@@ -10,9 +10,15 @@ export const BOLD_PAGO = {
   /** URL del link de pago generado en el panel de Bold. Vacío = aún no configurado. */
   LINK: '',
   /** Valor visible de la inscripción, ej. '$350.000 COP'. Vacío = por definir. */
-  VALOR: '',
+  VALOR: '$1.000.000 COP',
   /** Celular de soporte (WhatsApp) para dudas de pago. */
   WHATSAPP: '573126299744',
+  /**
+   * Temporal: mientras no haya link de Bold, el pago se coordina por WhatsApp.
+   * Poner en false cuando se configure `LINK` con el link real de Bold.
+   */
+  POR_WHATSAPP: true,
 } as const;
 
+/** Hay link de Bold configurado. */
 export const pagoConfigurado = BOLD_PAGO.LINK.trim() !== '';

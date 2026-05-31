@@ -13,6 +13,13 @@ function urlSoporte(equipo: string): string {
   return `https://wa.me/${BOLD_PAGO.WHATSAPP}?text=${encodeURIComponent(msg)}`;
 }
 
+function urlPagoWhatsApp(equipo: string): string {
+  const msg = `Hola, quiero pagar la inscripción de mi equipo${
+    equipo ? ` "${equipo}"` : ''
+  } al Torneo Managers (valor ${BOLD_PAGO.VALOR}). ¿Cómo realizo el pago?`;
+  return `https://wa.me/${BOLD_PAGO.WHATSAPP}?text=${encodeURIComponent(msg)}`;
+}
+
 export function PagoBold() {
   const [equipo, setEquipo] = useState('');
 
@@ -89,6 +96,15 @@ export function PagoBold() {
           >
             <CreditCard size={20} /> Pagar con Bold
           </a>
+        ) : BOLD_PAGO.POR_WHATSAPP ? (
+          <a
+            href={urlPagoWhatsApp(equipo)}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#25D366] px-7 py-4 text-base font-bold text-white shadow-[0_12px_40px_rgba(37,211,102,0.35)] transition-all duration-200 ease-managers hover:-translate-y-0.5"
+          >
+            <WhatsAppIcon size={20} /> Coordinar el pago por WhatsApp
+          </a>
         ) : (
           <p className="mt-6 rounded-full border border-dashed border-white/20 px-6 py-4 text-sm font-semibold text-neutral-400">
             El botón de pago estará disponible muy pronto.
@@ -96,17 +112,22 @@ export function PagoBold() {
         )}
 
         <p className="mt-4 flex items-center justify-center gap-2 text-xs text-neutral-500">
-          <ShieldCheck size={14} className="text-gold" /> Pago seguro procesado por Bold.
+          <ShieldCheck size={14} className="text-gold" />
+          {pagoConfigurado
+            ? 'Pago seguro procesado por Bold.'
+            : 'Te coordinamos el pago por WhatsApp. Pronto, pago en línea con Bold.'}
         </p>
 
-        <a
-          href={urlSoporte(equipo)}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="mt-4 inline-flex items-center justify-center gap-2 rounded-full border border-white/15 px-5 py-2.5 text-xs font-bold text-neutral-200 transition-colors hover:border-[#25D366] hover:text-[#25D366]"
-        >
-          <WhatsAppIcon size={14} /> Tengo una duda con el pago
-        </a>
+        {pagoConfigurado ? (
+          <a
+            href={urlSoporte(equipo)}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-4 inline-flex items-center justify-center gap-2 rounded-full border border-white/15 px-5 py-2.5 text-xs font-bold text-neutral-200 transition-colors hover:border-[#25D366] hover:text-[#25D366]"
+          >
+            <WhatsAppIcon size={14} /> Tengo una duda con el pago
+          </a>
+        ) : null}
       </div>
 
       <p className="text-center text-xs text-neutral-500">
