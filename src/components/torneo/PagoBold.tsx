@@ -1,0 +1,118 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+import { CreditCard, ShieldCheck } from 'lucide-react';
+import { WhatsAppIcon } from '@/components/shared/WhatsAppIcon';
+import { supabasePublico } from '@/lib/supabase';
+import { BOLD_PAGO, pagoConfigurado } from '@/lib/pago';
+
+function urlSoporte(equipo: string): string {
+  const msg = `Hola, tengo una duda con el pago de la inscripción de mi equipo${
+    equipo ? ` "${equipo}"` : ''
+  } al Torneo Managers.`;
+  return `https://wa.me/${BOLD_PAGO.WHATSAPP}?text=${encodeURIComponent(msg)}`;
+}
+
+export function PagoBold() {
+  const [equipo, setEquipo] = useState('');
+
+  useEffect(() => {
+    if (!supabasePublico) return;
+    const params = new URLSearchParams(window.location.search);
+    let id = params.get('eq') ?? '';
+    let t = params.get('t') ?? '';
+    if (!id || !t) {
+      try {
+        const local = JSON.parse(window.localStorage.getItem('fm-mi-inscripcion') ?? '{}');
+        id = id || local.id || '';
+        t = t || local.token || '';
+        if (local.equipo) setEquipo(local.equipo);
+      } catch {
+        /* noop */
+      }
+    }
+    if (id && t) {
+      supabasePublico
+        .rpc('fm_get_equipo', { p_id: id, p_token: t })
+        .then(({ data }) => {
+          const nombre = (data as { inscripcion?: { equipo?: string } } | null)?.inscripcion?.equipo;
+          if (nombre) setEquipo(nombre);
+        });
+    }
+  }, []);
+
+  return (
+    <div className="mx-auto max-w-lg space-y-6">
+      {/* Stepper */}
+      <div className="flex items-center justify-center gap-2" aria-hidden>
+        {[1, 2, 3, 4, 5].map((n) => (
+          <span
+            key={n}
+            className={`flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold ${
+              n <= 3
+                ? 'bg-gradient-to-br from-amarillo to-naranja text-carbon'
+                : n === 4
+                  ? 'border-2 border-[#25D366] text-[#25D366]'
+                  : 'border border-white/15 text-neutral-500'
+            }`}
+          >
+            {n <= 3 ? '✓' : n}
+          </span>
+        ))}
+      </div>
+
+      <div className="rounded-3xl border border-white/10 bg-[#0b0f14]/80 p-8 text-center">
+        <CreditCard size={44} className="mx-auto text-amarillo" />
+        <h2 className="mt-3 font-sport text-3xl uppercase text-neutral-50">Paso 4 · Pago</h2>
+        {equipo ? (
+          <p className="mt-1 text-sm font-semibold uppercase tracking-wide text-gold">{equipo}</p>
+        ) : null}
+
+        <p className="mt-4 text-sm text-neutral-300">
+          Asegura el cupo de tu equipo pagando la inscripción de forma segura con{' '}
+          <strong className="text-neutral-100">Bold</strong>.
+        </p>
+
+        <div className="mt-5 rounded-2xl border border-white/10 bg-[#0d1218]/70 p-5">
+          <p className="text-xs uppercase tracking-wide text-neutral-400">Valor de la inscripción</p>
+          <p className="mt-1 font-sport text-4xl text-amarillo">
+            {BOLD_PAGO.VALOR || 'Por confirmar'}
+          </p>
+        </div>
+
+        {pagoConfigurado ? (
+          <a
+            href={BOLD_PAGO.LINK}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-amarillo to-naranja px-7 py-4 text-base font-bold text-carbon shadow-[0_12px_40px_rgba(232,114,44,0.4)] transition-all duration-200 ease-managers hover:-translate-y-0.5"
+          >
+            <CreditCard size={20} /> Pagar con Bold
+          </a>
+        ) : (
+          <p className="mt-6 rounded-full border border-dashed border-white/20 px-6 py-4 text-sm font-semibold text-neutral-400">
+            El botón de pago estará disponible muy pronto.
+          </p>
+        )}
+
+        <p className="mt-4 flex items-center justify-center gap-2 text-xs text-neutral-500">
+          <ShieldCheck size={14} className="text-gold" /> Pago seguro procesado por Bold.
+        </p>
+
+        <a
+          href={urlSoporte(equipo)}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-4 inline-flex items-center justify-center gap-2 rounded-full border border-white/15 px-5 py-2.5 text-xs font-bold text-neutral-200 transition-colors hover:border-[#25D366] hover:text-[#25D366]"
+        >
+          <WhatsAppIcon size={14} /> Tengo una duda con el pago
+        </a>
+      </div>
+
+      <p className="text-center text-xs text-neutral-500">
+        Tras confirmar tu pago, el <strong className="text-neutral-300">paso 5</strong> es recibir la
+        programación del torneo. Te la enviamos por el grupo de WhatsApp.
+      </p>
+    </div>
+  );
+}

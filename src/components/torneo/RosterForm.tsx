@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Check, Copy, Loader2, Plus, Trash2, Upload, UserPlus } from 'lucide-react';
+import { Check, CreditCard, Copy, Loader2, Plus, Trash2, Upload, UserPlus } from 'lucide-react';
 // Cliente público sin sesión: el capitán siempre actúa como anon (las funciones
 // RPC validan el token, así que el acceso sigue siendo seguro).
 import { supabasePublico as supabase, supabaseConfigurado } from '@/lib/supabase';
@@ -248,13 +248,18 @@ export function RosterForm() {
         <div className="mt-6 rounded-2xl border border-white/10 bg-[#0d1218]/70 p-4 text-left text-sm text-neutral-300">
           <p className="font-bold text-neutral-100">¿Qué sigue?</p>
           <ul className="mt-2 space-y-1.5">
-            <li>📋 Revisamos tu plantel en el grupo de WhatsApp.</li>
-            <li>💳 <strong className="text-neutral-100">Paso 4 — Pago:</strong> una semana antes del torneo te habilitamos el botón de pago.</li>
-            <li>📅 <strong className="text-neutral-100">Paso 5 — Programación:</strong> te enviamos el calendario y las reglas.</li>
+            <li>💳 <strong className="text-neutral-100">Paso 4 — Pago:</strong> asegura tu cupo pagando la inscripción con Bold (botón abajo).</li>
+            <li>📅 <strong className="text-neutral-100">Paso 5 — Programación:</strong> te enviamos el calendario y las reglas por el grupo.</li>
           </ul>
         </div>
 
-        <div className="mt-6 flex flex-wrap justify-center gap-3">
+        <a
+          href={`${base}/torneo/inscripciones/pago/?eq=${eq}&t=${token}`}
+          className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-amarillo to-naranja px-7 py-3.5 text-sm font-bold text-carbon shadow-[0_12px_40px_rgba(232,114,44,0.4)] transition-all duration-200 ease-managers hover:-translate-y-0.5"
+        >
+          <CreditCard size={18} /> Continuar al pago (paso 4)
+        </a>
+        <div className="mt-3 flex flex-wrap justify-center gap-3">
           <button
             type="button"
             onClick={() => setFinalizado(false)}
@@ -264,7 +269,7 @@ export function RosterForm() {
           </button>
           <a
             href={`${base}/torneo/`}
-            className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-amarillo to-naranja px-6 py-2.5 text-sm font-bold text-carbon"
+            className="inline-flex items-center gap-2 rounded-full border border-white/15 px-5 py-2.5 text-sm font-bold text-neutral-200 transition-colors hover:border-gold hover:text-gold"
           >
             Ir al torneo
           </a>
