@@ -130,6 +130,13 @@ export function PagoBold() {
         ) : null}
       </div>
 
+      <a
+        href={`${process.env.NEXT_PUBLIC_BASE_PATH ?? ''}/torneo/inscripciones/listo/`}
+        className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-white/15 px-6 py-3 text-sm font-bold text-neutral-200 transition-colors hover:border-gold hover:text-gold"
+      >
+        Ya coordiné mi pago — ver paso 5 (programación)
+      </a>
+
       <p className="text-center text-xs text-neutral-500">
         Tras confirmar tu pago, el <strong className="text-neutral-300">paso 5</strong> es recibir la
         programación del torneo. Te la enviamos por el grupo de WhatsApp.
