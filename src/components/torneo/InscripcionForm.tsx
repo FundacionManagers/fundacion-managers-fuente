@@ -45,17 +45,22 @@ export function InscripcionForm() {
     // Si Supabase está configurado, guardamos la pre-inscripción en la BD.
     if (supabaseConfigurado && supabase) {
       setEstado('enviando');
-      const { error } = await supabase.from('inscripciones').insert({
-        equipo: eq,
-        capitan: cap,
-        contacto: tel || null,
-      });
-      if (error) {
-        setEstado('error');
-        return;
+      try {
+        const { error } = await supabase.from('inscripciones').insert({
+          equipo: eq,
+          capitan: cap,
+          contacto: tel || null,
+        });
+        if (error) {
+          // No bloqueamos al usuario: dejamos registro en consola y seguimos
+          // a WhatsApp para no perder el lead (red/caché/extensión, etc.).
+          console.error('Supabase insert error:', error.message);
+        }
+      } catch (err) {
+        console.error('Supabase insert exception:', err);
       }
       setEstado('enviado');
-      // Abrimos WhatsApp para unirse al grupo del torneo.
+      // Siempre abrimos WhatsApp para unirse al grupo del torneo.
       window.open(urlWhatsApp(cap, eq), '_blank', 'noopener,noreferrer');
       return;
     }
