@@ -12,7 +12,7 @@ const WHATSAPP_NUMERO = '573126299744';
 
 function construirMensaje(capitan: string, equipo: string): string {
   return [
-    'Hola, quiero inscribir mi equipo al Torneo Managers — Edición 4° (2026-2).',
+    'Hola, ya hice mi pre-inscripción al Torneo Managers — Edición 4° (2026-2) y quiero solicitar unirme al grupo de WhatsApp.',
     `Capitán: ${capitan}`,
     `Equipo: ${equipo}`,
   ].join('\n');
@@ -107,9 +107,11 @@ export function InscripcionForm() {
         </div>
 
         <p className="text-sm text-neutral-300">
-          Tu pre-inscripción quedó registrada. Ahora viene el{' '}
-          <strong className="text-neutral-100">paso 2</strong>: únete al grupo de WhatsApp del
-          torneo. Ahí te guiamos para confirmar el equipo, hacer el pago y recibir la programación.
+          Tu pre-inscripción quedó registrada. El{' '}
+          <strong className="text-neutral-100">paso 2</strong> es{' '}
+          <strong className="text-neutral-100">solicitar unirte al grupo de WhatsApp</strong> del
+          torneo: toca el botón de abajo para enviar tu solicitud. Cuando te acepten, ahí te
+          guiamos para confirmar el equipo, hacer el pago y recibir la programación.
         </p>
         <a
           href={urlWhatsApp(capitan.trim(), equipo.trim())}
@@ -117,7 +119,7 @@ export function InscripcionForm() {
           rel="noopener noreferrer"
           className="inline-flex w-full items-center justify-center gap-2.5 rounded-full bg-[#25D366] px-7 py-3.5 text-sm font-bold text-white shadow-[0_12px_40px_rgba(37,211,102,0.35)] transition-all duration-200 ease-managers hover:-translate-y-0.5"
         >
-          <WhatsAppIcon size={20} /> Ir al grupo de WhatsApp (paso 2)
+          <WhatsAppIcon size={20} /> Solicitar unirme al grupo (paso 2)
         </a>
         <p className="text-xs text-neutral-500">Se abrirá WhatsApp en una pestaña nueva.</p>
       </div>
