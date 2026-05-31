@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef } from 'react';
 import { PartyPopper, Trophy } from 'lucide-react';
+import { GoldCoin } from '@/components/shared/GoldCoin';
 
 const COLORES = ['#F2C230', '#E8722C', '#D4A437', '#ffffff', '#25D366', '#2D6CDF'];
 
@@ -96,20 +97,26 @@ export function CelebracionTrofeo() {
       />
 
       <div className="relative">
-        {/* Trofeo con rayos giratorios + glow */}
-        <div className="relative mx-auto flex h-32 w-32 items-center justify-center">
+        {/* Trofeo con rayos giratorios + la moneda girando dentro de la copa */}
+        <div className="relative mx-auto flex h-36 w-36 items-center justify-center">
           <span
             className="coin-spin absolute inset-0 rounded-full opacity-70"
             style={{
               background:
                 'conic-gradient(from 0deg, transparent 0 18deg, rgba(242,194,48,0.55) 18deg 24deg, transparent 24deg 48deg, rgba(232,114,44,0.5) 48deg 54deg, transparent 54deg)',
-              maskImage: 'radial-gradient(circle, transparent 38%, #000 40%)',
-              WebkitMaskImage: 'radial-gradient(circle, transparent 38%, #000 40%)',
+              maskImage: 'radial-gradient(circle, transparent 40%, #000 42%)',
+              WebkitMaskImage: 'radial-gradient(circle, transparent 40%, #000 42%)',
             }}
             aria-hidden
           />
-          <span className="cta-glow flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-br from-amarillo to-naranja">
-            <Trophy size={46} className="text-carbon" />
+          <Trophy
+            size={112}
+            className="relative text-amarillo drop-shadow-[0_0_22px_rgba(242,194,48,0.6)]"
+            strokeWidth={1.5}
+          />
+          {/* Moneda girando dentro de la copa del trofeo */}
+          <span className="absolute left-1/2 top-[34%] -translate-x-1/2 -translate-y-1/2">
+            <GoldCoin size={40} className="coin-spin drop-shadow-none" ariaLabel="" />
           </span>
         </div>
 
