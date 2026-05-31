@@ -108,18 +108,7 @@ export default function InscripcionesPage() {
             {/* FORMULARIO */}
             <div className="lg:sticky lg:top-28 lg:self-start">
               <div className="rounded-3xl border border-white/10 bg-[#0b0f14]/80 p-8 shadow-[0_40px_100px_rgba(0,0,0,0.6)] backdrop-blur-sm">
-                <p className="font-bufon text-xs font-bold uppercase tracking-[0.25em] text-naranja">
-                  Paso 1 · Pre-inscripción
-                </p>
-                <h2 className="mt-2 font-sport text-3xl uppercase leading-none text-neutral-50">
-                  Empieza aquí
-                </h2>
-                <p className="mt-3 text-sm text-neutral-400">
-                  Solo necesitamos tres datos para arrancar.
-                </p>
-                <div className="mt-7">
-                  <InscripcionForm />
-                </div>
+                <InscripcionForm />
               </div>
             </div>
           </div>
