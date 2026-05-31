@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import { CheckCircle2, MessageCircle, ShieldCheck } from 'lucide-react';
+import { GoldCoin } from '@/components/shared/GoldCoin';
 import { supabase, supabaseConfigurado } from '@/lib/supabase';
 
 /** Celular oficial al que llega la pre-inscripción por WhatsApp. */
@@ -165,7 +166,7 @@ export function InscripcionForm() {
         disabled={!listo || estado === 'enviando'}
         className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-amarillo to-naranja px-7 py-3.5 text-sm font-bold text-carbon shadow-[0_12px_40px_rgba(232,114,44,0.4)] transition-all duration-200 ease-managers hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
       >
-        <MessageCircle size={18} aria-hidden />
+        <GoldCoin size={22} className="drop-shadow-none" ariaLabel="" />
         {estado === 'enviando' ? 'Enviando…' : 'Enviar pre-inscripción'}
       </button>
 
