@@ -3,8 +3,10 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   Check,
+  ChevronDown,
   ChevronLeft,
   ChevronRight,
+  ChevronUp,
   Download,
   FileSpreadsheet,
   LogOut,
@@ -12,7 +14,9 @@ import {
   RefreshCw,
   Trash2,
   Upload,
+  Users,
 } from 'lucide-react';
+import { DashboardPlantel } from '@/components/torneo/DashboardPlantel';
 import {
   cargarInscripciones,
   exportarCSV,
@@ -54,6 +58,7 @@ export function InscripcionesDashboard() {
   const [equipo, setEquipo] = useState('');
   const [capitan, setCapitan] = useState('');
   const [contacto, setContacto] = useState('');
+  const [expandido, setExpandido] = useState<Record<string, boolean>>({});
   const fileRef = useRef<HTMLInputElement>(null);
 
   const modoSupabase = supabaseConfigurado && supabase != null;
@@ -445,6 +450,25 @@ export function InscripcionesDashboard() {
                 rows={2}
                 className="mt-4 block w-full rounded-md border border-white/15 px-3 py-2 text-sm placeholder:text-neutral-500 focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
               />
+
+              {modoSupabase ? (
+                <>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setExpandido((prev) => ({ ...prev, [ins.id]: !prev[ins.id] }))
+                    }
+                    className="mt-4 inline-flex items-center gap-2 rounded-full border border-white/15 px-4 py-2 text-xs font-bold text-neutral-200 transition-colors hover:border-gold hover:text-gold"
+                  >
+                    <Users size={14} aria-hidden />
+                    {expandido[ins.id] ? 'Ocultar plantel' : 'Ver plantel y fotos'}
+                    {expandido[ins.id] ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+                  </button>
+                  {expandido[ins.id] ? (
+                    <DashboardPlantel inscripcionId={ins.id} equipoNombre={ins.equipo} />
+                  ) : null}
+                </>
+              ) : null}
             </article>
           ))}
         </div>

@@ -98,3 +98,58 @@ export function progresoPlantel(jugadores: Jugador[]): number {
 export function plantelListo(jugadores: Jugador[]): boolean {
   return jugadores.filter(jugadorCompleto).length >= MIN_JUGADORES;
 }
+
+/** Fila de jugador tal como llega de la base de datos (snake_case). */
+export interface JugadorRow {
+  id: string;
+  inscripcion_id: string;
+  nombre: string;
+  documento: string;
+  celular: string | null;
+  numero: number | null;
+  posicion: string | null;
+  fecha_nacimiento: string | null;
+  eps: string | null;
+  talla: string | null;
+  foto_url: string | null;
+  orden: number;
+  creado_en: string;
+}
+
+function celda(v: unknown): string {
+  return `"${String(v ?? '').replace(/"/g, '""')}"`;
+}
+
+/** CSV (Excel es-CO: BOM + separador ";") del plantel de un equipo. */
+export function exportarPlantelCSV(equipo: string, jugadores: JugadorRow[]): string {
+  const cab = [
+    'Equipo',
+    'Nombre',
+    'Documento',
+    'Celular',
+    'N° camiseta',
+    'Posición',
+    'Fecha nacimiento',
+    'EPS',
+    'Talla',
+    'Tiene foto',
+  ];
+  const filas = jugadores.map((j) =>
+    [
+      equipo,
+      j.nombre,
+      j.documento,
+      j.celular,
+      j.numero,
+      j.posicion,
+      j.fecha_nacimiento,
+      j.eps,
+      j.talla,
+      j.foto_url ? 'Sí' : 'No',
+    ]
+      .map(celda)
+      .join(';'),
+  );
+  const BOM = String.fromCharCode(0xfeff);
+  return BOM + [cab.map(celda).join(';'), ...filas].join('\r\n');
+}
