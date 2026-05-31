@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { CalendarDays, ListChecks, Trophy } from 'lucide-react';
 import { TorneoBackdrop } from '@/components/torneo/TorneoBackdrop';
 import { TorneoNav } from '@/components/torneo/TorneoNav';
+import { ComprobanteInscripcion } from '@/components/torneo/ComprobanteInscripcion';
 
 export const metadata: Metadata = {
   title: 'Inscripción completa · Torneo Managers',
@@ -84,6 +85,13 @@ export default function ListoPage() {
               >
                 Ir al inicio del torneo
               </a>
+
+              <div className="mt-6 border-t border-white/10 pt-6">
+                <p className="text-xs uppercase tracking-wide text-neutral-400">
+                  Tu comprobante de inscripción
+                </p>
+                <ComprobanteInscripcion />
+              </div>
             </div>
 
             <p className="mt-6 text-center text-xs text-neutral-500">
