@@ -91,6 +91,14 @@ export function InscripcionesDashboard() {
     setCargado(true);
   }, [modoSupabase, sesion, recargarSupabase]);
 
+  // Auto-actualización: refresca desde Supabase cada 20s mientras hay sesión,
+  // para que las inscripciones nuevas aparezcan sin recargar a mano.
+  useEffect(() => {
+    if (!modoSupabase || !sesion) return;
+    const id = setInterval(() => void recargarSupabase(), 20000);
+    return () => clearInterval(id);
+  }, [modoSupabase, sesion, recargarSupabase]);
+
   // Persistir en localStorage solo en modo local.
   useEffect(() => {
     if (!modoSupabase && cargado) guardarInscripciones(lista);
