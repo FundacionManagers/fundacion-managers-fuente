@@ -59,35 +59,39 @@ export function InscripcionForm() {
       } catch (err) {
         console.error('Supabase insert exception:', err);
       }
+      // No saltamos automáticamente: mostramos la confirmación y dejamos que
+      // el usuario abra WhatsApp con un botón (evita el salto que confunde).
       setEstado('enviado');
-      // Siempre abrimos WhatsApp para unirse al grupo del torneo.
-      window.open(urlWhatsApp(cap, eq), '_blank', 'noopener,noreferrer');
       return;
     }
 
-    // Respaldo (sin BD): solo WhatsApp.
-    window.open(urlWhatsApp(cap, eq), '_blank', 'noopener,noreferrer');
+    // Respaldo (sin BD): mostramos confirmación; el usuario abre WhatsApp.
     setEstado('enviado');
   }
 
   if (estado === 'enviado') {
     return (
-      <div className="space-y-4 text-center">
-        <CheckCircle2 size={44} className="mx-auto text-gold" aria-hidden />
-        <h3 className="font-sport text-2xl uppercase text-neutral-50">¡Recibido!</h3>
+      <div className="space-y-5 text-center">
+        <CheckCircle2 size={48} className="mx-auto text-gold" aria-hidden />
+        <div>
+          <h3 className="font-sport text-3xl uppercase text-neutral-50">¡Recibido!</h3>
+          <p className="mt-1 text-sm font-semibold uppercase tracking-wide text-gold">
+            Pre-inscripción registrada
+          </p>
+        </div>
         <p className="text-sm text-neutral-300">
-          {supabaseConfigurado
-            ? 'Tu pre-inscripción quedó registrada. Te abrimos WhatsApp para unirte al grupo del torneo y continuar el proceso.'
-            : 'Te abrimos WhatsApp para enviar tu pre-inscripción y unirte al grupo del torneo.'}
+          Falta <strong className="text-neutral-100">un último paso</strong>: únete al grupo de
+          WhatsApp del torneo para confirmar tu equipo y recibir las instrucciones.
         </p>
         <a
           href={urlWhatsApp(capitan.trim(), equipo.trim())}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center justify-center gap-2 rounded-full border border-white/15 px-5 py-2.5 text-sm font-bold text-neutral-200 transition-colors hover:border-gold hover:text-gold"
+          className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#25D366] px-7 py-3.5 text-sm font-bold text-[#062b16] shadow-[0_12px_40px_rgba(37,211,102,0.35)] transition-all duration-200 ease-managers hover:-translate-y-0.5"
         >
-          <MessageCircle size={16} aria-hidden /> Abrir WhatsApp de nuevo
+          <MessageCircle size={18} aria-hidden /> Unirme al grupo de WhatsApp
         </a>
+        <p className="text-xs text-neutral-500">Se abrirá WhatsApp en una pestaña nueva.</p>
       </div>
     );
   }
