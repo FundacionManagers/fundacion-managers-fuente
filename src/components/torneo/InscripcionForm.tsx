@@ -72,6 +72,7 @@ export function InscripcionForm() {
     // Si Supabase está configurado, guardamos la pre-inscripción en la BD.
     if (supabaseConfigurado && supabase) {
       setEstado('enviando');
+      let ok = false;
       try {
         const { error } = await supabase.from('inscripciones').insert({
           id,
@@ -80,24 +81,25 @@ export function InscripcionForm() {
           contacto: tel || null,
           token: tk,
         });
-        if (error) {
-          // No bloqueamos al usuario: dejamos registro en consola y seguimos
-          // a WhatsApp para no perder el lead (red/caché/extensión, etc.).
-          console.error('Supabase insert error:', error.message);
-        } else if (typeof window !== 'undefined') {
-          // Guardamos referencia local para retomar el paso 3 en este dispositivo.
+        ok = !error;
+        if (error) console.error('Supabase insert error:', error.message);
+      } catch (err) {
+        console.error('Supabase insert exception:', err);
+      }
+      await giroMinimo;
+      if (ok) {
+        // Solo en éxito real guardamos la referencia local y mostramos el avance
+        // (evita enlaces de "plantel" que apunten a un equipo inexistente).
+        if (typeof window !== 'undefined') {
           window.localStorage.setItem(
             'fm-mi-inscripcion',
             JSON.stringify({ id, token: tk, equipo: eq, capitan: cap }),
           );
         }
-      } catch (err) {
-        console.error('Supabase insert exception:', err);
+        setEstado('enviado');
+      } else {
+        setEstado('error');
       }
-      await giroMinimo;
-      // No saltamos automáticamente: mostramos la confirmación y dejamos que
-      // el usuario abra WhatsApp con un botón (evita el salto que confunde).
-      setEstado('enviado');
       return;
     }
 
@@ -283,9 +285,20 @@ export function InscripcionForm() {
       </label>
 
       {estado === 'error' ? (
-        <p className="rounded-md border border-red-500/40 bg-red-500/10 p-3 text-xs text-red-300">
-          No pudimos registrar la pre-inscripción. Intenta de nuevo o escríbenos por WhatsApp.
-        </p>
+        <div className="space-y-2 rounded-md border border-red-500/40 bg-red-500/10 p-3 text-xs text-red-300">
+          <p>
+            No pudimos guardar tu pre-inscripción (revisa tu conexión e intenta de nuevo). Si
+            persiste, escríbenos por WhatsApp y te inscribimos manualmente.
+          </p>
+          <a
+            href={urlWhatsApp(capitan.trim(), equipo.trim())}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 font-semibold text-[#25D366] hover:underline"
+          >
+            <WhatsAppIcon size={13} /> Escribir por WhatsApp
+          </a>
+        </div>
       ) : null}
 
       <button
