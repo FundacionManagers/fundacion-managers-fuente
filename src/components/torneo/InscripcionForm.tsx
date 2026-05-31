@@ -110,8 +110,8 @@ export function InscripcionForm() {
           Tu pre-inscripción quedó registrada. El{' '}
           <strong className="text-neutral-100">paso 2</strong> es{' '}
           <strong className="text-neutral-100">solicitar unirte al grupo de WhatsApp</strong> del
-          torneo: toca el botón de abajo para enviar tu solicitud. Cuando te acepten, ahí te
-          guiamos para confirmar el equipo, hacer el pago y recibir la programación.
+          torneo: toca el botón de abajo para enviar tu solicitud. Cuando ya estés en el grupo te
+          llegará un mensaje de confirmación y avanzamos al paso 3.
         </p>
         <a
           href={urlWhatsApp(capitan.trim(), equipo.trim())}
