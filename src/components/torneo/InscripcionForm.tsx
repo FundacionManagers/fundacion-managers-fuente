@@ -43,6 +43,10 @@ export function InscripcionForm() {
     const eq = equipo.trim();
     const tel = contacto.trim();
 
+    // Giro mínimo visible: aunque el guardado sea instantáneo, la moneda gira
+    // al menos este tiempo para que se perciba el "procesando".
+    const giroMinimo = new Promise((r) => setTimeout(r, 1300));
+
     // Si Supabase está configurado, guardamos la pre-inscripción en la BD.
     if (supabaseConfigurado && supabase) {
       setEstado('enviando');
@@ -60,6 +64,7 @@ export function InscripcionForm() {
       } catch (err) {
         console.error('Supabase insert exception:', err);
       }
+      await giroMinimo;
       // No saltamos automáticamente: mostramos la confirmación y dejamos que
       // el usuario abra WhatsApp con un botón (evita el salto que confunde).
       setEstado('enviado');
@@ -67,6 +72,8 @@ export function InscripcionForm() {
     }
 
     // Respaldo (sin BD): mostramos confirmación; el usuario abre WhatsApp.
+    setEstado('enviando');
+    await giroMinimo;
     setEstado('enviado');
   }
 
@@ -198,7 +205,7 @@ export function InscripcionForm() {
       >
         <GoldCoin
           size={44}
-          className={`shrink-0 drop-shadow-none ${estado === 'enviando' ? 'animate-spin' : ''}`}
+          className={`shrink-0 drop-shadow-none ${estado === 'enviando' ? 'coin-spin' : ''}`}
           ariaLabel=""
         />
         {estado === 'enviando' ? 'Enviando…' : 'Enviar pre-inscripción'}

@@ -300,6 +300,19 @@
     }
   }
 
+  /* Giro de la moneda como indicador de "procesando" (feedback funcional).
+     Usa !important + especificidad de clase para sobrevivir a la regla de
+     reduce-motion de abajo: es un estado de carga, no decoración. */
+  .coin-spin {
+    animation: coin-spin 0.9s linear infinite !important;
+  }
+
+  @keyframes coin-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
   /* Respetar prefers-reduced-motion */
   @media (prefers-reduced-motion: reduce) {
     *,
