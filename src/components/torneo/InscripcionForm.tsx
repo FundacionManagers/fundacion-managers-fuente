@@ -190,6 +190,10 @@ export function InscripcionForm() {
           torneo: toca el botón de abajo para enviar tu solicitud. Cuando ya estés en el grupo te
           llegará un mensaje de confirmación.
         </p>
+        <p className="rounded-xl border border-amarillo/40 bg-amarillo/10 p-3 text-sm font-semibold text-amarillo">
+          👉 Después de enviar el mensaje, <strong>vuelve a esta página</strong> para continuar con
+          el paso 3 y registrar tu plantel.
+        </p>
         <a
           href={urlWhatsApp(capitan.trim(), equipo.trim())}
           target="_blank"
