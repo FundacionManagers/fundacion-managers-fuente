@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { CheckCircle2, ShieldCheck } from 'lucide-react';
 import { GoldCoin } from '@/components/shared/GoldCoin';
 import { WhatsAppIcon } from '@/components/shared/WhatsAppIcon';
-import { supabase, supabaseConfigurado } from '@/lib/supabase';
+import { supabasePublico, supabaseConfigurado } from '@/lib/supabase';
 
 /** Celular oficial al que llega la pre-inscripción por WhatsApp. */
 const WHATSAPP_NUMERO = '573126299744';
@@ -70,11 +70,11 @@ export function InscripcionForm() {
     setToken(tk);
 
     // Si Supabase está configurado, guardamos la pre-inscripción en la BD.
-    if (supabaseConfigurado && supabase) {
+    if (supabaseConfigurado && supabasePublico) {
       setEstado('enviando');
       let ok = false;
       try {
-        const { error } = await supabase.from('inscripciones').insert({
+        const { error } = await supabasePublico.from('inscripciones').insert({
           id,
           equipo: eq,
           capitan: cap,

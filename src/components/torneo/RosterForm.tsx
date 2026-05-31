@@ -2,7 +2,9 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Check, Copy, Loader2, Plus, Trash2, Upload, UserPlus } from 'lucide-react';
-import { supabase, supabaseConfigurado } from '@/lib/supabase';
+// Cliente público sin sesión: el capitán siempre actúa como anon (las funciones
+// RPC validan el token, así que el acceso sigue siendo seguro).
+import { supabasePublico as supabase, supabaseConfigurado } from '@/lib/supabase';
 import {
   jugadorCompleto,
   jugadorVacio,
