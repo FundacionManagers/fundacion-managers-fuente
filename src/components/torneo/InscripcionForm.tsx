@@ -31,6 +31,8 @@ export function InscripcionForm() {
   const [contacto, setContacto] = useState('');
   const [autoriza, setAutoriza] = useState(false);
   const [estado, setEstado] = useState<Estado>('idle');
+  // true cuando el usuario ya pulsó el botón para solicitar unirse al grupo.
+  const [solicitoGrupo, setSolicitoGrupo] = useState(false);
 
   const listo =
     capitan.trim() !== '' && equipo.trim() !== '' && contacto.trim() !== '' && autoriza;
@@ -78,6 +80,62 @@ export function InscripcionForm() {
   }
 
   if (estado === 'enviado') {
+    // Mini-stepper: `hechos` = pasos completados (✓), `siguiente` = paso resaltado.
+    const Stepper = ({ hechos, siguiente }: { hechos: number; siguiente: number }) => (
+      <div className="flex items-center justify-center gap-2" aria-hidden>
+        {[1, 2, 3, 4, 5].map((n) => (
+          <span
+            key={n}
+            className={`flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold ${
+              n <= hechos
+                ? 'bg-gradient-to-br from-amarillo to-naranja text-carbon'
+                : n === siguiente
+                  ? 'border-2 border-[#25D366] text-[#25D366]'
+                  : 'border border-white/15 text-neutral-500'
+            }`}
+          >
+            {n <= hechos ? '✓' : n}
+          </span>
+        ))}
+      </div>
+    );
+
+    // Tras solicitar el grupo: panel del paso 3.
+    if (solicitoGrupo) {
+      return (
+        <div className="space-y-5 text-center">
+          <CheckCircle2 size={48} className="mx-auto text-[#25D366]" aria-hidden />
+          <div>
+            <h3 className="font-sport text-3xl uppercase text-neutral-50">¡Solicitud enviada!</h3>
+            <p className="mt-1 text-sm font-semibold uppercase tracking-wide text-[#25D366]">
+              Paso 2 completado
+            </p>
+          </div>
+          <Stepper hechos={2} siguiente={3} />
+          <p className="text-sm text-neutral-300">
+            Enviaste tu solicitud para unirte al grupo. Te llegará un{' '}
+            <strong className="text-neutral-100">mensaje de confirmación</strong> cuando ya estés
+            dentro.
+          </p>
+          <p className="rounded-2xl border border-white/10 bg-[#0d1218]/70 p-4 text-sm text-neutral-300">
+            Ahora vamos al <strong className="text-neutral-100">paso 3</strong>: confirmar tu
+            inscripción enviando el <strong className="text-neutral-100">logo del equipo</strong> y
+            la <strong className="text-neutral-100">foto en fondo blanco de cada jugador</strong>.
+            Te compartimos el enlace dentro del grupo.
+          </p>
+          <a
+            href={urlWhatsApp(capitan.trim(), equipo.trim())}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center justify-center gap-2 rounded-full border border-white/15 px-5 py-2.5 text-sm font-bold text-neutral-200 transition-colors hover:border-[#25D366] hover:text-[#25D366]"
+          >
+            <WhatsAppIcon size={16} /> Volver a abrir WhatsApp
+          </a>
+        </div>
+      );
+    }
+
+    // Panel del paso 2 (por defecto tras enviar la pre-inscripción).
     return (
       <div className="space-y-5 text-center">
         <CheckCircle2 size={48} className="mx-auto text-gold" aria-hidden />
@@ -88,35 +146,20 @@ export function InscripcionForm() {
           </p>
         </div>
 
-        {/* Mini progreso de los 5 pasos */}
-        <div className="flex items-center justify-center gap-2" aria-hidden>
-          {[1, 2, 3, 4, 5].map((n) => (
-            <span
-              key={n}
-              className={`flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold ${
-                n === 1
-                  ? 'bg-gradient-to-br from-amarillo to-naranja text-carbon'
-                  : n === 2
-                    ? 'border-2 border-[#25D366] text-[#25D366]'
-                    : 'border border-white/15 text-neutral-500'
-              }`}
-            >
-              {n === 1 ? '✓' : n}
-            </span>
-          ))}
-        </div>
+        <Stepper hechos={1} siguiente={2} />
 
         <p className="text-sm text-neutral-300">
           Tu pre-inscripción quedó registrada. El{' '}
           <strong className="text-neutral-100">paso 2</strong> es{' '}
           <strong className="text-neutral-100">solicitar unirte al grupo de WhatsApp</strong> del
           torneo: toca el botón de abajo para enviar tu solicitud. Cuando ya estés en el grupo te
-          llegará un mensaje de confirmación y avanzamos al paso 3.
+          llegará un mensaje de confirmación.
         </p>
         <a
           href={urlWhatsApp(capitan.trim(), equipo.trim())}
           target="_blank"
           rel="noopener noreferrer"
+          onClick={() => setSolicitoGrupo(true)}
           className="inline-flex w-full items-center justify-center gap-2.5 rounded-full bg-[#25D366] px-7 py-3.5 text-sm font-bold text-white shadow-[0_12px_40px_rgba(37,211,102,0.35)] transition-all duration-200 ease-managers hover:-translate-y-0.5"
         >
           <WhatsAppIcon size={20} /> Solicitar unirme al grupo (paso 2)
