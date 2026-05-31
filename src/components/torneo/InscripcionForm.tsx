@@ -2,8 +2,9 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
-import { CheckCircle2, MessageCircle, ShieldCheck } from 'lucide-react';
+import { CheckCircle2, ShieldCheck } from 'lucide-react';
 import { GoldCoin } from '@/components/shared/GoldCoin';
+import { WhatsAppIcon } from '@/components/shared/WhatsAppIcon';
 import { supabase, supabaseConfigurado } from '@/lib/supabase';
 
 /** Celular oficial al que llega la pre-inscripción por WhatsApp. */
@@ -74,22 +75,42 @@ export function InscripcionForm() {
       <div className="space-y-5 text-center">
         <CheckCircle2 size={48} className="mx-auto text-gold" aria-hidden />
         <div>
-          <h3 className="font-sport text-3xl uppercase text-neutral-50">¡Recibido!</h3>
+          <h3 className="font-sport text-3xl uppercase text-neutral-50">¡Vas muy bien!</h3>
           <p className="mt-1 text-sm font-semibold uppercase tracking-wide text-gold">
-            Pre-inscripción registrada
+            Paso 1 de 5 completado
           </p>
         </div>
+
+        {/* Mini progreso de los 5 pasos */}
+        <div className="flex items-center justify-center gap-2" aria-hidden>
+          {[1, 2, 3, 4, 5].map((n) => (
+            <span
+              key={n}
+              className={`flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold ${
+                n === 1
+                  ? 'bg-gradient-to-br from-amarillo to-naranja text-carbon'
+                  : n === 2
+                    ? 'border-2 border-[#25D366] text-[#25D366]'
+                    : 'border border-white/15 text-neutral-500'
+              }`}
+            >
+              {n === 1 ? '✓' : n}
+            </span>
+          ))}
+        </div>
+
         <p className="text-sm text-neutral-300">
-          Falta <strong className="text-neutral-100">un último paso</strong>: únete al grupo de
-          WhatsApp del torneo para confirmar tu equipo y recibir las instrucciones.
+          Tu pre-inscripción quedó registrada. Ahora viene el{' '}
+          <strong className="text-neutral-100">paso 2</strong>: únete al grupo de WhatsApp del
+          torneo. Ahí te guiamos para confirmar el equipo, hacer el pago y recibir la programación.
         </p>
         <a
           href={urlWhatsApp(capitan.trim(), equipo.trim())}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#25D366] px-7 py-3.5 text-sm font-bold text-[#062b16] shadow-[0_12px_40px_rgba(37,211,102,0.35)] transition-all duration-200 ease-managers hover:-translate-y-0.5"
+          className="inline-flex w-full items-center justify-center gap-2.5 rounded-full bg-[#25D366] px-7 py-3.5 text-sm font-bold text-white shadow-[0_12px_40px_rgba(37,211,102,0.35)] transition-all duration-200 ease-managers hover:-translate-y-0.5"
         >
-          <MessageCircle size={18} aria-hidden /> Unirme al grupo de WhatsApp
+          <WhatsAppIcon size={20} /> Ir al grupo de WhatsApp (paso 2)
         </a>
         <p className="text-xs text-neutral-500">Se abrirá WhatsApp en una pestaña nueva.</p>
       </div>
