@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { ArrowRight, Instagram, Star, Trophy } from 'lucide-react';
 import { IconeBrand } from '@/components/shared/IconeBrand';
+import { GoldCoin } from '@/components/shared/GoldCoin';
 import { MatchCountdown } from '@/components/torneo/MatchCountdown';
 import { TorneoBackdrop } from '@/components/torneo/TorneoBackdrop';
 import { TeamCrest } from '@/components/torneo/TeamCrest';
@@ -270,6 +271,7 @@ export function TorneoLanding() {
               href="/torneo/inscripciones/"
               className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-amarillo to-naranja px-8 py-4 text-sm font-bold text-carbon shadow-[0_12px_40px_rgba(232,114,44,0.4)] transition-all duration-200 ease-managers hover:-translate-y-0.5"
             >
+              <GoldCoin size={30} className="drop-shadow-none" ariaLabel="" />
               Inscribir un equipo
               <ArrowRight size={18} aria-hidden />
             </Link>
