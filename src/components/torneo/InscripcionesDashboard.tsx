@@ -6,6 +6,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Download,
+  FileSpreadsheet,
   LogOut,
   Plus,
   RefreshCw,
@@ -14,6 +15,7 @@ import {
 } from 'lucide-react';
 import {
   cargarInscripciones,
+  exportarCSV,
   exportarJSON,
   guardarInscripciones,
   importarJSON,
@@ -161,14 +163,22 @@ export function InscripcionesDashboard() {
     }
   }
 
-  function descargar() {
-    const blob = new Blob([exportarJSON(lista)], { type: 'application/json' });
+  function bajarArchivo(contenido: string, tipo: string, ext: string) {
+    const blob = new Blob([contenido], { type: tipo });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `inscripciones-${new Date().toISOString().slice(0, 10)}.json`;
+    a.download = `inscripciones-${new Date().toISOString().slice(0, 10)}.${ext}`;
     a.click();
     URL.revokeObjectURL(url);
+  }
+
+  function descargar() {
+    bajarArchivo(exportarJSON(lista), 'application/json', 'json');
+  }
+
+  function descargarExcel() {
+    bajarArchivo(exportarCSV(lista), 'text/csv;charset=utf-8', 'csv');
   }
 
   function abrirImportar() {
@@ -276,19 +286,28 @@ export function InscripcionesDashboard() {
             ) : null}
             <button
               type="button"
-              onClick={descargar}
-              className="inline-flex items-center gap-2 rounded-full border border-white/15 px-4 py-2 text-xs font-bold text-neutral-200 transition-colors hover:border-gold hover:text-gold"
+              onClick={descargarExcel}
+              className="inline-flex items-center gap-2 rounded-full border border-[#1D6F42]/50 bg-[#1D6F42]/15 px-4 py-2 text-xs font-bold text-[#3fbf73] transition-colors hover:bg-[#1D6F42]/25"
             >
-              <Download size={14} aria-hidden /> Exportar JSON
+              <FileSpreadsheet size={14} aria-hidden /> Exportar a Excel
             </button>
             {!modoSupabase ? (
-              <button
-                type="button"
-                onClick={abrirImportar}
-                className="inline-flex items-center gap-2 rounded-full border border-white/15 px-4 py-2 text-xs font-bold text-neutral-200 transition-colors hover:border-gold hover:text-gold"
-              >
-                <Upload size={14} aria-hidden /> Importar JSON
-              </button>
+              <>
+                <button
+                  type="button"
+                  onClick={descargar}
+                  className="inline-flex items-center gap-2 rounded-full border border-white/15 px-4 py-2 text-xs font-bold text-neutral-200 transition-colors hover:border-gold hover:text-gold"
+                >
+                  <Download size={14} aria-hidden /> JSON
+                </button>
+                <button
+                  type="button"
+                  onClick={abrirImportar}
+                  className="inline-flex items-center gap-2 rounded-full border border-white/15 px-4 py-2 text-xs font-bold text-neutral-200 transition-colors hover:border-gold hover:text-gold"
+                >
+                  <Upload size={14} aria-hidden /> Importar
+                </button>
+              </>
             ) : null}
             {modoSupabase ? (
               <button

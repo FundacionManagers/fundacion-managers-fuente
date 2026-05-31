@@ -100,3 +100,46 @@ export function importarJSON(texto: string): Inscripcion[] {
 export function progreso(ins: Inscripcion): number {
   return ins.pasoActual / TOTAL_PASOS;
 }
+
+/** Nombre legible del paso (ej. "1 · Pre-inscripción"). */
+export function nombrePaso(numero: number): string {
+  const paso = PASOS_INSCRIPCION.find((p) => p.numero === numero);
+  return paso ? `${paso.numero} · ${paso.label}` : String(numero);
+}
+
+function celdaCSV(valor: string): string {
+  // Envuelve en comillas y duplica las comillas internas (formato CSV estándar).
+  return `"${valor.replace(/"/g, '""')}"`;
+}
+
+/**
+ * Genera un CSV compatible con Excel en español:
+ * - BOM UTF-8 (para que Excel muestre bien tildes y emojis).
+ * - Separador ";" (Excel en es-CO usa coma como decimal).
+ */
+export function exportarCSV(lista: Inscripcion[]): string {
+  const encabezados = [
+    'Equipo',
+    'Capitán',
+    'WhatsApp',
+    'Paso actual',
+    'Pago confirmado',
+    'Notas',
+    'Fecha de registro',
+  ];
+  const filas = lista.map((i) =>
+    [
+      i.equipo,
+      i.capitan,
+      i.contacto,
+      nombrePaso(i.pasoActual),
+      i.pagado ? 'Sí' : 'No',
+      i.notas,
+      new Date(i.creadoEn).toLocaleString('es-CO'),
+    ]
+      .map((c) => celdaCSV(String(c ?? '')))
+      .join(';'),
+  );
+  const BOM = String.fromCharCode(0xfeff);
+  return BOM + [encabezados.map(celdaCSV).join(';'), ...filas].join('\r\n');
+}
