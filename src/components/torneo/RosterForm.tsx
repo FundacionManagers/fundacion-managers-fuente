@@ -253,6 +253,24 @@ export function RosterForm() {
           </ul>
         </div>
 
+        {/* Guarda tu enlace: vuelve a tu plantel y al torneo cuando quieras */}
+        <div className="mt-6 rounded-2xl border border-amarillo/30 bg-amarillo/5 p-4 text-left">
+          <p className="text-sm font-bold text-neutral-100">📌 Guarda tu enlace</p>
+          <p className="mt-1 text-xs text-neutral-400">
+            Cópialo y guárdalo: ábrelo en tu navegador y <strong>agrégalo a la pantalla de inicio
+            de tu celular</strong>. Así vuelves a tu equipo y sigues informado del torneo en todo
+            momento.
+          </p>
+          <button
+            type="button"
+            onClick={copiarEnlace}
+            className="mt-3 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-amarillo to-naranja px-4 py-2 text-xs font-bold text-carbon transition-transform hover:-translate-y-0.5"
+          >
+            {copiado ? <Check size={14} /> : <Copy size={14} />}
+            {copiado ? '¡Enlace copiado!' : 'Copiar mi enlace'}
+          </button>
+        </div>
+
         <a
           href={`${base}/torneo/inscripciones/pago/?eq=${eq}&t=${token}`}
           className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-amarillo to-naranja px-7 py-3.5 text-sm font-bold text-carbon shadow-[0_12px_40px_rgba(232,114,44,0.4)] transition-all duration-200 ease-managers hover:-translate-y-0.5"
