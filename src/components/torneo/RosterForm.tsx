@@ -49,6 +49,7 @@ export function RosterForm() {
   const [filas, setFilas] = useState<Fila[]>([]);
   const [guardando, setGuardando] = useState(false);
   const [copiado, setCopiado] = useState(false);
+  const [finalizado, setFinalizado] = useState(false);
   const timers = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
 
   // Lee eq/t de la URL o del respaldo local.
@@ -210,6 +211,70 @@ export function RosterForm() {
   const completos = filas.filter(jugadorCompleto).length;
   const progreso = progresoPlantel(filas);
   const listo = plantelListo(filas);
+
+  // Pantalla de cierre tras pulsar "Finalizar".
+  if (finalizado) {
+    const base = process.env.NEXT_PUBLIC_BASE_PATH ?? '';
+    return (
+      <div className="mx-auto max-w-lg rounded-3xl border border-white/10 bg-[#0b0f14]/80 p-8 text-center">
+        <Check
+          size={48}
+          className={`mx-auto ${listo ? 'text-[#25D366]' : 'text-amarillo'}`}
+        />
+        {listo ? (
+          <>
+            <h3 className="mt-3 font-sport text-3xl uppercase text-neutral-50">
+              ¡Equipo inscrito!
+            </h3>
+            <p className="mt-1 text-sm font-semibold uppercase tracking-wide text-[#25D366]">
+              Paso 3 completado
+            </p>
+            <p className="mt-4 text-sm text-neutral-300">
+              Tu plantel quedó registrado con <strong className="text-neutral-100">{completos}</strong>{' '}
+              jugadores completos. ¡Ya tienes tu cupo!
+            </p>
+          </>
+        ) : (
+          <>
+            <h3 className="mt-3 font-sport text-3xl uppercase text-neutral-50">Avance guardado</h3>
+            <p className="mt-4 text-sm text-neutral-300">
+              Guardamos todo tu progreso. Te faltan{' '}
+              <strong className="text-neutral-100">{Math.max(0, MIN_JUGADORES - completos)}</strong>{' '}
+              jugadores para completar el mínimo. Vuelve cuando quieras con tu enlace y continúa.
+            </p>
+          </>
+        )}
+
+        <div className="mt-6 rounded-2xl border border-white/10 bg-[#0d1218]/70 p-4 text-left text-sm text-neutral-300">
+          <p className="font-bold text-neutral-100">¿Qué sigue?</p>
+          <ul className="mt-2 space-y-1.5">
+            <li>📋 Revisamos tu plantel en el grupo de WhatsApp.</li>
+            <li>💳 <strong className="text-neutral-100">Paso 4 — Pago:</strong> una semana antes del torneo te habilitamos el botón de pago.</li>
+            <li>📅 <strong className="text-neutral-100">Paso 5 — Programación:</strong> te enviamos el calendario y las reglas.</li>
+          </ul>
+        </div>
+
+        <div className="mt-6 flex flex-wrap justify-center gap-3">
+          <button
+            type="button"
+            onClick={() => setFinalizado(false)}
+            className="inline-flex items-center gap-2 rounded-full border border-white/15 px-5 py-2.5 text-sm font-bold text-neutral-200 transition-colors hover:border-gold hover:text-gold"
+          >
+            Seguir editando el plantel
+          </button>
+          <a
+            href={`${base}/torneo/`}
+            className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-amarillo to-naranja px-6 py-2.5 text-sm font-bold text-carbon"
+          >
+            Ir al torneo
+          </a>
+        </div>
+        <p className="mt-4 text-xs text-neutral-500">
+          Tu enlace sigue activo: puedes volver a editar este plantel cuando quieras.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8">
@@ -381,6 +446,32 @@ export function RosterForm() {
         Todo se guarda automáticamente. Puedes cerrar y volver con el mismo enlace; tu avance no se
         pierde. Mínimo {MIN_JUGADORES} jugadores completos para quedar inscrito.
       </p>
+
+      {/* Cierre: finalizar la inscripción del equipo */}
+      <div className="rounded-2xl border border-white/10 bg-[#0b0f14]/80 p-6 text-center">
+        <p className="text-sm text-neutral-300">
+          {listo
+            ? '¡Tu plantel está completo! Pulsa para finalizar y ver los próximos pasos.'
+            : `Cuando termines de cargar tus jugadores, pulsa finalizar. (Vas ${completos} de ${MIN_JUGADORES} completos.)`}
+        </p>
+        <button
+          type="button"
+          onClick={() => {
+            if (!listo && !window.confirm(`Tienes ${completos} de ${MIN_JUGADORES} jugadores completos. ¿Finalizar de todas formas? Podrás volver a editar con tu enlace.`))
+              return;
+            setFinalizado(true);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }}
+          className={`mt-4 inline-flex w-full items-center justify-center gap-2 rounded-full px-7 py-3.5 text-sm font-bold transition-all duration-200 ease-managers hover:-translate-y-0.5 sm:w-auto ${
+            listo
+              ? 'bg-[#25D366] text-white shadow-[0_12px_40px_rgba(37,211,102,0.35)]'
+              : 'bg-gradient-to-r from-amarillo to-naranja text-carbon'
+          }`}
+        >
+          <Check size={18} />
+          {listo ? 'Finalizar inscripción del equipo' : 'Terminé por ahora'}
+        </button>
+      </div>
     </div>
   );
 }
