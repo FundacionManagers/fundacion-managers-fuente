@@ -115,7 +115,7 @@ export default function InscripcionesPage() {
                   Empieza aquí
                 </h2>
                 <p className="mt-3 text-sm text-neutral-400">
-                  Solo necesitamos dos datos para arrancar.
+                  Solo necesitamos tres datos para arrancar.
                 </p>
                 <div className="mt-7">
                   <InscripcionForm />
