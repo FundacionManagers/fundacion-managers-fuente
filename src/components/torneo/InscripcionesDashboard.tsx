@@ -91,11 +91,11 @@ export function InscripcionesDashboard() {
     setCargado(true);
   }, [modoSupabase, sesion, recargarSupabase]);
 
-  // Auto-actualización: refresca desde Supabase cada 20s mientras hay sesión,
-  // para que las inscripciones nuevas aparezcan sin recargar a mano.
+  // Auto-actualización "en vivo": refresca desde Supabase cada 4s mientras hay
+  // sesión, para que las inscripciones nuevas aparezcan casi al instante.
   useEffect(() => {
     if (!modoSupabase || !sesion) return;
-    const id = setInterval(() => void recargarSupabase(), 20000);
+    const id = setInterval(() => void recargarSupabase(), 4000);
     return () => clearInterval(id);
   }, [modoSupabase, sesion, recargarSupabase]);
 
@@ -255,7 +255,16 @@ export function InscripcionesDashboard() {
       <div className="rounded-3xl border border-white/10 bg-[#0b0f14]/80 p-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <h2 className="font-sport text-2xl uppercase text-neutral-50">Registrar equipo</h2>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap items-center gap-2">
+            {modoSupabase ? (
+              <span className="inline-flex items-center gap-2 rounded-full border border-[#25D366]/40 bg-[#25D366]/10 px-3 py-2 text-xs font-bold text-[#25D366]">
+                <span className="relative flex h-2.5 w-2.5">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#25D366] opacity-75" />
+                  <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-[#25D366]" />
+                </span>
+                En vivo
+              </span>
+            ) : null}
             {modoSupabase ? (
               <button
                 type="button"
