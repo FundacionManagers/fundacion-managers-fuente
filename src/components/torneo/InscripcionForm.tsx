@@ -23,6 +23,17 @@ function urlWhatsApp(capitan: string, equipo: string): string {
   return `https://wa.me/${WHATSAPP_NUMERO}?text=${encodeURIComponent(mensaje)}`;
 }
 
+function nuevoId(): string {
+  if (typeof crypto !== 'undefined' && 'randomUUID' in crypto) return crypto.randomUUID();
+  return `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+}
+
+/** Ruta (con basePath) a la página de planteles para completar el paso 3. */
+function urlEquipo(id: string, token: string): string {
+  const base = process.env.NEXT_PUBLIC_BASE_PATH ?? '';
+  return `${base}/torneo/inscripciones/equipo/?eq=${id}&t=${token}`;
+}
+
 type Estado = 'idle' | 'enviando' | 'enviado' | 'error';
 
 export function InscripcionForm() {
@@ -33,6 +44,9 @@ export function InscripcionForm() {
   const [estado, setEstado] = useState<Estado>('idle');
   // true cuando el usuario ya pulsó el botón para solicitar unirse al grupo.
   const [solicitoGrupo, setSolicitoGrupo] = useState(false);
+  // id y token de la inscripción creada (para el enlace del paso 3 / reanudar).
+  const [equipoId, setEquipoId] = useState('');
+  const [token, setToken] = useState('');
 
   const listo =
     capitan.trim() !== '' && equipo.trim() !== '' && contacto.trim() !== '' && autoriza;
@@ -49,19 +63,33 @@ export function InscripcionForm() {
     // al menos este tiempo para que se perciba el "procesando".
     const giroMinimo = new Promise((r) => setTimeout(r, 1300));
 
+    // id y token generados en cliente (anon no puede leer de vuelta por RLS).
+    const id = nuevoId();
+    const tk = nuevoId();
+    setEquipoId(id);
+    setToken(tk);
+
     // Si Supabase está configurado, guardamos la pre-inscripción en la BD.
     if (supabaseConfigurado && supabase) {
       setEstado('enviando');
       try {
         const { error } = await supabase.from('inscripciones').insert({
+          id,
           equipo: eq,
           capitan: cap,
           contacto: tel || null,
+          token: tk,
         });
         if (error) {
           // No bloqueamos al usuario: dejamos registro en consola y seguimos
           // a WhatsApp para no perder el lead (red/caché/extensión, etc.).
           console.error('Supabase insert error:', error.message);
+        } else if (typeof window !== 'undefined') {
+          // Guardamos referencia local para retomar el paso 3 en este dispositivo.
+          window.localStorage.setItem(
+            'fm-mi-inscripcion',
+            JSON.stringify({ id, token: tk, equipo: eq, capitan: cap }),
+          );
         }
       } catch (err) {
         console.error('Supabase insert exception:', err);
@@ -118,11 +146,16 @@ export function InscripcionForm() {
             dentro.
           </p>
           <p className="rounded-2xl border border-white/10 bg-[#0d1218]/70 p-4 text-sm text-neutral-300">
-            Ahora vamos al <strong className="text-neutral-100">paso 3</strong>: confirmar tu
-            inscripción enviando el <strong className="text-neutral-100">logo del equipo</strong> y
-            la <strong className="text-neutral-100">foto en fondo blanco de cada jugador</strong>.
-            Te compartimos el enlace dentro del grupo.
+            Ahora vamos al <strong className="text-neutral-100">paso 3</strong>: registrar tu
+            plantel aquí mismo. Diligencia los datos de cada jugador y sube su foto. Se{' '}
+            <strong className="text-neutral-100">guarda solo</strong> y puedes continuar después.
           </p>
+          <a
+            href={urlEquipo(equipoId, token)}
+            className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-amarillo to-naranja px-7 py-3.5 text-sm font-bold text-carbon shadow-[0_12px_40px_rgba(232,114,44,0.4)] transition-all duration-200 ease-managers hover:-translate-y-0.5"
+          >
+            Registrar mi plantel (paso 3)
+          </a>
           <a
             href={urlWhatsApp(capitan.trim(), equipo.trim())}
             target="_blank"
