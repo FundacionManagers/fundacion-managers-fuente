@@ -30,7 +30,8 @@ export function InscripcionForm() {
   const [autoriza, setAutoriza] = useState(false);
   const [estado, setEstado] = useState<Estado>('idle');
 
-  const listo = capitan.trim() !== '' && equipo.trim() !== '' && autoriza;
+  const listo =
+    capitan.trim() !== '' && equipo.trim() !== '' && contacto.trim() !== '' && autoriza;
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -122,12 +123,13 @@ export function InscripcionForm() {
 
       <div>
         <label htmlFor="contacto" className="block text-sm font-medium text-neutral-300">
-          WhatsApp <span className="text-neutral-500">(opcional)</span>
+          WhatsApp
         </label>
         <input
           id="contacto"
           type="tel"
           name="contacto"
+          required
           autoComplete="tel"
           value={contacto}
           onChange={(e) => setContacto(e.target.value)}
