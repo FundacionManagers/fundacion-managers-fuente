@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { CreditCard, ShieldCheck } from 'lucide-react';
+import { GoldCoin } from '@/components/shared/GoldCoin';
 import { WhatsAppIcon } from '@/components/shared/WhatsAppIcon';
 import { supabasePublico } from '@/lib/supabase';
 import { BOLD_PAGO, pagoConfigurado } from '@/lib/pago';
@@ -132,8 +133,9 @@ export function PagoBold() {
 
       <a
         href={`${process.env.NEXT_PUBLIC_BASE_PATH ?? ''}/torneo/inscripciones/listo/`}
-        className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-white/15 px-6 py-3 text-sm font-bold text-neutral-200 transition-colors hover:border-gold hover:text-gold"
+        className="cta-glow inline-flex w-full items-center justify-center gap-2.5 rounded-full border-2 border-amarillo bg-amarillo/10 px-6 py-3.5 text-sm font-bold text-amarillo transition-all duration-200 ease-managers hover:-translate-y-0.5 hover:bg-amarillo/20"
       >
+        <GoldCoin size={26} className="coin-spin drop-shadow-none" ariaLabel="" />
         Ya coordiné mi pago — ver paso 5 (programación)
       </a>
 
