@@ -169,9 +169,13 @@ export function InscripcionForm() {
       <button
         type="submit"
         disabled={!listo || estado === 'enviando'}
-        className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-amarillo to-naranja px-7 py-3.5 text-sm font-bold text-carbon shadow-[0_12px_40px_rgba(232,114,44,0.4)] transition-all duration-200 ease-managers hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
+        className="inline-flex w-full items-center justify-center gap-3 rounded-full bg-gradient-to-r from-amarillo to-naranja py-2 pl-2.5 pr-7 text-sm font-bold text-carbon shadow-[0_12px_40px_rgba(232,114,44,0.4)] transition-all duration-200 ease-managers hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
       >
-        <GoldCoin size={30} className="drop-shadow-none" ariaLabel="" />
+        <GoldCoin
+          size={44}
+          className={`shrink-0 drop-shadow-none ${estado === 'enviando' ? 'animate-spin' : ''}`}
+          ariaLabel=""
+        />
         {estado === 'enviando' ? 'Enviando…' : 'Enviar pre-inscripción'}
       </button>
 
