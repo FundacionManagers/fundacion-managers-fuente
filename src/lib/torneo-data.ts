@@ -22,13 +22,13 @@ export interface Equipo {
 
 export const EQUIPOS: readonly Equipo[] = [
   { slug: 'pomada-alfa', nombre: 'Pomada Alfa FC', corto: 'PAL', color: '#8B2E2E', titulos: 2, placeholder: true },
-  { slug: 'managers-fc', nombre: 'Managers FC', corto: 'MGR', color: '#D4A437', titulos: 0, placeholder: true },
   { slug: 'the-originals', nombre: 'The Originals FC', corto: 'ORI', color: '#2D6CDF', titulos: 1, placeholder: true },
-  { slug: 'alianza', nombre: 'Alianza', corto: 'ALZ', color: '#2D7A4F', titulos: 0, placeholder: true },
   { slug: 'los-pibes', nombre: 'Los Pibes del Barrio', corto: 'PIB', color: '#C8362B', titulos: 0, placeholder: true },
-  { slug: 'useche-fc', nombre: 'Useche FC', corto: 'USE', color: '#5B3DA8', titulos: 0, placeholder: true },
   { slug: 'yonotomo-fc', nombre: 'Yonotomo FC', corto: 'YON', color: '#E8722C', titulos: 0, placeholder: true },
+  { slug: 'alianza', nombre: 'Alianza', corto: 'ALZ', color: '#2D7A4F', titulos: 0, placeholder: true },
   { slug: 'tp-fc', nombre: 'TP F.C.', corto: 'TPF', color: '#0F766E', titulos: 0, placeholder: true },
+  { slug: 'managers-fc', nombre: 'Managers FC', corto: 'MGR', color: '#D4A437', titulos: 0, placeholder: true },
+  { slug: 'useche-fc', nombre: 'Useche FC', corto: 'USE', color: '#5B3DA8', titulos: 0, placeholder: true },
 ] as const;
 
 export function getEquipo(slug: string): Equipo | undefined {
