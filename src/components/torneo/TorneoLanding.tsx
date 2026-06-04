@@ -188,7 +188,7 @@ export function TorneoLanding() {
           </div>
           <div>
             <p className="flex items-center gap-2 font-bufon text-sm font-bold uppercase tracking-[0.25em] text-naranja">
-              <Trophy size={18} aria-hidden /> Campeón vigente · Edición 3°
+              <Trophy size={18} aria-hidden /> Vigente Campeón · 3° Edición (2026-1)
             </p>
             <h2 className="mt-3 font-sport text-6xl uppercase leading-none text-neutral-50 md:text-8xl">
               {CAMPEON_VIGENTE.equipo}
@@ -199,7 +199,7 @@ export function TorneoLanding() {
               ))}
             </div>
             <p className="mt-6 max-w-lg text-lg text-neutral-300">
-              {CAMPEON_VIGENTE.descripcion} Defenderá el título en la Edición 4° (2026-2).
+              {CAMPEON_VIGENTE.descripcion} Defenderá su corona en la 4° Edición (2026-2).
             </p>
           </div>
         </div>

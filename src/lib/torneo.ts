@@ -53,7 +53,7 @@ export const EDICIONES: readonly Edicion[] = [
 export const CAMPEON_VIGENTE = {
   equipo: 'The Originals FC',
   titulos: 1,
-  descripcion: 'Campeón vigente del Torneo Managers F7 — Edición 3° (2026-1).',
+  descripcion: 'Vigente Campeón — 3° Edición Torneo Managers (2026-1).',
 };
 
 /** Equipos identificados en el bracket de la edición 2026. */
