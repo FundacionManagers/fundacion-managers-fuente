@@ -23,7 +23,7 @@ export interface Equipo {
 export const EQUIPOS: readonly Equipo[] = [
   { slug: 'pomada-alfa', nombre: 'Pomada Alfa FC', corto: 'PAL', color: '#8B2E2E', titulos: 2, placeholder: true },
   { slug: 'managers-fc', nombre: 'Managers FC', corto: 'MGR', color: '#D4A437', titulos: 0, placeholder: true },
-  { slug: 'the-originals', nombre: 'The Originals FC', corto: 'ORI', color: '#2D6CDF', titulos: 0, placeholder: true },
+  { slug: 'the-originals', nombre: 'The Originals FC', corto: 'ORI', color: '#2D6CDF', titulos: 1, placeholder: true },
   { slug: 'alianza', nombre: 'Alianza', corto: 'ALZ', color: '#2D7A4F', titulos: 0, placeholder: true },
   { slug: 'los-pibes', nombre: 'Los Pibes del Barrio', corto: 'PIB', color: '#C8362B', titulos: 0, placeholder: true },
   { slug: 'useche-fc', nombre: 'Useche FC', corto: 'USE', color: '#5B3DA8', titulos: 0, placeholder: true },

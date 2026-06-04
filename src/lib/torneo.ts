@@ -51,9 +51,9 @@ export const EDICIONES: readonly Edicion[] = [
 ] as const;
 
 export const CAMPEON_VIGENTE = {
-  equipo: 'Pomada Alfa FC',
-  titulos: 2,
-  descripcion: 'Bicampeón del Torneo Managers F7.',
+  equipo: 'The Originals FC',
+  titulos: 1,
+  descripcion: 'Campeón vigente del Torneo Managers F7 — Edición 3° (2026-1).',
 };
 
 /** Equipos identificados en el bracket de la edición 2026. */

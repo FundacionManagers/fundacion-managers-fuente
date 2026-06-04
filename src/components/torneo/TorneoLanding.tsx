@@ -2,7 +2,6 @@ import Link from 'next/link';
 import { ArrowRight, Instagram, Star, Trophy } from 'lucide-react';
 import { IconeBrand } from '@/components/shared/IconeBrand';
 import { GoldCoin } from '@/components/shared/GoldCoin';
-import { MatchCountdown } from '@/components/torneo/MatchCountdown';
 import { TorneoBackdrop } from '@/components/torneo/TorneoBackdrop';
 import { TeamCrest } from '@/components/torneo/TeamCrest';
 import { TorneoNav } from '@/components/torneo/TorneoNav';
@@ -15,7 +14,7 @@ import {
 import {
   EQUIPOS,
   FINAL,
-  PROXIMO_PARTIDO_ISO,
+  ganadorDe,
   getEquipo,
 } from '@/lib/torneo-data';
 
@@ -27,9 +26,10 @@ const STATS = [
 ] as const;
 
 export function TorneoLanding() {
-  const proximo = FINAL;
-  const loc = proximo.local ? getEquipo(proximo.local) : undefined;
-  const vis = proximo.visitante ? getEquipo(proximo.visitante) : undefined;
+  const campeonSlug = ganadorDe(FINAL);
+  const campeon = campeonSlug ? getEquipo(campeonSlug) : undefined;
+  const loc = FINAL.local ? getEquipo(FINAL.local) : undefined;
+  const vis = FINAL.visitante ? getEquipo(FINAL.visitante) : undefined;
 
   return (
     <div className="tournament-section relative">
@@ -61,49 +61,35 @@ export function TorneoLanding() {
             </a>
           </div>
 
-          {/* MATCH CENTER — lo primero que se ve */}
-          <div className="mt-10 overflow-hidden rounded-3xl border border-white/10 bg-[#0b0f14]/55 shadow-[0_40px_100px_rgba(0,0,0,0.6)] backdrop-blur-sm">
+          {/* MATCH CENTER — torneo finalizado, campeón de la Edición 3° */}
+          <div className="mt-10 overflow-hidden rounded-3xl border border-amarillo/30 bg-[#0b0f14]/55 shadow-[0_40px_100px_rgba(0,0,0,0.6)] backdrop-blur-sm">
             <div className="flex items-center justify-between border-b border-white/10 px-6 py-3">
               <span className="font-bufon text-xs font-bold uppercase tracking-[0.25em] text-naranja">
-                Próximo partido
+                Torneo finalizado
               </span>
               <span className="font-mono text-[11px] uppercase tracking-widest text-neutral-400">
-                {proximo.etiqueta} · {proximo.fecha}
+                Edición 3° (2026-1)
               </span>
             </div>
 
-            <div className="grid items-center gap-8 px-6 py-12 lg:grid-cols-[1fr_auto_1fr] lg:px-14">
-              <div className="flex flex-col items-center gap-4 text-center">
-                <TeamCrest slug={proximo.local} size={120} showStars />
-                <span className="font-sport text-3xl uppercase leading-none text-neutral-50 md:text-4xl">
-                  {loc?.nombre ?? 'Por definir'}
-                </span>
-              </div>
-
-              <div className="flex flex-col items-center">
-                <span className="font-sport text-5xl text-white/25 md:text-6xl">VS</span>
-                <span className="mt-2 rounded-full border border-amarillo/40 px-4 py-1 font-mono text-xs uppercase tracking-widest text-amarillo">
-                  {proximo.hora} · cancha por confirmar
-                </span>
-              </div>
-
-              <div className="flex flex-col items-center gap-4 text-center">
-                <TeamCrest slug={proximo.visitante} size={120} showStars />
-                <span className="font-sport text-3xl uppercase leading-none text-neutral-50 md:text-4xl">
-                  {vis?.nombre ?? 'Por definir'}
-                </span>
-              </div>
+            <div className="flex flex-col items-center gap-5 px-6 py-12 text-center">
+              <span className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-amarillo to-naranja px-4 py-1.5 font-bufon text-xs font-bold uppercase tracking-[0.2em] text-carbon">
+                <Trophy size={14} aria-hidden /> Campeón
+              </span>
+              <TeamCrest slug={campeon?.slug ?? FINAL.visitante} size={150} showStars />
+              <span className="font-sport text-5xl uppercase leading-none text-neutral-50 md:text-6xl">
+                {campeon?.nombre ?? 'The Originals FC'}
+              </span>
+              <span className="rounded-full border border-amarillo/40 px-4 py-1 font-mono text-xs uppercase tracking-widest text-amarillo">
+                Final: {vis?.corto ?? 'ORI'} {FINAL.golesVisitante}–{FINAL.golesLocal}{' '}
+                {loc?.corto ?? 'PIB'}
+              </span>
             </div>
 
-            {/* Cuenta regresiva en vivo */}
-            <div className="flex flex-col items-center gap-5 border-t border-white/10 bg-black/30 px-6 py-10">
-              <span className="font-bufon text-xs font-bold uppercase tracking-[0.3em] text-neutral-500">
-                Arranca en
-              </span>
-              <MatchCountdown targetIso={PROXIMO_PARTIDO_ISO} />
+            <div className="flex flex-col items-center gap-5 border-t border-white/10 bg-black/30 px-6 py-8">
               <Link
                 href="/torneo/bracket/"
-                className="group mt-2 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-amarillo to-naranja px-7 py-3.5 text-sm font-bold text-carbon shadow-[0_12px_40px_rgba(232,114,44,0.4)] transition-all duration-200 ease-managers hover:-translate-y-0.5"
+                className="group inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-amarillo to-naranja px-7 py-3.5 text-sm font-bold text-carbon shadow-[0_12px_40px_rgba(232,114,44,0.4)] transition-all duration-200 ease-managers hover:-translate-y-0.5"
               >
                 Ver la llave completa
                 <ArrowRight
@@ -194,15 +180,15 @@ export function TorneoLanding() {
         </div>
       </section>
 
-      {/* ===== BICAMPEÓN ===== */}
+      {/* ===== CAMPEÓN VIGENTE ===== */}
       <section className="relative z-10 overflow-hidden grain">
         <div className="relative mx-auto grid max-w-7xl items-center gap-12 px-6 py-24 lg:grid-cols-[0.8fr_1.2fr] lg:px-8">
           <div className="flex justify-center">
-            <TeamCrest slug="pomada-alfa" size={220} showStars />
+            <TeamCrest slug="the-originals" size={220} showStars />
           </div>
           <div>
             <p className="flex items-center gap-2 font-bufon text-sm font-bold uppercase tracking-[0.25em] text-naranja">
-              <Trophy size={18} aria-hidden /> Bicampeón vigente
+              <Trophy size={18} aria-hidden /> Campeón vigente · Edición 3°
             </p>
             <h2 className="mt-3 font-sport text-6xl uppercase leading-none text-neutral-50 md:text-8xl">
               {CAMPEON_VIGENTE.equipo}
@@ -213,7 +199,7 @@ export function TorneoLanding() {
               ))}
             </div>
             <p className="mt-6 max-w-lg text-lg text-neutral-300">
-              {CAMPEON_VIGENTE.descripcion} Van por la tercera estrella.
+              {CAMPEON_VIGENTE.descripcion} Defenderá el título en la Edición 4° (2026-2).
             </p>
           </div>
         </div>
