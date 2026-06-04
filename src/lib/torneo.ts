@@ -38,8 +38,9 @@ export const EDICIONES: readonly Edicion[] = [
   {
     numero: 3,
     periodo: '2026-1',
-    estado: 'en-curso',
-    notas: 'Tercera edición — fase de semifinales.',
+    estado: 'jugada',
+    campeon: 'The Originals FC',
+    notas: 'Tercera edición — campeón The Originals FC.',
   },
   {
     numero: 4,

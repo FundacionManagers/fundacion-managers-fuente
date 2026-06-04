@@ -173,9 +173,9 @@ export const BRACKET_2026: readonly Partido[] = [
     hora: '11:30',
     local: 'los-pibes',
     visitante: 'the-originals',
-    golesLocal: null,
-    golesVisitante: null,
-    estado: 'programado',
+    golesLocal: 1,
+    golesVisitante: 2,
+    estado: 'jugado',
     placeholder: false,
   },
 ] as const;
