@@ -4,6 +4,7 @@ import { IconeBrand } from '@/components/shared/IconeBrand';
 import { GoldCoin } from '@/components/shared/GoldCoin';
 import { TorneoBackdrop } from '@/components/torneo/TorneoBackdrop';
 import { TeamCrest } from '@/components/torneo/TeamCrest';
+import { CampeonReveal } from '@/components/torneo/CampeonReveal';
 import { TorneoNav } from '@/components/torneo/TorneoNav';
 import { ALIANZA, ICONE_CYAN } from '@/lib/alianza';
 import {
@@ -61,45 +62,13 @@ export function TorneoLanding() {
             </a>
           </div>
 
-          {/* MATCH CENTER — torneo finalizado, campeón de la Edición 3° */}
-          <div className="mt-10 overflow-hidden rounded-3xl border border-amarillo/30 bg-[#0b0f14]/55 shadow-[0_40px_100px_rgba(0,0,0,0.6)] backdrop-blur-sm">
-            <div className="flex items-center justify-between border-b border-white/10 px-6 py-3">
-              <span className="font-bufon text-xs font-bold uppercase tracking-[0.25em] text-naranja">
-                Torneo finalizado
-              </span>
-              <span className="font-mono text-[11px] uppercase tracking-widest text-neutral-400">
-                Edición 3° (2026-1)
-              </span>
-            </div>
-
-            <div className="flex flex-col items-center gap-5 px-6 py-12 text-center">
-              <span className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-amarillo to-naranja px-4 py-1.5 font-bufon text-xs font-bold uppercase tracking-[0.2em] text-carbon">
-                <Trophy size={14} aria-hidden /> Campeón
-              </span>
-              <TeamCrest slug={campeon?.slug ?? FINAL.visitante} size={150} showStars />
-              <span className="font-sport text-5xl uppercase leading-none text-neutral-50 md:text-6xl">
-                {campeon?.nombre ?? 'The Originals FC'}
-              </span>
-              <span className="rounded-full border border-amarillo/40 px-4 py-1 font-mono text-xs uppercase tracking-widest text-amarillo">
-                Final: {vis?.corto ?? 'ORI'} {FINAL.golesVisitante}–{FINAL.golesLocal}{' '}
-                {loc?.corto ?? 'PIB'}
-              </span>
-            </div>
-
-            <div className="flex flex-col items-center gap-5 border-t border-white/10 bg-black/30 px-6 py-8">
-              <Link
-                href="/torneo/bracket/"
-                className="group inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-amarillo to-naranja px-7 py-3.5 text-sm font-bold text-carbon shadow-[0_12px_40px_rgba(232,114,44,0.4)] transition-all duration-200 ease-managers hover:-translate-y-0.5"
-              >
-                Ver la llave completa
-                <ArrowRight
-                  size={18}
-                  aria-hidden
-                  className="transition-transform duration-200 ease-managers group-hover:translate-x-1"
-                />
-              </Link>
-            </div>
-          </div>
+          {/* CAMPEÓN — revelación épica de la Edición 3° */}
+          <CampeonReveal
+            slug={campeon?.slug ?? FINAL.visitante ?? 'the-originals'}
+            nombre={campeon?.nombre ?? 'The Originals FC'}
+            scoreText={`${vis?.corto ?? 'ORI'} ${FINAL.golesVisitante}–${FINAL.golesLocal} ${loc?.corto ?? 'PIB'}`}
+            edicion="Edición 3° (2026-1)"
+          />
 
           <p className="mt-10 max-w-2xl text-lg text-neutral-300">{TORNEO_BIO}</p>
         </div>

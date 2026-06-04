@@ -328,6 +328,38 @@
     }
   }
 
+  /* Revelación de campeón: brillo en el texto + aura pulsante. */
+  .campeon-title {
+    background: linear-gradient(90deg, #F2C230, #fff3c4, #E8722C, #F2C230);
+    background-size: 250% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: campeon-sheen 3s linear infinite !important;
+  }
+
+  @keyframes campeon-sheen {
+    to {
+      background-position: 250% 0;
+    }
+  }
+
+  .campeon-aura {
+    animation: campeon-aura 2.4s ease-in-out infinite !important;
+  }
+
+  @keyframes campeon-aura {
+    0%,
+    100% {
+      transform: scale(0.85);
+      opacity: 0.45;
+    }
+    50% {
+      transform: scale(1.12);
+      opacity: 0.9;
+    }
+  }
+
   /* Respetar prefers-reduced-motion */
   @media (prefers-reduced-motion: reduce) {
     *,
