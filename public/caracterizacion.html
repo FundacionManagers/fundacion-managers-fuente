@@ -1,0 +1,1498 @@
+<!DOCTYPE html>
+<html lang="es-CO">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Caracterización · Fundación Managers</title>
+<meta name="description" content="Cuéntanos tu historia y te devolvemos tu plan a 12 meses. Cinco dimensiones, guardado automático.">
+<meta name="theme-color" content="#0F1419">
+<meta name="robots" content="noindex">
+<meta property="og:type" content="website">
+<meta property="og:title" content="¿Para dónde vas en los próximos 12 meses?">
+<meta property="og:description" content="Cuéntanos tu historia académica, laboral y tus planes. Al final recibes tu plan a 12 meses.">
+<meta property="og:locale" content="es_CO">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='15' fill='%23D4A437'/%3E%3Ccircle cx='16' cy='16' r='11' fill='none' stroke='%230F1419' stroke-width='1.5'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet">
+
+<style>
+/* ============================================================
+   Sistema de diseño Fundación Managers (DESIGN_SYSTEM.md)
+   ============================================================ */
+:root{
+  --gold:#D4A437; --gold-hover:#BD8E2A; --carbon:#0F1419;
+  --bg:#FAFAF7; --text:#1A1A1A; --muted:#57534E; --border:#E8E5DE;
+  --success:#2D7A4F; --danger:#C8362B;
+  --n100:#F2EFE8; --n200:#E8E5DE; --n300:#D6D3CC; --n400:#A8A29E; --n800:#1F1B16;
+  --r-sm:6px; --r-md:10px; --r-lg:16px; --r-full:9999px;
+  --sh-md:0 4px 12px rgb(0 0 0 / .08);
+  --sh-lg:0 12px 32px rgb(0 0 0 / .12);
+  --sh-gold:0 8px 24px rgb(212 164 55 / .25);
+  --ease:cubic-bezier(.16,1,.3,1);
+  --font-body:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --font-display:'Plus Jakarta Sans',system-ui,sans-serif;
+  --font-sport:'Bebas Neue',Impact,system-ui,sans-serif;
+  --coin:url("data:image/webp;base64,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");
+}
+.coin-img{background:var(--coin) center/contain no-repeat; flex:none; display:block}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0; background:var(--bg); color:var(--text);
+  font-family:var(--font-body); font-size:16px; line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,h4{font-family:var(--font-display); font-weight:800; line-height:1.15; margin:0}
+p{margin:0}
+button{font:inherit; color:inherit; cursor:pointer}
+:focus-visible{outline:3px solid var(--gold); outline-offset:2px; border-radius:4px}
+
+/* ---------- Barra superior ---------- */
+.topbar{
+  position:sticky; top:0; z-index:50; background:var(--carbon);
+  padding:calc(10px + env(safe-area-inset-top,0)) 16px 10px;
+  display:flex; align-items:center; gap:10px;
+}
+.topbar .coin-img{width:26px; height:26px}
+.topbar .marca{font-family:var(--font-display); font-weight:700; font-size:13px; color:#FAFAF7; white-space:nowrap}
+.topbar .paso{
+  margin-left:auto; font-size:11px; font-weight:600; letter-spacing:.08em;
+  text-transform:uppercase; color:var(--n400); white-space:nowrap;
+}
+.progress{height:3px; background:var(--n800); position:sticky; top:46px; z-index:49}
+.progress > i{display:block; height:100%; width:0%; background:var(--gold); transition:width .45s var(--ease)}
+
+.wrap{max-width:680px; margin:0 auto; padding:0 20px 96px}
+.pantalla{display:none; animation:entra .4s var(--ease) both}
+.pantalla.activa{display:block}
+@keyframes entra{from{opacity:0; transform:translateY(12px)} to{opacity:1; transform:none}}
+
+/* ---------- Portada ---------- */
+.hero{
+  background:var(--carbon); color:#FAFAF7; margin:0 -20px 32px;
+  padding:48px 24px 44px; text-align:center; position:relative; overflow:hidden;
+}
+.hero::after{content:''; position:absolute; inset:auto 0 0 0; height:3px;
+  background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+.hero .coin{width:76px; height:76px; margin:0 auto 20px; filter:drop-shadow(0 6px 18px rgb(212 164 55 / .35))}
+.hero .kicker{font-size:11px; font-weight:600; letter-spacing:.18em; text-transform:uppercase; color:var(--gold); margin-bottom:14px}
+.hero h1{font-size:clamp(30px,7.5vw,44px); color:#FAFAF7; margin-bottom:16px; text-wrap:balance}
+.hero p{color:#D6D3CC; font-size:16px; max-width:44ch; margin:0 auto; text-wrap:pretty}
+
+.datos-rapidos{
+  display:grid; grid-template-columns:repeat(3,1fr); gap:1px;
+  background:var(--n200); border:1px solid var(--n200); border-radius:var(--r-md);
+  overflow:hidden; margin-bottom:28px;
+}
+.datos-rapidos div{background:var(--bg); padding:16px 8px; text-align:center}
+.datos-rapidos b{display:block; font-family:var(--font-sport); font-size:30px; line-height:1; color:var(--gold)}
+.datos-rapidos span{font-size:11px; color:var(--muted); letter-spacing:.04em; text-transform:uppercase; font-weight:500}
+
+.dimensiones{list-style:none; padding:0; margin:0 0 28px; display:grid; gap:10px}
+.dimensiones li{display:flex; gap:14px; align-items:flex-start; background:#fff;
+  border:1px solid var(--border); border-radius:var(--r-md); padding:16px 18px}
+.dimensiones b{font-family:var(--font-sport); font-size:22px; line-height:1.1; color:var(--gold); flex:none; width:26px; padding-top:2px}
+.dimensiones strong{display:block; font-weight:600; font-size:15px; margin-bottom:2px}
+.dimensiones span{font-size:14px; color:var(--muted); line-height:1.45}
+
+.legal{background:var(--n100); border:1px solid var(--border); border-left:3px solid var(--gold);
+  border-radius:var(--r-md); padding:18px 20px; margin-bottom:24px}
+.legal h3{font-size:14px; font-weight:700; margin-bottom:8px; font-family:var(--font-body)}
+.legal p{font-size:13.5px; color:var(--muted); line-height:1.55}
+.legal p + p{margin-top:8px}
+
+/* ---------- Encabezado de dimensión ---------- */
+.dim-head{padding:32px 0 8px}
+.dim-head .num{font-family:var(--font-sport); font-size:52px; line-height:.9; color:var(--n300); display:block; margin-bottom:4px}
+.dim-head h2{font-size:clamp(24px,6vw,32px); margin-bottom:8px; text-wrap:balance}
+.dim-head p{color:var(--muted); font-size:15px; text-wrap:pretty}
+
+/* ---------- Preguntas ---------- */
+.q{background:#fff; border:1px solid var(--border); border-radius:var(--r-md);
+  padding:20px; margin-top:14px; transition:border-color .2s var(--ease)}
+.q.error{border-color:var(--danger); box-shadow:0 0 0 3px rgb(200 54 43 / .08)}
+.q.oculta{display:none}
+.q > label.pregunta, .q > .pregunta{display:block; font-weight:600; font-size:15.5px; margin-bottom:4px; line-height:1.4}
+.q .ayuda{display:block; font-size:13px; color:var(--muted); margin-bottom:14px; line-height:1.45}
+.q .req{color:var(--gold); font-weight:700}
+.msg-error{display:none; font-size:13px; color:var(--danger); font-weight:500; margin-top:10px}
+.q.error .msg-error{display:block}
+
+input[type=text],input[type=email],input[type=tel],input[type=number],input[type=date],input[type=month],select,textarea{
+  width:100%; padding:12px 14px; font:inherit; font-size:16px;
+  background:var(--bg); color:var(--text);
+  border:1px solid var(--n300); border-radius:var(--r-sm);
+  transition:border-color .15s var(--ease), box-shadow .15s var(--ease);
+}
+input:focus,select:focus,textarea:focus{outline:none; border-color:var(--gold); box-shadow:0 0 0 3px rgb(212 164 55 / .15)}
+textarea{min-height:88px; resize:vertical; line-height:1.55}
+select{appearance:none; background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' fill='none' stroke='%2357534E' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'><path d='M5 8l5 5 5-5'/></svg>"); background-repeat:no-repeat; background-position:right 12px center; padding-right:42px}
+
+.opciones{display:grid; gap:8px}
+.opciones.dos{grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+.op{display:flex; align-items:flex-start; gap:11px; padding:12px 14px;
+  background:var(--bg); border:1px solid var(--n300); border-radius:var(--r-sm);
+  cursor:pointer; transition:all .15s var(--ease); font-size:14.5px; line-height:1.4}
+.op:hover{border-color:var(--gold); background:#fff}
+.op input{appearance:none; width:19px; height:19px; flex:none; margin:1px 0 0;
+  border:2px solid var(--n400); background:#fff; cursor:pointer; transition:all .15s var(--ease)}
+.op input[type=radio]{border-radius:var(--r-full)}
+.op input[type=checkbox]{border-radius:4px}
+.op input:checked{border-color:var(--gold); background:var(--gold)}
+.op input[type=radio]:checked{box-shadow:inset 0 0 0 3.5px #fff}
+.op input[type=checkbox]:checked{
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'><path d='M2.5 7.5l3.5 3.5 5.5-6.5'/></svg>");
+  background-repeat:no-repeat; background-position:center}
+.op:has(input:checked){border-color:var(--gold); background:#fff; box-shadow:0 0 0 2px rgb(212 164 55 / .18)}
+.op input:disabled{opacity:.35; cursor:not-allowed}
+.op:has(input:disabled){opacity:.5; cursor:not-allowed}
+.tope{font-size:12.5px; color:var(--muted); margin-top:10px; display:block}
+
+/* Matriz de ejes (0..3) */
+.eje-fila{padding:14px 0; border-top:1px solid var(--border)}
+.eje-fila:first-child{border-top:0; padding-top:4px}
+.eje-fila .titulo{font-weight:600; font-size:15px; display:block}
+.eje-fila .desc{font-size:12.5px; color:var(--muted); display:block; margin:1px 0 10px; line-height:1.4}
+.eje-grados{display:grid; grid-template-columns:repeat(4,1fr); gap:5px}
+.eje-grados label{text-align:center; padding:9px 2px; font-size:11.5px; font-weight:500;
+  background:var(--bg); border:1px solid var(--n300); border-radius:var(--r-sm);
+  cursor:pointer; color:var(--muted); transition:all .15s var(--ease); line-height:1.25}
+.eje-grados label:hover{border-color:var(--gold)}
+.eje-grados input{position:absolute; opacity:0; pointer-events:none}
+.eje-grados label:has(input:checked){background:var(--carbon); border-color:var(--carbon); color:var(--gold); font-weight:600}
+
+/* ---------- Bloques repetibles ---------- */
+.grupo{margin-top:14px}
+.grupo > .cabecera{display:flex; align-items:baseline; gap:10px; margin-bottom:4px}
+.grupo > .cabecera h4{font-size:15.5px; font-weight:700; font-family:var(--font-body)}
+.grupo > .nota{font-size:13px; color:var(--muted); margin-bottom:12px; line-height:1.45}
+.instancia{background:#fff; border:1px solid var(--border); border-radius:var(--r-md);
+  padding:18px 20px; margin-bottom:10px; animation:entra .3s var(--ease) both}
+.instancia.error{border-color:var(--danger); box-shadow:0 0 0 3px rgb(200 54 43 / .08)}
+.instancia > .head{display:flex; align-items:center; gap:10px; margin-bottom:14px;
+  padding-bottom:12px; border-bottom:1px solid var(--n100)}
+.instancia > .head b{font-family:var(--font-sport); font-size:20px; color:var(--gold); letter-spacing:.03em}
+.instancia > .head button{margin-left:auto; background:none; border:0; color:var(--muted);
+  font-size:13px; font-weight:500; padding:4px 8px; border-radius:var(--r-sm)}
+.instancia > .head button:hover{color:var(--danger); background:#FDF2F1}
+.campo{margin-bottom:12px}
+.campo:last-child{margin-bottom:0}
+.campo > label{display:block; font-size:13.5px; font-weight:600; margin-bottom:5px}
+.campo .req{color:var(--gold)}
+.campo-fila{display:grid; grid-template-columns:1fr 1fr; gap:10px}
+.btn-agregar{width:100%; background:transparent; border:1.5px dashed var(--n300);
+  color:var(--muted); border-radius:var(--r-md); padding:14px; font-weight:600; font-size:14.5px;
+  transition:all .18s var(--ease)}
+.btn-agregar:hover{border-color:var(--gold); color:var(--gold); background:#FFFCF4}
+
+/* ---------- Botones ---------- */
+.acciones{display:flex; gap:10px; margin-top:28px; align-items:center}
+.btn{border:0; border-radius:var(--r-sm); padding:15px 26px; font-weight:600; font-size:15.5px;
+  transition:all .18s var(--ease); display:inline-flex; align-items:center; justify-content:center; gap:8px}
+.btn-primary{background:var(--gold); color:var(--carbon); box-shadow:var(--sh-gold); flex:1}
+.btn-primary:hover{background:var(--gold-hover); transform:translateY(-1px)}
+.btn-primary:disabled{background:var(--n300); color:var(--muted); box-shadow:none; cursor:not-allowed; transform:none}
+.btn-ghost{background:transparent; color:var(--muted); border:1px solid var(--n300); padding:15px 18px}
+.btn-ghost:hover{border-color:var(--muted); color:var(--text)}
+.guardado{text-align:center; font-size:12.5px; color:var(--muted); margin-top:16px}
+
+/* ---------- Resultado ---------- */
+.resultado-card{background:var(--carbon); color:#FAFAF7; border-radius:var(--r-lg);
+  padding:36px 26px 32px; text-align:center; margin:24px 0 20px; box-shadow:var(--sh-lg);
+  position:relative; overflow:hidden}
+.resultado-card::before{content:''; position:absolute; inset:0 0 auto 0; height:3px;
+  background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+.resultado-card .kicker{font-size:11px; letter-spacing:.18em; text-transform:uppercase;
+  color:var(--n400); font-weight:600; margin-bottom:12px}
+.resultado-card h2{font-family:var(--font-sport); font-weight:400; letter-spacing:.02em;
+  font-size:clamp(34px,9vw,52px); color:var(--gold); line-height:1.05; margin-bottom:14px}
+.resultado-card .lema{color:#D6D3CC; font-size:15.5px; max-width:42ch; margin:0 auto; text-wrap:pretty}
+
+.seccion-res{margin-top:32px}
+.seccion-res > h3{font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted);
+  font-family:var(--font-body); font-weight:600; margin-bottom:14px}
+.tarjeta{background:#fff; border:1px solid var(--border); border-radius:var(--r-md); padding:20px}
+.tarjeta + .tarjeta{margin-top:10px}
+.hitos{display:grid; grid-template-columns:repeat(3,1fr); gap:1px;
+  background:var(--n200); border:1px solid var(--n200); border-radius:var(--r-md); overflow:hidden}
+.hitos div{background:#fff; padding:16px 8px; text-align:center}
+.hitos b{display:block; font-family:var(--font-sport); font-size:clamp(22px,6vw,28px); line-height:1; color:var(--carbon)}
+.hitos span{font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.05em; font-weight:600; margin-top:5px; display:block}
+
+.pasos{display:grid; gap:10px; counter-reset:paso}
+.paso-card{display:flex; gap:14px; background:#fff; border:1px solid var(--border);
+  border-radius:var(--r-md); padding:16px 18px; align-items:flex-start}
+.paso-card b{counter-increment:paso; font-family:var(--font-sport); font-size:24px; color:var(--gold); flex:none; width:24px; line-height:1.1}
+.paso-card b::before{content:counter(paso,decimal-leading-zero)}
+.paso-card strong{display:block; font-weight:600; font-size:15px; margin-bottom:3px}
+.paso-card span{font-size:13.5px; color:var(--muted); line-height:1.45}
+
+.cita{background:var(--n100); border-left:3px solid var(--gold); border-radius:var(--r-sm);
+  padding:16px 18px; font-size:15px; line-height:1.55}
+.cita em{font-style:normal; color:var(--muted); font-size:13px; display:block; margin-bottom:5px}
+
+.cierre{background:var(--n100); border:1px solid var(--border); border-radius:var(--r-md);
+  padding:20px; margin-top:28px; text-align:center}
+.cierre p{font-size:14.5px; color:var(--muted); margin-bottom:16px; text-wrap:pretty}
+.wa{display:flex; align-items:center; justify-content:center; gap:9px; background:var(--success);
+  color:#fff; text-decoration:none; font-weight:600; padding:14px 20px; border-radius:var(--r-sm);
+  font-size:15px; transition:all .18s var(--ease)}
+.wa:hover{background:#25643F; transform:translateY(-1px)}
+
+.aviso{border-radius:var(--r-sm); padding:14px 16px; font-size:14px; margin-top:16px; line-height:1.5; display:none}
+.aviso.visible{display:block}
+.aviso.error{background:#FDF2F1; border:1px solid #F0C4C0; color:#8E2820}
+
+footer{text-align:center; padding:36px 20px 40px; border-top:1px solid var(--border);
+  margin-top:48px; font-size:12.5px; color:var(--muted); line-height:1.7}
+footer .coin-img{width:34px; height:34px; opacity:.55; margin:0 auto 10px}
+footer a{color:var(--muted)}
+
+@media (min-width:640px){
+  .wrap{padding:0 24px 96px}
+  .hero{margin:0 -24px 40px; padding:64px 32px 56px}
+  .q{padding:24px}
+}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms !important; transition-duration:.01ms !important}}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <span class="coin-img" aria-hidden="true"></span>
+  <span class="marca">Fundación Managers</span>
+  <span class="paso" id="indicadorPaso">Inicio</span>
+</div>
+<div class="progress"><i id="barraProgreso"></i></div>
+
+<main class="wrap">
+
+  <!-- ============ PORTADA ============ -->
+  <section class="pantalla activa" id="p0" aria-labelledby="tituloPortada">
+    <div class="hero">
+      <span class="coin-img coin" role="img" aria-label="Moneda dorada de la Fundación Managers"></span>
+      <div class="kicker">Caracterización de la comunidad</div>
+      <h1 id="tituloPortada">Cuéntanos tu historia y te devolvemos tu plan a 12 meses</h1>
+      <p>Cinco dimensiones: de dónde vienes, dónde estás, para dónde vas y qué necesitas para llegar.</p>
+    </div>
+
+    <div class="datos-rapidos">
+      <div><b>5</b><span>Dimensiones</span></div>
+      <div><b>20</b><span>Minutos</span></div>
+      <div><b>∞</b><span>Puedes pausar</span></div>
+    </div>
+
+    <ul class="dimensiones">
+      <li><b>01</b><div><strong>Académica</strong><span>Tu colegio, tus pregrados y todos tus posgrados.</span></div></li>
+      <li><b>02</b><div><strong>Laboral</strong><span>Tu situación hoy y la trayectoria que has construido.</span></div></li>
+      <li><b>03</b><div><strong>Proyección y planeación</strong><span>Qué te propusiste para los próximos 12 meses y qué necesitas.</span></div></li>
+      <li><b>04</b><div><strong>Familiar</strong><span>Cómo es tu hogar. Sin nombres ni datos de terceros.</span></div></li>
+      <li><b>05</b><div><strong>La fundación y tú</strong><span>Qué te interesa y cómo te gustaría participar.</span></div></li>
+    </ul>
+
+    <div class="legal">
+      <h3>Antes de empezar: dos cosas honestas</h3>
+      <p><strong>Esto toma unos 20 minutos.</strong> Es un ejercicio a fondo, no una encuesta rápida. Tus respuestas se guardan solas en este dispositivo: puedes cerrar, hacer otra cosa y volver donde ibas.</p>
+      <p><strong>Sobre tus datos.</strong> La Fundación Managers, responsable del tratamiento, los recoge para entender la composición de su comunidad y ofrecerte programas, eventos y oportunidades que te sirvan. No los vendemos, no los cedemos con fines comerciales y no los publicamos. Conforme a la <strong>Ley 1581 de 2012</strong>, puedes conocer, actualizar, rectificar o pedir la supresión de tus datos escribiendo a <a href="mailto:williammojica@fundacionmanagers.com">williammojica@fundacionmanagers.com</a>. Responder es voluntario y puedes dejar en blanco lo que prefieras.</p>
+      <p><strong>No te pedimos datos de tu familia.</strong> En la dimensión familiar preguntamos solo por rangos y niveles, nunca nombres, colegios ni instituciones de tu pareja o tus hijos.</p>
+    </div>
+
+    <div class="q" id="q_consentimiento">
+      <div class="opciones">
+        <label class="op">
+          <input type="checkbox" id="consentimiento">
+          <span>Autorizo de manera libre, previa, expresa e informada a la Fundación Managers para tratar mis datos personales con la finalidad descrita arriba.</span>
+        </label>
+      </div>
+      <div class="msg-error">Necesitamos tu autorización para continuar.</div>
+    </div>
+
+    <div class="acciones"><button class="btn btn-primary" id="btnEmpezar" type="button">Empezar</button></div>
+    <p class="guardado" id="avisoReanudar" hidden></p>
+  </section>
+
+  <!-- ============ DIMENSIONES (generadas por JS) ============ -->
+  <section class="pantalla" id="p1"></section>
+  <section class="pantalla" id="p2"></section>
+  <section class="pantalla" id="p3"></section>
+  <section class="pantalla" id="p4"></section>
+  <section class="pantalla" id="p5"></section>
+
+  <!-- ============ RESULTADO ============ -->
+  <section class="pantalla" id="p6" aria-live="polite"></section>
+
+</main>
+
+<footer>
+  <span class="coin-img" aria-hidden="true"></span>
+  <div><strong>Fundación Managers</strong> · Bogotá, Colombia</div>
+  <div>Consultoría · Deportes · Turismo · Eventos · Emprendimiento · Rural</div>
+  <div style="margin-top:8px"><a href="mailto:williammojica@fundacionmanagers.com">williammojica@fundacionmanagers.com</a></div>
+</footer>
+
+<datalist id="listaInstituciones"></datalist>
+
+<script>
+'use strict';
+
+/* ============================================================
+   Configuración
+   ============================================================ */
+const SUPABASE_URL = 'https://rlgakgpcfbwhigjdumiv.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_VJ4JIosQfATwORGErcb0Dw_VxcrSngy';
+const TABLA        = 'miembros';
+const WHATSAPP     = '573126299744';
+const STORAGE_KEY  = 'fm-caracterizacion-v2';
+
+/* ============================================================
+   Catálogos
+   ============================================================ */
+
+const INSTITUCIONES = [
+  'Universidad Nacional de Colombia','Universidad de los Andes','Pontificia Universidad Javeriana',
+  'Universidad del Rosario','Universidad Externado de Colombia','Universidad de La Sabana',
+  'Universidad EAN','Universidad Jorge Tadeo Lozano','Universidad Sergio Arboleda',
+  'Universidad Central','Universidad Católica de Colombia','Universidad La Gran Colombia',
+  'Universidad Libre','Universidad Santo Tomás','Universidad Militar Nueva Granada',
+  'Universidad Distrital Francisco José de Caldas','Universidad Pedagógica Nacional',
+  'Universidad El Bosque','Fundación Universitaria Konrad Lorenz','Politécnico Grancolombiano',
+  'Universidad Piloto de Colombia','Universidad Agustiniana','Universidad ECCI',
+  'Universidad Manuela Beltrán','Fundación Universitaria del Área Andina',
+  'Universidad Cooperativa de Colombia','CESA — Colegio de Estudios Superiores de Administración',
+  'Universidad de América','Universidad Antonio Nariño','Escuela Colombiana de Ingeniería Julio Garavito',
+  'Universidad de San Buenaventura','Corporación Universitaria Minuto de Dios (UNIMINUTO)',
+  'Universidad Nacional Abierta y a Distancia (UNAD)','Escuela Superior de Administración Pública (ESAP)',
+  'SENA','Universidad de Antioquia','Universidad EAFIT','Universidad Pontificia Bolivariana',
+  'Universidad de Medellín','Universidad CES','Universidad de Caldas',
+  'Universidad Tecnológica de Pereira','Universidad del Quindío','Universidad del Valle',
+  'Universidad ICESI','Universidad Autónoma de Occidente','Universidad del Cauca',
+  'Universidad de Nariño','Universidad del Norte','Universidad del Atlántico',
+  'Universidad de Cartagena','Universidad Tecnológica de Bolívar','Universidad de Córdoba',
+  'Universidad Industrial de Santander (UIS)','Universidad Autónoma de Bucaramanga (UNAB)',
+  'Universidad Francisco de Paula Santander','Universidad de Pamplona',
+  'Universidad Pedagógica y Tecnológica de Colombia (UPTC)','Universidad del Tolima',
+  'Universidad de Ibagué','Universidad Surcolombiana','Universidad de los Llanos',
+];
+
+const SECTORES = ['Tecnología','Servicios profesionales','Comercio o retail','Industria o manufactura',
+  'Construcción e inmobiliario','Salud','Educación','Agro y agroindustria','Turismo y hotelería',
+  'Financiero y asegurador','Transporte y logística','Energía y minería','Medios y comunicación',
+  'Sector público','Organizaciones sociales y ONG','Otro'];
+
+const NIVEL_CARGO = ['Analista o profesional','Coordinador o líder de equipo','Jefe o gerente de área',
+  'Director','Alta dirección o C-level','Dueño o socio fundador'];
+
+const PERSONAS_CARGO = ['Ninguna','1 a 5','6 a 15','16 a 50','51 a 200','Más de 200'];
+
+const EJES = [
+  { id:'consultoria',    titulo:'Consultoría empresarial',  desc:'Diagnóstico, estrategia y acompañamiento a organizaciones.' },
+  { id:'deportes',       titulo:'Deportes · Torneo Managers', desc:'Fútbol 7 para líderes mayores de 28 años.' },
+  { id:'turismo',        titulo:'Turismo con propósito',    desc:'Viajes diseñados para aprender y conectar.' },
+  { id:'eventos',        titulo:'Eventos',                  desc:'Foros, jornadas, lanzamientos y encuentros.' },
+  { id:'emprendimiento', titulo:'Emprendimiento',           desc:'Mentoría y red para ideas en etapa temprana.' },
+  { id:'rural',          titulo:'Managers Rural',           desc:'Trabajo con territorios y productores del campo.' },
+];
+const GRADOS = ['No me interesa','Curiosidad','Interés real','Es prioridad'];
+
+/* ============================================================
+   Esquema del instrumento — 5 dimensiones
+   Editar aquí para cambiar preguntas: la interfaz se regenera sola.
+   ============================================================ */
+
+const DIMENSIONES = [
+  /* ---------------- 1 · ACADÉMICA ---------------- */
+  {
+    num:'01', titulo:'Académica',
+    bajada:'De dónde viene tu formación. Si algo está en curso, también cuenta.',
+    bloques:[
+      { tipo:'preguntas', preguntas:[
+        { id:'nombre',  tipo:'text',  req:true, label:'¿Cómo te llamas?', ph:'Nombre y apellido' },
+        { id:'correo',  tipo:'email', req:true, label:'Tu correo electrónico',
+          ayuda:'Ahí te enviamos tu plan y las convocatorias que te correspondan.', ph:'nombre@correo.com' },
+        { id:'celular', tipo:'tel',   req:true, label:'Tu celular (WhatsApp)', ph:'300 000 0000' },
+        { id:'ciudad',  tipo:'text',  req:true, label:'¿En qué ciudad o municipio vives?', ph:'Bogotá' },
+        { id:'fecha_nacimiento', tipo:'date', req:true, label:'Tu fecha de nacimiento' },
+        { id:'colegio', tipo:'text', req:true, label:'¿En qué colegio terminaste el bachillerato?', ph:'Nombre del colegio' },
+        { id:'colegio_modalidad', tipo:'select', req:true, label:'Modalidad del bachillerato',
+          ops:['Académico','Técnico','Comercial','Pedagógico o normalista','Industrial','Agropecuario','Bachillerato Internacional (IB)','Otro'] },
+        { id:'colegio_ano', tipo:'ano', req:true, label:'¿En qué año te graduaste del colegio?', ph:'2005' },
+        { id:'tiene_pregrado', tipo:'radio', req:true, cols:true,
+          label:'¿Tienes o estás cursando estudios de pregrado universitario?', ops:['Sí','No'] },
+      ]},
+      { tipo:'repetible', id:'pregrados', singular:'Pregrado',
+        titulo:'Tus pregrados', nota:'Si tienes más de una carrera, agrégalas todas.',
+        etiquetaAgregar:'Agregar otro pregrado', minimo:1,
+        dependeDe:{ pregunta:'tiene_pregrado', valor:'Sí' },
+        campos:[
+          { id:'institucion', tipo:'institucion', req:true, label:'Institución' },
+          { id:'programa',    tipo:'text', req:true, label:'Programa o carrera', ph:'Administración de Empresas' },
+          { id:'estado',      tipo:'select', req:true, label:'Estado', ops:['Terminado','En curso'] },
+          { id:'ano',         tipo:'ano', req:true, label:'Año de grado (o año esperado)', ph:'2012' },
+        ]},
+      { tipo:'preguntas', preguntas:[
+        { id:'tiene_posgrado', tipo:'radio', req:true, cols:true,
+          label:'¿Tienes o estás cursando algún posgrado?', ops:['Sí','No'] },
+      ]},
+      { tipo:'repetible', id:'posgrados', singular:'Posgrado',
+        titulo:'Tus posgrados', nota:'Agrega todos los que tengas: especializaciones, maestrías, doctorados.',
+        etiquetaAgregar:'Agregar otro posgrado', minimo:1,
+        dependeDe:{ pregunta:'tiene_posgrado', valor:'Sí' },
+        campos:[
+          { id:'nivel',       tipo:'select', req:true, label:'Nivel', ops:['Especialización','Maestría','Doctorado','Posdoctorado'] },
+          { id:'programa',    tipo:'text', req:true, label:'Nombre del programa', ph:'Maestría en Finanzas' },
+          { id:'institucion', tipo:'institucion', req:true, label:'Institución' },
+          { id:'pais',        tipo:'select', req:true, label:'País de la institución', ops:['Colombia','Otro país'] },
+          { id:'estado',      tipo:'select', req:true, label:'Estado', ops:['Terminado','En curso'] },
+          { id:'ano',         tipo:'ano', req:true, label:'Año de grado (o año esperado)', ph:'2019' },
+        ]},
+    ],
+  },
+
+  /* ---------------- 2 · LABORAL ---------------- */
+  {
+    num:'02', titulo:'Laboral',
+    bajada:'Dónde estás hoy y el camino que llevas recorrido.',
+    bloques:[
+      { tipo:'preguntas', preguntas:[
+        { id:'situacion_laboral', tipo:'checkbox', req:true,
+          label:'¿Cuál es tu situación laboral hoy?', ayuda:'Puedes marcar varias si aplica más de una.',
+          ops:['Empleado en una organización','Dueño de empresa o emprendedor','Independiente o consultor',
+               'Buscando empleo','Estudiante','Pensionado'] },
+      ]},
+      { tipo:'repetible', id:'experiencias', singular:'Experiencia',
+        titulo:'Tu trayectoria', nota:'Empieza por la actual o la más reciente. Agrega las que consideres relevantes — no tienes que reconstruir toda tu hoja de vida.',
+        etiquetaAgregar:'Agregar otra experiencia', minimo:1,
+        campos:[
+          { id:'empresa', tipo:'text', req:true, label:'Empresa u organización', ph:'Nombre de la empresa' },
+          { id:'sector',  tipo:'select', req:true, label:'Sector', ops:SECTORES },
+          { id:'cargo',   tipo:'text', req:true, label:'Cargo', ph:'El nombre exacto de tu cargo' },
+          { id:'nivel',   tipo:'select', req:true, label:'Nivel del cargo', ops:NIVEL_CARGO },
+          { id:'inicio',  tipo:'mes', req:true, label:'Fecha de inicio', mitad:true },
+          { id:'fin',     tipo:'mes', req:false, label:'Fecha de salida', mitad:true, ayuda:'Déjala vacía si sigues ahí.' },
+          { id:'actual',  tipo:'check_simple', label:'Actualmente trabajo aquí' },
+          { id:'personas_cargo', tipo:'select', req:true, label:'¿Cuántas personas tenías a cargo?', ops:PERSONAS_CARGO },
+          { id:'logro',   tipo:'textarea', req:false, label:'¿Cuál fue tu mayor logro ahí?',
+            ayuda:'Una o dos frases. Es lo que más nos ayuda a conocerte.', ph:'Por ejemplo: armé el área comercial desde cero y la llevé a facturar el 40% de la compañía.' },
+        ]},
+      { tipo:'preguntas', preguntas:[
+        { id:'anos_experiencia', tipo:'radio', req:true, cols:true, label:'En total, ¿cuántos años de experiencia laboral tienes?',
+          ops:['Menos de 3 años','3 a 5 años','5 a 10 años','10 a 15 años','15 a 20 años','Más de 20 años'] },
+        { id:'sectores', tipo:'checkbox', req:true, label:'¿En qué sectores has trabajado?',
+          ayuda:'Puedes marcar varios.', cols:true, ops:SECTORES },
+      ]},
+    ],
+  },
+
+  /* ---------------- 3 · PROYECCIÓN Y PLANEACIÓN ---------------- */
+  {
+    num:'03', titulo:'Proyección y planeación',
+    bajada:'Lo que te propusiste para los próximos 12 meses. Aquí es donde podemos ser útiles.',
+    bloques:[
+      { tipo:'preguntas', preguntas:[
+        { id:'proyectos_academicos', tipo:'checkbox', req:true, exclusiva:'Ninguno por ahora',
+          label:'Proyectos académicos para los próximos 12 meses', ayuda:'Puedes marcar varios.',
+          ops:['Terminar un programa que tengo en curso','Empezar un pregrado','Empezar una especialización',
+               'Empezar una maestría','Empezar un doctorado','Hacer un diplomado o curso de educación continua',
+               'Obtener una certificación profesional','Aprender o mejorar un idioma','Estudiar en el exterior',
+               'Convalidar u homologar un título','Postularme a una beca','Escribir o publicar',
+               'Empezar a enseñar o ser docente','Ninguno por ahora'] },
+        { id:'proyectos_academicos_det', tipo:'textarea', req:false,
+          label:'Si quieres, cuéntanoslo en una frase', ph:'Por ejemplo: quiero hacer una maestría en analítica, pero no sé si presencial o virtual.' },
+
+        { id:'proyectos_laborales', tipo:'checkbox', req:true, exclusiva:'Ninguno por ahora',
+          label:'Proyectos laborales para los próximos 12 meses', ayuda:'Puedes marcar varios.',
+          ops:['Buscar un nuevo empleo','Ascender dentro de mi organización actual','Cambiar de sector o industria',
+               'Cambiar de rol o especialidad','Asumir personas a cargo por primera vez','Negociar una mejora salarial',
+               'Pasar a trabajar como independiente o consultor','Volver al mercado laboral tras una pausa',
+               'Trabajar en el exterior','Reducir carga horaria o buscar más equilibrio','Preparar mi retiro o jubilación',
+               'Mantenerme donde estoy, sin cambios','Ninguno por ahora'] },
+        { id:'proyectos_laborales_det', tipo:'textarea', req:false,
+          label:'Si quieres, cuéntanoslo en una frase', ph:'Por ejemplo: quiero pasar de jefe de área a dirección, pero en otra compañía.' },
+
+        { id:'proyectos_emprendimiento', tipo:'checkbox', req:true, exclusiva:'No tengo planes de emprender',
+          label:'Proyectos o ideas de emprendimiento para los próximos 12 meses', ayuda:'Puedes marcar varios.',
+          ops:['Tengo una idea pero no he empezado','Estoy validando la idea con clientes potenciales',
+               'Voy a constituir o formalizar la empresa','Voy a lanzar el producto o servicio',
+               'Quiero conseguir mis primeros clientes','Quiero conseguir inversión o financiación',
+               'Quiero escalar un negocio que ya opera','Quiero conseguir socio o equipo',
+               'Quiero llevar mi negocio al exterior','Quiero vender o cerrar el negocio',
+               'No tengo planes de emprender'] },
+        { id:'proyectos_emprend_det', tipo:'textarea', req:false,
+          label:'Si quieres, cuéntanoslo en una frase', ph:'Por ejemplo: tengo un servicio de asesoría contable y quiero volverlo producto.' },
+
+        { id:'prioridad_12m', tipo:'textarea', req:true,
+          label:'De todo lo anterior, ¿cuál es tu prioridad número uno para estos 12 meses?',
+          ayuda:'Una sola. La que de verdad quieres que pase.',
+          ph:'Por ejemplo: arrancar la maestría en el segundo semestre.' },
+
+        { id:'necesidades', tipo:'checkbox', req:true, tope:3,
+          label:'Para lograr esa prioridad, ¿qué necesitas?',
+          ayuda:'Máximo 3. Escoge las que de verdad pesan.',
+          ops:['Financiación o dinero','Tiempo','Información u orientación sobre cómo hacerlo',
+               'Formar o desarrollar una habilidad específica','Contactos o referencias',
+               'Mentoría de alguien que ya lo hizo','Un socio o un equipo','Clientes',
+               'Apoyo de mi empresa o de mi jefe','Apoyo familiar','Claridad sobre qué quiero realmente',
+               'Decidirme a dar el paso','Ya tengo todo lo que necesito'] },
+        { id:'necesidades_det', tipo:'textarea', req:false,
+          label:'¿Algo más específico que necesites?', ph:'Escríbelo como se lo dirías a un amigo.' },
+      ]},
+    ],
+  },
+
+  /* ---------------- 4 · FAMILIAR ---------------- */
+  {
+    num:'04', titulo:'Familiar',
+    bajada:'Cómo es tu hogar. No te pedimos nombres, colegios ni instituciones de tu pareja o tus hijos: solo niveles y rangos.',
+    bloques:[
+      { tipo:'preguntas', preguntas:[
+        { id:'estado_civil', tipo:'radio', req:true, cols:true, label:'¿Cuál es tu estado civil?',
+          ops:['Soltero(a)','Casado(a)','Unión libre','Separado(a) o divorciado(a)','Viudo(a)','Prefiero no responder'] },
+        { id:'tiene_hijos', tipo:'radio', req:true, cols:true, label:'¿Tienes hijos?', ops:['Sí','No'] },
+        { id:'numero_hijos', tipo:'numero', req:true, label:'¿Cuántos?', min:1, max:20,
+          dependeDe:{ pregunta:'tiene_hijos', valor:'Sí' } },
+        { id:'edades_hijos', tipo:'checkbox', req:true, label:'¿En qué rangos de edad están?',
+          ayuda:'Marca todos los que apliquen.', cols:true,
+          dependeDe:{ pregunta:'tiene_hijos', valor:'Sí' },
+          ops:['Menos de 5 años','6 a 11 años','12 a 17 años','18 a 25 años','Más de 25 años'] },
+        { id:'hijos_etapa', tipo:'checkbox', req:true, label:'¿En qué etapa educativa están?',
+          ayuda:'Marca todas las que apliquen.', cols:true,
+          dependeDe:{ pregunta:'tiene_hijos', valor:'Sí' },
+          ops:['Preescolar','Primaria','Bachillerato','Técnico o tecnólogo','Pregrado','Posgrado',
+               'Ya terminaron sus estudios','No estudian'] },
+        { id:'hijo_entra_universidad', tipo:'radio', req:true, cols:true,
+          label:'¿Alguno entra a la universidad en los próximos 12 meses?',
+          dependeDe:{ pregunta:'tiene_hijos', valor:'Sí' }, ops:['Sí','No','Todavía no sé'] },
+
+        { id:'pareja_nivel_educativo', tipo:'select', req:false,
+          label:'Nivel educativo más alto de tu pareja',
+          ayuda:'Solo si tienes pareja. Déjalo en blanco si no aplica o prefieres no responder.',
+          ops:['Bachillerato','Técnico o tecnólogo','Pregrado','Especialización','Maestría','Doctorado','Prefiero no responder'] },
+        { id:'pareja_area_formacion', tipo:'select', req:false, label:'Área de formación de tu pareja',
+          ops:['Administración y negocios','Ingeniería','Ciencias de la salud','Ciencias sociales y humanas',
+               'Derecho','Educación','Artes y diseño','Ciencias exactas y naturales','Agropecuaria',
+               'Comunicación','Otra','Prefiero no responder'] },
+        { id:'pareja_situacion', tipo:'select', req:false, label:'Situación laboral de tu pareja',
+          ops:['Empleada o empleado','Emprendedor(a) o dueño(a) de empresa','Independiente o consultor(a)',
+               'No trabaja fuera del hogar','Buscando empleo','Pensionado(a)','Prefiero no responder'] },
+
+        { id:'participaria_familia', tipo:'radio', req:true, cols:true,
+          label:'¿Participarías con tu familia en actividades de la fundación?',
+          ops:['Sí','No','Depende de la actividad'] },
+
+        { id:'pareja_correo', tipo:'email', req:false,
+          label:'¿Te gustaría que tu pareja también se caracterice?',
+          ayuda:'Déjanos su correo y le enviamos su propia invitación. Ella o él dará su propio consentimiento — nosotros no guardamos nada suyo hasta que lo autorice.',
+          ph:'correo de tu pareja (opcional)' },
+        { id:'pareja_autoriza', tipo:'check_simple',
+          label:'Confirmo que mi pareja está de acuerdo con recibir esta invitación',
+          dependeDe:{ pregunta:'pareja_correo', tipoDependencia:'noVacio' } },
+      ]},
+    ],
+  },
+
+  /* ---------------- 5 · LA FUNDACIÓN Y TÚ ---------------- */
+  {
+    num:'05', titulo:'La fundación y tú',
+    bajada:'Última dimensión. Aquí definimos qué tan realista es lo que te vamos a proponer.',
+    bloques:[
+      { tipo:'preguntas', preguntas:[
+        { id:'__ejes', tipo:'ejes', req:true, label:'¿Qué tanto te interesa cada eje de la fundación?',
+          ayuda:'Responde los seis. No pasa nada si varios son "no me interesa": eso también nos sirve.' },
+        { id:'vinculo_previo', tipo:'radio', req:true, label:'¿Cuál es tu relación previa con la fundación?',
+          ops:['No la conocía hasta ahora','La conozco pero no he participado','He asistido a eventos',
+               'He jugado el Torneo Managers','He sido cliente, aliado o proveedor'] },
+        { id:'tipo_vinculo', tipo:'checkbox', req:true, label:'¿Cómo te gustaría vincularte?', ayuda:'Puedes marcar varias.',
+          ops:['Como participante de los programas','Como mentor o formador','Como aliado o patrocinador',
+               'Como voluntario','Como proveedor de servicios','Como inversionista','Difundiendo lo que hacemos'] },
+        { id:'aportes', tipo:'checkbox', req:true, label:'¿Qué podrías aportarle a la comunidad?',
+          ayuda:'Puedes marcar varias.', cols:true,
+          ops:['Experiencia y mentoría','Contactos','Capital','Servicios profesionales',
+               'Espacios o logística','Contenido','Tiempo'] },
+        { id:'tiempo_mensual', tipo:'radio', req:true, cols:true, label:'¿Cuánto tiempo puedes dedicarle al mes?',
+          ops:['Menos de 2 horas','De 2 a 5 horas','De 5 a 10 horas','Más de 10 horas'] },
+        { id:'formatos', tipo:'checkbox', req:true, label:'¿En qué formatos puedes participar?',
+          ayuda:'Puedes marcar varias.', cols:true,
+          ops:['Presencial en Bogotá','Presencial fuera de Bogotá','Virtual','Fines de semana','Entre semana en la noche'] },
+        { id:'capacidad_inversion', tipo:'radio', req:true, label:'¿Qué disposición tienes de invertir en programas pagos?',
+          ayuda:'Muchos de nuestros espacios son gratuitos. Preguntamos para no ofrecerte algo fuera de tu alcance.',
+          ops:['Solo puedo participar en lo gratuito','Hasta $200.000 COP','Entre $200.000 y $1.000.000 COP',
+               'Entre $1.000.000 y $5.000.000 COP','Más de $5.000.000 COP','Depende del valor de la propuesta'] },
+        { id:'acepta_whatsapp', tipo:'radio', req:true, cols:true,
+          label:'¿Quieres recibir novedades y convocatorias por WhatsApp?',
+          ops:['Sí, quiero recibirlas','No, prefiero solo correo'] },
+      ]},
+    ],
+  },
+];
+
+/* ============================================================
+   Estado
+   ============================================================ */
+const estado = { pantalla:0, datos:{}, grupos:{} };
+const $ = (s)=>document.querySelector(s);
+
+function esc(s){
+  return String(s ?? '').replace(/[&<>"']/g,(c)=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+/** Todas las preguntas planas de una dimensión (sin los campos de repetibles). */
+function preguntasDe(dim){
+  return dim.bloques.filter((b)=>b.tipo==='preguntas').flatMap((b)=>b.preguntas);
+}
+function repetiblesDe(dim){
+  return dim.bloques.filter((b)=>b.tipo==='repetible');
+}
+const TODAS_PREGUNTAS = DIMENSIONES.flatMap(preguntasDe);
+const TODOS_GRUPOS    = DIMENSIONES.flatMap(repetiblesDe);
+
+/* ============================================================
+   Render
+   ============================================================ */
+
+document.getElementById('listaInstituciones').innerHTML =
+  INSTITUCIONES.map((u)=>`<option value="${esc(u)}"></option>`).join('');
+
+/** Campo de formulario suelto (dentro de una instancia repetible). */
+function renderCampo(c, nombre, id){
+  const req = c.req ? ' <span class="req" aria-hidden="true">*</span>' : '';
+  const ayuda = c.ayuda ? `<span class="ayuda" style="margin-bottom:6px">${esc(c.ayuda)}</span>` : '';
+  let control = '';
+  switch(c.tipo){
+    case 'text':
+      control = `<input type="text" id="${id}" name="${nombre}" placeholder="${esc(c.ph||'')}">`; break;
+    case 'institucion':
+      control = `<input type="text" id="${id}" name="${nombre}" list="listaInstituciones"
+                   placeholder="Escribe y elige de la lista, o escríbela completa" autocomplete="off">`; break;
+    case 'ano':
+      control = `<input type="number" id="${id}" name="${nombre}" min="1940" max="2100" step="1"
+                   inputmode="numeric" placeholder="${esc(c.ph||'')}">`; break;
+    case 'mes':
+      control = `<input type="month" id="${id}" name="${nombre}">`; break;
+    case 'select':
+      control = `<select id="${id}" name="${nombre}"><option value="">Selecciona…</option>
+                 ${c.ops.map((o)=>`<option value="${esc(o)}">${esc(o)}</option>`).join('')}</select>`; break;
+    case 'textarea':
+      control = `<textarea id="${id}" name="${nombre}" placeholder="${esc(c.ph||'')}"></textarea>`; break;
+    case 'check_simple':
+      return `<div class="campo"><label class="op" style="font-size:14px">
+                <input type="checkbox" id="${id}" name="${nombre}"><span>${esc(c.label)}</span></label></div>`;
+  }
+  return `<div class="campo${c.mitad?' mitad':''}">
+            <label for="${id}">${esc(c.label)}${req}</label>${ayuda}${control}
+          </div>`;
+}
+
+/** Una instancia de un bloque repetible.
+ *  Los campos marcados `mitad` consecutivos se agrupan en una fila de dos columnas. */
+function renderInstancia(grupo, i){
+  const partes = [];
+  let mitades = [];
+  const cerrarMitades = ()=>{
+    if(!mitades.length) return;
+    partes.push(mitades.length > 1
+      ? `<div class="campo-fila">${mitades.join('')}</div>`
+      : mitades[0]);
+    mitades = [];
+  };
+  grupo.campos.forEach((c)=>{
+    const nombre = `${grupo.id}__${i}__${c.id}`;
+    const html = renderCampo(c, nombre, nombre);
+    if(c.mitad) mitades.push(html);
+    else { cerrarMitades(); partes.push(html); }
+  });
+  cerrarMitades();
+
+  return `<div class="instancia" data-grupo="${grupo.id}" data-i="${i}">
+            <div class="head">
+              <b>${esc(grupo.singular)} ${i+1}</b>
+              <button type="button" data-quitar="${grupo.id}" data-i="${i}">Quitar</button>
+            </div>
+            ${partes.join('')}
+            <div class="msg-error">Completa los campos obligatorios de este bloque.</div>
+          </div>`;
+}
+
+function renderGrupo(grupo){
+  return `<div class="grupo" id="grupo_${grupo.id}"${grupo.dependeDe?' hidden':''}>
+            <div class="cabecera"><h4>${esc(grupo.titulo)}</h4></div>
+            <p class="nota">${esc(grupo.nota)}</p>
+            <div class="instancias" id="inst_${grupo.id}"></div>
+            <button type="button" class="btn-agregar" data-agregar="${grupo.id}">+ ${esc(grupo.etiquetaAgregar)}</button>
+          </div>`;
+}
+
+/** Pregunta suelta (no dentro de un repetible). */
+function renderPregunta(q){
+  const req = q.req ? ' <span class="req" aria-hidden="true">*</span>' : '';
+  const ayuda = q.ayuda ? `<span class="ayuda">${esc(q.ayuda)}</span>` : '';
+  let campo = '';
+
+  switch(q.tipo){
+    case 'text': case 'email': case 'tel':
+      campo = `<input type="${q.tipo}" id="${q.id}" name="${q.id}" placeholder="${esc(q.ph||'')}"
+                 autocomplete="${q.tipo==='email'?'email':q.tipo==='tel'?'tel':q.id==='nombre'?'name':'off'}">`; break;
+    case 'date':
+      campo = `<input type="date" id="${q.id}" name="${q.id}" max="2020-12-31" min="1930-01-01">`; break;
+    case 'ano':
+      campo = `<input type="number" id="${q.id}" name="${q.id}" min="1940" max="2100" step="1"
+                 inputmode="numeric" placeholder="${esc(q.ph||'')}">`; break;
+    case 'numero':
+      campo = `<input type="number" id="${q.id}" name="${q.id}" min="${q.min??0}" max="${q.max??99}"
+                 step="1" inputmode="numeric">`; break;
+    case 'textarea':
+      campo = `<textarea id="${q.id}" name="${q.id}" placeholder="${esc(q.ph||'')}"></textarea>`; break;
+    case 'select':
+      campo = `<select id="${q.id}" name="${q.id}"><option value="">Selecciona una opción…</option>
+               ${q.ops.map((o)=>`<option value="${esc(o)}">${esc(o)}</option>`).join('')}</select>`; break;
+    case 'check_simple':
+      campo = `<label class="op"><input type="checkbox" id="${q.id}" name="${q.id}"><span>${esc(q.label)}</span></label>`;
+      return `<div class="q" id="q_${q.id}"${q.dependeDe?' hidden':''}>${campo}
+                <div class="msg-error">Marca la casilla para continuar.</div></div>`;
+    case 'radio': case 'checkbox':
+      campo = `<div class="opciones${q.cols?' dos':''}" role="group" aria-labelledby="lbl_${q.id}">
+                 ${q.ops.map((o,i)=>`<label class="op">
+                   <input type="${q.tipo}" name="${q.id}" value="${esc(o)}" id="${q.id}_${i}"
+                     ${q.exclusiva===o?'data-exclusiva="1"':''}><span>${esc(o)}</span></label>`).join('')}
+               </div>${q.tope?`<span class="tope" id="tope_${q.id}">Puedes marcar hasta ${q.tope}.</span>`:''}`;
+      break;
+    case 'ejes':
+      campo = EJES.map((e)=>`
+        <div class="eje-fila">
+          <span class="titulo" id="lbl_eje_${e.id}">${esc(e.titulo)}</span>
+          <span class="desc">${esc(e.desc)}</span>
+          <div class="eje-grados" role="group" aria-labelledby="lbl_eje_${e.id}">
+            ${GRADOS.map((g,v)=>`<label aria-label="${esc(e.titulo)}: ${esc(g)}">
+              <input type="radio" name="eje_${e.id}" value="${v}">${esc(g)}</label>`).join('')}
+          </div>
+        </div>`).join('');
+      break;
+  }
+
+  const usaLabel = ['text','email','tel','date','ano','numero','textarea','select'].includes(q.tipo);
+  const etiqueta = usaLabel
+    ? `<label class="pregunta" for="${q.id}" id="lbl_${q.id}">${esc(q.label)}${req}</label>`
+    : `<span class="pregunta" id="lbl_${q.id}">${esc(q.label)}${req}</span>`;
+
+  return `<div class="q" id="q_${q.id}"${q.dependeDe?' hidden':''}>
+            ${etiqueta}${ayuda}${campo}
+            <div class="msg-error">${q.tipo==='checkbox'?'Marca al menos una opción.':'Esta pregunta es obligatoria.'}</div>
+          </div>`;
+}
+
+function renderDimension(dim, indice){
+  const esUltima = indice === DIMENSIONES.length - 1;
+  const cuerpo = dim.bloques.map((b)=>
+    b.tipo === 'preguntas' ? b.preguntas.map(renderPregunta).join('') : renderGrupo(b)
+  ).join('');
+  return `<div class="dim-head">
+            <span class="num" aria-hidden="true">${dim.num}</span>
+            <h2>${esc(dim.titulo)}</h2><p>${esc(dim.bajada)}</p>
+          </div>
+          ${cuerpo}
+          <div class="acciones">
+            <button class="btn btn-ghost" type="button" data-atras>Atrás</button>
+            <button class="btn btn-primary" type="button" data-siguiente>${esUltima?'Ver mi plan':'Continuar'}</button>
+          </div>
+          <p class="guardado">Tus respuestas se guardan solas en este dispositivo.</p>`;
+}
+
+DIMENSIONES.forEach((dim,i)=>{ document.getElementById('p'+(i+1)).innerHTML = renderDimension(dim,i); });
+
+/* ============================================================
+   Bloques repetibles: agregar, quitar, renumerar
+   ============================================================ */
+
+TODOS_GRUPOS.forEach((g)=>{ estado.grupos[g.id] = 0; });
+
+function grupoPorId(id){ return TODOS_GRUPOS.find((g)=>g.id===id); }
+
+function agregarInstancia(id){
+  const g = grupoPorId(id);
+  const cont = document.getElementById('inst_'+id);
+  const i = estado.grupos[id];
+  cont.insertAdjacentHTML('beforeend', renderInstancia(g, i));
+  estado.grupos[id] = i + 1;
+  actualizarBotonesQuitar(id);
+  return cont.lastElementChild;
+}
+
+/** Solo se puede quitar si quedan más instancias que el mínimo. */
+function actualizarBotonesQuitar(id){
+  const g = grupoPorId(id);
+  const inst = [...document.querySelectorAll(`#inst_${id} > .instancia`)];
+  inst.forEach((el,n)=>{
+    el.querySelector('.head b').textContent = `${g.singular} ${n+1}`;
+    el.querySelector('[data-quitar]').hidden = inst.length <= (g.minimo||1);
+  });
+}
+
+/** Reindexa los `name` tras eliminar una instancia, para no dejar huecos. */
+function reindexarGrupo(id){
+  const g = grupoPorId(id);
+  const inst = [...document.querySelectorAll(`#inst_${id} > .instancia`)];
+  inst.forEach((el,n)=>{
+    el.dataset.i = n;
+    el.querySelector('[data-quitar]').dataset.i = n;
+    g.campos.forEach((c)=>{
+      const viejo = el.querySelector(`[name$="__${c.id}"]`);
+      if(viejo){ viejo.name = `${id}__${n}__${c.id}`; viejo.id = viejo.name; }
+    });
+  });
+  estado.grupos[id] = inst.length;
+  actualizarBotonesQuitar(id);
+}
+
+document.addEventListener('click', (e)=>{
+  const agregar = e.target.closest('[data-agregar]');
+  if(agregar){
+    const el = agregarInstancia(agregar.dataset.agregar);
+    el.scrollIntoView({behavior:'smooth', block:'center'});
+    return;
+  }
+  const quitar = e.target.closest('[data-quitar]');
+  if(quitar){
+    const id = quitar.dataset.quitar;
+    quitar.closest('.instancia').remove();
+    reindexarGrupo(id);
+  }
+});
+
+/* ============================================================
+   Dependencias (mostrar/ocultar según otra respuesta)
+   ============================================================ */
+
+function valorDe(idPregunta){
+  const q = TODAS_PREGUNTAS.find((p)=>p.id===idPregunta);
+  if(!q) return '';
+  if(q.tipo==='checkbox') return [...document.querySelectorAll(`input[name="${idPregunta}"]:checked`)].map((i)=>i.value);
+  if(q.tipo==='radio')    { const s = document.querySelector(`input[name="${idPregunta}"]:checked`); return s?s.value:''; }
+  if(q.tipo==='check_simple'){ const el = document.getElementById(idPregunta); return el && el.checked; }
+  const el = document.getElementById(idPregunta);
+  return el ? el.value.trim() : '';
+}
+
+function cumpleDependencia(dep){
+  const v = valorDe(dep.pregunta);
+  if(dep.tipoDependencia === 'noVacio') return String(v||'').trim() !== '';
+  return v === dep.valor;
+}
+
+function aplicarDependencias(){
+  TODAS_PREGUNTAS.forEach((q)=>{
+    if(!q.dependeDe) return;
+    const caja = document.getElementById('q_'+q.id);
+    if(caja) caja.hidden = !cumpleDependencia(q.dependeDe);
+  });
+  TODOS_GRUPOS.forEach((g)=>{
+    const caja = document.getElementById('grupo_'+g.id);
+    if(!caja) return;
+    // Un grupo sin dependencia siempre está visible.
+    const visible = g.dependeDe ? cumpleDependencia(g.dependeDe) : true;
+    caja.hidden = !visible;
+    // Al mostrarse por primera vez, arranca con una instancia lista para llenar.
+    if(visible && estado.grupos[g.id] === 0) agregarInstancia(g.id);
+  });
+}
+
+/* ============================================================
+   Opciones exclusivas y topes de selección
+   ============================================================ */
+
+function aplicarReglasOpciones(nombre){
+  const q = TODAS_PREGUNTAS.find((p)=>p.id===nombre);
+  if(!q || q.tipo!=='checkbox') return;
+  const inputs = [...document.querySelectorAll(`input[name="${nombre}"]`)];
+
+  if(q.exclusiva){
+    const ex = inputs.find((i)=>i.value===q.exclusiva);
+    if(ex && ex.checked){
+      inputs.forEach((i)=>{ if(i!==ex){ i.checked=false; i.disabled=true; } });
+    }else{
+      inputs.forEach((i)=>{ i.disabled=false; });
+    }
+  }
+  if(q.tope){
+    const marcados = inputs.filter((i)=>i.checked).length;
+    inputs.forEach((i)=>{ if(!i.checked) i.disabled = marcados >= q.tope; });
+    const nota = document.getElementById('tope_'+nombre);
+    if(nota) nota.textContent = marcados >= q.tope
+      ? `Llegaste al máximo de ${q.tope}. Desmarca una para cambiar.`
+      : `Puedes marcar hasta ${q.tope}. Llevas ${marcados}.`;
+  }
+}
+
+document.addEventListener('change', (e)=>{
+  if(e.target.name) aplicarReglasOpciones(e.target.name);
+  aplicarDependencias();
+});
+
+/* ============================================================
+   Lectura y validación
+   ============================================================ */
+
+function leerPregunta(q){
+  if(q.tipo==='ejes'){
+    const out = {};
+    EJES.forEach((e)=>{
+      const sel = document.querySelector(`input[name="eje_${e.id}"]:checked`);
+      out['eje_'+e.id] = sel ? Number(sel.value) : null;
+    });
+    return out;
+  }
+  if(q.tipo==='checkbox') return [...document.querySelectorAll(`input[name="${q.id}"]:checked`)].map((i)=>i.value);
+  if(q.tipo==='radio'){ const s = document.querySelector(`input[name="${q.id}"]:checked`); return s?s.value:''; }
+  if(q.tipo==='check_simple'){ const el = document.getElementById(q.id); return !!(el && el.checked); }
+  const el = document.getElementById(q.id);
+  return el ? el.value.trim() : '';
+}
+
+function leerGrupo(g){
+  const inst = [...document.querySelectorAll(`#inst_${g.id} > .instancia`)];
+  return inst.map((el)=>{
+    const fila = {};
+    g.campos.forEach((c)=>{
+      const campo = el.querySelector(`[name="${g.id}__${el.dataset.i}__${c.id}"]`);
+      if(!campo) { fila[c.id] = ''; return; }
+      fila[c.id] = c.tipo==='check_simple' ? campo.checked : campo.value.trim();
+    });
+    return fila;
+  });
+}
+
+function valorValido(q, valor){
+  if(q.tipo==='ejes')     return Object.values(valor).every((v)=>v !== null);
+  if(q.tipo==='checkbox') return valor.length > 0;
+  if(q.tipo==='email')    return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(valor);
+  if(q.tipo==='tel')      return valor.replace(/\D/g,'').length >= 7;
+  if(q.tipo==='check_simple') return valor === true;
+  if(q.tipo==='ano')      { const n = Number(valor); return n >= 1940 && n <= 2100; }
+  return String(valor).trim() !== '';
+}
+
+function validarDimension(indice){
+  const dim = DIMENSIONES[indice];
+  let ok = true, primerError = null;
+
+  preguntasDe(dim).forEach((q)=>{
+    const caja = document.getElementById('q_'+q.id);
+    if(!caja) return;
+    // Una pregunta oculta por dependencia no se valida.
+    if(caja.hidden){ caja.classList.remove('error'); return; }
+    if(!q.req){ caja.classList.remove('error'); return; }
+    if(valorValido(q, leerPregunta(q))){ caja.classList.remove('error'); }
+    else { caja.classList.add('error'); ok = false; if(!primerError) primerError = caja; }
+  });
+
+  repetiblesDe(dim).forEach((g)=>{
+    const caja = document.getElementById('grupo_'+g.id);
+    if(!caja || caja.hidden) return;
+    [...document.querySelectorAll(`#inst_${g.id} > .instancia`)].forEach((el)=>{
+      const bien = g.campos.every((c)=>{
+        if(!c.req) return true;
+        const campo = el.querySelector(`[name="${g.id}__${el.dataset.i}__${c.id}"]`);
+        return campo && valorValido(c, campo.value.trim());
+      });
+      el.classList.toggle('error', !bien);
+      if(!bien){ ok = false; if(!primerError) primerError = el; }
+    });
+  });
+
+  if(primerError) primerError.scrollIntoView({behavior:'smooth', block:'center'});
+  return ok;
+}
+
+function capturarDimension(indice){
+  const dim = DIMENSIONES[indice];
+  preguntasDe(dim).forEach((q)=>{
+    const caja = document.getElementById('q_'+q.id);
+    if(caja && caja.hidden) return;   // no guardamos respuestas de preguntas ocultas
+    const valor = leerPregunta(q);
+    if(q.tipo==='ejes') Object.assign(estado.datos, valor);
+    else estado.datos[q.id] = valor;
+  });
+  repetiblesDe(dim).forEach((g)=>{
+    const caja = document.getElementById('grupo_'+g.id);
+    estado.datos[g.id] = (caja && caja.hidden) ? [] : leerGrupo(g);
+  });
+  guardarLocal();
+}
+
+/* ============================================================
+   Persistencia local
+   ============================================================ */
+
+function guardarLocal(){
+  try{
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+      pantalla:estado.pantalla, datos:estado.datos, ts:Date.now(),
+    }));
+  }catch(e){ /* incógnito o storage lleno: seguimos sin persistir */ }
+}
+
+function restaurarLocal(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(!raw) return null;
+    const g = JSON.parse(raw);
+    if(!g || !g.datos || Date.now() - (g.ts||0) > 30*24*3600*1000) return null;  // 30 días
+    return g;
+  }catch(e){ return null; }
+}
+
+function pintarDatos(){
+  const d = estado.datos;
+
+  TODAS_PREGUNTAS.forEach((q)=>{
+    const v = d[q.id];
+    if(q.tipo==='check_simple'){ const el = document.getElementById(q.id); if(el) el.checked = !!v; return; }
+    if(v === undefined || v === '' || (Array.isArray(v) && !v.length)) return;
+    if(q.tipo==='checkbox'){
+      v.forEach((val)=>{ const el = document.querySelector(`input[name="${q.id}"][value="${CSS.escape(val)}"]`); if(el) el.checked = true; });
+    }else if(q.tipo==='radio'){
+      const el = document.querySelector(`input[name="${q.id}"][value="${CSS.escape(v)}"]`); if(el) el.checked = true;
+    }else{
+      const el = document.getElementById(q.id); if(el) el.value = v;
+    }
+  });
+
+  EJES.forEach((e)=>{
+    const v = d['eje_'+e.id];
+    if(v === null || v === undefined) return;
+    const el = document.querySelector(`input[name="eje_${e.id}"][value="${v}"]`); if(el) el.checked = true;
+  });
+
+  aplicarDependencias();
+
+  // Bloques repetibles: recreamos tantas instancias como haya guardadas.
+  TODOS_GRUPOS.forEach((g)=>{
+    const filas = d[g.id];
+    if(!Array.isArray(filas) || !filas.length) return;
+    const cont = document.getElementById('inst_'+g.id);
+    if(!cont) return;
+    cont.innerHTML = ''; estado.grupos[g.id] = 0;
+    filas.forEach((fila)=>{
+      const el = agregarInstancia(g.id);
+      g.campos.forEach((c)=>{
+        const campo = el.querySelector(`[name="${g.id}__${el.dataset.i}__${c.id}"]`);
+        if(!campo) return;
+        if(c.tipo==='check_simple') campo.checked = !!fila[c.id];
+        else campo.value = fila[c.id] ?? '';
+      });
+    });
+  });
+
+  TODAS_PREGUNTAS.forEach((q)=>{ if(q.tipo==='checkbox') aplicarReglasOpciones(q.id); });
+}
+
+/* ============================================================
+   Navegación
+   ============================================================ */
+
+const ETIQUETAS = ['Inicio','1 de 5 · Académica','2 de 5 · Laboral','3 de 5 · Proyección','4 de 5 · Familiar','5 de 5 · La fundación','Tu plan'];
+
+function irA(n){
+  document.querySelectorAll('.pantalla').forEach((s)=>s.classList.remove('activa'));
+  document.getElementById('p'+n).classList.add('activa');
+  estado.pantalla = n;
+  $('#barraProgreso').style.width = (n/6*100) + '%';
+  $('#indicadorPaso').textContent = ETIQUETAS[n];
+  window.scrollTo({top:0, behavior:'smooth'});
+  guardarLocal();
+}
+
+let destinoInicio = 1;
+
+$('#btnEmpezar').addEventListener('click', ()=>{
+  const caja = $('#q_consentimiento');
+  if(!$('#consentimiento').checked){
+    caja.classList.add('error');
+    caja.scrollIntoView({behavior:'smooth', block:'center'});
+    return;
+  }
+  caja.classList.remove('error');
+  if(!estado.datos.consentimiento_en) estado.datos.consentimiento_en = new Date().toISOString();
+  irA(destinoInicio);
+});
+$('#consentimiento').addEventListener('change', (e)=>{
+  if(e.target.checked) $('#q_consentimiento').classList.remove('error');
+});
+
+document.querySelectorAll('[data-siguiente]').forEach((btn,i)=>{
+  btn.addEventListener('click', ()=>{
+    if(!validarDimension(i)) return;
+    capturarDimension(i);
+    if(i === DIMENSIONES.length - 1) finalizar();
+    else irA(i+2);
+  });
+});
+document.querySelectorAll('[data-atras]').forEach((btn,i)=>{
+  btn.addEventListener('click', ()=>{ capturarDimension(i); irA(i); });
+});
+
+document.addEventListener('input', (e)=>{
+  const caja = e.target.closest('.q, .instancia');
+  if(caja) caja.classList.remove('error');
+});
+
+/* ============================================================
+   Lectura interna — solo viaja a Supabase, nunca se muestra
+   ============================================================ */
+
+const NIVELES_ALTOS = ['Director','Alta dirección o C-level','Dueño o socio fundador'];
+const CARGO_GRANDE  = ['16 a 50','51 a 200','Más de 200'];
+const INVERSION_ALTA = ['Entre $1.000.000 y $5.000.000 COP','Más de $5.000.000 COP'];
+
+function analizar(d){
+  const puntos = { consultoria:0, deportes:0, turismo:0, eventos:0, emprendimiento:0, rural:0 };
+  const motivos = { consultoria:[], deportes:[], turismo:[], eventos:[], emprendimiento:[], rural:[] };
+  const exp = d.experiencias || [];
+  const pa = d.proyectos_academicos || [], pl = d.proyectos_laborales || [], pe = d.proyectos_emprendimiento || [];
+  const nec = d.necesidades || [], ap = d.aportes || [], tv = d.tipo_vinculo || [], sit = d.situacion_laboral || [];
+
+  // 1) El interés declarado es la base.
+  Object.keys(puntos).forEach((k)=>{
+    const v = Number(d['eje_'+k] ?? 0);
+    puntos[k] += v * 10;
+    if(v >= 2) motivos[k].push('Lo declaró como ' + GRADOS[v].toLowerCase());
+  });
+
+  const senal = (eje, pts, motivo)=>{ puntos[eje] += pts; motivos[eje].push(motivo); };
+
+  // 2) Señales de perfil directivo → consultoría.
+  const nivelAlto = exp.some((e)=>NIVELES_ALTOS.includes(e.nivel));
+  const equipoGrande = exp.some((e)=>CARGO_GRANDE.includes(e.personas_cargo));
+  if(nivelAlto)    senal('consultoria', 8, 'Perfil directivo en su trayectoria');
+  if(equipoGrande) senal('consultoria', 6, 'Ha liderado equipos grandes');
+  if(pl.includes('Ascender dentro de mi organización actual')) senal('consultoria', 4, 'Busca ascender');
+  if(pl.includes('Asumir personas a cargo por primera vez'))   senal('consultoria', 5, 'Primer rol de liderazgo');
+  if(sit.includes('Dueño de empresa o emprendedor'))           senal('consultoria', 5, 'Dueño de empresa');
+
+  // 3) Señales de emprendimiento.
+  const emprendeAlgo = pe.length && !pe.includes('No tengo planes de emprender');
+  if(emprendeAlgo) senal('emprendimiento', 10, 'Tiene proyecto de emprendimiento activo');
+  if(sit.includes('Dueño de empresa o emprendedor'))  senal('emprendimiento', 5, 'Ya es dueño o emprendedor');
+  if(sit.includes('Independiente o consultor'))       senal('emprendimiento', 3, 'Trabaja de forma independiente');
+  if(nec.includes('Financiación o dinero'))           senal('emprendimiento', 4, 'Necesita financiación');
+  if(nec.includes('Un socio o un equipo'))            senal('emprendimiento', 4, 'Busca socio o equipo');
+  if(nec.includes('Clientes'))                        senal('emprendimiento', 4, 'Necesita clientes');
+
+  // 4) Eventos y red.
+  if(nec.includes('Contactos o referencias')) senal('eventos', 6, 'Necesita ampliar su red');
+  if(ap.includes('Contactos'))                senal('eventos', 4, 'Puede aportar contactos');
+  if(tv.includes('Como mentor o formador'))   senal('eventos', 4, 'Se ofrece como mentor');
+  if(pl.includes('Buscar un nuevo empleo'))   senal('eventos', 4, 'Está en búsqueda laboral');
+
+  // 5) Turismo y equilibrio.
+  if(pl.includes('Reducir carga horaria o buscar más equilibrio')) senal('turismo', 5, 'Busca equilibrio');
+  if(d.participaria_familia === 'Sí')                              senal('turismo', 4, 'Participaría con su familia');
+  if(pl.includes('Preparar mi retiro o jubilación'))               senal('turismo', 4, 'Prepara su retiro');
+
+  // 6) Deportes.
+  if(pl.includes('Reducir carga horaria o buscar más equilibrio')) senal('deportes', 3, 'Busca equilibrio');
+  if((d.formatos||[]).includes('Fines de semana'))                 senal('deportes', 3, 'Disponible fines de semana');
+
+  // 7) Rural.
+  if((d.sectores||[]).includes('Agro y agroindustria')) senal('rural', 8, 'Ha trabajado en el agro');
+  if(tv.includes('Como voluntario'))                    senal('rural', 4, 'Se ofrece como voluntario');
+  if(ap.includes('Tiempo'))                             senal('rural', 2, 'Puede aportar tiempo');
+
+  const ejes_recomendados = EJES
+    .map((e)=>({ eje:e.titulo, id:e.id, puntaje:puntos[e.id], motivo:motivos[e.id].slice(0,3).join(' · ') }))
+    .sort((a,b)=>b.puntaje-a.puntaje);
+
+  // ---------- Rol potencial en la comunidad ----------
+  let rol_potencial = 'Participante';
+  if(tv.includes('Como inversionista') || ap.includes('Capital'))                 rol_potencial = 'Inversionista';
+  else if(tv.includes('Como aliado o patrocinador'))                              rol_potencial = 'Aliado o patrocinador';
+  else if(tv.includes('Como mentor o formador') && (nivelAlto || ap.includes('Experiencia y mentoría'))) rol_potencial = 'Mentor';
+  else if(tv.includes('Como proveedor de servicios'))                             rol_potencial = 'Proveedor';
+  else if(tv.includes('Como voluntario'))                                         rol_potencial = 'Voluntario';
+
+  // ---------- Oportunidades concretas ----------
+  const oportunidades = [];
+  if(d.hijo_entra_universidad === 'Sí') oportunidades.push('Hijo entra a la universidad en 12 meses');
+  if(pa.some((p)=>/maestría|doctorado|especialización/i.test(p))) oportunidades.push('Planea un posgrado este año');
+  if(pa.includes('Hacer un diplomado o curso de educación continua')) oportunidades.push('Busca educación continua');
+  if(nec.includes('Financiación o dinero') && INVERSION_ALTA.includes(d.capacidad_inversion)) oportunidades.push('Necesita financiación pero tiene capacidad de pago');
+  if(pl.includes('Buscar un nuevo empleo')) oportunidades.push('En búsqueda activa de empleo');
+  if(pe.includes('Quiero conseguir inversión o financiación')) oportunidades.push('Emprendimiento buscando inversión');
+  if(pe.includes('Quiero conseguir mis primeros clientes')) oportunidades.push('Emprendimiento buscando primeros clientes');
+  if(nec.includes('Mentoría de alguien que ya lo hizo')) oportunidades.push('Pide mentoría');
+  if(ap.includes('Capital') || tv.includes('Como inversionista')) oportunidades.push('Puede aportar capital');
+  if(tv.includes('Como aliado o patrocinador')) oportunidades.push('Interesado en alianza o patrocinio');
+  if(d.pareja_correo) oportunidades.push('Autorizó invitar a su pareja');
+  if(INVERSION_ALTA.includes(d.capacidad_inversion)) oportunidades.push('Alta capacidad de inversión');
+
+  // ---------- Prioridad de contacto ----------
+  let score = oportunidades.length;
+  if(nivelAlto) score += 2;
+  if(equipoGrande) score += 1;
+  if(INVERSION_ALTA.includes(d.capacidad_inversion)) score += 2;
+  if(d.capacidad_inversion === 'Solo puedo participar en lo gratuito') score -= 2;
+  if(d.tiempo_mensual === 'Menos de 2 horas') score -= 1;
+  if(d.tiempo_mensual === 'Más de 10 horas') score += 1;
+  const prioridad_contacto = score >= 5 ? 'Alta' : score >= 2 ? 'Media' : 'Baja';
+
+  // ---------- Lectura del momento, en una línea ----------
+  const actual = exp.find((e)=>e.actual) || exp[0] || {};
+  const partes = [];
+  if(actual.nivel)  partes.push(actual.nivel + (actual.empresa ? ' en ' + actual.empresa : ''));
+  else if(sit.length) partes.push(sit[0]);
+  if(d.anos_experiencia) partes.push(d.anos_experiencia.toLowerCase() + ' de experiencia');
+  if(d.prioridad_12m) partes.push('quiere: ' + d.prioridad_12m.replace(/\s+/g,' ').trim().slice(0,90));
+  if(nec.length) partes.push('necesita ' + nec.slice(0,2).map((n)=>n.toLowerCase()).join(' y '));
+  if(d.hijo_entra_universidad === 'Sí') partes.push('hijo entra a la universidad este año');
+  const lectura_momento = partes.join(' · ');
+
+  return { ejes_recomendados, rol_potencial, prioridad_contacto, oportunidades, lectura_momento };
+}
+
+/* ============================================================
+   Pantalla de resultado — "Tu plan a 12 meses"
+   Se construye con lo que la persona misma respondió.
+   ============================================================ */
+
+/** Un paso accionable por cada necesidad declarada. */
+const PASOS_POR_NECESIDAD = {
+  'Financiación o dinero':{ t:'Resuelve la plata antes de comprometer la fecha',
+    d:'Revisa tres frentes en este orden: auxilios de formación de tu empresa, becas del programa al que aplicas, y crédito educativo. Muchos se pierden por no preguntar a tiempo.' },
+  'Tiempo':{ t:'Bloquea el tiempo antes de que se lo lleve otra cosa',
+    d:'Decide ahora qué días y a qué hora, y ponlo en el calendario como una reunión fija. El tiempo que no se agenda no aparece.' },
+  'Información u orientación sobre cómo hacerlo':{ t:'Habla con tres personas que ya lo hicieron',
+    d:'Una conversación de treinta minutos con alguien que ya recorrió el camino te ahorra meses de investigación. Escríbeles: la mayoría dice que sí.' },
+  'Formar o desarrollar una habilidad específica':{ t:'Empieza por la versión corta',
+    d:'Antes de un programa largo, haz un curso corto de la misma habilidad. Si te sigue interesando después, ahí sí invierte en serio.' },
+  'Contactos o referencias':{ t:'Pide presentaciones concretas, no ayuda genérica',
+    d:'"¿Me presentas a alguien de tu red?" no funciona. "¿Conoces a alguien en tal empresa?" sí. Haz una lista de diez nombres o empresas específicas.' },
+  'Mentoría de alguien que ya lo hizo':{ t:'Busca un mentor con una pregunta concreta',
+    d:'La mentoría abierta se diluye. Llega con una decisión específica sobre la mesa y pide criterio sobre esa. La relación crece sola después.' },
+  'Un socio o un equipo':{ t:'Prueba antes de casarte',
+    d:'Trabaja con esa persona en algo pequeño y acotado antes de repartir participación. Los socios se conocen ejecutando, no conversando.' },
+  'Clientes':{ t:'Habla con diez clientes potenciales este mes',
+    d:'No para venderles: para entender qué problema tienen y cómo lo resuelven hoy. Las primeras ventas salen de ahí, no de la publicidad.' },
+  'Apoyo de mi empresa o de mi jefe':{ t:'Llega con la propuesta armada, no con la petición',
+    d:'Escribe media página: qué vas a estudiar o hacer, cuánto cuesta, cuánto tiempo te toma y qué gana la empresa. Es mucho más difícil decir que no a eso.' },
+  'Apoyo familiar':{ t:'Ponlo en la mesa con números y fechas',
+    d:'Lo que genera resistencia en casa casi nunca es el proyecto: es la incertidumbre. Cuánto cuesta, cuánto dura y qué cambia en la rutina.' },
+  'Claridad sobre qué quiero realmente':{ t:'Escríbelo antes de decidirlo',
+    d:'Redacta en una página cómo se ve tu vida dentro de tres años si esto sale bien. Si no logras escribirlo, todavía no es el momento de invertir en ello.' },
+  'Decidirme a dar el paso':{ t:'Ponle una fecha límite a la decisión',
+    d:'No a la ejecución: a la decisión. Escoge un día del calendario y ese día decides sí o no. La indecisión abierta cuesta más que cualquiera de las dos opciones.' },
+  'Ya tengo todo lo que necesito':{ t:'Entonces ponle fecha de arranque',
+    d:'Si no te falta nada, lo único que separa el plan de la realidad es una fecha. Escógela esta semana.' },
+};
+
+/** Dónde la fundación calza de verdad, según lo que pidió. */
+function acompanamiento(d){
+  const nec = d.necesidades || [], pe = d.proyectos_emprendimiento || [], pa = d.proyectos_academicos || [];
+  const out = [];
+  const interes = (id)=>Number(d['eje_'+id] ?? 0) >= 2;
+
+  if(interes('consultoria') && (nec.includes('Información u orientación sobre cómo hacerlo') || nec.includes('Claridad sobre qué quiero realmente')))
+    out.push('Una conversación exploratoria con el equipo de consultoría, para poner orden antes de decidir.');
+  if(interes('emprendimiento') && pe.length && !pe.includes('No tengo planes de emprender'))
+    out.push('La próxima cohorte de emprendimiento y la red de mentores.');
+  if(nec.includes('Mentoría de alguien que ya lo hizo'))
+    out.push('Podemos conectarte con alguien de la comunidad que ya pasó por donde vas.');
+  if(nec.includes('Contactos o referencias') && interes('eventos'))
+    out.push('Los encuentros de la comunidad son la vía más directa para lo que necesitas.');
+  if(interes('deportes'))
+    out.push('El Torneo Managers, si lo tuyo también pasa por la cancha.');
+  if(interes('turismo'))
+    out.push('Las próximas salidas, cuando quieras cambiar de aire.');
+  if(interes('rural'))
+    out.push('Managers Rural, si quieres que parte de tu tiempo tenga impacto en territorio.');
+  if(pa.some((p)=>/maestría|doctorado|especialización|diplomado/i.test(p)))
+    out.push('Te avisamos de convenios y descuentos en formación apenas se abran.');
+  return out.slice(0,3);
+}
+
+function renderResultado(d){
+  const nombre = (d.nombre||'').split(' ')[0] || 'Hola';
+  const pre = d.pregrados || [], pos = d.posgrados || [], exp = d.experiencias || [];
+  const nec = d.necesidades || [];
+
+  const totalTitulos = pre.length + pos.length;
+  const nivelMax = pos.some((p)=>p.nivel==='Doctorado'||p.nivel==='Posdoctorado') ? 'Doctorado'
+                 : pos.some((p)=>p.nivel==='Maestría') ? 'Maestría'
+                 : pos.length ? 'Especialización'
+                 : pre.length ? 'Pregrado' : 'Bachillerato';
+  const actual = exp.find((e)=>e.actual) || exp[0];
+
+  const pasos = nec.map((n)=>PASOS_POR_NECESIDAD[n]).filter(Boolean);
+  const apoyo = acompanamiento(d);
+
+  const resumenWa = encodeURIComponent(
+    `Hola, soy ${d.nombre}. Acabo de completar la caracterización de la Fundación Managers. ` +
+    `Mi prioridad para estos 12 meses es: ${(d.prioridad_12m||'').slice(0,140)}`);
+
+  $('#p6').innerHTML = `
+    <div class="resultado-card">
+      <div class="kicker">${esc(nombre)}, este es tu plan</div>
+      <h2>12 meses</h2>
+      <p class="lema">${esc((d.prioridad_12m||'').trim() || 'Tu prioridad para este año, en tus propias palabras.')}</p>
+    </div>
+
+    <div id="avisoEnvio" class="aviso"></div>
+
+    <div class="seccion-res">
+      <h3>Dónde estás hoy</h3>
+      <div class="hitos">
+        <div><b>${totalTitulos}</b><span>Títulos</span></div>
+        <div><b>${exp.length}</b><span>Experiencias</span></div>
+        <div><b>${esc((d.anos_experiencia||'—').replace(/ años?/,'').replace('Menos de ','<').replace('Más de ','+'))}</b><span>Años de trabajo</span></div>
+      </div>
+      <div class="tarjeta" style="margin-top:10px">
+        <p style="font-size:14.5px; line-height:1.6">
+          Tu nivel de formación más alto es <strong>${esc(nivelMax)}</strong>${
+            pos.length ? ` — ${esc(pos[0].programa)}${pos[0].institucion?', '+esc(pos[0].institucion):''}` :
+            pre.length ? ` — ${esc(pre[0].programa)}${pre[0].institucion?', '+esc(pre[0].institucion):''}` : ''
+          }.${ actual ? ` Hoy estás como <strong>${esc(actual.cargo||actual.nivel||'')}</strong>${actual.empresa?' en '+esc(actual.empresa):''}.` : '' }
+        </p>
+      </div>
+    </div>
+
+    ${ pasos.length ? `
+    <div class="seccion-res">
+      <h3>Lo que dijiste que necesitas, y por dónde empezar</h3>
+      <div class="pasos">
+        ${pasos.map((p)=>`<div class="paso-card"><b aria-hidden="true"></b>
+          <div><strong>${esc(p.t)}</strong><span>${esc(p.d)}</span></div></div>`).join('')}
+      </div>
+    </div>` : '' }
+
+    ${ (d.proyectos_academicos_det || d.proyectos_laborales_det || d.proyectos_emprend_det || d.necesidades_det) ? `
+    <div class="seccion-res">
+      <h3>Lo que nos contaste</h3>
+      ${[['Académico',d.proyectos_academicos_det],['Laboral',d.proyectos_laborales_det],
+         ['Emprendimiento',d.proyectos_emprend_det],['Lo que necesitas',d.necesidades_det]]
+        .filter(([,v])=>v && v.trim())
+        .map(([k,v])=>`<div class="cita" style="margin-bottom:8px"><em>${esc(k)}</em>«${esc(v)}»</div>`).join('')}
+    </div>` : '' }
+
+    ${ apoyo.length ? `
+    <div class="seccion-res">
+      <h3>Dónde la fundación te puede acompañar</h3>
+      <div class="tarjeta">
+        <ul style="margin:0; padding-left:20px; font-size:14.5px; line-height:1.7; color:var(--muted)">
+          ${apoyo.map((a)=>`<li>${esc(a)}</li>`).join('')}
+        </ul>
+      </div>
+    </div>` : '' }
+
+    <div class="cierre">
+      <p>Gracias por tomarte los veinte minutos. El equipo te escribe a <strong>${esc(d.correo)}</strong> con lo que corresponda a tu plan.</p>
+      <a class="wa" href="https://wa.me/${WHATSAPP}?text=${resumenWa}" target="_blank" rel="noopener">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.1-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.2-.5-2.3-1.4-.9-.8-1.4-1.7-1.6-2-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5 0-.2 0-.4 0-.5 0-.2-.7-1.6-.9-2.2-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.3zM12 2a10 10 0 0 0-8.6 15L2 22l5.2-1.4A10 10 0 1 0 12 2zm0 18.2c-1.6 0-3.1-.4-4.4-1.2l-.3-.2-3.1.8.8-3-.2-.3a8.2 8.2 0 1 1 7.2 4z"/></svg>
+        Escribirle a la fundación
+      </a>
+    </div>
+
+    <p class="guardado" style="margin-top:24px">
+      Puedes pedir la actualización o eliminación de tus datos escribiendo a
+      <a href="mailto:williammojica@fundacionmanagers.com">williammojica@fundacionmanagers.com</a>.
+    </p>`;
+}
+
+/* ============================================================
+   Envío
+   ============================================================ */
+
+function armarFila(d, a){
+  const num = (v)=>{ const n = Number(v); return Number.isFinite(n) ? n : null; };
+  return {
+    nombre:d.nombre, correo:d.correo, celular:d.celular, ciudad:d.ciudad,
+    fecha_nacimiento:d.fecha_nacimiento || null,
+
+    colegio:d.colegio, colegio_modalidad:d.colegio_modalidad, colegio_ano:num(d.colegio_ano),
+    tiene_pregrado:d.tiene_pregrado === 'Sí', pregrados:d.pregrados || [],
+    tiene_posgrado:d.tiene_posgrado === 'Sí', posgrados:d.posgrados || [],
+
+    situacion_laboral:d.situacion_laboral || [], experiencias:d.experiencias || [],
+    anos_experiencia:d.anos_experiencia, sectores:d.sectores || [],
+
+    proyectos_academicos:d.proyectos_academicos || [], proyectos_academicos_det:d.proyectos_academicos_det || null,
+    proyectos_laborales:d.proyectos_laborales || [],   proyectos_laborales_det:d.proyectos_laborales_det || null,
+    proyectos_emprendimiento:d.proyectos_emprendimiento || [], proyectos_emprend_det:d.proyectos_emprend_det || null,
+    prioridad_12m:d.prioridad_12m, necesidades:d.necesidades || [], necesidades_det:d.necesidades_det || null,
+
+    estado_civil:d.estado_civil, tiene_hijos:d.tiene_hijos === 'Sí',
+    numero_hijos:num(d.numero_hijos), edades_hijos:d.edades_hijos || [],
+    pareja_nivel_educativo:d.pareja_nivel_educativo || null,
+    pareja_area_formacion:d.pareja_area_formacion || null,
+    pareja_situacion:d.pareja_situacion || null,
+    hijos_etapa:d.hijos_etapa || [], hijo_entra_universidad:d.hijo_entra_universidad || null,
+    // El correo de la pareja solo se envía si marcó la confirmación.
+    pareja_correo:(d.pareja_correo && d.pareja_autoriza) ? d.pareja_correo : null,
+    pareja_autoriza:!!d.pareja_autoriza,
+    participaria_familia:d.participaria_familia,
+
+    eje_consultoria:d.eje_consultoria, eje_deportes:d.eje_deportes, eje_turismo:d.eje_turismo,
+    eje_eventos:d.eje_eventos, eje_emprendimiento:d.eje_emprendimiento, eje_rural:d.eje_rural,
+    vinculo_previo:d.vinculo_previo, tipo_vinculo:d.tipo_vinculo || [], aportes:d.aportes || [],
+    tiempo_mensual:d.tiempo_mensual, formatos:d.formatos || [],
+    capacidad_inversion:d.capacidad_inversion,
+    acepta_whatsapp:(d.acepta_whatsapp || '').startsWith('Sí'),
+
+    ejes_recomendados:a.ejes_recomendados, rol_potencial:a.rol_potencial,
+    prioridad_contacto:a.prioridad_contacto, oportunidades:a.oportunidades,
+    lectura_momento:a.lectura_momento,
+
+    consentimiento:true, consentimiento_en:d.consentimiento_en || new Date().toISOString(),
+    origen:'artefacto-web', respuestas:d,
+  };
+}
+
+async function enviarASupabase(fila){
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/${TABLA}`, {
+    method:'POST',
+    headers:{ 'apikey':SUPABASE_KEY, 'Authorization':'Bearer '+SUPABASE_KEY,
+              'Content-Type':'application/json', 'Prefer':'return=minimal' },
+    body: JSON.stringify(fila),
+  });
+  if(!res.ok) throw new Error('HTTP ' + res.status + ' — ' + (await res.text()).slice(0,200));
+}
+
+async function finalizar(){
+  const a = analizar(estado.datos);
+  renderResultado(estado.datos);
+  irA(6);
+  try{
+    await enviarASupabase(armarFila(estado.datos, a));
+    try{ localStorage.removeItem(STORAGE_KEY); }catch(e){}
+  }catch(err){
+    const aviso = $('#avisoEnvio');
+    aviso.className = 'aviso error visible';
+    aviso.innerHTML = 'No pudimos guardar tus respuestas en el servidor. Tu plan de abajo es correcto — ' +
+      'por favor escríbenos por WhatsApp para que no se pierda tu registro.' +
+      '<br><span style="font-size:12px;opacity:.7">Detalle técnico: ' + esc(err.message) + '</span>';
+    console.error('[caracterizacion] falló el envío:', err);
+  }
+}
+
+/* ============================================================
+   Arranque
+   ============================================================ */
+
+(function iniciar(){
+  const g = restaurarLocal();
+  if(g && Object.keys(g.datos).length){
+    estado.datos = g.datos;
+    if(g.datos.consentimiento_en) $('#consentimiento').checked = true;
+    pintarDatos();
+    const aviso = $('#avisoReanudar');
+    aviso.hidden = false;
+    aviso.textContent = 'Encontramos respuestas tuyas sin terminar. Puedes seguir donde ibas.';
+    if(g.pantalla > 0 && g.pantalla < 6){
+      destinoInicio = g.pantalla;
+      $('#btnEmpezar').textContent = 'Continuar donde iba';
+    }
+  }else{
+    aplicarDependencias();
+  }
+  $('#barraProgreso').style.width = '0%';
+})();
+</script>
+</body>
+</html>
