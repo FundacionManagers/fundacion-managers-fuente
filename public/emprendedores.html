@@ -1,0 +1,2183 @@
+<!DOCTYPE html>
+<html lang="es-CO">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Diagnóstico de emprendedores · Fundación Managers</title>
+<meta name="description" content="Cuéntanos en qué va tu emprendimiento y te devolvemos un diagnóstico con tus tres frentes críticos y tus próximos 90 días.">
+<meta name="theme-color" content="#0F1419">
+<meta name="robots" content="noindex">
+<meta property="og:type" content="website">
+<meta property="og:title" content="¿En qué etapa está tu emprendimiento?">
+<meta property="og:description" content="Un diagnóstico serio de tu emprendimiento: en qué etapa estás, qué te está frenando y qué hacer en los próximos 90 días.">
+<meta property="og:locale" content="es_CO">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='15' fill='%23D4A437'/%3E%3Ccircle cx='16' cy='16' r='11' fill='none' stroke='%230F1419' stroke-width='1.5'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet">
+
+<style>
+/* ============================================================
+   Sistema de diseño Fundación Managers (DESIGN_SYSTEM.md)
+   ============================================================ */
+:root{
+  --gold:#D4A437; --gold-hover:#BD8E2A; --carbon:#0F1419;
+  --bg:#FAFAF7; --text:#1A1A1A; --muted:#57534E; --border:#E8E5DE;
+  --success:#2D7A4F; --danger:#C8362B;
+  --n100:#F2EFE8; --n200:#E8E5DE; --n300:#D6D3CC; --n400:#A8A29E; --n800:#1F1B16;
+  --r-sm:6px; --r-md:10px; --r-lg:16px; --r-full:9999px;
+  --sh-md:0 4px 12px rgb(0 0 0 / .08);
+  --sh-lg:0 12px 32px rgb(0 0 0 / .12);
+  --sh-gold:0 8px 24px rgb(212 164 55 / .25);
+  --ease:cubic-bezier(.16,1,.3,1);
+  --font-body:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --font-display:'Plus Jakarta Sans',system-ui,sans-serif;
+  --font-sport:'Bebas Neue',Impact,system-ui,sans-serif;
+  --coin:url("data:image/webp;base64,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");
+}
+.coin-img{background:var(--coin) center/contain no-repeat; flex:none; display:block}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0; background:var(--bg); color:var(--text);
+  font-family:var(--font-body); font-size:16px; line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,h4{font-family:var(--font-display); font-weight:800; line-height:1.15; margin:0}
+p{margin:0}
+button{font:inherit; color:inherit; cursor:pointer}
+:focus-visible{outline:3px solid var(--gold); outline-offset:2px; border-radius:4px}
+
+/* ---------- Barra superior ---------- */
+.topbar{
+  position:sticky; top:0; z-index:50; background:var(--carbon);
+  padding:calc(10px + env(safe-area-inset-top,0)) 16px 10px;
+  display:flex; align-items:center; gap:10px;
+}
+.topbar .coin-img{width:26px; height:26px}
+.topbar .marca{font-family:var(--font-display); font-weight:700; font-size:13px; color:#FAFAF7; white-space:nowrap}
+.topbar .paso{
+  margin-left:auto; font-size:11px; font-weight:600; letter-spacing:.08em;
+  text-transform:uppercase; color:var(--n400); white-space:nowrap;
+}
+.progress{height:3px; background:var(--n800); position:sticky; top:46px; z-index:49}
+.progress > i{display:block; height:100%; width:0%; background:var(--gold); transition:width .45s var(--ease)}
+
+.wrap{max-width:680px; margin:0 auto; padding:0 20px 96px}
+.pantalla{display:none; animation:entra .4s var(--ease) both}
+.pantalla.activa{display:block}
+@keyframes entra{from{opacity:0; transform:translateY(12px)} to{opacity:1; transform:none}}
+
+/* ---------- Portada ---------- */
+.hero{
+  background:var(--carbon); color:#FAFAF7; margin:0 -20px 32px;
+  padding:48px 24px 44px; text-align:center; position:relative; overflow:hidden;
+}
+.hero::after{content:''; position:absolute; inset:auto 0 0 0; height:3px;
+  background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+.hero .coin{width:76px; height:76px; margin:0 auto 20px; filter:drop-shadow(0 6px 18px rgb(212 164 55 / .35))}
+.hero .kicker{font-size:11px; font-weight:600; letter-spacing:.18em; text-transform:uppercase; color:var(--gold); margin-bottom:14px}
+.hero h1{font-size:clamp(30px,7.5vw,44px); color:#FAFAF7; margin-bottom:16px; text-wrap:balance}
+.hero p{color:#D6D3CC; font-size:16px; max-width:44ch; margin:0 auto; text-wrap:pretty}
+
+.datos-rapidos{
+  display:grid; grid-template-columns:repeat(3,1fr); gap:1px;
+  background:var(--n200); border:1px solid var(--n200); border-radius:var(--r-md);
+  overflow:hidden; margin-bottom:28px;
+}
+.datos-rapidos div{background:var(--bg); padding:16px 8px; text-align:center}
+.datos-rapidos b{display:block; font-family:var(--font-sport); font-size:30px; line-height:1; color:var(--gold)}
+.datos-rapidos span{font-size:11px; color:var(--muted); letter-spacing:.04em; text-transform:uppercase; font-weight:500}
+
+.dimensiones{list-style:none; padding:0; margin:0 0 28px; display:grid; gap:10px}
+.dimensiones li{display:flex; gap:14px; align-items:flex-start; background:#fff;
+  border:1px solid var(--border); border-radius:var(--r-md); padding:16px 18px}
+.dimensiones b{font-family:var(--font-sport); font-size:22px; line-height:1.1; color:var(--gold); flex:none; width:26px; padding-top:2px}
+.dimensiones strong{display:block; font-weight:600; font-size:15px; margin-bottom:2px}
+.dimensiones span{font-size:14px; color:var(--muted); line-height:1.45}
+
+.legal{background:var(--n100); border:1px solid var(--border); border-left:3px solid var(--gold);
+  border-radius:var(--r-md); padding:18px 20px; margin-bottom:24px}
+.legal h3{font-size:14px; font-weight:700; margin-bottom:8px; font-family:var(--font-body)}
+.legal p{font-size:13.5px; color:var(--muted); line-height:1.55}
+.legal p + p{margin-top:8px}
+
+/* ---------- Encabezado de dimensión ---------- */
+.dim-head{padding:32px 0 8px}
+.dim-head .num{font-family:var(--font-sport); font-size:52px; line-height:.9; color:var(--n300); display:block; margin-bottom:4px}
+.dim-head h2{font-size:clamp(24px,6vw,32px); margin-bottom:8px; text-wrap:balance}
+.dim-head p{color:var(--muted); font-size:15px; text-wrap:pretty}
+
+/* ---------- Preguntas ---------- */
+.q{background:#fff; border:1px solid var(--border); border-radius:var(--r-md);
+  padding:20px; margin-top:14px; transition:border-color .2s var(--ease)}
+.q.error{border-color:var(--danger); box-shadow:0 0 0 3px rgb(200 54 43 / .08)}
+.q.oculta{display:none}
+.q > label.pregunta, .q > .pregunta{display:block; font-weight:600; font-size:15.5px; margin-bottom:4px; line-height:1.4}
+.q .ayuda{display:block; font-size:13px; color:var(--muted); margin-bottom:14px; line-height:1.45}
+.q .req{color:var(--gold); font-weight:700}
+.msg-error{display:none; font-size:13px; color:var(--danger); font-weight:500; margin-top:10px}
+.q.error .msg-error{display:block}
+
+input[type=text],input[type=email],input[type=tel],input[type=number],input[type=date],input[type=month],select,textarea{
+  width:100%; padding:12px 14px; font:inherit; font-size:16px;
+  background:var(--bg); color:var(--text);
+  border:1px solid var(--n300); border-radius:var(--r-sm);
+  transition:border-color .15s var(--ease), box-shadow .15s var(--ease);
+}
+input:focus,select:focus,textarea:focus{outline:none; border-color:var(--gold); box-shadow:0 0 0 3px rgb(212 164 55 / .15)}
+textarea{min-height:88px; resize:vertical; line-height:1.55}
+select{appearance:none; background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' fill='none' stroke='%2357534E' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'><path d='M5 8l5 5 5-5'/></svg>"); background-repeat:no-repeat; background-position:right 12px center; padding-right:42px}
+
+.opciones{display:grid; gap:8px}
+.opciones.dos{grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+.op{display:flex; align-items:flex-start; gap:11px; padding:12px 14px;
+  background:var(--bg); border:1px solid var(--n300); border-radius:var(--r-sm);
+  cursor:pointer; transition:all .15s var(--ease); font-size:14.5px; line-height:1.4}
+.op:hover{border-color:var(--gold); background:#fff}
+.op input{appearance:none; width:19px; height:19px; flex:none; margin:1px 0 0;
+  border:2px solid var(--n400); background:#fff; cursor:pointer; transition:all .15s var(--ease)}
+.op input[type=radio]{border-radius:var(--r-full)}
+.op input[type=checkbox]{border-radius:4px}
+.op input:checked{border-color:var(--gold); background:var(--gold)}
+.op input[type=radio]:checked{box-shadow:inset 0 0 0 3.5px #fff}
+.op input[type=checkbox]:checked{
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'><path d='M2.5 7.5l3.5 3.5 5.5-6.5'/></svg>");
+  background-repeat:no-repeat; background-position:center}
+.op:has(input:checked){border-color:var(--gold); background:#fff; box-shadow:0 0 0 2px rgb(212 164 55 / .18)}
+.op input:disabled{opacity:.35; cursor:not-allowed}
+.op:has(input:disabled){opacity:.5; cursor:not-allowed}
+.tope{font-size:12.5px; color:var(--muted); margin-top:10px; display:block}
+
+/* Matriz de ejes (0..3) */
+.eje-fila{padding:14px 0; border-top:1px solid var(--border)}
+.eje-fila:first-child{border-top:0; padding-top:4px}
+.eje-fila .titulo{font-weight:600; font-size:15px; display:block}
+.eje-fila .desc{font-size:12.5px; color:var(--muted); display:block; margin:1px 0 10px; line-height:1.4}
+.eje-grados{display:grid; grid-template-columns:repeat(4,1fr); gap:5px}
+.eje-grados label{text-align:center; padding:9px 2px; font-size:11.5px; font-weight:500;
+  background:var(--bg); border:1px solid var(--n300); border-radius:var(--r-sm);
+  cursor:pointer; color:var(--muted); transition:all .15s var(--ease); line-height:1.25}
+.eje-grados label:hover{border-color:var(--gold)}
+.eje-grados input{position:absolute; opacity:0; pointer-events:none}
+.eje-grados label:has(input:checked){background:var(--carbon); border-color:var(--carbon); color:var(--gold); font-weight:600}
+
+/* ---------- Bloques repetibles ---------- */
+.grupo{margin-top:14px}
+.grupo > .cabecera{display:flex; align-items:baseline; gap:10px; margin-bottom:4px}
+.grupo > .cabecera h4{font-size:15.5px; font-weight:700; font-family:var(--font-body)}
+.grupo > .nota{font-size:13px; color:var(--muted); margin-bottom:12px; line-height:1.45}
+.instancia{background:#fff; border:1px solid var(--border); border-radius:var(--r-md);
+  padding:18px 20px; margin-bottom:10px; animation:entra .3s var(--ease) both}
+.instancia.error{border-color:var(--danger); box-shadow:0 0 0 3px rgb(200 54 43 / .08)}
+.instancia > .head{display:flex; align-items:center; gap:10px; margin-bottom:14px;
+  padding-bottom:12px; border-bottom:1px solid var(--n100)}
+.instancia > .head b{font-family:var(--font-sport); font-size:20px; color:var(--gold); letter-spacing:.03em}
+.instancia > .head button{margin-left:auto; background:none; border:0; color:var(--muted);
+  font-size:13px; font-weight:500; padding:4px 8px; border-radius:var(--r-sm)}
+.instancia > .head button:hover{color:var(--danger); background:#FDF2F1}
+.campo{margin-bottom:12px}
+.campo:last-child{margin-bottom:0}
+.campo > label{display:block; font-size:13.5px; font-weight:600; margin-bottom:5px}
+.campo .req{color:var(--gold)}
+.campo-fila{display:grid; grid-template-columns:1fr 1fr; gap:10px}
+.btn-agregar{width:100%; background:transparent; border:1.5px dashed var(--n300);
+  color:var(--muted); border-radius:var(--r-md); padding:14px; font-weight:600; font-size:14.5px;
+  transition:all .18s var(--ease)}
+.btn-agregar:hover{border-color:var(--gold); color:var(--gold); background:#FFFCF4}
+
+/* ---------- Botones ---------- */
+.acciones{display:flex; gap:10px; margin-top:28px; align-items:center}
+.btn{border:0; border-radius:var(--r-sm); padding:15px 26px; font-weight:600; font-size:15.5px;
+  transition:all .18s var(--ease); display:inline-flex; align-items:center; justify-content:center; gap:8px}
+.btn-primary{background:var(--gold); color:var(--carbon); box-shadow:var(--sh-gold); flex:1}
+.btn-primary:hover{background:var(--gold-hover); transform:translateY(-1px)}
+.btn-primary:disabled{background:var(--n300); color:var(--muted); box-shadow:none; cursor:not-allowed; transform:none}
+.btn-ghost{background:transparent; color:var(--muted); border:1px solid var(--n300); padding:15px 18px}
+.btn-ghost:hover{border-color:var(--muted); color:var(--text)}
+.guardado{text-align:center; font-size:12.5px; color:var(--muted); margin-top:16px}
+
+/* ---------- Resultado ---------- */
+.resultado-card{background:var(--carbon); color:#FAFAF7; border-radius:var(--r-lg);
+  padding:36px 26px 32px; text-align:center; margin:24px 0 20px; box-shadow:var(--sh-lg);
+  position:relative; overflow:hidden}
+.resultado-card::before{content:''; position:absolute; inset:0 0 auto 0; height:3px;
+  background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+.resultado-card .kicker{font-size:11px; letter-spacing:.18em; text-transform:uppercase;
+  color:var(--n400); font-weight:600; margin-bottom:12px}
+.resultado-card h2{font-family:var(--font-sport); font-weight:400; letter-spacing:.02em;
+  font-size:clamp(34px,9vw,52px); color:var(--gold); line-height:1.05; margin-bottom:14px}
+.resultado-card .lema{color:#D6D3CC; font-size:15.5px; max-width:42ch; margin:0 auto; text-wrap:pretty}
+
+.seccion-res{margin-top:32px}
+.seccion-res > h3{font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:var(--muted);
+  font-family:var(--font-body); font-weight:600; margin-bottom:14px}
+.tarjeta{background:#fff; border:1px solid var(--border); border-radius:var(--r-md); padding:20px}
+.tarjeta + .tarjeta{margin-top:10px}
+.hitos{display:grid; grid-template-columns:repeat(3,1fr); gap:1px;
+  background:var(--n200); border:1px solid var(--n200); border-radius:var(--r-md); overflow:hidden}
+.hitos div{background:#fff; padding:16px 8px; text-align:center}
+.hitos b{display:block; font-family:var(--font-sport); font-size:clamp(22px,6vw,28px); line-height:1; color:var(--carbon)}
+.hitos span{font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.05em; font-weight:600; margin-top:5px; display:block}
+
+.pasos{display:grid; gap:10px; counter-reset:paso}
+.paso-card{display:flex; gap:14px; background:#fff; border:1px solid var(--border);
+  border-radius:var(--r-md); padding:16px 18px; align-items:flex-start}
+.paso-card b{counter-increment:paso; font-family:var(--font-sport); font-size:24px; color:var(--gold); flex:none; width:24px; line-height:1.1}
+.paso-card b::before{content:counter(paso,decimal-leading-zero)}
+.paso-card strong{display:block; font-weight:600; font-size:15px; margin-bottom:3px}
+.paso-card span{font-size:13.5px; color:var(--muted); line-height:1.45}
+
+.cita{background:var(--n100); border-left:3px solid var(--gold); border-radius:var(--r-sm);
+  padding:16px 18px; font-size:15px; line-height:1.55}
+.cita em{font-style:normal; color:var(--muted); font-size:13px; display:block; margin-bottom:5px}
+
+.cierre{background:var(--n100); border:1px solid var(--border); border-radius:var(--r-md);
+  padding:20px; margin-top:28px; text-align:center}
+.cierre p{font-size:14.5px; color:var(--muted); margin-bottom:16px; text-wrap:pretty}
+.wa{display:flex; align-items:center; justify-content:center; gap:9px; background:var(--success);
+  color:#fff; text-decoration:none; font-weight:600; padding:14px 20px; border-radius:var(--r-sm);
+  font-size:15px; transition:all .18s var(--ease)}
+.wa:hover{background:#25643F; transform:translateY(-1px)}
+
+.aviso{border-radius:var(--r-sm); padding:14px 16px; font-size:14px; margin-top:16px; line-height:1.5; display:none}
+.aviso.visible{display:block}
+.aviso.error{background:#FDF2F1; border:1px solid #F0C4C0; color:#8E2820}
+
+footer{text-align:center; padding:36px 20px 40px; border-top:1px solid var(--border);
+  margin-top:48px; font-size:12.5px; color:var(--muted); line-height:1.7}
+footer .coin-img{width:34px; height:34px; opacity:.55; margin:0 auto 10px}
+footer a{color:var(--muted)}
+
+@media (min-width:640px){
+  .wrap{padding:0 24px 96px}
+  .hero{margin:0 -24px 40px; padding:64px 32px 56px}
+  .q{padding:24px}
+}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms !important; transition-duration:.01ms !important}}
+</style>
+
+<style>
+/* ============================================================
+   Componentes propios del diagnóstico de emprendedores.
+   Todo lo demás lo hereda del sistema de diseño de caracterizacion.html.
+   ============================================================ */
+
+/* Sello de etapa en la portada del resultado */
+.etapa-sello{
+  display:inline-flex; align-items:center; gap:8px; margin:0 auto 12px;
+  padding:7px 16px; border-radius:var(--r-full);
+  background:rgb(212 164 55 / .16); border:1px solid rgb(212 164 55 / .45);
+  font-size:12px; font-weight:600; letter-spacing:.12em; text-transform:uppercase;
+  color:var(--gold);
+}
+.etapa-sello i{ width:7px; height:7px; border-radius:50%; background:var(--gold); font-style:normal; }
+
+/* La pregunta viva de la etapa */
+.pregunta-viva{
+  margin-top:10px; padding:20px 22px; border-radius:var(--r-lg);
+  background:var(--carbon); color:#fff;
+}
+.pregunta-viva span{
+  display:block; font-size:11px; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--gold); font-weight:600; margin-bottom:8px;
+}
+.pregunta-viva p{ margin:0; font-family:var(--font-display); font-size:19px; line-height:1.4; }
+.pregunta-viva em{ display:block; margin-top:10px; font-size:14px; line-height:1.6;
+  color:#D6D3CC; font-style:normal; font-family:var(--font-body); }
+
+/* Mapa de madurez: una barra por frente */
+.madurez{ display:grid; gap:11px; }
+.madurez-fila{ display:grid; grid-template-columns:132px 1fr 42px; align-items:center; gap:12px; }
+.madurez-fila b{ font-size:13.5px; font-weight:600; color:var(--text); }
+.madurez-barra{ height:9px; border-radius:var(--r-full); background:var(--n200); overflow:hidden; }
+.madurez-barra i{ display:block; height:100%; border-radius:var(--r-full);
+  background:var(--gold); transition:width .8s var(--ease); }
+.madurez-fila.bajo  .madurez-barra i{ background:var(--danger); }
+.madurez-fila.medio .madurez-barra i{ background:var(--gold); }
+.madurez-fila.alto  .madurez-barra i{ background:var(--success); }
+.madurez-fila span{ font-size:12.5px; font-weight:600; color:var(--muted); text-align:right;
+  font-variant-numeric:tabular-nums; }
+@media (max-width:520px){
+  .madurez-fila{ grid-template-columns:104px 1fr 38px; gap:9px; }
+  .madurez-fila b{ font-size:12.5px; }
+}
+
+/* Tarjeta de freno */
+.freno-card{
+  padding:18px 20px; border:1px solid var(--border); border-left:3px solid var(--danger);
+  border-radius:var(--r-md); background:#fff; margin-bottom:10px;
+}
+.freno-card .cabeza{ display:flex; align-items:baseline; gap:10px; margin-bottom:6px; flex-wrap:wrap; }
+.freno-card .cabeza strong{ font-family:var(--font-display); font-size:16px; }
+.freno-card .cabeza em{ font-style:normal; font-size:11px; letter-spacing:.1em;
+  text-transform:uppercase; color:var(--danger); font-weight:600; }
+.freno-card p{ margin:0 0 10px; font-size:14px; line-height:1.6; color:var(--muted); }
+.freno-card .hacer{
+  padding:12px 14px; border-radius:var(--r-sm); background:var(--n100);
+  font-size:14px; line-height:1.6;
+}
+.freno-card .hacer strong{ display:block; margin-bottom:3px; color:var(--text); }
+.freno-card .hacer span{ color:var(--muted); }
+
+/* Próximos 90 días: lista numerada */
+.noventa{ counter-reset:paso; display:grid; gap:9px; margin:0; padding:0; }
+.noventa li{
+  counter-increment:paso; list-style:none; display:grid;
+  grid-template-columns:30px 1fr; gap:12px; align-items:start;
+  padding:14px 16px; border:1px solid var(--border); border-radius:var(--r-md); background:#fff;
+}
+.noventa li::before{
+  content:counter(paso); display:grid; place-items:center;
+  width:30px; height:30px; border-radius:50%; background:var(--carbon); color:var(--gold);
+  font-family:var(--font-display); font-size:14px; font-weight:800;
+}
+.noventa li div strong{ display:block; font-size:14.5px; margin-bottom:2px; }
+.noventa li div span{ font-size:13.5px; line-height:1.6; color:var(--muted); }
+
+/* Programas y rutas de apoyo */
+.programa{
+  padding:15px 17px; border:1px solid var(--border); border-radius:var(--r-md);
+  background:#fff; margin-bottom:9px;
+}
+.programa strong{ display:block; font-family:var(--font-display); font-size:15px; margin-bottom:3px; }
+.programa span{ font-size:13.5px; line-height:1.6; color:var(--muted); }
+
+/* Fortalezas */
+.fortalezas{ display:flex; flex-wrap:wrap; gap:8px; margin:0; padding:0; }
+.fortalezas li{
+  list-style:none; padding:7px 13px; border-radius:var(--r-full);
+  background:rgb(45 122 79 / .10); border:1px solid rgb(45 122 79 / .28);
+  font-size:13px; font-weight:500; color:var(--success);
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <span class="coin-img" aria-hidden="true"></span>
+  <span class="marca">Fundación Managers</span>
+  <span class="paso" id="indicadorPaso">Inicio</span>
+</div>
+<div class="progress"><i id="barraProgreso"></i></div>
+
+<main class="wrap">
+
+  <!-- ============ PORTADA ============ -->
+  <section class="pantalla activa" id="p0" aria-labelledby="tituloPortada">
+    <div class="hero">
+      <span class="coin-img coin" role="img" aria-label="Moneda dorada de la Fundación Managers"></span>
+      <div class="kicker">Diagnóstico de emprendedores</div>
+      <h1 id="tituloPortada">Cuéntanos en qué va tu emprendimiento y te decimos qué te está frenando</h1>
+      <p>No es una encuesta. Es un diagnóstico: al final sabes en qué etapa estás, cuáles son tus tres frentes críticos y qué hacer en los próximos 90 días.</p>
+    </div>
+
+    <div class="datos-rapidos">
+      <div><b>5</b><span>Dimensiones</span></div>
+      <div><b>20</b><span>Minutos</span></div>
+      <div><b>3</b><span>Etapas posibles</span></div>
+    </div>
+
+    <ul class="dimensiones">
+      <li><b>01</b><div><strong>Tú y tu punto de partida</strong><span>Quién eres, por qué emprendes y con quién lo estás haciendo.</span></div></li>
+      <li><b>02</b><div><strong>Tu emprendimiento hoy</strong><span>Qué hace, hace cuánto vende y qué tan formalizado está.</span></div></li>
+      <li><b>03</b><div><strong>Cliente y validación</strong><span>A quién le resuelves qué, y qué tan probado está.</span></div></li>
+      <li><b>04</b><div><strong>Modelo, números y recursos</strong><span>Cómo cobras, qué margen te queda y con qué plata cuentas.</span></div></li>
+      <li><b>05</b><div><strong>Tu cuello de botella</strong><span>Qué no te deja avanzar y qué necesitas para lograrlo.</span></div></li>
+    </ul>
+
+    <div class="legal">
+      <h3>Antes de empezar: tres cosas honestas</h3>
+      <p><strong>Esto toma unos 20 minutos.</strong> Hay preguntas de números que quizá no sepas de memoria. No pasa nada: responder «no lo he calculado» también es una respuesta válida, y de hecho es de las que más nos dice. Tus respuestas se guardan solas en este dispositivo: puedes cerrar y volver donde ibas.</p>
+      <p><strong>El diagnóstico es para ti.</strong> Está construido sobre los marcos que se usan en el mundo para caracterizar emprendedores —el <em>Global Entrepreneurship Monitor</em>, el desarrollo de clientes de Steve Blank, el modelo de negocio de Osterwalder— y sobre el marco colombiano: la Ley 2069 de 2020, la clasificación de tamaño empresarial del Decreto 957 de 2019 y las rutas públicas de apoyo. No es un test de personalidad.</p>
+      <p><strong>Sobre tus datos.</strong> La Fundación Managers, responsable del tratamiento, los recoge para entender la composición de su comunidad de emprendedores y ofrecerte programas, mentoría y oportunidades que te sirvan. No los vendemos, no los cedemos con fines comerciales y no los publicamos. Conforme a la <strong>Ley 1581 de 2012</strong>, puedes conocer, actualizar, rectificar o pedir la supresión de tus datos escribiendo a <a href="mailto:williammojica@fundacionmanagers.com">williammojica@fundacionmanagers.com</a>. Responder es voluntario.</p>
+    </div>
+
+    <div class="q" id="q_consentimiento">
+      <div class="opciones">
+        <label class="op">
+          <input type="checkbox" id="consentimiento">
+          <span>Autorizo de manera libre, previa, expresa e informada a la Fundación Managers para tratar mis datos personales con la finalidad descrita arriba.</span>
+        </label>
+      </div>
+      <div class="msg-error">Necesitamos tu autorización para continuar.</div>
+    </div>
+
+    <div class="acciones"><button class="btn btn-primary" id="btnEmpezar" type="button">Empezar</button></div>
+    <p class="guardado" id="avisoReanudar" hidden></p>
+  </section>
+
+  <!-- ============ DIMENSIONES (generadas por JS) ============ -->
+  <section class="pantalla" id="p1"></section>
+  <section class="pantalla" id="p2"></section>
+  <section class="pantalla" id="p3"></section>
+  <section class="pantalla" id="p4"></section>
+  <section class="pantalla" id="p5"></section>
+
+  <!-- ============ RESULTADO ============ -->
+  <section class="pantalla" id="p6" aria-live="polite"></section>
+
+</main>
+
+<footer>
+  <span class="coin-img" aria-hidden="true"></span>
+  <div><strong>Fundación Managers</strong> · Bogotá, Colombia</div>
+  <div>Consultoría · Deportes · Turismo · Eventos · Emprendimiento · Rural</div>
+  <div style="margin-top:8px"><a href="mailto:williammojica@fundacionmanagers.com">williammojica@fundacionmanagers.com</a></div>
+</footer>
+
+<datalist id="listaInstituciones"></datalist>
+
+<script>
+'use strict';
+
+/* ============================================================
+   Configuración
+   ============================================================ */
+const SUPABASE_URL = 'https://rlgakgpcfbwhigjdumiv.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_VJ4JIosQfATwORGErcb0Dw_VxcrSngy';
+const TABLA        = 'emprendedores';
+const WHATSAPP     = '573126299744';
+const STORAGE_KEY  = 'fm-emprendedores-v1';
+
+/* El motor de render viene de caracterizacion.html y admite un campo tipo
+   'institucion' con autocompletado. Aquí no se usa, pero se deja el catálogo
+   vacío para no tener que tocar el motor. */
+const INSTITUCIONES = [];
+
+/* ============================================================
+   Catálogos
+   ============================================================ */
+
+const DEPARTAMENTOS = ['Bogotá D.C.','Amazonas','Antioquia','Arauca','Archipiélago de San Andrés',
+  'Atlántico','Bolívar','Boyacá','Caldas','Caquetá','Casanare','Cauca','Cesar','Chocó','Córdoba',
+  'Cundinamarca','Guainía','Guaviare','Huila','La Guajira','Magdalena','Meta','Nariño',
+  'Norte de Santander','Putumayo','Quindío','Risaralda','Santander','Sucre','Tolima',
+  'Valle del Cauca','Vaupés','Vichada','Vivo fuera de Colombia'];
+
+const SECTORES_EMP = ['Alimentos y bebidas','Agro y agroindustria','Comercio o retail',
+  'Moda, textil y confección','Manufactura o producción','Construcción e inmobiliario',
+  'Software y tecnología','Servicios profesionales y consultoría','Educación y formación',
+  'Salud y bienestar','Belleza y cuidado personal','Turismo, hotelería y gastronomía',
+  'Transporte y logística','Marketing, publicidad y contenido','Servicios financieros y fintech',
+  'Energía y medio ambiente','Cultura, arte y entretenimiento','Deporte y recreación',
+  'Impacto social o ambiental','Otro'];
+
+/* Niveles de madurez tecnológica (TRL 1-9), en lenguaje llano.
+   MinCiencias usa esta escala para clasificar proyectos de CTeI en Colombia. */
+const TRL_OPS = [
+  '1 · Todavía es una idea, no he probado nada',
+  '2 · Tengo el concepto claro y escrito, pero sin construir',
+  '3 · Hice pruebas sueltas y funcionan',
+  '4 · Tengo un prototipo que funciona en condiciones controladas',
+  '5 · El prototipo funciona en un entorno parecido al real',
+  '6 · El prototipo ya funciona en el entorno real',
+  '7 · Lo probé con usuarios reales y aguantó',
+  '8 · El producto está terminado y con los permisos o certificaciones que necesita',
+  '9 · Está en el mercado, vendiéndose y funcionando',
+];
+
+/* Los frentes de la fundación, en clave de emprendimiento. */
+const EJES = [
+  { id:'mentoria',    titulo:'Mentoría uno a uno',    desc:'Alguien que ya recorrió tu camino, revisando tus decisiones.' },
+  { id:'red',         titulo:'Red y contactos',       desc:'Presentaciones concretas a personas y empresas.' },
+  { id:'formacion',   titulo:'Formación práctica',    desc:'Talleres cortos sobre lo que te está faltando hoy.' },
+  { id:'financiacion',titulo:'Rutas de financiación', desc:'Cómo llegar preparado a un banco, un fondo o una convocatoria.' },
+  { id:'mercado',     titulo:'Acceso a mercado',      desc:'Ayuda para llegarle a clientes que hoy no te conocen.' },
+  { id:'rural',       titulo:'Managers Rural',        desc:'Trabajo con territorios, productores y cadenas del campo.' },
+];
+const GRADOS = ['No me interesa','Curiosidad','Interés real','Es prioridad'];
+
+/* Las tres etapas del diagnóstico.
+   La columna vertebral es el ciclo del Global Entrepreneurship Monitor:
+   emprendedor naciente (0-3 meses de ingresos) · nuevo empresario (3-42 meses)
+   · empresario establecido (más de 42 meses). Aquí la etapa no se decide solo
+   por el tiempo: se decide por la evidencia (ventas, clientes, equipo, formalidad),
+   porque hay negocios de cinco años que siguen sin validar y de ocho meses que
+   ya están consolidados. */
+const ETAPAS = {
+  E1:{
+    codigo:'E1', nombre:'Semilla', titulo:'Etapa 1 · Semilla',
+    resumen:'Tienes una idea o los primeros intentos de venta, pero todavía no hay evidencia de que alguien pague por esto de forma sostenida.',
+    pregunta:'¿Existe de verdad el problema, y hay alguien dispuesto a pagar por resolverlo?',
+    nota:'Todo lo que hagas en esta etapa debería servir para responder esa pregunta. Contratar, montar marca o pulir el producto antes de responderla es gastar plata en una apuesta sin verificar.',
+  },
+  E2:{
+    codigo:'E2', nombre:'Tracción', titulo:'Etapa 2 · Tracción',
+    resumen:'Ya vendes. Lo que todavía no está resuelto es si eso se puede repetir a voluntad y si deja plata.',
+    pregunta:'¿Esto es repetible, y me deja margen?',
+    nota:'Aquí es donde se cae la mayoría. No por falta de ventas, sino porque las ventas dependen del esfuerzo del fundador y nadie ha calculado si el margen aguanta el crecimiento.',
+  },
+  E3:{
+    codigo:'E3', nombre:'Consolidación', titulo:'Etapa 3 · Consolidación',
+    resumen:'El negocio se sostiene solo y tiene historia. El reto ya no es sobrevivir: es crecer sin romperse.',
+    pregunta:'¿Esto escala sin que todo dependa de mí?',
+    nota:'La consolidación se rompe por dentro: procesos que no existen, un equipo que no decide sin el dueño, y una contabilidad que no alcanza a mostrar dónde se está yendo la plata.',
+  },
+};
+
+/* Los ocho frentes que se miden. */
+const FRENTES = [
+  { id:'validacion',    titulo:'Validación' },
+  { id:'modelo',        titulo:'Modelo de negocio' },
+  { id:'comercial',     titulo:'Comercial' },
+  { id:'finanzas',      titulo:'Finanzas' },
+  { id:'formalizacion', titulo:'Formalización' },
+  { id:'equipo',        titulo:'Equipo' },
+  { id:'capital',       titulo:'Capital' },
+  { id:'escala',        titulo:'Operación y escala' },
+];
+
+/* ============================================================
+   Esquema del instrumento — 5 dimensiones
+   Editar aquí para cambiar preguntas: la interfaz se regenera sola.
+   ============================================================ */
+
+const DIMENSIONES = [
+
+  /* ---------------- 1 · TÚ Y TU PUNTO DE PARTIDA ---------------- */
+  {
+    num:'01', titulo:'Tú y tu punto de partida',
+    bajada:'Quién eres, por qué emprendes y con quién lo estás haciendo. Esto explica buena parte de lo que pasa después.',
+    bloques:[
+      { tipo:'preguntas', preguntas:[
+        { id:'nombre',  tipo:'text',  req:true, label:'¿Cómo te llamas?', ph:'Nombre y apellido' },
+        { id:'correo',  tipo:'email', req:true, label:'Tu correo electrónico',
+          ayuda:'Ahí te enviamos tu diagnóstico y las convocatorias que te sirvan.', ph:'nombre@correo.com' },
+        { id:'celular', tipo:'tel',   req:true, label:'Tu celular (WhatsApp)', ph:'300 000 0000' },
+        { id:'departamento', tipo:'select', req:true, label:'¿En qué departamento operas?', ops:DEPARTAMENTOS },
+        { id:'ciudad',  tipo:'text',  req:true, label:'¿En qué ciudad o municipio?', ph:'Bogotá' },
+        { id:'fecha_nacimiento', tipo:'date', req:true, label:'Tu fecha de nacimiento' },
+        { id:'genero', tipo:'select', req:false, label:'Género',
+          ayuda:'Opcional. Nos sirve para medir si la comunidad está llegando parejo.',
+          ops:['Mujer','Hombre','No binario','Prefiero no decirlo'] },
+        { id:'nivel_educativo', tipo:'select', req:true, label:'Tu nivel de formación más alto',
+          ops:['Bachillerato','Técnico o tecnólogo','Pregrado en curso','Pregrado terminado',
+               'Especialización','Maestría','Doctorado'] },
+        { id:'formacion_relacionada', tipo:'radio', req:true, cols:true,
+          label:'¿Tu formación tiene que ver con lo que estás emprendiendo?',
+          ops:['Sí, directamente','En parte','No, es un mundo distinto'] },
+        { id:'intentos_previos', tipo:'radio', req:true, cols:true,
+          label:'¿Este es tu primer emprendimiento?',
+          ops:['Sí, es el primero','Ya tuve uno antes','He tenido dos o tres antes','He tenido más de tres'] },
+        { id:'cierre_previo', tipo:'radio', req:true, cols:true,
+          label:'¿Alguno de los anteriores cerró?',
+          ayuda:'Cerrar un emprendimiento no es un demérito: en el mundo se mide como experiencia acumulada.',
+          dependeDe:{ pregunta:'intentos_previos', tipoDependencia:'distintoDe', valor:'Sí, es el primero' },
+          ops:['Sí, cerró','No, siguen activos','Algunos sí y otros no'] },
+        { id:'dedicacion', tipo:'radio', req:true,
+          label:'¿Cuánto tiempo le dedicas hoy?',
+          ops:['Tiempo completo, es lo único que hago','Medio tiempo, tengo otra fuente de ingresos',
+               'Ratos libres y fines de semana','Todavía no le dedico tiempo fijo'] },
+        { id:'sustento', tipo:'checkbox', req:true,
+          label:'¿De qué vives hoy?', ayuda:'Puedes marcar varias.',
+          ops:['De un empleo','Del emprendimiento','De ahorros','De trabajos independientes o freelance',
+               'Del apoyo de mi familia o pareja','De una pensión o una renta'] },
+        { id:'motivacion', tipo:'checkbox', req:true, tope:2,
+          label:'¿Por qué estás emprendiendo?',
+          ayuda:'Marca hasta dos. Son las motivaciones que mide el Global Entrepreneurship Monitor en todo el mundo.',
+          ops:['Para aprovechar una oportunidad que vi clara',
+               'Para marcar una diferencia en el mundo',
+               'Para construir una gran riqueza o un ingreso muy alto',
+               'Para tener autonomía y ser mi propio jefe',
+               'Para continuar una tradición o un negocio familiar',
+               'Porque el empleo escasea y necesito ganarme la vida'] },
+        { id:'capacidades', tipo:'radio', req:true,
+          label:'¿Tienes los conocimientos y las habilidades para sacar esto adelante?',
+          ops:['Sí, con claridad','Creo que sí, pero necesito apoyo en algunos temas',
+               'En unas cosas sí y en otras estoy perdido','Todavía no, estoy aprendiendo sobre la marcha'] },
+        { id:'miedo_fracaso', tipo:'radio', req:true, cols:true,
+          label:'¿El miedo a que no funcione te ha frenado para dar algún paso?',
+          ops:['Nunca','A veces','Con frecuencia','Sí, me tiene detenido'] },
+        { id:'equipo_fundador', tipo:'radio', req:true,
+          label:'Hoy, ¿con quién sacas esto adelante?',
+          ops:['Solo, yo hago todo','Con un socio','Con dos o más socios',
+               'Con un equipo que me trabaja','Con mi familia'] },
+        { id:'socios_complementarios', tipo:'radio', req:true,
+          label:'¿Los perfiles de los socios se complementan?',
+          dependeDe:{ pregunta:'equipo_fundador', tipoDependencia:'enLista', valores:['Con un socio','Con dos o más socios'] },
+          ops:['Sí, cada uno cubre algo que el otro no sabe hacer',
+               'Somos parecidos, sabemos hacer lo mismo',
+               'Todavía no hemos hablado de quién hace qué'] },
+      ]},
+    ],
+  },
+
+  /* ---------------- 2 · TU EMPRENDIMIENTO HOY ---------------- */
+  {
+    num:'02', titulo:'Tu emprendimiento hoy',
+    bajada:'Qué hace, hace cuánto vende y qué tan formalizado está. Aquí es donde se define tu etapa.',
+    bloques:[
+      { tipo:'preguntas', preguntas:[
+        { id:'nombre_emprendimiento', tipo:'text', req:true,
+          label:'¿Cómo se llama tu emprendimiento?', ph:'El nombre con el que lo conocen' },
+        { id:'que_hace', tipo:'textarea', req:true,
+          label:'En una frase, ¿qué hace?',
+          ayuda:'Una sola frase. Si te toman tres párrafos, esa ya es una señal.',
+          ph:'Ayudamos a ___ a ___ mediante ___' },
+        { id:'sector', tipo:'select', req:true, label:'¿En qué sector está?', ops:SECTORES_EMP },
+        { id:'base_tecnologica', tipo:'radio', req:true,
+          label:'¿Depende de desarrollar tecnología propia?',
+          ops:['Sí, la tecnología es el corazón del negocio',
+               'En parte, tiene un componente técnico importante',
+               'No, uso herramientas que ya existen'] },
+        { id:'trl', tipo:'select', req:true,
+          label:'¿Qué tan avanzado está eso que estás desarrollando?',
+          ayuda:'Es la escala de madurez tecnológica (TRL) que usa MinCiencias en Colombia. Escoge lo más honesto, no lo más ambicioso.',
+          dependeDe:{ pregunta:'base_tecnologica', tipoDependencia:'distintoDe', valor:'No, uso herramientas que ya existen' },
+          ops:TRL_OPS },
+        { id:'tiempo_idea', tipo:'select', req:true,
+          label:'¿Hace cuánto existe la idea?',
+          ops:['Menos de 6 meses','Entre 6 meses y 1 año','Entre 1 y 3 años',
+               'Entre 3 y 5 años','Más de 5 años'] },
+        { id:'ya_vendio', tipo:'radio', req:true, cols:true,
+          label:'¿Ya le vendiste a alguien y te pagaron?',
+          ayuda:'Que un familiar te compre por apoyarte no cuenta como venta.',
+          ops:['Sí','Todavía no'] },
+        { id:'primera_venta', tipo:'select', req:true,
+          label:'¿Hace cuánto fue tu primera venta?',
+          dependeDe:{ pregunta:'ya_vendio', valor:'Sí' },
+          ops:['Hace menos de 3 meses','Entre 3 y 12 meses','Entre 1 y 3 años y medio','Hace más de 3 años y medio'] },
+        { id:'frecuencia_ventas', tipo:'select', req:true,
+          label:'Hoy, ¿con qué frecuencia vendes?',
+          dependeDe:{ pregunta:'ya_vendio', valor:'Sí' },
+          ops:['Fue una sola vez','De vez en cuando, sin patrón','Todos los meses, pero varía mucho',
+               'Todos los meses de forma estable','Cada mes más que el anterior'] },
+        { id:'formalizacion', tipo:'checkbox', req:true,
+          exclusiva:'Todavía no tengo nada de eso',
+          label:'¿Qué tienes en regla hoy?', ayuda:'Marca todo lo que ya tengas.',
+          ops:['RUT ante la DIAN','Matrícula mercantil en la Cámara de Comercio',
+               'Estoy constituido como SAS u otra sociedad','Facturo electrónicamente',
+               'Pago mi propia seguridad social','Tengo empleados con seguridad social',
+               'Tengo registro sanitario, marca u otro permiso de mi sector',
+               'Todavía no tengo nada de eso'] },
+        { id:'razon_informal', tipo:'checkbox', req:true,
+          label:'¿Qué te ha frenado para formalizarte?',
+          dependeDe:{ pregunta:'formalizacion', tipoDependencia:'incluye', valor:'Todavía no tengo nada de eso' },
+          ops:['No me alcanza la plata para los costos','No sé cómo se hace ni por dónde empezar',
+               'Todavía no vendo lo suficiente para que valga la pena','Me preocupan los impuestos',
+               'No lo veo necesario por ahora','Lo he intentado pero el trámite me venció'] },
+        { id:'empleados', tipo:'select', req:true,
+          label:'¿Cuántas personas trabajan contigo hoy?',
+          ayuda:'Sin contarte a ti.',
+          ops:['Ninguna, solo yo','1 a 3','4 a 10','11 a 50','Más de 50'] },
+        { id:'tipo_vinculacion', tipo:'checkbox', req:true,
+          label:'¿Cómo están vinculadas?',
+          dependeDe:{ pregunta:'empleados', tipoDependencia:'distintoDe', valor:'Ninguna, solo yo' },
+          ops:['Contrato laboral','Prestación de servicios','Por obra o por comisión',
+               'Sin contrato, de palabra','Son familia y no cobran'] },
+        { id:'ingresos_anuales', tipo:'select', req:true,
+          label:'¿Cuánto vendiste en los últimos 12 meses?',
+          ayuda:'Un aproximado sirve. Es el criterio con el que el Decreto 957 de 2019 clasifica el tamaño de una empresa en Colombia.',
+          ops:['Todavía no tengo ingresos','Menos de $12 millones','Entre $12 y $50 millones',
+               'Entre $50 y $200 millones','Entre $200 millones y $1.000 millones',
+               'Entre $1.000 y $5.000 millones','Más de $5.000 millones','Prefiero no decirlo'] },
+        { id:'ambito', tipo:'select', req:true,
+          label:'¿Hasta dónde llega hoy tu operación?',
+          ops:['Mi barrio o mi municipio','Mi ciudad','Varias ciudades del país','Todo el país',
+               'También fuera de Colombia'] },
+        { id:'exportar', tipo:'radio', req:true,
+          label:'¿Vender fuera de Colombia está en tus planes de los próximos dos años?',
+          ops:['Ya lo hago','Sí, es una meta clara','Me gustaría, pero no sé cómo','No está en mis planes'] },
+      ]},
+    ],
+  },
+
+  /* ---------------- 3 · CLIENTE Y VALIDACIÓN ---------------- */
+  {
+    num:'03', titulo:'Cliente y validación',
+    bajada:'A quién le resuelves qué, y qué tan probado está. Es la dimensión donde más negocios se caen sin darse cuenta.',
+    bloques:[
+      { tipo:'preguntas', preguntas:[
+        { id:'cliente_quien', tipo:'textarea', req:true,
+          label:'¿Quién es tu cliente?',
+          ayuda:'Descríbelo como si me lo estuvieras presentando. Entre más específico, mejor: «todo el mundo» no es un cliente.',
+          ph:'Mujeres entre 30 y 45 años, en Bogotá, que...' },
+        { id:'problema', tipo:'textarea', req:true,
+          label:'¿Qué problema le resuelves?',
+          ph:'El problema concreto que le quita el sueño a esa persona' },
+        { id:'alternativa', tipo:'textarea', req:true,
+          label:'Si tú no existieras, ¿cómo resolvería ese problema hoy?',
+          ayuda:'Tu verdadera competencia casi nunca es otra empresa: es lo que la gente hace hoy sin ti.',
+          ph:'Lo hace a mano, le paga a un conocido, se aguanta...' },
+        { id:'entrevistas', tipo:'select', req:true,
+          label:'¿Con cuántos clientes potenciales has hablado a fondo sobre ese problema?',
+          ayuda:'Conversaciones para entender, no para venderles. Es la base del desarrollo de clientes de Steve Blank.',
+          ops:['Con ninguno','Con 1 a 5','Con 6 a 20','Con 21 a 50','Con más de 50'] },
+        { id:'clientes_pagando', tipo:'select', req:true,
+          label:'Hoy, ¿cuántos clientes te están pagando?',
+          ops:['Ninguno','1 a 3','4 a 10','11 a 50','51 a 200','Más de 200'] },
+        { id:'recurrencia', tipo:'select', req:true,
+          label:'¿Tus clientes vuelven a comprarte?',
+          dependeDe:{ pregunta:'clientes_pagando', tipoDependencia:'distintoDe', valor:'Ninguno' },
+          ops:['La mayoría vuelve','Algunos vuelven','Casi ninguno vuelve',
+               'Por naturaleza es una compra de una sola vez','Todavía no lo he medido'] },
+        { id:'concentracion', tipo:'select', req:true,
+          label:'¿Qué parte de tus ingresos viene de tu cliente más grande?',
+          dependeDe:{ pregunta:'clientes_pagando', tipoDependencia:'distintoDe', valor:'Ninguno' },
+          ops:['Menos de la cuarta parte','Entre la cuarta parte y la mitad','Más de la mitad',
+               'Casi todo viene de un solo cliente'] },
+        { id:'decepcion', tipo:'select', req:true,
+          label:'Si tu producto o servicio desapareciera mañana, ¿qué tan decepcionados quedarían tus clientes?',
+          ayuda:'Es la pregunta con la que se mide en el mundo si un producto ya encontró su mercado.',
+          dependeDe:{ pregunta:'clientes_pagando', tipoDependencia:'distintoDe', valor:'Ninguno' },
+          ops:['Muy decepcionados, no tienen con qué reemplazarlo',
+               'Algo decepcionados, conseguirían otra cosa',
+               'Poco, hay alternativas fáciles','No lo sé, nunca se lo he preguntado'] },
+        { id:'canales', tipo:'checkbox', req:true,
+          exclusiva:'Todavía no me llegan clientes',
+          label:'¿Por dónde te llegan los clientes hoy?',
+          ops:['Referidos y voz a voz','Redes sociales sin pagar pauta','Pauta pagada',
+               'Yo los busco uno por uno','Un local o punto físico','Marketplace o plataforma',
+               'Aliados o distribuidores','Licitaciones o compras públicas',
+               'Todavía no me llegan clientes'] },
+        { id:'adquisicion_predecible', tipo:'radio', req:true,
+          label:'Si mañana necesitaras cinco clientes nuevos, ¿sabrías exactamente qué hacer?',
+          ops:['Sí, tengo un proceso que funciona y lo puedo repetir',
+               'Más o menos, a veces funciona y a veces no',
+               'No, los clientes llegan por suerte'] },
+        { id:'diferencia', tipo:'textarea', req:true,
+          label:'¿Por qué te compran a ti y no a otro?',
+          ph:'Lo que de verdad te hace distinto, no el eslogan' },
+      ]},
+    ],
+  },
+
+  /* ---------------- 4 · MODELO, NÚMEROS Y RECURSOS ---------------- */
+  {
+    num:'04', titulo:'Modelo, números y recursos',
+    bajada:'Cómo cobras, qué margen te queda y con qué plata cuentas. Responder «no lo he calculado» es válido y también nos dice algo.',
+    bloques:[
+      { tipo:'preguntas', preguntas:[
+        { id:'modelo_ingreso', tipo:'checkbox', req:true,
+          exclusiva:'Todavía no lo defino',
+          label:'¿Cómo cobras?',
+          ops:['Venta única de un producto','Servicio cobrado por proyecto','Servicio cobrado por horas',
+               'Suscripción o mensualidad','Comisión por intermediación','Publicidad o patrocinio',
+               'Licencia o franquicia','Contratos con el Estado','Todavía no lo defino'] },
+        { id:'precio_como', tipo:'radio', req:true,
+          label:'¿Cómo pusiste tus precios?',
+          ops:['Calculando mis costos y sumando un margen','Mirando lo que cobra la competencia',
+               'Por lo que el cliente está dispuesto a pagar','A ojo, sin un método',
+               'Todavía no tengo precio definido'] },
+        { id:'conoce_costo', tipo:'radio', req:true,
+          label:'¿Sabes cuánto te cuesta producir o entregar una unidad de lo que vendes?',
+          ops:['Sí, con número exacto','Un aproximado','No lo he calculado'] },
+        { id:'margen', tipo:'select', req:true,
+          label:'De cada $100 que vendes, ¿cuánto te queda después de los costos directos?',
+          dependeDe:{ pregunta:'conoce_costo', tipoDependencia:'distintoDe', valor:'No lo he calculado' },
+          ops:['Menos de $10','Entre $10 y $30','Entre $30 y $50','Más de $50','Pierdo plata en cada venta'] },
+        { id:'cuentas_separadas', tipo:'radio', req:true, cols:true,
+          label:'¿La plata del negocio está separada de tu plata personal?',
+          ops:['Sí, cuentas distintas','Parcialmente','No, es la misma bolsa'] },
+        { id:'contabilidad', tipo:'radio', req:true,
+          label:'¿Llevas registro de lo que entra y sale?',
+          ops:['Sí, con un contador','Sí, yo mismo en una hoja de cálculo o una app',
+               'Anoto algunas cosas','No llevo registro'] },
+        { id:'sueldo_propio', tipo:'radio', req:true,
+          label:'¿El negocio te paga a ti un sueldo?',
+          ops:['Sí, fijo cada mes','Sí, pero variable','Saco lo que voy necesitando',
+               'No, todavía no me paga nada'] },
+        { id:'punto_equilibrio', tipo:'radio', req:true,
+          label:'¿El negocio ya cubre sus propios gastos?',
+          ops:['Sí, y sobra','Sí, justo','Todavía no, le pongo de mi bolsillo',
+               'No sé cuánto necesitaría para cubrirlos'] },
+        { id:'inversion_inicial', tipo:'select', req:true,
+          label:'¿Con cuánta plata arrancaste?',
+          ops:['Con nada, solo mi tiempo','Menos de $2 millones','Entre $2 y $10 millones',
+               'Entre $10 y $50 millones','Entre $50 y $200 millones','Más de $200 millones'] },
+        { id:'origen_capital', tipo:'checkbox', req:true,
+          exclusiva:'Todavía no he puesto plata',
+          label:'¿De dónde salió esa plata?',
+          ops:['Ahorros propios','Familia o amigos','Crédito bancario','Tarjeta de crédito',
+               'Préstamo informal o gota a gota','Capital semilla de un programa público',
+               'Un inversionista','Reinversión de las propias ventas','Todavía no he puesto plata'] },
+        { id:'busco_financiacion', tipo:'radio', req:true,
+          label:'¿Has buscado financiación externa?',
+          ops:['Sí y la conseguí','Sí pero no la conseguí','No, pero la necesito',
+               'No la necesito por ahora'] },
+        { id:'porque_no_consiguio', tipo:'checkbox', req:true,
+          label:'¿Por qué no la conseguiste?',
+          dependeDe:{ pregunta:'busco_financiacion', valor:'Sí pero no la conseguí' },
+          ops:['No cumplía los requisitos','No tenía cómo demostrar ingresos','Estoy reportado en centrales',
+               'No tenía garantías ni codeudor','El negocio era muy nuevo','Nunca me dieron respuesta',
+               'No sé por qué'] },
+        { id:'runway', tipo:'select', req:true,
+          label:'Si dejaras de vender mañana, ¿cuánto tiempo aguantaría el negocio?',
+          ops:['No aguantaría nada','Menos de 3 meses','Entre 3 y 6 meses','Entre 6 y 12 meses',
+               'Más de un año','No lo he calculado'] },
+        { id:'programas_previos', tipo:'checkbox', req:true,
+          exclusiva:'Ninguno',
+          label:'¿Has pasado por algún programa de apoyo?',
+          ops:['Fondo Emprender del SENA','iNNpulsa Colombia','Cámara de Comercio de mi ciudad',
+               'Apps.co del MinTIC','Una incubadora o aceleradora universitaria',
+               'Un fondo de inversión o red de ángeles','Una alcaldía o gobernación','Ninguno'] },
+      ]},
+    ],
+  },
+
+  /* ---------------- 5 · TU CUELLO DE BOTELLA ---------------- */
+  {
+    num:'05', titulo:'Tu cuello de botella y la fundación',
+    bajada:'La parte más importante: qué no te deja avanzar hoy y qué necesitas para lograrlo.',
+    bloques:[
+      { tipo:'preguntas', preguntas:[
+        { id:'freno', tipo:'checkbox', req:true, tope:3,
+          label:'¿Qué es lo que hoy no te deja avanzar?',
+          ayuda:'Marca hasta tres. Sé honesto: de esto depende que el diagnóstico te sirva.',
+          ops:['Conseguir clientes','No tengo claro a quién le vendo','Vendo pero no me queda margen',
+               'No tengo plata para crecer','Estoy solo y no doy abasto','No sé cómo formalizarme',
+               'La operación se me desordena cuando crece','No sé si el producto ya está listo',
+               'Me falta conocimiento técnico o digital','No tengo tiempo, tengo otro trabajo',
+               'Me falta decidirme y arrancar en serio'] },
+        { id:'freno_det', tipo:'textarea', req:true,
+          label:'Cuéntame con tus palabras qué está pasando',
+          ayuda:'Escribe como le contarías a un amigo. Esto lo lee una persona, no un algoritmo.',
+          ph:'Lo que más me está costando es...' },
+        { id:'meta_6m', tipo:'textarea', req:true,
+          label:'¿Qué necesitas que pase en los próximos 6 meses?',
+          ph:'Algo concreto y verificable' },
+        { id:'meta_12m', tipo:'textarea', req:true,
+          label:'¿Dónde quieres estar en 12 meses?',
+          ayuda:'Esta frase es la que te devolvemos al final, con tus propias palabras.',
+          ph:'En un año, mi emprendimiento...' },
+        { id:'apoyo', tipo:'checkbox', req:true, tope:4,
+          label:'¿Qué tipo de apoyo te serviría de verdad?',
+          ayuda:'Hasta cuatro.',
+          ops:['Mentoría de alguien que ya lo hizo','Contactos y red','Financiación',
+               'Formación en un tema puntual','Ayuda para conseguir clientes',
+               'Acompañamiento para formalizarme','Ayuda para ordenar los números',
+               'Un socio o alguien que entre al equipo','Herramientas digitales',
+               'Un espacio de trabajo','Ayuda para exportar'] },
+        { id:'ejes_interes', tipo:'ejes', req:true,
+          label:'¿Qué tanto te interesa cada frente de la fundación?',
+          ayuda:'Marca una casilla en cada fila. No hay respuesta correcta.' },
+        { id:'tiempo_mensual', tipo:'select', req:true,
+          label:'¿Cuánto tiempo al mes podrías dedicarle a un acompañamiento?',
+          ops:['Menos de 2 horas','Entre 2 y 5 horas','Entre 5 y 10 horas','Más de 10 horas'] },
+        { id:'capacidad_inversion', tipo:'select', req:true,
+          label:'¿Cuánto podrías invertir en formación o acompañamiento?',
+          ayuda:'Preguntamos para no ofrecerte cosas que no te sirven.',
+          ops:['Solo puedo participar en lo gratuito','Menos de $200.000 COP',
+               'Entre $200.000 y $1.000.000 COP','Entre $1.000.000 y $5.000.000 COP',
+               'Más de $5.000.000 COP'] },
+        { id:'aporte', tipo:'checkbox', req:true,
+          exclusiva:'Por ahora prefiero solo recibir',
+          label:'¿Qué le podrías aportar tú a otros emprendedores de la comunidad?',
+          ops:['Mi experiencia y mentoría','Contactos','Un servicio o producto para la comunidad',
+               'Tiempo como voluntario','Capital para invertir en otros','Espacio o infraestructura',
+               'Por ahora prefiero solo recibir'] },
+        { id:'acepta_whatsapp', tipo:'radio', req:true, cols:true,
+          label:'¿Podemos escribirte por WhatsApp?',
+          ops:['Sí, es la vía más fácil','Prefiero solo correo'] },
+      ]},
+    ],
+  },
+];
+
+/* ============================================================
+   Motor de render — el mismo de caracterizacion.html.
+   La única diferencia es `cumpleDependencia`, que aquí admite
+   cuatro formas de dependencia en lugar de dos.
+   ============================================================ */
+
+const estado = { pantalla:0, datos:{}, grupos:{} };
+
+const $ = (s)=>document.querySelector(s);
+
+function esc(s){
+  return String(s ?? '').replace(/[&<>"']/g,(c)=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function preguntasDe(dim){
+  return dim.bloques.filter((b)=>b.tipo==='preguntas').flatMap((b)=>b.preguntas);
+}
+function repetiblesDe(dim){
+  return dim.bloques.filter((b)=>b.tipo==='repetible');
+}
+const TODAS_PREGUNTAS = DIMENSIONES.flatMap(preguntasDe);
+const TODOS_GRUPOS    = DIMENSIONES.flatMap(repetiblesDe);
+
+document.getElementById('listaInstituciones').innerHTML =
+  INSTITUCIONES.map((u)=>`<option value="${esc(u)}"></option>`).join('');
+
+function renderCampo(c, nombre, id){
+  const req = c.req ? ' <span class="req" aria-hidden="true">*</span>' : '';
+  const ayuda = c.ayuda ? `<span class="ayuda" style="margin-bottom:6px">${esc(c.ayuda)}</span>` : '';
+  let control = '';
+  switch(c.tipo){
+    case 'text':
+      control = `<input type="text" id="${id}" name="${nombre}" placeholder="${esc(c.ph||'')}">`; break;
+    case 'institucion':
+      control = `<input type="text" id="${id}" name="${nombre}" list="listaInstituciones"
+                   placeholder="Escribe y elige de la lista, o escríbela completa" autocomplete="off">`; break;
+    case 'ano':
+      control = `<input type="number" id="${id}" name="${nombre}" min="1940" max="2100" step="1"
+                   inputmode="numeric" placeholder="${esc(c.ph||'')}">`; break;
+    case 'mes':
+      control = `<input type="month" id="${id}" name="${nombre}">`; break;
+    case 'select':
+      control = `<select id="${id}" name="${nombre}"><option value="">Selecciona…</option>
+                 ${c.ops.map((o)=>`<option value="${esc(o)}">${esc(o)}</option>`).join('')}</select>`; break;
+    case 'textarea':
+      control = `<textarea id="${id}" name="${nombre}" placeholder="${esc(c.ph||'')}"></textarea>`; break;
+    case 'check_simple':
+      return `<div class="campo"><label class="op" style="font-size:14px">
+                <input type="checkbox" id="${id}" name="${nombre}"><span>${esc(c.label)}</span></label></div>`;
+  }
+  return `<div class="campo${c.mitad?' mitad':''}">
+            <label for="${id}">${esc(c.label)}${req}</label>${ayuda}${control}
+          </div>`;
+}
+
+function renderInstancia(grupo, i){
+  const partes = [];
+  let mitades = [];
+  const cerrarMitades = ()=>{
+    if(!mitades.length) return;
+    partes.push(mitades.length > 1
+      ? `<div class="campo-fila">${mitades.join('')}</div>`
+      : mitades[0]);
+    mitades = [];
+  };
+  grupo.campos.forEach((c)=>{
+    const nombre = `${grupo.id}__${i}__${c.id}`;
+    const html = renderCampo(c, nombre, nombre);
+    if(c.mitad) mitades.push(html);
+    else { cerrarMitades(); partes.push(html); }
+  });
+  cerrarMitades();
+
+  return `<div class="instancia" data-grupo="${grupo.id}" data-i="${i}">
+            <div class="head">
+              <b>${esc(grupo.singular)} ${i+1}</b>
+              <button type="button" data-quitar="${grupo.id}" data-i="${i}">Quitar</button>
+            </div>
+            ${partes.join('')}
+            <div class="msg-error">Completa los campos obligatorios de este bloque.</div>
+          </div>`;
+}
+
+function renderGrupo(grupo){
+  return `<div class="grupo" id="grupo_${grupo.id}"${grupo.dependeDe?' hidden':''}>
+            <div class="cabecera"><h4>${esc(grupo.titulo)}</h4></div>
+            <p class="nota">${esc(grupo.nota)}</p>
+            <div class="instancias" id="inst_${grupo.id}"></div>
+            <button type="button" class="btn-agregar" data-agregar="${grupo.id}">+ ${esc(grupo.etiquetaAgregar)}</button>
+          </div>`;
+}
+
+function renderPregunta(q){
+  const req = q.req ? ' <span class="req" aria-hidden="true">*</span>' : '';
+  const ayuda = q.ayuda ? `<span class="ayuda">${esc(q.ayuda)}</span>` : '';
+  let campo = '';
+
+  switch(q.tipo){
+    case 'text': case 'email': case 'tel':
+      campo = `<input type="${q.tipo}" id="${q.id}" name="${q.id}" placeholder="${esc(q.ph||'')}"
+                 autocomplete="${q.tipo==='email'?'email':q.tipo==='tel'?'tel':q.id==='nombre'?'name':'off'}">`; break;
+    case 'date':
+      campo = `<input type="date" id="${q.id}" name="${q.id}" max="2012-12-31" min="1930-01-01">`; break;
+    case 'ano':
+      campo = `<input type="number" id="${q.id}" name="${q.id}" min="1940" max="2100" step="1"
+                 inputmode="numeric" placeholder="${esc(q.ph||'')}">`; break;
+    case 'numero':
+      campo = `<input type="number" id="${q.id}" name="${q.id}" min="${q.min??0}" max="${q.max??99}"
+                 step="1" inputmode="numeric">`; break;
+    case 'textarea':
+      campo = `<textarea id="${q.id}" name="${q.id}" placeholder="${esc(q.ph||'')}"></textarea>`; break;
+    case 'select':
+      campo = `<select id="${q.id}" name="${q.id}"><option value="">Selecciona una opción…</option>
+               ${q.ops.map((o)=>`<option value="${esc(o)}">${esc(o)}</option>`).join('')}</select>`; break;
+    case 'check_simple':
+      campo = `<label class="op"><input type="checkbox" id="${q.id}" name="${q.id}"><span>${esc(q.label)}</span></label>`;
+      return `<div class="q" id="q_${q.id}"${q.dependeDe?' hidden':''}>${campo}
+                <div class="msg-error">Marca la casilla para continuar.</div></div>`;
+    case 'radio': case 'checkbox':
+      campo = `<div class="opciones${q.cols?' dos':''}" role="group" aria-labelledby="lbl_${q.id}">
+                 ${q.ops.map((o,i)=>`<label class="op">
+                   <input type="${q.tipo}" name="${q.id}" value="${esc(o)}" id="${q.id}_${i}"
+                     ${q.exclusiva===o?'data-exclusiva="1"':''}><span>${esc(o)}</span></label>`).join('')}
+               </div>${q.tope?`<span class="tope" id="tope_${q.id}">Puedes marcar hasta ${q.tope}.</span>`:''}`;
+      break;
+    case 'ejes':
+      campo = EJES.map((e)=>`
+        <div class="eje-fila">
+          <span class="titulo" id="lbl_eje_${e.id}">${esc(e.titulo)}</span>
+          <span class="desc">${esc(e.desc)}</span>
+          <div class="eje-grados" role="group" aria-labelledby="lbl_eje_${e.id}">
+            ${GRADOS.map((g,v)=>`<label aria-label="${esc(e.titulo)}: ${esc(g)}">
+              <input type="radio" name="eje_${e.id}" value="${v}">${esc(g)}</label>`).join('')}
+          </div>
+        </div>`).join('');
+      break;
+  }
+
+  const usaLabel = ['text','email','tel','date','ano','numero','textarea','select'].includes(q.tipo);
+  const etiqueta = usaLabel
+    ? `<label class="pregunta" for="${q.id}" id="lbl_${q.id}">${esc(q.label)}${req}</label>`
+    : `<span class="pregunta" id="lbl_${q.id}">${esc(q.label)}${req}</span>`;
+
+  return `<div class="q" id="q_${q.id}"${q.dependeDe?' hidden':''}>
+            ${etiqueta}${ayuda}${campo}
+            <div class="msg-error">${q.tipo==='checkbox'?'Marca al menos una opción.':'Esta pregunta es obligatoria.'}</div>
+          </div>`;
+}
+
+function renderDimension(dim, indice){
+  const esUltima = indice === DIMENSIONES.length - 1;
+  const cuerpo = dim.bloques.map((b)=>
+    b.tipo === 'preguntas' ? b.preguntas.map(renderPregunta).join('') : renderGrupo(b)
+  ).join('');
+  return `<div class="dim-head">
+            <span class="num" aria-hidden="true">${dim.num}</span>
+            <h2>${esc(dim.titulo)}</h2><p>${esc(dim.bajada)}</p>
+          </div>
+          ${cuerpo}
+          <div class="acciones">
+            <button class="btn btn-ghost" type="button" data-atras>Atrás</button>
+            <button class="btn btn-primary" type="button" data-siguiente>${esUltima?'Ver mi diagnóstico':'Continuar'}</button>
+          </div>
+          <p class="guardado">Tus respuestas se guardan solas en este dispositivo.</p>`;
+}
+
+DIMENSIONES.forEach((dim,i)=>{ document.getElementById('p'+(i+1)).innerHTML = renderDimension(dim,i); });
+
+/* ============================================================
+   Bloques repetibles: agregar, quitar, renumerar
+   (este instrumento no usa ninguno, pero el motor los soporta
+   por si se agregan después)
+   ============================================================ */
+
+TODOS_GRUPOS.forEach((g)=>{ estado.grupos[g.id] = 0; });
+
+function grupoPorId(id){ return TODOS_GRUPOS.find((g)=>g.id===id); }
+
+function agregarInstancia(id){
+  const g = grupoPorId(id);
+  const cont = document.getElementById('inst_'+id);
+  const i = estado.grupos[id];
+  cont.insertAdjacentHTML('beforeend', renderInstancia(g, i));
+  estado.grupos[id] = i + 1;
+  actualizarBotonesQuitar(id);
+  return cont.lastElementChild;
+}
+
+function actualizarBotonesQuitar(id){
+  const g = grupoPorId(id);
+  const inst = [...document.querySelectorAll(`#inst_${id} > .instancia`)];
+  inst.forEach((el,n)=>{
+    el.querySelector('.head b').textContent = `${g.singular} ${n+1}`;
+    el.querySelector('[data-quitar]').hidden = inst.length <= (g.minimo||1);
+  });
+}
+
+function reindexarGrupo(id){
+  const g = grupoPorId(id);
+  const inst = [...document.querySelectorAll(`#inst_${id} > .instancia`)];
+  inst.forEach((el,n)=>{
+    el.dataset.i = n;
+    el.querySelector('[data-quitar]').dataset.i = n;
+    g.campos.forEach((c)=>{
+      const viejo = el.querySelector(`[name$="__${c.id}"]`);
+      if(viejo){ viejo.name = `${id}__${n}__${c.id}`; viejo.id = viejo.name; }
+    });
+  });
+  estado.grupos[id] = inst.length;
+  actualizarBotonesQuitar(id);
+}
+
+document.addEventListener('click', (e)=>{
+  const agregar = e.target.closest('[data-agregar]');
+  if(agregar){
+    const el = agregarInstancia(agregar.dataset.agregar);
+    el.scrollIntoView({behavior:'smooth', block:'center'});
+    return;
+  }
+  const quitar = e.target.closest('[data-quitar]');
+  if(quitar){
+    const id = quitar.dataset.quitar;
+    quitar.closest('.instancia').remove();
+    reindexarGrupo(id);
+  }
+});
+
+/* ============================================================
+   Dependencias (mostrar/ocultar según otra respuesta)
+   ============================================================ */
+
+function valorDe(idPregunta){
+  const q = TODAS_PREGUNTAS.find((p)=>p.id===idPregunta);
+  if(!q) return '';
+  if(q.tipo==='checkbox') return [...document.querySelectorAll(`input[name="${idPregunta}"]:checked`)].map((i)=>i.value);
+  if(q.tipo==='radio')    { const s = document.querySelector(`input[name="${idPregunta}"]:checked`); return s?s.value:''; }
+  if(q.tipo==='check_simple'){ const el = document.getElementById(idPregunta); return el && el.checked; }
+  const el = document.getElementById(idPregunta);
+  return el ? el.value.trim() : '';
+}
+
+/** Formas admitidas:
+ *    { pregunta, valor }                              → la respuesta es exactamente ese valor
+ *    { pregunta, tipoDependencia:'noVacio' }          → hay cualquier respuesta
+ *    { pregunta, tipoDependencia:'incluye', valor }   → la casilla marcada incluye ese valor
+ *    { pregunta, tipoDependencia:'distintoDe', valor }→ ya respondió y no fue ese valor
+ *    { pregunta, tipoDependencia:'enLista', valores } → la respuesta está en esa lista
+ */
+function cumpleDependencia(dep){
+  const v = valorDe(dep.pregunta);
+  switch(dep.tipoDependencia){
+    case 'noVacio':    return String(v||'').trim() !== '';
+    case 'incluye':    return Array.isArray(v) && v.includes(dep.valor);
+    case 'distintoDe': return String(v||'').trim() !== '' && v !== dep.valor;
+    case 'enLista':    return (dep.valores||[]).includes(v);
+    default:           return v === dep.valor;
+  }
+}
+
+function aplicarDependencias(){
+  TODAS_PREGUNTAS.forEach((q)=>{
+    if(!q.dependeDe) return;
+    const caja = document.getElementById('q_'+q.id);
+    if(caja) caja.hidden = !cumpleDependencia(q.dependeDe);
+  });
+  TODOS_GRUPOS.forEach((g)=>{
+    const caja = document.getElementById('grupo_'+g.id);
+    if(!caja) return;
+    const visible = g.dependeDe ? cumpleDependencia(g.dependeDe) : true;
+    caja.hidden = !visible;
+    if(visible && estado.grupos[g.id] === 0) agregarInstancia(g.id);
+  });
+}
+
+/* ============================================================
+   Opciones exclusivas y topes de selección
+   ============================================================ */
+
+function aplicarReglasOpciones(nombre){
+  const q = TODAS_PREGUNTAS.find((p)=>p.id===nombre);
+  if(!q || q.tipo!=='checkbox') return;
+  const inputs = [...document.querySelectorAll(`input[name="${nombre}"]`)];
+
+  if(q.exclusiva){
+    const ex = inputs.find((i)=>i.value===q.exclusiva);
+    if(ex && ex.checked){
+      inputs.forEach((i)=>{ if(i!==ex){ i.checked=false; i.disabled=true; } });
+    }else{
+      inputs.forEach((i)=>{ i.disabled=false; });
+    }
+  }
+  if(q.tope){
+    const marcados = inputs.filter((i)=>i.checked).length;
+    inputs.forEach((i)=>{ if(!i.checked) i.disabled = marcados >= q.tope; });
+    const nota = document.getElementById('tope_'+nombre);
+    if(nota) nota.textContent = marcados >= q.tope
+      ? `Llegaste al máximo de ${q.tope}. Desmarca una para cambiar.`
+      : `Puedes marcar hasta ${q.tope}. Llevas ${marcados}.`;
+  }
+}
+
+document.addEventListener('change', (e)=>{
+  if(e.target.name) aplicarReglasOpciones(e.target.name);
+  aplicarDependencias();
+});
+
+/* ============================================================
+   Lectura y validación
+   ============================================================ */
+
+function leerPregunta(q){
+  if(q.tipo==='ejes'){
+    const out = {};
+    EJES.forEach((e)=>{
+      const sel = document.querySelector(`input[name="eje_${e.id}"]:checked`);
+      out['eje_'+e.id] = sel ? Number(sel.value) : null;
+    });
+    return out;
+  }
+  if(q.tipo==='checkbox') return [...document.querySelectorAll(`input[name="${q.id}"]:checked`)].map((i)=>i.value);
+  if(q.tipo==='radio'){ const s = document.querySelector(`input[name="${q.id}"]:checked`); return s?s.value:''; }
+  if(q.tipo==='check_simple'){ const el = document.getElementById(q.id); return !!(el && el.checked); }
+  const el = document.getElementById(q.id);
+  return el ? el.value.trim() : '';
+}
+
+function leerGrupo(g){
+  const inst = [...document.querySelectorAll(`#inst_${g.id} > .instancia`)];
+  return inst.map((el)=>{
+    const fila = {};
+    g.campos.forEach((c)=>{
+      const campo = el.querySelector(`[name="${g.id}__${el.dataset.i}__${c.id}"]`);
+      if(!campo) { fila[c.id] = ''; return; }
+      fila[c.id] = c.tipo==='check_simple' ? campo.checked : campo.value.trim();
+    });
+    return fila;
+  });
+}
+
+function valorValido(q, valor){
+  if(q.tipo==='ejes')     return Object.values(valor).every((v)=>v !== null);
+  if(q.tipo==='checkbox') return valor.length > 0;
+  if(q.tipo==='email')    return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(valor);
+  if(q.tipo==='tel')      return valor.replace(/\D/g,'').length >= 7;
+  if(q.tipo==='check_simple') return valor === true;
+  if(q.tipo==='ano')      { const n = Number(valor); return n >= 1940 && n <= 2100; }
+  return String(valor).trim() !== '';
+}
+
+function validarDimension(indice){
+  const dim = DIMENSIONES[indice];
+  let ok = true, primerError = null;
+
+  preguntasDe(dim).forEach((q)=>{
+    const caja = document.getElementById('q_'+q.id);
+    if(!caja) return;
+    if(caja.hidden){ caja.classList.remove('error'); return; }
+    if(!q.req){ caja.classList.remove('error'); return; }
+    if(valorValido(q, leerPregunta(q))){ caja.classList.remove('error'); }
+    else { caja.classList.add('error'); ok = false; if(!primerError) primerError = caja; }
+  });
+
+  repetiblesDe(dim).forEach((g)=>{
+    const caja = document.getElementById('grupo_'+g.id);
+    if(!caja || caja.hidden) return;
+    [...document.querySelectorAll(`#inst_${g.id} > .instancia`)].forEach((el)=>{
+      const bien = g.campos.every((c)=>{
+        if(!c.req) return true;
+        const campo = el.querySelector(`[name="${g.id}__${el.dataset.i}__${c.id}"]`);
+        return campo && valorValido(c, campo.value.trim());
+      });
+      el.classList.toggle('error', !bien);
+      if(!bien){ ok = false; if(!primerError) primerError = el; }
+    });
+  });
+
+  if(primerError) primerError.scrollIntoView({behavior:'smooth', block:'center'});
+  return ok;
+}
+
+function capturarDimension(indice){
+  const dim = DIMENSIONES[indice];
+  preguntasDe(dim).forEach((q)=>{
+    const caja = document.getElementById('q_'+q.id);
+    if(caja && caja.hidden){
+      // Si la pregunta quedó oculta, borramos lo que hubiera respondido antes:
+      // dejarlo produciría diagnósticos con datos que ya no aplican.
+      if(q.tipo==='ejes') return;
+      delete estado.datos[q.id];
+      return;
+    }
+    const valor = leerPregunta(q);
+    if(q.tipo==='ejes') Object.assign(estado.datos, valor);
+    else estado.datos[q.id] = valor;
+  });
+  repetiblesDe(dim).forEach((g)=>{
+    const caja = document.getElementById('grupo_'+g.id);
+    estado.datos[g.id] = (caja && caja.hidden) ? [] : leerGrupo(g);
+  });
+  guardarLocal();
+}
+
+/* ============================================================
+   Persistencia local
+   ============================================================ */
+
+function guardarLocal(){
+  try{
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+      pantalla:estado.pantalla, datos:estado.datos, ts:Date.now(),
+    }));
+  }catch(e){ /* incógnito o storage lleno: seguimos sin persistir */ }
+}
+
+function restaurarLocal(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(!raw) return null;
+    const g = JSON.parse(raw);
+    if(!g || !g.datos || Date.now() - (g.ts||0) > 30*24*3600*1000) return null;  // 30 días
+    return g;
+  }catch(e){ return null; }
+}
+
+function pintarDatos(){
+  const d = estado.datos;
+
+  TODAS_PREGUNTAS.forEach((q)=>{
+    const v = d[q.id];
+    if(q.tipo==='check_simple'){ const el = document.getElementById(q.id); if(el) el.checked = !!v; return; }
+    if(v === undefined || v === '' || (Array.isArray(v) && !v.length)) return;
+    if(q.tipo==='checkbox'){
+      v.forEach((val)=>{ const el = document.querySelector(`input[name="${q.id}"][value="${CSS.escape(val)}"]`); if(el) el.checked = true; });
+    }else if(q.tipo==='radio'){
+      const el = document.querySelector(`input[name="${q.id}"][value="${CSS.escape(v)}"]`); if(el) el.checked = true;
+    }else{
+      const el = document.getElementById(q.id); if(el) el.value = v;
+    }
+  });
+
+  EJES.forEach((e)=>{
+    const v = d['eje_'+e.id];
+    if(v === null || v === undefined) return;
+    const el = document.querySelector(`input[name="eje_${e.id}"][value="${v}"]`); if(el) el.checked = true;
+  });
+
+  aplicarDependencias();
+
+  TODOS_GRUPOS.forEach((g)=>{
+    const filas = d[g.id];
+    if(!Array.isArray(filas) || !filas.length) return;
+    const cont = document.getElementById('inst_'+g.id);
+    if(!cont) return;
+    cont.innerHTML = ''; estado.grupos[g.id] = 0;
+    filas.forEach((fila)=>{
+      const el = agregarInstancia(g.id);
+      g.campos.forEach((c)=>{
+        const campo = el.querySelector(`[name="${g.id}__${el.dataset.i}__${c.id}"]`);
+        if(!campo) return;
+        if(c.tipo==='check_simple') campo.checked = !!fila[c.id];
+        else campo.value = fila[c.id] ?? '';
+      });
+    });
+  });
+
+  TODAS_PREGUNTAS.forEach((q)=>{ if(q.tipo==='checkbox') aplicarReglasOpciones(q.id); });
+}
+
+/* ============================================================
+   Navegación
+   ============================================================ */
+
+const ETIQUETAS = ['Inicio','1 de 5 · Tú','2 de 5 · Tu emprendimiento','3 de 5 · Cliente',
+                   '4 de 5 · Números','5 de 5 · Tu cuello de botella','Tu diagnóstico'];
+
+function irA(n){
+  document.querySelectorAll('.pantalla').forEach((s)=>s.classList.remove('activa'));
+  document.getElementById('p'+n).classList.add('activa');
+  estado.pantalla = n;
+  $('#barraProgreso').style.width = (n/6*100) + '%';
+  $('#indicadorPaso').textContent = ETIQUETAS[n];
+  window.scrollTo({top:0, behavior:'smooth'});
+  guardarLocal();
+}
+
+let destinoInicio = 1;
+
+$('#btnEmpezar').addEventListener('click', ()=>{
+  const caja = $('#q_consentimiento');
+  if(!$('#consentimiento').checked){
+    caja.classList.add('error');
+    caja.scrollIntoView({behavior:'smooth', block:'center'});
+    return;
+  }
+  caja.classList.remove('error');
+  if(!estado.datos.consentimiento_en) estado.datos.consentimiento_en = new Date().toISOString();
+  irA(destinoInicio);
+});
+$('#consentimiento').addEventListener('change', (e)=>{
+  if(e.target.checked) $('#q_consentimiento').classList.remove('error');
+});
+
+document.querySelectorAll('[data-siguiente]').forEach((btn,i)=>{
+  btn.addEventListener('click', ()=>{
+    if(!validarDimension(i)) return;
+    capturarDimension(i);
+    if(i === DIMENSIONES.length - 1) finalizar();
+    else irA(i+2);
+  });
+});
+document.querySelectorAll('[data-atras]').forEach((btn,i)=>{
+  btn.addEventListener('click', ()=>{ capturarDimension(i); irA(i); });
+});
+
+document.addEventListener('input', (e)=>{
+  const caja = e.target.closest('.q, .instancia');
+  if(caja) caja.classList.remove('error');
+});
+
+/* ============================================================
+   EL DIAGNÓSTICO
+   ------------------------------------------------------------
+   Ocho frentes, cada uno de 0 a 100. La etapa sale de la evidencia
+   (ventas, clientes, formalidad, equipo), no solo del tiempo. El cuello
+   de botella es el frente con la brecha más grande, ponderada por lo
+   que importa en esa etapa y por lo que la persona misma declaró.
+   ============================================================ */
+
+/** Puntos por opción; lo no listado vale 0. */
+const p = (valor, mapa)=> mapa[valor] ?? 0;
+const entre0y100 = (n)=> Math.max(0, Math.min(100, Math.round(n)));
+const largo = (t)=> String(t||'').trim().length;
+
+function calcularMadurez(d){
+  const form   = d.formalizacion || [];
+  const canal  = (d.canales || []).filter((c)=>c !== 'Todavía no me llegan clientes');
+  const modIng = (d.modelo_ingreso || []).filter((m)=>m !== 'Todavía no lo defino');
+  const capOri = d.origen_capital || [];
+  const vinc   = d.tipo_vinculacion || [];
+  const vendio = d.ya_vendio === 'Sí';
+  const conCli = d.clientes_pagando && d.clientes_pagando !== 'Ninguno';
+
+  /* ---------- Validación: ¿existe el problema y alguien paga? ---------- */
+  const validacion = entre0y100(
+      p(d.entrevistas, {'Con ninguno':0,'Con 1 a 5':10,'Con 6 a 20':22,'Con 21 a 50':30,'Con más de 50':35})
+    + p(d.clientes_pagando, {'Ninguno':0,'1 a 3':10,'4 a 10':18,'11 a 50':24,'51 a 200':28,'Más de 200':30})
+    + (conCli ? p(d.decepcion, {
+        'Muy decepcionados, no tienen con qué reemplazarlo':25,
+        'Algo decepcionados, conseguirían otra cosa':12,
+        'Poco, hay alternativas fáciles':4,
+        'No lo sé, nunca se lo he preguntado':0}) : 0)
+    + (conCli ? p(d.recurrencia, {
+        'La mayoría vuelve':10,'Algunos vuelven':6,'Casi ninguno vuelve':2,
+        'Por naturaleza es una compra de una sola vez':6,'Todavía no lo he medido':0}) : 0)
+  );
+
+  /* ---------- Modelo: ¿cómo se gana la plata y por qué te compran? ---------- */
+  const modelo = entre0y100(
+      (modIng.length ? 15 : 0)
+    + (modIng.some((m)=>/Suscripción|Licencia/.test(m)) ? 5 : 0)
+    + p(d.precio_como, {
+        'Calculando mis costos y sumando un margen':25,
+        'Por lo que el cliente está dispuesto a pagar':20,
+        'Mirando lo que cobra la competencia':15,
+        'A ojo, sin un método':5,'Todavía no tengo precio definido':0})
+    + (largo(d.diferencia) >= 25 ? 15 : largo(d.diferencia) >= 8 ? 8 : 0)
+    + (largo(d.que_hace) >= 15 && largo(d.que_hace) <= 180 ? 15 : largo(d.que_hace) ? 7 : 0)
+    + (conCli ? p(d.recurrencia, {
+        'La mayoría vuelve':20,'Algunos vuelven':12,
+        'Por naturaleza es una compra de una sola vez':12,'Casi ninguno vuelve':4,
+        'Todavía no lo he medido':0}) : 0)
+    + (largo(d.alternativa) >= 15 ? 5 : 0)
+  );
+
+  /* ---------- Comercial: ¿los clientes llegan a voluntad? ---------- */
+  const comercial = entre0y100(
+      p(d.adquisicion_predecible, {
+        'Sí, tengo un proceso que funciona y lo puedo repetir':35,
+        'Más o menos, a veces funciona y a veces no':18,
+        'No, los clientes llegan por suerte':0})
+    + p(d.clientes_pagando, {'Ninguno':0,'1 a 3':8,'4 a 10':15,'11 a 50':20,'51 a 200':24,'Más de 200':25})
+    + (vendio ? p(d.frecuencia_ventas, {
+        'Fue una sola vez':2,'De vez en cuando, sin patrón':6,'Todos los meses, pero varía mucho':14,
+        'Todos los meses de forma estable':20,'Cada mes más que el anterior':25}) : 0)
+    + (canal.length >= 3 ? 12 : canal.length === 2 ? 9 : canal.length === 1 ? 5 : 0)
+    + p(d.concentracion, {'Casi todo viene de un solo cliente':-10,'Más de la mitad':-6})
+  );
+
+  /* ---------- Finanzas: ¿sabe si gana plata? ---------- */
+  const finanzas = entre0y100(
+      p(d.conoce_costo, {'Sí, con número exacto':20,'Un aproximado':10,'No lo he calculado':0})
+    + p(d.margen, {'Más de $50':20,'Entre $30 y $50':18,'Entre $10 y $30':14,'Menos de $10':8,
+                   'Pierdo plata en cada venta':0})
+    + p(d.cuentas_separadas, {'Sí, cuentas distintas':15,'Parcialmente':7,'No, es la misma bolsa':0})
+    + p(d.contabilidad, {'Sí, con un contador':20,'Sí, yo mismo en una hoja de cálculo o una app':14,
+                         'Anoto algunas cosas':6,'No llevo registro':0})
+    + p(d.punto_equilibrio, {'Sí, y sobra':25,'Sí, justo':16,'Todavía no, le pongo de mi bolsillo':5,
+                             'No sé cuánto necesitaría para cubrirlos':0})
+  );
+
+  /* ---------- Formalización: marco legal colombiano ---------- */
+  const formalizacion = entre0y100(
+      (form.includes('RUT ante la DIAN') ? 15 : 0)
+    + (form.includes('Matrícula mercantil en la Cámara de Comercio') ? 25 : 0)
+    + (form.includes('Estoy constituido como SAS u otra sociedad') ? 15 : 0)
+    + (form.includes('Facturo electrónicamente') ? 15 : 0)
+    + (form.includes('Pago mi propia seguridad social') ? 10 : 0)
+    + (form.includes('Tengo empleados con seguridad social') ? 10 : 0)
+    + (form.includes('Tengo registro sanitario, marca u otro permiso de mi sector') ? 10 : 0)
+  );
+
+  /* ---------- Equipo ---------- */
+  const equipo = entre0y100(
+      p(d.equipo_fundador, {'Solo, yo hago todo':10,'Con mi familia':22,'Con un socio':30,
+                            'Con dos o más socios':35,'Con un equipo que me trabaja':40})
+    + p(d.socios_complementarios, {
+        'Sí, cada uno cubre algo que el otro no sabe hacer':20,
+        'Somos parecidos, sabemos hacer lo mismo':8,
+        'Todavía no hemos hablado de quién hace qué':0})
+    + p(d.empleados, {'Ninguna, solo yo':0,'1 a 3':12,'4 a 10':20,'11 a 50':25,'Más de 50':25})
+    + p(d.dedicacion, {'Tiempo completo, es lo único que hago':20,
+                       'Medio tiempo, tengo otra fuente de ingresos':13,
+                       'Ratos libres y fines de semana':6,'Todavía no le dedico tiempo fijo':0})
+    + p(d.capacidades, {'Sí, con claridad':15,'Creo que sí, pero necesito apoyo en algunos temas':10,
+                        'En unas cosas sí y en otras estoy perdido':5,
+                        'Todavía no, estoy aprendiendo sobre la marcha':0})
+  );
+
+  /* ---------- Capital ---------- */
+  let capOriPts = 0;
+  if(capOri.includes('Reinversión de las propias ventas')) capOriPts += 18;
+  if(capOri.includes('Un inversionista'))                  capOriPts += 15;
+  if(capOri.includes('Capital semilla de un programa público')) capOriPts += 12;
+  if(capOri.includes('Crédito bancario'))                  capOriPts += 8;
+  if(capOri.includes('Ahorros propios'))                   capOriPts += 6;
+  if(capOri.includes('Familia o amigos'))                  capOriPts += 4;
+  if(capOri.includes('Tarjeta de crédito'))                capOriPts -= 3;
+  if(capOri.includes('Préstamo informal o gota a gota'))   capOriPts -= 8;
+  capOriPts = Math.max(0, Math.min(20, capOriPts));
+
+  const capital = entre0y100(
+      p(d.runway, {'No aguantaría nada':0,'Menos de 3 meses':8,'Entre 3 y 6 meses':18,
+                   'Entre 6 y 12 meses':28,'Más de un año':35,'No lo he calculado':5})
+    + p(d.busco_financiacion, {'Sí y la conseguí':25,'No la necesito por ahora':22,
+                               'Sí pero no la conseguí':8,'No, pero la necesito':5})
+    + capOriPts
+    + p(d.sueldo_propio, {'Sí, fijo cada mes':20,'Sí, pero variable':13,
+                          'Saco lo que voy necesitando':6,'No, todavía no me paga nada':0})
+  );
+
+  /* ---------- Operación y escala ---------- */
+  const escala = entre0y100(
+      p(d.ambito, {'Mi barrio o mi municipio':5,'Mi ciudad':10,'Varias ciudades del país':18,
+                   'Todo el país':22,'También fuera de Colombia':25})
+    + p(d.empleados, {'Ninguna, solo yo':0,'1 a 3':10,'4 a 10':18,'11 a 50':22,'Más de 50':25})
+    + p(d.contabilidad, {'Sí, con un contador':12,'Sí, yo mismo en una hoja de cálculo o una app':8,
+                         'Anoto algunas cosas':3,'No llevo registro':0})
+    + p(d.adquisicion_predecible, {'Sí, tengo un proceso que funciona y lo puedo repetir':20,
+                                   'Más o menos, a veces funciona y a veces no':10,
+                                   'No, los clientes llegan por suerte':0})
+    + (vendio ? p(d.frecuencia_ventas, {'Cada mes más que el anterior':15,
+        'Todos los meses de forma estable':10,'Todos los meses, pero varía mucho':7,
+        'De vez en cuando, sin patrón':3,'Fue una sola vez':0}) : 0)
+    + (vinc.includes('Sin contrato, de palabra') ? -8 : 0)
+  );
+
+  return { validacion, modelo, comercial, finanzas, formalizacion, equipo, capital, escala };
+}
+
+/** La etapa se decide por evidencia acumulada, no por antigüedad. */
+function calcularEtapa(d, m){
+  const vendio = d.ya_vendio === 'Sí';
+  if(!vendio) return { clave:'E1', score:0 };
+
+  const bruto =
+      10
+    + p(d.primera_venta, {'Hace menos de 3 meses':5,'Entre 3 y 12 meses':15,
+                          'Entre 1 y 3 años y medio':25,'Hace más de 3 años y medio':32})
+    + p(d.frecuencia_ventas, {'Fue una sola vez':0,'De vez en cuando, sin patrón':5,
+                              'Todos los meses, pero varía mucho':14,
+                              'Todos los meses de forma estable':22,'Cada mes más que el anterior':26})
+    + p(d.clientes_pagando, {'Ninguno':0,'1 a 3':5,'4 a 10':11,'11 a 50':16,'51 a 200':20,'Más de 200':22})
+    + (m.formalizacion / 10)
+    + p(d.empleados, {'Ninguna, solo yo':0,'1 a 3':4,'4 a 10':7,'11 a 50':9,'Más de 50':10});
+
+  const score = entre0y100(bruto / 1.1);
+  let clave = score >= 59 ? 'E3' : score >= 25 ? 'E2' : 'E1';
+
+  // Un negocio que todavía se sostiene del bolsillo del dueño no está consolidado,
+  // por muchos años que tenga encima.
+  if(clave === 'E3' && d.punto_equilibrio === 'Todavía no, le pongo de mi bolsillo') clave = 'E2';
+
+  return { clave, score };
+}
+
+/* Qué pesa en cada etapa. Decirle a alguien en semilla que su problema
+   es la escala sería cierto y perfectamente inútil. */
+const PESOS = {
+  E1:{ validacion:1.5, modelo:1.2, comercial:1.0, equipo:0.8, capital:0.6, finanzas:0.5, formalizacion:0.5, escala:0.2 },
+  E2:{ comercial:1.4, finanzas:1.3, modelo:1.2, formalizacion:1.1, capital:1.0, validacion:0.9, equipo:0.9, escala:0.6 },
+  E3:{ escala:1.4, finanzas:1.3, equipo:1.3, comercial:1.1, capital:1.1, formalizacion:1.0, modelo:0.8, validacion:0.5 },
+};
+
+/* Lo que la persona declara como freno pesa. Nadie conoce mejor su negocio. */
+const FRENO_A_FRENTE = {
+  'Conseguir clientes':'comercial',
+  'No tengo claro a quién le vendo':'validacion',
+  'Vendo pero no me queda margen':'finanzas',
+  'No tengo plata para crecer':'capital',
+  'Estoy solo y no doy abasto':'equipo',
+  'No sé cómo formalizarme':'formalizacion',
+  'La operación se me desordena cuando crece':'escala',
+  'No sé si el producto ya está listo':'validacion',
+  'Me falta conocimiento técnico o digital':'equipo',
+  'No tengo tiempo, tengo otro trabajo':'equipo',
+  'Me falta decidirme y arrancar en serio':'modelo',
+};
+
+/* Para cada frente: qué significa la brecha en esa etapa, y qué hacer. */
+const FRENTE_TEXTO = {
+  validacion:{
+    diag:{
+      E1:'Todavía no hay evidencia suficiente de que el problema exista y de que alguien quiera pagar por resolverlo. En tu etapa, eso es lo único que importa.',
+      E2:'Ya vendes, pero no sabes si te compran por convicción o por cortesía. Sin esa respuesta, cualquier crecimiento es una apuesta.',
+      E3:'Llevas tiempo vendiendo y probablemente dejaste de preguntar. Los negocios consolidados se quedan atrás porque el cliente cambió y nadie lo notó.',
+    },
+    hacer:{
+      E1:{ t:'Veinte conversaciones antes de gastar un peso más',
+           d:'Habla con veinte clientes potenciales sobre cómo resuelven hoy ese problema. No les cuentes tu idea: pregúntales qué hicieron la última vez que les pasó. Si nadie hizo nada, no hay problema que resolver.' },
+      E2:{ t:'Pregúntale a tus clientes qué tan decepcionados quedarían',
+           d:'Escríbeles: «si mañana dejáramos de existir, ¿qué tan decepcionado quedarías?». Si menos de cuatro de cada diez responden que mucho, el producto todavía no encontró su mercado y crecer solo va a multiplicar el problema.' },
+      E3:{ t:'Vuelve a llamar a los que se fueron',
+           d:'El riesgo en tu etapa no son los clientes nuevos: son los que dejaron de comprar y nadie llamó. Haz diez llamadas a clientes perdidos este mes y anota textualmente por qué se fueron.' },
+    },
+  },
+  modelo:{
+    diag:{
+      E1:'Todavía no está claro qué vendes exactamente, a cambio de qué y por qué a ti. Esa falta de claridad se transmite en cada conversación de venta.',
+      E2:'Vendes, pero el modelo no está resuelto: el precio no sale de una cuenta y no hay nada que garantice que el cliente vuelva.',
+      E3:'El negocio funciona, pero vuelve a empezar de cero cada mes. Eso pone un techo a cuánto puede valer.',
+    },
+    hacer:{
+      E1:{ t:'Escribe tu propuesta en una sola frase',
+           d:'«Ayudamos a [quién] a [qué logra] mediante [cómo]». Si no cabe en una frase, todavía no la tienes clara. Pruébala con cinco personas que no conozcan tu negocio y mira si la repiten bien.' },
+      E2:{ t:'Ponle número a la fórmula de tu precio',
+           d:'Costo directo, más los gastos que te toca cubrir, más el margen que quieres. Si tu precio sale de mirar a la competencia y no de esa cuenta, estás dejando que otro decida cuánto ganas.' },
+      E3:{ t:'Busca el ingreso que se repite solo',
+           d:'Un contrato anual, una mensualidad, un mantenimiento. Un negocio consolidado que arranca de cero cada mes no es consolidado: es un empleo con más riesgo y sin prestaciones.' },
+    },
+  },
+  comercial:{
+    diag:{
+      E1:'Todavía no hay un camino para llegarle a un cliente. Sin eso, ni el mejor producto se entera de que existe alguien esperándolo.',
+      E2:'Las ventas llegan, pero no a voluntad. Mientras dependan de la suerte o de tu esfuerzo puntual, no se puede planear nada.',
+      E3:'La operación comercial sigue dependiendo demasiado de ti o de un canal único. Eso es frágil justo cuando ya hay gente que depende del negocio.',
+    },
+    hacer:{
+      E1:{ t:'Consigue tus tres primeras ventas a mano',
+           d:'No montes marca ni pauta todavía. Haz una lista de treinta personas o empresas que podrían comprarte, escríbeles una por una y aprende de cada respuesta, incluidas las negativas.' },
+      E2:{ t:'Escribe cómo conseguiste tus últimos cinco clientes',
+           d:'Uno por uno: de dónde salió, qué le dijiste, cuánto se demoró en decidir. Si aparece un patrón, ese es tu proceso comercial y ya lo tienes. Si no aparece ninguno, ese es tu trabajo del próximo mes.' },
+      E3:{ t:'Deja de ser tú el que vende',
+           d:'Mientras las ventas dependan de tu presencia, el negocio no escala y tampoco se puede vender. Documenta el proceso y entrégaselo a alguien más, aunque al principio venda peor que tú.' },
+    },
+  },
+  finanzas:{
+    diag:{
+      E1:'No sabes todavía si cada venta te deja plata o te la quita. Es el error más caro y el más silencioso de esta etapa.',
+      E2:'Vendes sin saber con precisión qué te queda. Muchos negocios que parecen tener un problema de ventas tienen en realidad un problema de margen.',
+      E3:'Con este volumen, no ver mes contra mes dónde se va la plata es la forma en que un negocio sano empieza a desangrarse sin que nadie note cuándo empezó.',
+    },
+    hacer:{
+      E1:{ t:'Calcula cuánto te cuesta una unidad',
+           d:'Materiales, tiempo tuyo, comisiones, domicilio, empaque, la plataforma que usas. Todo. Muchos descubren tarde que vendían perdiendo y lo confunden con falta de ventas.' },
+      E2:{ t:'Separa la plata del negocio de la tuya esta semana',
+           d:'Una cuenta aparte, hoy. Mientras esté todo revuelto no vas a saber si el negocio gana o si solo estás moviendo tu propio dinero. Y ningún banco, fondo ni convocatoria te va a tomar en serio así.' },
+      E3:{ t:'Arma un estado de resultados mensual',
+           d:'No para la DIAN: para ti. Ventas, costos directos, gastos fijos, lo que queda. Un cuadro de doce columnas, una por mes. La mayoría de las decisiones difíciles se vuelven obvias cuando ves esa fila.' },
+    },
+  },
+  formalizacion:{
+    diag:{
+      E1:'Estar informal en el arranque es normal y no es urgente, pero ya te está cerrando puertas: no puedes facturar ni presentarte a convocatorias.',
+      E2:'Con las ventas que ya tienes, la informalidad dejó de ser un ahorro y pasó a ser un costo: te bloquea clientes empresariales, crédito y convocatorias públicas.',
+      E3:'A este tamaño, cualquier vacío en la formalización es un riesgo legal y tributario que puede costar más que varios años de utilidad.',
+    },
+    hacer:{
+      E1:{ t:'Saca el RUT antes que cualquier otra cosa',
+           d:'Es gratis, se hace en línea ante la DIAN y te habilita para facturar. La matrícula mercantil viene después, cuando ya haya ventas que la justifiquen.' },
+      E2:{ t:'Matricúlate en la Cámara de Comercio',
+           d:'Sin matrícula no le vendes a empresas grandes, no accedes a convocatorias públicas y no calificas a crédito formal. La Ley 2069 de 2020 dejó condiciones más suaves para quien se formaliza por primera vez: pregunta por ellas en la Cámara de tu ciudad.' },
+      E3:{ t:'Revisa si el régimen tributario que tienes sigue siendo el mejor',
+           d:'El que escogiste al arrancar casi nunca sigue siendo el óptimo cuando las ventas se estabilizan. Es una conversación de una hora con un contador que puede valer varios millones al año.' },
+    },
+  },
+  equipo:{
+    diag:{
+      E1:'Estás cargando solo con todo. En esta etapa se aguanta, pero define qué tan rápido puedes aprender.',
+      E2:'El negocio ya pide más manos de las que tienes. Estar solo dejó de ser una virtud: hoy es el techo del negocio.',
+      E3:'Todo sigue pasando por ti. Un negocio de este tamaño donde el dueño decide cada cosa no crece más allá de su agenda.',
+    },
+    hacer:{
+      E1:{ t:'No busques socio: busca un cómplice de prueba',
+           d:'Trabaja con esa persona en algo pequeño y con fecha de cierre antes de repartir participación. Los socios se conocen ejecutando, no conversando. Repartir acciones temprano es de las decisiones más difíciles de deshacer.' },
+      E2:{ t:'Suelta lo primero que no tienes que hacer tú',
+           d:'Escribe todo lo que hiciste la semana pasada y marca lo que solo tú puedes hacer. Lo demás delégalo, así sea por horas o por obra. Empieza por lo que más tiempo te quita y menos criterio requiere.' },
+      E3:{ t:'Define quién decide qué sin preguntarte',
+           d:'Escribe qué puede decidir cada persona y hasta qué monto. Mientras no exista ese documento, tus vacaciones son el riesgo operativo más grande de la empresa.' },
+    },
+  },
+  capital:{
+    diag:{
+      E1:'No tienes con qué aguantar si esto se demora, y en esta etapa siempre se demora más de lo previsto.',
+      E2:'La caja está apretada justo cuando el negocio necesita invertir para crecer. Es la trampa clásica de esta etapa.',
+      E3:'Un negocio de este tamaño sin colchón termina tomando malas decisiones por urgencia, no por falta de criterio.',
+    },
+    hacer:{
+      E1:{ t:'Todavía no salgas a buscar inversión',
+           d:'Nadie invierte en una idea sin evidencia, y quemar contactos temprano cuesta caro porque solo se usan una vez. Mira primero convocatorias de capital semilla, que son las que sí están hechas para tu etapa.' },
+      E2:{ t:'Llega al banco con tres cosas en la mano',
+           d:'Ventas demostrables de los últimos doce meses, cuentas separadas y matrícula al día. Sin eso el «no» es automático y no tiene nada que ver con qué tan bueno sea tu negocio.' },
+      E3:{ t:'Calcula cuántos meses aguantas sin vender',
+           d:'Gastos fijos mensuales dividido entre la plata disponible. Ese número te dice cuánto puedes arriesgar. Si te da menos de tres, tu prioridad de este trimestre es ese número y no el crecimiento.' },
+    },
+  },
+  escala:{
+    diag:{
+      E1:'Ordenar procesos antes de saber si alguien compra es la forma más elegante de perder el tiempo.',
+      E2:'Lo que hoy funciona funciona porque el volumen es bajo. Con el triple de pedidos, se rompe.',
+      E3:'El crecimiento se está topando con la operación. Aquí es donde los negocios buenos se estancan.',
+    },
+    hacer:{
+      E1:{ t:'Esto todavía no es tu problema',
+           d:'Anótalo y déjalo quieto. Toda la energía que le pongas a organizar la operación antes de validar es energía que le quitas a la única pregunta que importa hoy.' },
+      E2:{ t:'Escribe cómo se hace lo que haces',
+           d:'Un documento simple: paso a paso de cómo se atiende un pedido, de principio a fin, con quién hace qué. Es lo que va a permitir que otro lo haga igual cuando suba el volumen.' },
+      E3:{ t:'Encuentra el punto exacto donde se rompe',
+           d:'Si mañana te llega el triple de pedidos, ¿qué se cae primero: producción, entrega, cobro o atención? Ese es el cuello de botella real y ahí va la próxima inversión, no en más publicidad.' },
+    },
+  },
+};
+
+/** Tamaño empresarial aproximado.
+ *  El Decreto 957 de 2019 clasifica por ingresos anuales medidos en UVT y con
+ *  umbrales distintos por sector (manufactura, servicios, comercio). Como el
+ *  valor de la UVT cambia cada año, aquí solo se da una franja aproximada: para
+ *  cualquier trámite hay que hacer la cuenta con la UVT vigente. */
+function tamanoEmpresa(d){
+  switch(d.ingresos_anuales){
+    case 'Todavía no tengo ingresos':
+      return { largo:'Sin ingresos registrados', corto:'Sin ventas' };
+    case 'Menos de $12 millones':
+    case 'Entre $12 y $50 millones':
+    case 'Entre $50 y $200 millones':
+    case 'Entre $200 millones y $1.000 millones':
+      return { largo:'Microempresa', corto:'Micro' };
+    case 'Entre $1.000 y $5.000 millones':
+      return { largo:'Pequeña empresa (aproximado)', corto:'Pequeña' };
+    case 'Más de $5.000 millones':
+      return { largo:'Pequeña o mediana, según el sector', corto:'Pequeña o mediana' };
+    default:
+      return { largo:null, corto:'—' };
+  }
+}
+
+function calcularFortalezas(d, m){
+  const f = [];
+  const form = d.formalizacion || [];
+  if(['Con 21 a 50','Con más de 50'].includes(d.entrevistas)) f.push('Conoces el problema de primera mano');
+  if(d.decepcion === 'Muy decepcionados, no tienen con qué reemplazarlo') f.push('Tus clientes no tienen con qué reemplazarte');
+  if(d.recurrencia === 'La mayoría vuelve') f.push('La mayoría de tus clientes vuelve');
+  if(d.frecuencia_ventas === 'Cada mes más que el anterior') f.push('Tus ventas crecen mes a mes');
+  if(d.punto_equilibrio === 'Sí, y sobra') f.push('El negocio cubre sus gastos y deja excedente');
+  if(d.conoce_costo === 'Sí, con número exacto') f.push('Sabes con número exacto cuánto te cuesta vender');
+  if(d.cuentas_separadas === 'Sí, cuentas distintas') f.push('Tienes las cuentas del negocio separadas');
+  if(d.adquisicion_predecible === 'Sí, tengo un proceso que funciona y lo puedo repetir') f.push('Sabes cómo conseguir clientes cuando los necesitas');
+  if(form.includes('Matrícula mercantil en la Cámara de Comercio')) f.push('Estás formalizado');
+  if(d.socios_complementarios === 'Sí, cada uno cubre algo que el otro no sabe hacer') f.push('Tu sociedad reparte lo que cada uno sabe hacer');
+  if(d.intentos_previos && d.intentos_previos !== 'Sí, es el primero') f.push('No es tu primer emprendimiento');
+  if(d.ambito === 'También fuera de Colombia') f.push('Ya vendes fuera de Colombia');
+  if(d.dedicacion === 'Tiempo completo, es lo único que hago') f.push('Le estás dedicando tiempo completo');
+  if(d.runway === 'Más de un año') f.push('Tienes más de un año de colchón');
+  if((d.programas_previos||[]).some((x)=>x!=='Ninguno')) f.push('Ya pasaste por un programa de apoyo');
+  if(m.formalizacion >= 70 && m.finanzas >= 60) f.push('El negocio está ordenado por dentro');
+  return f.slice(0, 5);
+}
+
+/** Solo para el equipo. Nunca se muestra a quien responde. */
+function calcularRiesgos(d, m){
+  const r = [];
+  const form = d.formalizacion || [];
+  const cap  = d.origen_capital || [];
+  const alto = ['Entre $200 millones y $1.000 millones','Entre $1.000 y $5.000 millones','Más de $5.000 millones'];
+  if(d.concentracion === 'Casi todo viene de un solo cliente') r.push('Dependencia crítica de un solo cliente');
+  else if(d.concentracion === 'Más de la mitad') r.push('Más de la mitad de los ingresos en un cliente');
+  if(d.margen === 'Pierdo plata en cada venta') r.push('Margen negativo declarado');
+  if(d.cuentas_separadas === 'No, es la misma bolsa') r.push('Finanzas del negocio mezcladas con las personales');
+  if(['No aguantaría nada','Menos de 3 meses'].includes(d.runway)) r.push('Caja crítica: menos de 3 meses');
+  if(cap.includes('Préstamo informal o gota a gota')) r.push('Financiado con préstamo informal');
+  if(form.includes('Todavía no tengo nada de eso') && alto.includes(d.ingresos_anuales)) r.push('Opera informalmente con ingresos relevantes');
+  if((d.tipo_vinculacion||[]).includes('Sin contrato, de palabra')) r.push('Personal sin vinculación formal');
+  if(d.miedo_fracaso === 'Sí, me tiene detenido') r.push('Bloqueo declarado por miedo al fracaso');
+  if((d.porque_no_consiguio||[]).includes('Estoy reportado en centrales')) r.push('Reportado en centrales de riesgo');
+  if((d.sustento||[]).includes('Del emprendimiento') && d.punto_equilibrio === 'Todavía no, le pongo de mi bolsillo')
+    r.push('Vive del negocio pero el negocio no cubre sus gastos');
+  if(d.ya_vendio !== 'Sí' && ['Entre 3 y 5 años','Más de 5 años'].includes(d.tiempo_idea))
+    r.push('Más de tres años sin lograr la primera venta');
+  if(m.validacion < 30 && m.escala > 50) r.push('Está escalando algo que no ha validado');
+  return r;
+}
+
+/* Rutas de apoyo del ecosistema colombiano. Se sugieren, no se promete
+   elegibilidad: cada convocatoria define su propia población beneficiaria. */
+const RUTAS = [
+  { nombre:'RUT ante la DIAN',
+    aplica:(d)=> !(d.formalizacion||[]).includes('RUT ante la DIAN'),
+    texto:'Es gratis y se saca en línea. Sin RUT no puedes facturar, y sin factura no le vendes a ninguna empresa formal. Es el primer paso de todos los demás.' },
+  { nombre:'Cámara de Comercio de tu ciudad',
+    aplica:(d)=> !(d.formalizacion||[]).includes('Matrícula mercantil en la Cámara de Comercio'),
+    texto:'Además de la matrícula mercantil, las cámaras tienen rutas de crecimiento y asesoría sin costo. La Ley 2069 de 2020 estableció condiciones más favorables para quien se formaliza por primera vez: pregunta por ellas explícitamente.' },
+  { nombre:'Fondo Emprender (SENA)',
+    aplica:(d,a)=> a.etapa.clave !== 'E3' && !(d.programas_previos||[]).includes('Fondo Emprender del SENA'),
+    texto:'Capital semilla que puede volverse no reembolsable si cumples las metas del plan. Está dirigido a una población específica —aprendices y egresados del SENA, egresados de educación superior, entre otros—: revisa en la convocatoria vigente si entras.' },
+  { nombre:'iNNpulsa Colombia',
+    aplica:(d,a)=> a.etapa.clave !== 'E1' && a.potencial_escala !== 'Bajo',
+    texto:'Es la agencia del Gobierno para emprendimiento e innovación. Sus convocatorias apuntan a negocios que ya venden y quieren escalar, que es exactamente donde estás.' },
+  { nombre:'Apps.co del MinTIC',
+    aplica:(d)=> String(d.base_tecnologica||'').startsWith('Sí'),
+    texto:'Acompañamiento gratuito para emprendimientos digitales en etapa temprana. Si el corazón de tu negocio es tecnología propia, es de los programas más directos que hay.' },
+  { nombre:'Bancóldex',
+    aplica:(d,a)=> a.etapa.clave !== 'E1' &&
+      ['No, pero la necesito','Sí pero no la conseguí'].includes(d.busco_financiacion),
+    texto:'Es banca de desarrollo: no presta directo, coloca líneas de crédito a través de bancos comerciales con mejores condiciones. Ve a tu banco y pregunta por las líneas Bancóldex para mipymes, nombrándolas así.' },
+  { nombre:'ProColombia',
+    aplica:(d)=> ['Sí, es una meta clara','Me gustaría, pero no sé cómo'].includes(d.exportar),
+    texto:'Acompaña sin costo a empresas colombianas que quieren exportar: identificación de mercados, requisitos de entrada y ruedas de negocios.' },
+  { nombre:'Régimen Simple de Tributación',
+    aplica:(d)=> (d.formalizacion||[]).includes('Matrícula mercantil en la Cámara de Comercio') &&
+      d.ingresos_anuales && !['Todavía no tengo ingresos','Prefiero no decirlo'].includes(d.ingresos_anuales),
+    texto:'Unifica varios impuestos en un solo pago y suele bajar la carga de una micro o pequeña empresa. Vale una hora con un contador para saber si en tu caso conviene.' },
+];
+
+function analizar(d){
+  const m = calcularMadurez(d);
+  const et = calcularEtapa(d, m);
+  const etapa = Object.assign({}, ETAPAS[et.clave], { score:et.score, clave:et.clave });
+
+  /* ---------- Potencial de escala (solo lectura interna) ---------- */
+  let ptsEscala = 0;
+  if(['Varias ciudades del país','Todo el país','También fuera de Colombia'].includes(d.ambito)) ptsEscala += 2;
+  if(['Ya lo hago','Sí, es una meta clara'].includes(d.exportar)) ptsEscala += 2;
+  if(String(d.base_tecnologica||'').startsWith('Sí')) ptsEscala += 2;
+  if(d.frecuencia_ventas === 'Cada mes más que el anterior') ptsEscala += 2;
+  if(d.recurrencia === 'La mayoría vuelve') ptsEscala += 1;
+  if((d.modelo_ingreso||[]).some((x)=>/Suscripción|Licencia/.test(x))) ptsEscala += 2;
+  if(d.adquisicion_predecible === 'Sí, tengo un proceso que funciona y lo puedo repetir') ptsEscala += 2;
+  if(['11 a 50','Más de 50'].includes(d.empleados)) ptsEscala += 1;
+  if(['Entre $200 millones y $1.000 millones','Entre $1.000 y $5.000 millones','Más de $5.000 millones']
+      .includes(d.ingresos_anuales)) ptsEscala += 2;
+  const potencial_escala = ptsEscala >= 8 ? 'Alto' : ptsEscala >= 4 ? 'Medio' : 'Bajo';
+
+  /* ---------- Frenos: la brecha más grande, ponderada ---------- */
+  const declarados = new Set((d.freno||[]).map((f)=>FRENO_A_FRENTE[f]).filter(Boolean));
+  let frenos = FRENTES.map((f)=>{
+    const nivel   = m[f.id];
+    const peso    = PESOS[et.clave][f.id] || 1;
+    const decl    = declarados.has(f.id);
+    const brecha  = (100 - nivel) * peso + (decl ? 25 : 0);
+    return { id:f.id, frente:f.titulo, nivel, brecha:Math.round(brecha), declarado:decl,
+             diagnostico:FRENTE_TEXTO[f.id].diag[et.clave],
+             accion:FRENTE_TEXTO[f.id].hacer[et.clave] };
+  })
+  .filter((f)=> f.nivel < 80)   // un frente en 90 no es un freno, lo haya dicho o no
+  .sort((a,b)=> b.brecha - a.brecha)
+  .slice(0, 3);
+
+  /* Si ningún frente sale bajo, no le inventamos un problema. Nos quedamos con
+     lo que la persona señaló: sabe cosas de su negocio que ningún puntaje mide. */
+  const sin_frenos = frenos.length === 0;
+  if(sin_frenos){
+    frenos = FRENTES.filter((f)=> declarados.has(f.id)).slice(0, 2).map((f)=>({
+      id:f.id, frente:f.titulo, nivel:m[f.id], brecha:0, declarado:true,
+      diagnostico:'En los números no aparece como debilidad, pero tú lo señalaste como tu freno. Ese dato pesa más que el puntaje.',
+      accion:FRENTE_TEXTO[f.id].hacer[et.clave],
+    }));
+  }
+
+  /* ---------- Rol y prioridad de contacto (solo lectura interna) ---------- */
+  const aporte = d.aporte || [];
+  let rol_potencial = 'Emprendedor acompañado';
+  if(aporte.includes('Capital para invertir en otros'))                      rol_potencial = 'Inversionista';
+  else if(aporte.includes('Mi experiencia y mentoría') && et.clave === 'E3') rol_potencial = 'Mentor';
+  else if(aporte.includes('Un servicio o producto para la comunidad'))       rol_potencial = 'Proveedor';
+  else if(aporte.includes('Espacio o infraestructura'))                      rol_potencial = 'Aliado';
+  else if(aporte.includes('Tiempo como voluntario'))                         rol_potencial = 'Voluntario';
+  else if(aporte.includes('Contactos'))                                      rol_potencial = 'Conector';
+
+  let score = 0;
+  if(potencial_escala === 'Alto') score += 3; else if(potencial_escala === 'Medio') score += 1;
+  if(et.clave === 'E3') score += 2; else if(et.clave === 'E2') score += 1;
+  if(['Entre $1.000.000 y $5.000.000 COP','Más de $5.000.000 COP'].includes(d.capacidad_inversion)) score += 2;
+  if(d.capacidad_inversion === 'Solo puedo participar en lo gratuito') score -= 1;
+  if(d.tiempo_mensual === 'Más de 10 horas') score += 1;
+  if(d.tiempo_mensual === 'Menos de 2 horas') score -= 1;
+  if(rol_potencial !== 'Emprendedor acompañado') score += 2;
+  if(EJES.some((e)=> Number(d['eje_'+e.id] ?? 0) === 3)) score += 1;
+  const prioridad_contacto = score >= 6 ? 'Alta' : score >= 3 ? 'Media' : 'Baja';
+
+  const tam = tamanoEmpresa(d);
+  const a = {
+    etapa, madurez:m, frenos, sin_frenos,
+    fortalezas: calcularFortalezas(d, m),
+    riesgos: calcularRiesgos(d, m),
+    tamano_empresa: tam.largo, tamano_corto: tam.corto,
+    potencial_escala, rol_potencial, prioridad_contacto,
+  };
+
+  a.rutas = RUTAS.filter((r)=>{ try{ return r.aplica(d, a); }catch(e){ return false; } })
+                 .slice(0, 4)
+                 .map((r)=>({ nombre:r.nombre, texto:r.texto }));
+
+  /* ---------- El momento, en una línea, para el panel ---------- */
+  const partes = [];
+  partes.push(`${etapa.nombre} (${etapa.score}/100)`);
+  if(d.sector) partes.push(d.sector.toLowerCase());
+  if(d.ciudad) partes.push(d.ciudad);
+  if(d.clientes_pagando && d.clientes_pagando !== 'Ninguno') partes.push(`${d.clientes_pagando} clientes`);
+  else partes.push('sin clientes pagando');
+  if(frenos.length) partes.push('freno: ' + frenos.map((f)=>f.frente.toLowerCase()).join(', '));
+  if(a.riesgos.length) partes.push('riesgo: ' + a.riesgos[0].toLowerCase());
+  a.lectura_momento = partes.join(' · ');
+
+  return a;
+}
+
+/** Dónde la fundación calza de verdad, según lo que pidió. */
+function acompanamiento(d, a){
+  const apoyo = d.apoyo || [];
+  const out = [];
+  const interes = (id)=> Number(d['eje_'+id] ?? 0) >= 2;
+
+  if(interes('mentoria') || apoyo.includes('Mentoría de alguien que ya lo hizo'))
+    out.push('Un mentor de la comunidad que ya pasó por la etapa en la que estás.');
+  if(interes('mercado') || apoyo.includes('Ayuda para conseguir clientes'))
+    out.push('Presentaciones concretas a clientes potenciales dentro de la red de la fundación.');
+  if(interes('financiacion') || apoyo.includes('Financiación'))
+    out.push('Acompañamiento para llegar preparado a una convocatoria, un banco o un inversionista.');
+  if(interes('red') || apoyo.includes('Contactos y red'))
+    out.push('Los encuentros de la comunidad, que es la vía más directa para lo que pediste.');
+  if(interes('formacion') || apoyo.includes('Formación en un tema puntual'))
+    out.push('Talleres cortos sobre el frente que hoy te está frenando.');
+  if(apoyo.includes('Acompañamiento para formalizarme') || apoyo.includes('Ayuda para ordenar los números'))
+    out.push('Apoyo del equipo de consultoría para poner en orden lo administrativo.');
+  if(interes('rural'))
+    out.push('Managers Rural, si tu negocio toca territorio, campo o cadenas agrícolas.');
+  if(apoyo.includes('Un socio o alguien que entre al equipo'))
+    out.push('Podemos buscarte perfiles dentro de la comunidad para lo que te falta en el equipo.');
+  return out.slice(0, 3);
+}
+
+/* ============================================================
+   Pantalla de resultado — "Tu diagnóstico"
+   Muestra la etapa, el mapa de madurez, los frenos y qué hacer.
+   No muestra la prioridad de contacto, el potencial ni los riesgos:
+   eso es lectura del equipo.
+   ============================================================ */
+
+function renderResultado(d, a){
+  const nombre = (d.nombre||'').split(' ')[0] || 'Hola';
+  const et = a.etapa;
+  const nivelClase = (n)=> n >= 67 ? 'alto' : n >= 34 ? 'medio' : 'bajo';
+
+  const resumenWa = encodeURIComponent(
+    `Hola, soy ${d.nombre}, de ${d.nombre_emprendimiento}. Acabo de hacer el diagnóstico de emprendedores ` +
+    `de la Fundación Managers. Me salió etapa ${et.nombre} y mi principal freno es ` +
+    `${a.frenos.length ? a.frenos[0].frente.toLowerCase() : 'por definir'}.`);
+
+  $('#p6').innerHTML = `
+    <div class="resultado-card">
+      <div class="etapa-sello"><i></i>${esc(et.titulo)}</div>
+      <div class="kicker">${esc(nombre)}, este es tu diagnóstico</div>
+      <h2>${esc(d.nombre_emprendimiento||'Tu emprendimiento')}</h2>
+      <p class="lema">${esc((d.meta_12m||'').trim() || 'Tu meta para los próximos 12 meses, en tus propias palabras.')}</p>
+    </div>
+
+    <div id="avisoEnvio" class="aviso"></div>
+
+    <div class="seccion-res">
+      <h3>Dónde estás hoy</h3>
+      <div class="hitos">
+        <div><b>${esc(et.nombre)}</b><span>Etapa</span></div>
+        <div><b>${esc(d.clientes_pagando === 'Ninguno' ? '0' : (d.clientes_pagando||'—'))}</b><span>Clientes pagando</span></div>
+        <div><b>${esc(a.tamano_corto || '—')}</b><span>Tamaño</span></div>
+      </div>
+      <div class="tarjeta" style="margin-top:10px">
+        <p style="font-size:14.5px; line-height:1.6">${esc(et.resumen)}</p>
+      </div>
+      <div class="pregunta-viva">
+        <span>La pregunta de tu etapa</span>
+        <p>${esc(et.pregunta)}</p>
+        <em>${esc(et.nota)}</em>
+      </div>
+    </div>
+
+    ${ a.fortalezas.length ? `
+    <div class="seccion-res">
+      <h3>Lo que ya tienes a favor</h3>
+      <ul class="fortalezas">${a.fortalezas.map((f)=>`<li>${esc(f)}</li>`).join('')}</ul>
+    </div>` : '' }
+
+    <div class="seccion-res">
+      <h3>Tu mapa de madurez</h3>
+      <p class="nota" style="margin-bottom:12px">Ocho frentes, cada uno de 0 a 100. No hace falta tenerlos todos altos: hace falta tener alto el que corresponde a tu etapa.</p>
+      <div class="madurez">
+        ${FRENTES.map((f)=>`
+          <div class="madurez-fila ${nivelClase(a.madurez[f.id])}">
+            <b>${esc(f.titulo)}</b>
+            <div class="madurez-barra"><i style="width:${a.madurez[f.id]}%"></i></div>
+            <span>${a.madurez[f.id]}</span>
+          </div>`).join('')}
+      </div>
+    </div>
+
+    ${ a.frenos.length ? `
+    <div class="seccion-res">
+      <h3>Lo que te está frenando</h3>
+      <p class="nota" style="margin-bottom:12px">Ordenado por lo que más te cuesta hoy, no por lo que más falta en general.</p>
+      ${a.frenos.map((f,i)=>`
+        <div class="freno-card">
+          <div class="cabeza">
+            <strong>${i+1}. ${esc(f.frente)}</strong>
+            ${f.declarado ? '<em>lo dijiste tú</em>' : ''}
+          </div>
+          <p>${esc(f.diagnostico)}</p>
+          <div class="hacer">
+            <strong>${esc(f.accion.t)}</strong>
+            <span>${esc(f.accion.d)}</span>
+          </div>
+        </div>`).join('')}
+    </div>` : '' }
+
+    ${ a.frenos.length ? `
+    <div class="seccion-res">
+      <h3>Tus próximos 90 días</h3>
+      <ul class="noventa">
+        ${a.frenos.map((f)=>`<li><div><strong>${esc(f.accion.t)}</strong>
+          <span>Frente: ${esc(f.frente.toLowerCase())}.</span></div></li>`).join('')}
+      </ul>
+    </div>` : '' }
+
+    ${ a.rutas.length ? `
+    <div class="seccion-res">
+      <h3>Rutas en Colombia que te conviene mirar</h3>
+      <p class="nota" style="margin-bottom:12px">Cada programa define su propia población beneficiaria y sus fechas. Esto es por dónde empezar a buscar, no una confirmación de que calificas.</p>
+      ${a.rutas.map((r)=>`<div class="programa"><strong>${esc(r.nombre)}</strong><span>${esc(r.texto)}</span></div>`).join('')}
+    </div>` : '' }
+
+    ${ (d.freno_det || d.meta_6m) ? `
+    <div class="seccion-res">
+      <h3>Lo que nos contaste</h3>
+      ${[['Lo que está pasando', d.freno_det],['Lo que necesitas en 6 meses', d.meta_6m]]
+        .filter(([,v])=>v && v.trim())
+        .map(([k,v])=>`<div class="cita" style="margin-bottom:8px"><em>${esc(k)}</em>«${esc(v)}»</div>`).join('')}
+    </div>` : '' }
+
+    ${ (()=>{ const ap = acompanamiento(d, a); return ap.length ? `
+    <div class="seccion-res">
+      <h3>Dónde la fundación te puede acompañar</h3>
+      <div class="tarjeta">
+        <ul style="margin:0; padding-left:20px; font-size:14.5px; line-height:1.7; color:var(--muted)">
+          ${ap.map((x)=>`<li>${esc(x)}</li>`).join('')}
+        </ul>
+      </div>
+    </div>` : ''; })() }
+
+    <div class="cierre">
+      <p>Gracias por tomarte los veinte minutos y por responder con honestidad. El equipo te escribe a <strong>${esc(d.correo)}</strong> con lo que corresponda a tu etapa.</p>
+      <a class="wa" href="https://wa.me/${WHATSAPP}?text=${resumenWa}" target="_blank" rel="noopener">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.2-1.7-.9-2-1-.3-.1-.5-.1-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.2-.5-2.3-1.4-.9-.8-1.4-1.7-1.6-2-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5 0-.2 0-.4 0-.5 0-.2-.7-1.6-.9-2.2-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.3zM12 2a10 10 0 0 0-8.6 15L2 22l5.2-1.4A10 10 0 1 0 12 2zm0 18.2c-1.6 0-3.1-.4-4.4-1.2l-.3-.2-3.1.8.8-3-.2-.3a8.2 8.2 0 1 1 7.2 4z"/></svg>
+        Escribirle a la fundación
+      </a>
+    </div>
+
+    <p class="guardado" style="margin-top:24px">
+      Puedes pedir la actualización o eliminación de tus datos escribiendo a
+      <a href="mailto:williammojica@fundacionmanagers.com">williammojica@fundacionmanagers.com</a>.
+    </p>`;
+}
+
+/* ============================================================
+   Envío
+   ============================================================ */
+
+function armarFila(d, a){
+  return {
+    // ---------- Identificación ----------
+    nombre:d.nombre, correo:d.correo, celular:d.celular,
+    departamento:d.departamento, ciudad:d.ciudad,
+    fecha_nacimiento:d.fecha_nacimiento || null, genero:d.genero || null,
+
+    // ---------- Dimensión 1 · El emprendedor ----------
+    nivel_educativo:d.nivel_educativo, formacion_relacionada:d.formacion_relacionada,
+    intentos_previos:d.intentos_previos, cierre_previo:d.cierre_previo || null,
+    dedicacion:d.dedicacion, sustento:d.sustento || [],
+    motivacion:d.motivacion || [], capacidades:d.capacidades, miedo_fracaso:d.miedo_fracaso,
+    equipo_fundador:d.equipo_fundador, socios_complementarios:d.socios_complementarios || null,
+
+    // ---------- Dimensión 2 · El emprendimiento ----------
+    nombre_emprendimiento:d.nombre_emprendimiento, que_hace:d.que_hace, sector:d.sector,
+    base_tecnologica:d.base_tecnologica, trl:d.trl || null,
+    tiempo_idea:d.tiempo_idea, ya_vendio:d.ya_vendio === 'Sí',
+    primera_venta:d.primera_venta || null, frecuencia_ventas:d.frecuencia_ventas || null,
+    formalizacion:d.formalizacion || [], razon_informal:d.razon_informal || [],
+    empleados:d.empleados, tipo_vinculacion:d.tipo_vinculacion || [],
+    ingresos_anuales:d.ingresos_anuales, ambito:d.ambito, exportar:d.exportar,
+
+    // ---------- Dimensión 3 · Cliente y validación ----------
+    cliente_quien:d.cliente_quien, problema:d.problema, alternativa:d.alternativa,
+    entrevistas:d.entrevistas, clientes_pagando:d.clientes_pagando,
+    recurrencia:d.recurrencia || null, concentracion:d.concentracion || null,
+    decepcion:d.decepcion || null, canales:d.canales || [],
+    adquisicion_predecible:d.adquisicion_predecible, diferencia:d.diferencia,
+
+    // ---------- Dimensión 4 · Modelo y números ----------
+    modelo_ingreso:d.modelo_ingreso || [], precio_como:d.precio_como,
+    conoce_costo:d.conoce_costo, margen:d.margen || null,
+    cuentas_separadas:d.cuentas_separadas, contabilidad:d.contabilidad,
+    sueldo_propio:d.sueldo_propio, punto_equilibrio:d.punto_equilibrio,
+    inversion_inicial:d.inversion_inicial, origen_capital:d.origen_capital || [],
+    busco_financiacion:d.busco_financiacion, porque_no_consiguio:d.porque_no_consiguio || [],
+    runway:d.runway, programas_previos:d.programas_previos || [],
+
+    // ---------- Dimensión 5 · Cuello de botella ----------
+    freno:d.freno || [], freno_det:d.freno_det, meta_6m:d.meta_6m, meta_12m:d.meta_12m,
+    apoyo:d.apoyo || [],
+    eje_mentoria:d.eje_mentoria, eje_red:d.eje_red, eje_formacion:d.eje_formacion,
+    eje_financiacion:d.eje_financiacion, eje_mercado:d.eje_mercado, eje_rural:d.eje_rural,
+    tiempo_mensual:d.tiempo_mensual, capacidad_inversion:d.capacidad_inversion,
+    aporte:d.aporte || [],
+    acepta_whatsapp:(d.acepta_whatsapp || '').startsWith('Sí'),
+
+    // ---------- Lectura interna ----------
+    etapa:a.etapa.clave, etapa_nombre:a.etapa.nombre, etapa_score:a.etapa.score,
+    madurez:a.madurez, frenos:a.frenos, fortalezas:a.fortalezas, riesgos:a.riesgos,
+    rutas:a.rutas, tamano_empresa:a.tamano_empresa, sin_frenos:a.sin_frenos,
+    potencial_escala:a.potencial_escala, rol_potencial:a.rol_potencial,
+    prioridad_contacto:a.prioridad_contacto, lectura_momento:a.lectura_momento,
+
+    // ---------- Trazabilidad ----------
+    consentimiento:true, consentimiento_en:d.consentimiento_en || new Date().toISOString(),
+    origen:'artefacto-web', respuestas:d,
+  };
+}
+
+async function enviarASupabase(fila){
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/${TABLA}`, {
+    method:'POST',
+    headers:{ 'apikey':SUPABASE_KEY, 'Authorization':'Bearer '+SUPABASE_KEY,
+              'Content-Type':'application/json', 'Prefer':'return=minimal' },
+    body: JSON.stringify(fila),
+  });
+  if(!res.ok) throw new Error('HTTP ' + res.status + ' — ' + (await res.text()).slice(0,200));
+}
+
+async function finalizar(){
+  const a = analizar(estado.datos);
+  renderResultado(estado.datos, a);
+  irA(6);
+  try{
+    await enviarASupabase(armarFila(estado.datos, a));
+    try{ localStorage.removeItem(STORAGE_KEY); }catch(e){}
+  }catch(err){
+    const aviso = $('#avisoEnvio');
+    aviso.className = 'aviso error visible';
+    aviso.innerHTML = 'No pudimos guardar tus respuestas en el servidor. Tu diagnóstico de abajo es correcto — ' +
+      'por favor escríbenos por WhatsApp para que no se pierda tu registro.' +
+      '<br><span style="font-size:12px;opacity:.7">Detalle técnico: ' + esc(err.message) + '</span>';
+    console.error('[emprendedores] falló el envío:', err);
+  }
+}
+
+/* ============================================================
+   Arranque
+   ============================================================ */
+
+(function iniciar(){
+  const g = restaurarLocal();
+  if(g && Object.keys(g.datos).length){
+    estado.datos = g.datos;
+    if(g.datos.consentimiento_en) $('#consentimiento').checked = true;
+    pintarDatos();
+    const aviso = $('#avisoReanudar');
+    aviso.hidden = false;
+    aviso.textContent = 'Encontramos respuestas tuyas sin terminar. Puedes seguir donde ibas.';
+    if(g.pantalla > 0 && g.pantalla < 6){
+      destinoInicio = g.pantalla;
+      $('#btnEmpezar').textContent = 'Continuar donde iba';
+    }
+  }else{
+    aplicarDependencias();
+  }
+  $('#barraProgreso').style.width = '0%';
+})();
+</script>
+</body>
+</html>
