@@ -6,7 +6,10 @@ import { TorneoBackdrop } from '@/components/torneo/TorneoBackdrop';
 import { TeamCrest } from '@/components/torneo/TeamCrest';
 import { CampeonReveal } from '@/components/torneo/CampeonReveal';
 import { TorneoNav } from '@/components/torneo/TorneoNav';
+import { TablaPosiciones } from '@/components/torneo/TablaPosiciones';
+import { RankingGoleadores } from '@/components/torneo/RankingGoleadores';
 import { ALIANZA, ICONE_CYAN } from '@/lib/alianza';
+import { JORNADA_ACTUAL, TOTAL_JORNADAS } from '@/lib/liga';
 import {
   CAMPEON_VIGENTE,
   TORNEO_BIO,
@@ -20,7 +23,7 @@ import {
 } from '@/lib/torneo-data';
 
 const STATS = [
-  { v: '3', l: 'Ediciones' },
+  { v: '4', l: 'Ediciones' },
   { v: '8', l: 'Equipos' },
   { v: '28+', l: 'Edad líderes' },
   { v: 'F7', l: 'Formato' },
@@ -49,7 +52,7 @@ export function TorneoLanding() {
           <div className="flex flex-wrap items-center justify-between gap-4 animate-fade-up">
             <span className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-amarillo to-naranja px-4 py-1.5 font-bufon text-xs font-bold uppercase tracking-[0.15em] text-carbon">
               <span className="h-2 w-2 rounded-full bg-carbon pulse-live" />
-              Torneo Managers F7 · Tercera edición 2026
+              Torneo Managers F7 · Cuarta edición 2026-2
             </span>
             <a
               href={TORNEO_INSTAGRAM_URL}
@@ -104,6 +107,21 @@ export function TorneoLanding() {
               </div>
             </div>
           ))}
+        </div>
+      </section>
+
+      {/* ===== FASE DE GRUPOS: TABLA Y GOLEADORES ===== */}
+      <section id="fase-de-grupos" className="relative z-10 overflow-hidden grain scroll-mt-24">
+        <div className="relative mx-auto max-w-7xl px-6 py-20 lg:px-8 lg:py-28">
+          <span className="inline-flex items-center gap-2 rounded-full border border-amarillo/40 bg-amarillo/10 px-4 py-1.5 font-bufon text-xs font-bold uppercase tracking-[0.15em] text-amarillo">
+            <span className="h-2 w-2 rounded-full bg-amarillo pulse-live" />
+            Cuarta edición en curso · Fecha {JORNADA_ACTUAL} de {TOTAL_JORNADAS}
+          </span>
+
+          <div className="mt-10 space-y-24">
+            <TablaPosiciones />
+            <RankingGoleadores />
+          </div>
         </div>
       </section>
 
