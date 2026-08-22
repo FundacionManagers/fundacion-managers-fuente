@@ -45,8 +45,8 @@ export const EDICIONES: readonly Edicion[] = [
   {
     numero: 4,
     periodo: '2026-2',
-    estado: 'proxima',
-    notas: 'Cuarta edición — inscripciones por abrir.',
+    estado: 'en-curso',
+    notas: 'Cuarta edición — fase de grupos, 8 equipos a 7 fechas.',
   },
 ] as const;
 
@@ -61,7 +61,7 @@ export const EQUIPOS_2026: readonly string[] = [
   'Pomada Alfa FC',
   'Managers FC',
   'The Originals FC',
-  'Alianza',
+  'La Banda Cruzada FC',
   'Los Pibes del Barrio',
   'Useche FC',
   'Yonotomo FC',
