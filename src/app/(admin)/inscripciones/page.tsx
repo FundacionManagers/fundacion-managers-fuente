@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { ShieldAlert } from 'lucide-react';
 import { InscripcionesDashboard } from '@/components/torneo/InscripcionesDashboard';
+import { NavAdmin } from '@/components/shared/NavAdmin';
 
 export const metadata: Metadata = {
   title: 'Dashboard de inscripciones · Admin',
@@ -11,7 +12,9 @@ export default function AdminInscripcionesPage() {
   return (
     <div className="min-h-screen bg-carbon">
       <div className="mx-auto max-w-5xl px-6 py-16 lg:py-20">
-        <p className="font-bufon text-sm font-bold uppercase tracking-[0.25em] text-naranja">
+        <NavAdmin actual="/inscripciones/" />
+
+        <p className="mt-8 font-bufon text-sm font-bold uppercase tracking-[0.25em] text-naranja">
           Panel interno · Torneo Managers
         </p>
         <h1 className="mt-2 font-sport text-5xl uppercase leading-none text-neutral-50 md:text-6xl">
