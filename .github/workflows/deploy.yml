@@ -14,8 +14,12 @@ name: Desplegar web (GitHub Pages)
 on:
   push:
     branches: [main]
+  # Minutos sueltos a proposito, no en punto. GitHub encola los crons de todo
+  # el mundo y :00, :15, :30 y :45 son los mas congestionados: ahi las
+  # ejecuciones se retrasan o se saltan. El horario es orientativo de todos
+  # modos, GitHub no garantiza puntualidad.
   schedule:
-    - cron: '*/15 * * * *'
+    - cron: '7,22,37,52 * * * *'
   workflow_dispatch:
 
 permissions:
