@@ -21,6 +21,13 @@ on:
   schedule:
     - cron: '7,22,37,52 * * * *'
   workflow_dispatch:
+  # Disparo desde el panel. Se usa repository_dispatch y no workflow_dispatch
+  # porque este ultimo exige derechos de admin sobre el repositorio cuando se
+  # llama con un token personal clasico —GitHub responde 403 "Must have admin
+  # rights to Repository"—. repository_dispatch se conforma con permiso de
+  # escritura, que es el que tiene la cuenta que opera el panel.
+  repository_dispatch:
+    types: [publicar]
 
 permissions:
   contents: read
