@@ -14,7 +14,7 @@ import { PanelResultados } from '@/components/torneo/PanelResultados';
 export function PanelTorneoCliente() {
   return (
     <PuertaAdmin titulo="Panel del torneo">
-      {(salir) => <PanelResultados salir={salir} />}
+      {(salir, correo) => <PanelResultados salir={salir} correo={correo} />}
     </PuertaAdmin>
   );
 }

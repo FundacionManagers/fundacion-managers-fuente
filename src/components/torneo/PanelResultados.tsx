@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Check, Loader2, Plus, RefreshCw, Trash2, TriangleAlert } from 'lucide-react';
+import { DefinirClave } from '@/components/shared/DefinirClave';
 import { TeamCrest } from '@/components/torneo/TeamCrest';
 import { EQUIPOS, getEquipo } from '@/lib/torneo-data';
 import { TOTAL_JORNADAS } from '@/lib/liga';
@@ -19,12 +20,13 @@ import {
 } from '@/lib/panel-torneo';
 import { cn } from '@/lib/utils';
 
-type Seccion = 'marcadores' | 'tarjetas' | 'goleadores';
+type Seccion = 'marcadores' | 'tarjetas' | 'goleadores' | 'acceso';
 
 const SECCIONES: { key: Seccion; label: string }[] = [
   { key: 'marcadores', label: 'Marcadores' },
   { key: 'tarjetas', label: 'Tarjetas' },
   { key: 'goleadores', label: 'Goleadores' },
+  { key: 'acceso', label: 'Mi acceso' },
 ];
 
 /** Campo numérico que admite quedar vacío mientras se escribe. */
@@ -55,7 +57,13 @@ function NumeroInput({
   );
 }
 
-export function PanelResultados({ salir }: { salir: () => Promise<void> }) {
+export function PanelResultados({
+  salir,
+  correo,
+}: {
+  salir: () => Promise<void>;
+  correo: string;
+}) {
   const [estado, setEstado] = useState<EstadoTorneo | null>(null);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState('');
@@ -379,6 +387,8 @@ export function PanelResultados({ salir }: { salir: () => Promise<void> }) {
       {seccion === 'goleadores' ? (
         <SeccionGoleadores estado={estado} onCambio={() => void recargar()} />
       ) : null}
+
+      {seccion === 'acceso' ? <DefinirClave correo={correo} /> : null}
     </div>
   );
 }

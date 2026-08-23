@@ -20,7 +20,7 @@ export function PuertaAdmin({
   children,
 }: {
   titulo: string;
-  children: (salir: () => Promise<void>) => React.ReactNode;
+  children: (salir: () => Promise<void>, correo: string) => React.ReactNode;
 }) {
   const [listo, setListo] = useState(false);
   const [sesion, setSesion] = useState(false);
@@ -204,5 +204,5 @@ export function PuertaAdmin({
     return <p className="text-sm text-neutral-400">Comprobando permisos…</p>;
   }
 
-  return <>{children(salir)}</>;
+  return <>{children(salir, correoSesion)}</>;
 }
