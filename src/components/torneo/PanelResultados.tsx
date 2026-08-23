@@ -5,7 +5,7 @@ import { Check, Loader2, Plus, RefreshCw, Trash2, TriangleAlert } from 'lucide-r
 import { DefinirClave } from '@/components/shared/DefinirClave';
 import { TeamCrest } from '@/components/torneo/TeamCrest';
 import { EQUIPOS, getEquipo } from '@/lib/torneo-data';
-import { TOTAL_JORNADAS } from '@/lib/liga';
+import { calcularPosiciones, COLUMNAS_TABLA, TOTAL_JORNADAS, type PartidoLiga } from '@/lib/liga';
 import {
   actualizarGoleador,
   cargarTodo,
@@ -20,11 +20,12 @@ import {
 } from '@/lib/panel-torneo';
 import { cn } from '@/lib/utils';
 
-type Seccion = 'marcadores' | 'tarjetas' | 'goleadores' | 'acceso';
+type Seccion = 'marcadores' | 'tarjetas' | 'previa' | 'goleadores' | 'acceso';
 
 const SECCIONES: { key: Seccion; label: string }[] = [
   { key: 'marcadores', label: 'Marcadores' },
   { key: 'tarjetas', label: 'Tarjetas' },
+  { key: 'previa', label: 'Tabla (previa)' },
   { key: 'goleadores', label: 'Goleadores' },
   { key: 'acceso', label: 'Mi acceso' },
 ];
@@ -93,6 +94,27 @@ export function PanelResultados({
   }, [recargar]);
 
   const problemas = useMemo(() => (estado ? descuadres(estado) : []), [estado]);
+
+  // Tabla calculada con lo que hay AHORA en pantalla, aunque no se haya
+  // guardado. Deja ver el efecto de un marcador antes de tocar nada real.
+  const previa = useMemo(() => {
+    if (!estado) return [];
+    const comoLiga: PartidoLiga[] = estado.partidos.map((p) => ({
+      id: p.id,
+      jornada: p.jornada,
+      fecha: p.fecha,
+      hora: p.hora,
+      local: p.local,
+      visitante: p.visitante,
+      golesLocal: p.jugado ? p.golesLocal : null,
+      golesVisitante: p.jugado ? p.golesVisitante : null,
+      estado: p.jugado && p.golesLocal != null && p.golesVisitante != null ? 'jugado' : 'programado',
+    }));
+    const disciplina = Object.fromEntries(
+      estado.disciplina.map((d) => [d.equipo, { amarillas: d.amarillas, rojas: d.rojas }]),
+    );
+    return calcularPosiciones(comoLiga, disciplina);
+  }, [estado]);
   const partidosJornada = useMemo(
     () => (estado ? estado.partidos.filter((p) => p.jornada === jornada) : []),
     [estado, jornada],
@@ -386,6 +408,68 @@ export function PanelResultados({
       {/* ── GOLEADORES ─────────────────────────────────────────────── */}
       {seccion === 'goleadores' ? (
         <SeccionGoleadores estado={estado} onCambio={() => void recargar()} />
+      ) : null}
+
+      {seccion === 'previa' ? (
+        <div className="mt-8">
+          <p className="text-sm text-neutral-400">
+            Así quedaría la tabla con lo que tienes en pantalla ahora mismo, esté guardado o no.
+            Cambia un marcador y vuelve aquí: se recalcula sin tocar el sitio.
+          </p>
+          <div className="mt-5 overflow-x-auto rounded-2xl border border-white/10 bg-black/40">
+            <table className="w-full min-w-[560px] border-collapse text-sm">
+              <thead>
+                <tr className="border-b border-amarillo/30 bg-amarillo/10">
+                  <th className="px-3 py-2.5 text-center font-bufon text-xs uppercase text-amarillo">
+                    Pos
+                  </th>
+                  <th className="px-3 py-2.5 text-left font-bufon text-xs uppercase text-amarillo">
+                    Equipo
+                  </th>
+                  {COLUMNAS_TABLA.map((c) => (
+                    <th
+                      key={c.key}
+                      title={c.largo}
+                      className="px-2 py-2.5 text-center font-bufon text-xs uppercase text-amarillo"
+                    >
+                      {c.corto}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {previa.map((f) => (
+                  <tr key={f.equipo} className="border-b border-white/5 last:border-0">
+                    <td className="px-3 py-2.5 text-center tabular-nums text-neutral-400">
+                      {f.posicion}
+                    </td>
+                    <td className="whitespace-nowrap px-3 py-2.5">
+                      <span className="flex items-center gap-2">
+                        <TeamCrest slug={f.equipo} size={24} />
+                        <span className="font-semibold text-neutral-100">
+                          {getEquipo(f.equipo)?.nombre ?? f.equipo}
+                        </span>
+                      </span>
+                    </td>
+                    {COLUMNAS_TABLA.map((c) => (
+                      <td
+                        key={c.key}
+                        className={cn(
+                          'px-2 py-2.5 text-center tabular-nums',
+                          c.key === 'pts' ? 'font-sport text-base text-amarillo' : 'text-neutral-300',
+                          c.key === 'dg' && f.dg > 0 && 'text-emerald-400',
+                          c.key === 'dg' && f.dg < 0 && 'text-red-400',
+                        )}
+                      >
+                        {c.key === 'dg' && f.dg > 0 ? `+${f.dg}` : f[c.key]}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
       ) : null}
 
       {seccion === 'acceso' ? <DefinirClave correo={correo} /> : null}
