@@ -95,6 +95,9 @@ Deno.serve(async (req) => {
   }
 
   const detalle = await githubRes.text();
+  // Queda en los registros de la funcion: sin esto, un fallo aqui solo se ve
+  // como un 502 opaco y hay que adivinar si fue token, permiso o ruta.
+  console.error(`[publicar] GitHub ${githubRes.status}: ${detalle.slice(0, 200)}`);
   return responder(502, {
     error: 'GitHub rechazó el disparo.',
     estado: githubRes.status,

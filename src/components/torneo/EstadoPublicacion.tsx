@@ -105,7 +105,24 @@ export function EstadoPublicacion() {
     setPublicando(false);
 
     if (error) {
-      const detalle = (data as { error?: string } | null)?.error;
+      // Cuando la funcion responde con un codigo de error, supabase-js deja
+      // `data` en null y guarda la respuesta real en `error.context`. Leerla
+      // de `data`, como estaba antes, siempre daba undefined y acababa en un
+      // mensaje generico que no decia nada.
+      let detalle = '';
+      try {
+        const respuesta = (error as { context?: Response }).context;
+        if (respuesta && typeof respuesta.json === 'function') {
+          const cuerpo = await respuesta.json();
+          if (cuerpo?.error) {
+            detalle = cuerpo.estado
+              ? `${cuerpo.error} (GitHub respondio ${cuerpo.estado})`
+              : String(cuerpo.error);
+          }
+        }
+      } catch {
+        // Si no se puede leer el cuerpo, queda el mensaje generico.
+      }
       setFallo(detalle || 'No se pudo iniciar el despliegue.');
       return;
     }
