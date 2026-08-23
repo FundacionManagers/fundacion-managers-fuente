@@ -1,6 +1,6 @@
 import { TeamCrest } from '@/components/torneo/TeamCrest';
 import { getEquipo } from '@/lib/torneo-data';
-import { COLUMNAS_TABLA, calcularPosiciones, jornadaActualDe } from '@/lib/liga';
+import { COLUMNAS_TABLA, CRITERIOS_DESEMPATE, calcularPosiciones, jornadaActualDe } from '@/lib/liga';
 import type { DatosLiga } from '@/lib/liga-supabase';
 import { cn } from '@/lib/utils';
 
@@ -127,6 +127,29 @@ export function TablaPosiciones({ datos }: { datos: DatosLiga }) {
           </div>
         ))}
       </dl>
+
+      {/* Articulo 14 del reglamento. Se publica porque sin esto la tabla
+          parece arbitraria: un club puede ir sobre otro con peor diferencia
+          de gol, y quien mira no sabe por que. */}
+      <div className="mt-6 rounded-xl border border-white/10 bg-black/30 px-5 py-4">
+        <p className="font-bufon text-xs font-bold uppercase tracking-[0.2em] text-amarillo">
+          Criterios de desempate · Artículo 14
+        </p>
+        <ol className="mt-3 flex flex-wrap gap-x-6 gap-y-2 text-sm text-neutral-300">
+          {CRITERIOS_DESEMPATE.map((c, i) => (
+            <li key={c} className="flex items-center gap-2">
+              <span className="inline-flex h-5 w-5 items-center justify-center rounded-md border border-white/15 font-mono text-[10px] text-neutral-400">
+                {i + 1}
+              </span>
+              {c}
+            </li>
+          ))}
+        </ol>
+        <p className="mt-3 text-xs text-neutral-500">
+          Se aplican en ese orden. El Fair Play pesa más que la diferencia de gol: por eso un
+          club con menos tarjetas puede ir por encima de otro que marcó más.
+        </p>
+      </div>
     </div>
   );
 }

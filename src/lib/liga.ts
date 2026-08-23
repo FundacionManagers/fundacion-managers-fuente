@@ -232,10 +232,23 @@ export const PROXIMO_PARTIDO =
 /**
  * Calcula la tabla de posiciones a partir de los partidos jugados.
  *
- * Desempate confirmado por la organización (Jorge, agosto 2026):
- * puntos, luego diferencia de gol, luego juego limpio. Se añade goles a
- * favor y orden alfabético como último recurso, para que la tabla sea
- * estable entre compilaciones aunque dos clubes empaten en todo.
+ * Desempate segun el Articulo 14 del reglamento del torneo, en este orden:
+ *
+ *   1. Puntaje
+ *   2. Fair Play          <- antes que la diferencia de gol
+ *   3. Diferencia de gol
+ *   4. Goles a favor
+ *   5. Resultados entre si
+ *   6. Sorteo
+ *
+ * El orden importa: con Fair Play en segundo lugar, un club con peor
+ * diferencia de gol puede ir por encima si tiene menos tarjetas. Es
+ * exactamente lo que ocurre entre The Originals y Los Pibes en la 4a
+ * edicion, y explica el orden del grafico oficial de la Fecha 4.
+ *
+ * El sorteo no se automatiza: si dos clubes empatan en los cinco criterios,
+ * la funcion los deja en orden alfabetico para que la tabla no cambie sola
+ * entre compilaciones, y la organizacion decide con la moneda.
  */
 export function calcularPosiciones(
   partidos: readonly PartidoLiga[] = PARTIDOS_LIGA,
@@ -285,12 +298,34 @@ export function calcularPosiciones(
 
   const filas = [...tabla.values()].map((f) => ({ ...f, dg: f.gf - f.gc }));
 
+  /**
+   * Criterio 5: resultados entre si. Suma lo que cada uno le hizo al otro en
+   * sus enfrentamientos directos. Devuelve 0 si no se han enfrentado o si
+   * quedaron igualados.
+   */
+  function entreSi(a: string, b: string): number {
+    let golesA = 0;
+    let golesB = 0;
+    for (const p of partidos) {
+      if (p.estado !== 'jugado' || p.golesLocal == null || p.golesVisitante == null) continue;
+      if (p.local === a && p.visitante === b) {
+        golesA += p.golesLocal;
+        golesB += p.golesVisitante;
+      } else if (p.local === b && p.visitante === a) {
+        golesA += p.golesVisitante;
+        golesB += p.golesLocal;
+      }
+    }
+    return golesB - golesA;
+  }
+
   filas.sort(
     (a, b) =>
       b.pts - a.pts ||
-      b.dg - a.dg ||
       puntosJuegoLimpio(a) - puntosJuegoLimpio(b) ||
+      b.dg - a.dg ||
       b.gf - a.gf ||
+      entreSi(a.equipo, b.equipo) ||
       a.equipo.localeCompare(b.equipo),
   );
 
@@ -298,6 +333,19 @@ export function calcularPosiciones(
 }
 
 export const POSICIONES_LIGA = calcularPosiciones();
+
+/**
+ * Criterios de desempate del Articulo 14, para mostrarlos junto a la tabla.
+ * Quien mira la tabla necesita saber por que un club esta sobre otro.
+ */
+export const CRITERIOS_DESEMPATE = [
+  'Puntaje',
+  'Fair Play',
+  'Diferencia de gol',
+  'Goles a favor',
+  'Resultados entre sí',
+  'Sorteo (cara o sello)',
+] as const;
 
 /** Columnas de la tabla, con su nombre largo para accesibilidad. */
 export const COLUMNAS_TABLA = [
