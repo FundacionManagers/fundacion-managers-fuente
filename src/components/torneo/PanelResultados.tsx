@@ -35,7 +35,7 @@ const SECCIONES: { key: Seccion; label: string }[] = [
 function NumeroInput({
   valor,
   onChange,
-  ancho = 'w-16',
+  ancho = 'w-20',
   min = 0,
 }: {
   valor: number | null;
@@ -52,8 +52,9 @@ function NumeroInput({
       onChange={(e) => onChange(e.target.value === '' ? null : Math.max(min, Number(e.target.value)))}
       className={cn(
         ancho,
-        'rounded-md border border-white/15 bg-black/40 px-2 py-2 text-center text-base tabular-nums',
-        'focus:border-amarillo focus:outline-none focus:ring-2 focus:ring-amarillo/30',
+        'rounded-md border border-white/25 bg-[#05070a] px-2 py-2 text-center tabular-nums',
+        'font-sport text-2xl leading-none text-neutral-50',
+        'focus:border-amarillo focus:outline-none focus:ring-2 focus:ring-amarillo/40',
       )}
     />
   );
@@ -326,7 +327,7 @@ export function PanelResultados({
 
           <ul className="mt-6 space-y-3">
             {partidosJornada.map((p) => (
-              <li key={p.id} className="rounded-xl border border-white/10 bg-black/40 p-4">
+              <li key={p.id} className="rounded-xl border border-white/10 bg-black/70 p-4 backdrop-blur-sm">
                 <p className="text-xs text-neutral-500">
                   {p.fecha} · {p.hora}
                 </p>
@@ -598,7 +599,7 @@ function SeccionGoleadores({
               value={nuevo.jugador}
               onChange={(e) => setNuevo({ ...nuevo, jugador: e.target.value })}
               placeholder="Nombre y apellido"
-              className="w-52 rounded-md border border-white/15 bg-black/40 px-3 py-2 text-sm focus:border-amarillo focus:outline-none"
+              className="w-52 rounded-md border border-white/25 bg-[#05070a] px-3 py-2 text-sm text-neutral-50 placeholder:text-neutral-500 focus:border-amarillo focus:outline-none"
             />
           </label>
           <label className="flex flex-col gap-1 text-xs text-neutral-400">
@@ -606,7 +607,7 @@ function SeccionGoleadores({
             <select
               value={nuevo.equipo}
               onChange={(e) => setNuevo({ ...nuevo, equipo: e.target.value })}
-              className="w-48 rounded-md border border-white/15 bg-black/40 px-3 py-2 text-sm focus:border-amarillo focus:outline-none"
+              className="w-48 rounded-md border border-white/25 bg-[#05070a] px-3 py-2 text-sm text-neutral-50 focus:border-amarillo focus:outline-none"
             >
               {EQUIPOS.map((eq) => (
                 <option key={eq.slug} value={eq.slug}>
