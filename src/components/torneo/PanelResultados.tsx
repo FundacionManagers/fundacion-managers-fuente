@@ -1,7 +1,8 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Check, Loader2, Plus, RefreshCw, Trash2, TriangleAlert } from 'lucide-react';
+import Link from 'next/link';
+import { BookOpen, Check, Loader2, Plus, RefreshCw, Trash2, TriangleAlert } from 'lucide-react';
 import { DefinirClave } from '@/components/shared/DefinirClave';
 import { EstadoPublicacion } from '@/components/torneo/EstadoPublicacion';
 import { TeamCrest } from '@/components/torneo/TeamCrest';
@@ -242,6 +243,12 @@ export function PanelResultados({
           ))}
         </div>
         <div className="flex items-center gap-3">
+          <Link
+            href="/resultados/guia/"
+            className="inline-flex items-center gap-1.5 text-xs text-neutral-400 hover:text-amarillo"
+          >
+            <BookOpen size={14} /> Guía
+          </Link>
           <button
             onClick={() => void recargar()}
             className="inline-flex items-center gap-1.5 text-xs text-neutral-400 hover:text-amarillo"
