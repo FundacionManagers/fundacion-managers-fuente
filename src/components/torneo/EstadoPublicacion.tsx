@@ -101,7 +101,7 @@ export function EstadoPublicacion() {
     setPublicando(true);
     setAviso('');
     setFallo('');
-    const { data, error } = await supabase.functions.invoke('publicar', { body: {} });
+    const { error } = await supabase.functions.invoke('publicar', { body: {} });
     setPublicando(false);
 
     if (error) {
