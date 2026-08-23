@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Check, Loader2, Plus, RefreshCw, Trash2, TriangleAlert } from 'lucide-react';
 import { DefinirClave } from '@/components/shared/DefinirClave';
+import { EstadoPublicacion } from '@/components/torneo/EstadoPublicacion';
 import { TeamCrest } from '@/components/torneo/TeamCrest';
 import { EQUIPOS, getEquipo } from '@/lib/torneo-data';
 import { calcularPosiciones, COLUMNAS_TABLA, TOTAL_JORNADAS, type PartidoLiga } from '@/lib/liga';
@@ -255,6 +256,10 @@ export function PanelResultados({
         </div>
       </div>
 
+      <div className="mt-5">
+        <EstadoPublicacion />
+      </div>
+
       {/* Mensajes */}
       {error ? (
         <p className="mt-5 rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
@@ -263,7 +268,7 @@ export function PanelResultados({
       ) : null}
       {aviso ? (
         <p className="mt-5 flex items-center gap-2 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-300">
-          <Check size={16} /> {aviso} Los cambios se verán en el sitio tras el próximo despliegue.
+          <Check size={16} /> {aviso} Arriba puedes ver si ya salieron al sitio.
         </p>
       ) : null}
 

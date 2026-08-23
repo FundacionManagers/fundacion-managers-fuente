@@ -55,6 +55,9 @@ export async function cargarTodo(edicion = EDICION_ACTUAL): Promise<EstadoTorneo
       .from('partidos')
       .select('id, jornada, fecha, hora, local, visitante, goles_local, goles_visitante, estado')
       .eq('edicion', edicion)
+      // Solo fase de grupos: los cruces eliminatorios llevan jornada 0 y
+      // apareceria una "Fecha 0" sin sentido en el selector.
+      .eq('fase', 'grupos')
       .order('jornada')
       .order('fecha')
       .order('hora'),

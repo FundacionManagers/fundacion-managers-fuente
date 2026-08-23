@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { MatchCard } from '@/components/torneo/MatchCard';
 import { FixtureLiga } from '@/components/torneo/FixtureLiga';
+import { EliminatoriaLiga } from '@/components/torneo/EliminatoriaLiga';
 import { TorneoShell } from '@/components/torneo/TorneoShell';
 import { CUARTOS, SEMIS, TERCER_PUESTO, FINAL } from '@/lib/torneo-data';
 import { EDICION_ACTUAL } from '@/lib/liga';
@@ -30,6 +31,22 @@ export default async function CalendarioPage() {
       active="/torneo/calendario/"
     >
       <FixtureLiga datos={datos} />
+
+      {/* Fase final de la 4a edicion: aparece sola en cuanto existan cruces. */}
+      {datos.eliminatoria.length > 0 ? (
+        <div className="mt-20">
+          <p className="font-bufon text-sm font-bold uppercase tracking-[0.25em] text-naranja">
+            Fase final
+          </p>
+          <h2 className="mt-1 font-sport text-5xl uppercase leading-none text-neutral-50 md:text-6xl">
+            La llave
+          </h2>
+          <div className="mt-5 h-1 w-full rounded-full energy-bar opacity-70" />
+          <div className="mt-8">
+            <EliminatoriaLiga partidos={datos.eliminatoria} />
+          </div>
+        </div>
+      ) : null}
 
       {/* ===== Historial: la llave de la edición anterior ===== */}
       <div className="mt-24 border-t border-white/10 pt-16">

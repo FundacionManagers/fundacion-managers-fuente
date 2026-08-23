@@ -28,15 +28,25 @@ import {
 } from './liga';
 
 export interface DatosLiga {
+  /** Solo fase de grupos: es lo que alimenta la tabla de posiciones. */
   partidos: readonly PartidoLiga[];
+  /** Cruces eliminatorios, si ya existen. No cuentan para la tabla. */
+  eliminatoria: readonly PartidoEliminatoria[];
   disciplina: Readonly<Record<string, Disciplina>>;
   goleadores: readonly Goleador[];
   /** De dónde salieron los datos. Se registra en el log del build. */
   origen: 'supabase' | 'respaldo';
 }
 
+export type FaseFinal = 'cuartos' | 'semifinal' | 'tercer-puesto' | 'final';
+
+export interface PartidoEliminatoria extends PartidoLiga {
+  fase: FaseFinal;
+}
+
 const RESPALDO: DatosLiga = {
   partidos: PARTIDOS_LIGA,
+  eliminatoria: [],
   disciplina: DISCIPLINA,
   goleadores: GOLEADORES_LIGA,
   origen: 'respaldo',
@@ -55,6 +65,7 @@ function aHoraLegible(hora: string): string {
 
 interface FilaPartido {
   id: string;
+  fase: string;
   jornada: number;
   fecha: string;
   hora: string;
@@ -105,7 +116,7 @@ export async function cargarLiga(edicion = 4): Promise<DatosLiga> {
     const [partidosRes, disciplinaRes, goleadoresRes] = await Promise.all([
       supabase
         .from('partidos')
-        .select('id, jornada, fecha, hora, local, visitante, goles_local, goles_visitante, estado')
+        .select('id, fase, jornada, fecha, hora, local, visitante, goles_local, goles_visitante, estado')
         .eq('edicion', edicion)
         // Por fecha antes que por hora: hay jornadas repartidas en dos dias
         // (miercoles y jueves) y ordenar solo por hora las intercala mal.
@@ -127,9 +138,11 @@ export async function cargarLiga(edicion = 4): Promise<DatosLiga> {
 
     // Sin partidos no hay tabla ni calendario que mostrar: es preferible el
     // respaldo a publicar un torneo vacío.
-    if (partidosRes.error || filasPartidos.length === 0) return RESPALDO;
+    if (partidosRes.error || filasPartidos.filter((p) => p.fase === 'grupos').length === 0) {
+      return RESPALDO;
+    }
 
-    const partidos: PartidoLiga[] = filasPartidos.map((p) => ({
+    const aPartido = (p: FilaPartido): PartidoLiga => ({
       id: p.id,
       jornada: p.jornada,
       fecha: aFechaLegible(p.fecha),
@@ -139,7 +152,13 @@ export async function cargarLiga(edicion = 4): Promise<DatosLiga> {
       golesLocal: p.goles_local,
       golesVisitante: p.goles_visitante,
       estado: p.estado === 'jugado' ? 'jugado' : 'programado',
-    }));
+    });
+
+    // Se separan aqui, no en la consulta, para no pagar dos viajes a la base.
+    const partidos = filasPartidos.filter((p) => p.fase === 'grupos').map(aPartido);
+    const eliminatoria: PartidoEliminatoria[] = filasPartidos
+      .filter((p) => p.fase !== 'grupos')
+      .map((p) => ({ ...aPartido(p), fase: p.fase as FaseFinal }));
 
     const disciplina: Record<string, Disciplina> = {};
     for (const d of (disciplinaRes.data ?? []) as FilaDisciplina[]) {
@@ -159,7 +178,7 @@ export async function cargarLiga(edicion = 4): Promise<DatosLiga> {
         goles: g.goles,
       }));
 
-    return { partidos, disciplina, goleadores, origen: 'supabase' };
+    return { partidos, eliminatoria, disciplina, goleadores, origen: 'supabase' };
   } catch {
     return RESPALDO;
   }
