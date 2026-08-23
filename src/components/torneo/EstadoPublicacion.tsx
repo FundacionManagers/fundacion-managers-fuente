@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { CloudUpload, Globe, HelpCircle } from 'lucide-react';
+import { CloudUpload, Globe, HelpCircle, Loader2, Rocket } from 'lucide-react';
 import { asset } from '@/lib/asset';
 import { supabase } from '@/lib/supabase';
 import { cn } from '@/lib/utils';
@@ -46,6 +46,9 @@ function haceCuanto(iso: string): string {
  */
 export function EstadoPublicacion() {
   const [estado, setEstado] = useState<Estado>({ tipo: 'cargando' });
+  const [publicando, setPublicando] = useState(false);
+  const [aviso, setAviso] = useState('');
+  const [fallo, setFallo] = useState('');
 
   const revisar = useCallback(async () => {
     try {
@@ -85,6 +88,32 @@ export function EstadoPublicacion() {
     return () => clearInterval(id);
   }, [revisar]);
 
+  /**
+   * Dispara el despliegue sin esperar al cron.
+   *
+   * La llamada va a una función de Supabase, no directo a GitHub: el token
+   * que autoriza el disparo vive como secreto del servidor y nunca llega al
+   * navegador. La función además comprueba que el correo esté en la lista de
+   * administradores antes de hacer nada.
+   */
+  async function publicarAhora() {
+    if (!supabase) return;
+    setPublicando(true);
+    setAviso('');
+    setFallo('');
+    const { data, error } = await supabase.functions.invoke('publicar', { body: {} });
+    setPublicando(false);
+
+    if (error) {
+      const detalle = (data as { error?: string } | null)?.error;
+      setFallo(detalle || 'No se pudo iniciar el despliegue.');
+      return;
+    }
+    setAviso('Despliegue iniciado. El sitio se actualiza en un par de minutos.');
+    // Se vuelve a mirar pasado un rato, cuando ya deberia haber terminado.
+    setTimeout(() => void revisar(), 150_000);
+  }
+
   if (estado.tipo === 'cargando') return null;
 
   if (estado.tipo === 'desconocido') {
@@ -112,8 +141,7 @@ export function EstadoPublicacion() {
         <>
           <strong>Hay cambios sin publicar.</strong>
           <span className="text-amarillo/80">
-            El sitio se actualiza solo en unos minutos. Último despliegue{' '}
-            {haceCuanto(estado.publicadoEn)}.
+            Último despliegue {haceCuanto(estado.publicadoEn)}.
           </span>
         </>
       ) : (
@@ -124,6 +152,26 @@ export function EstadoPublicacion() {
           </span>
         </>
       )}
+
+      <button
+        type="button"
+        onClick={() => void publicarAhora()}
+        disabled={publicando}
+        title="Dispara el despliegue sin esperar a la revisión automática"
+        className={cn(
+          'ml-auto inline-flex shrink-0 items-center gap-1.5 rounded-full px-4 py-1.5 font-bold transition-transform',
+          'disabled:cursor-not-allowed disabled:opacity-50',
+          pendiente
+            ? 'bg-gradient-to-r from-amarillo to-naranja text-carbon hover:-translate-y-0.5'
+            : 'border border-white/20 text-neutral-300 hover:border-amarillo/60 hover:text-amarillo',
+        )}
+      >
+        {publicando ? <Loader2 size={13} className="animate-spin" /> : <Rocket size={13} />}
+        {publicando ? 'Publicando…' : 'Publicar ahora'}
+      </button>
+
+      {aviso ? <span className="w-full text-emerald-300">{aviso}</span> : null}
+      {fallo ? <span className="w-full text-red-400">{fallo}</span> : null}
     </p>
   );
 }
