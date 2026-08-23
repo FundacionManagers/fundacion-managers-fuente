@@ -1,6 +1,7 @@
 import { TeamCrest } from '@/components/torneo/TeamCrest';
 import { getEquipo } from '@/lib/torneo-data';
-import { COLUMNAS_TABLA, JORNADA_ACTUAL, POSICIONES_LIGA } from '@/lib/liga';
+import { COLUMNAS_TABLA, calcularPosiciones, jornadaActualDe } from '@/lib/liga';
+import type { DatosLiga } from '@/lib/liga-supabase';
 import { cn } from '@/lib/utils';
 
 /**
@@ -13,7 +14,10 @@ import { cn } from '@/lib/utils';
  * — la página nunca se desplaza de lado — y las columnas de disciplina se
  * ocultan por debajo de `sm`, porque son las menos consultadas.
  */
-export function TablaPosiciones() {
+export function TablaPosiciones({ datos }: { datos: DatosLiga }) {
+  const posiciones = calcularPosiciones(datos.partidos, datos.disciplina);
+  const jornadaActual = jornadaActualDe(datos.partidos);
+
   return (
     <div>
       <div className="flex items-end justify-between gap-4">
@@ -26,7 +30,7 @@ export function TablaPosiciones() {
           </h2>
         </div>
         <span className="hidden shrink-0 rounded-full border border-amarillo/40 bg-amarillo/10 px-4 py-1.5 font-bufon text-xs font-bold uppercase tracking-[0.15em] text-amarillo sm:block">
-          Hasta la fecha {JORNADA_ACTUAL}
+          Hasta la fecha {jornadaActual}
         </span>
       </div>
       <div className="mt-5 h-1 w-full rounded-full energy-bar opacity-70" />
@@ -34,7 +38,7 @@ export function TablaPosiciones() {
       <div className="mt-8 overflow-x-auto rounded-2xl border border-white/10 bg-black/40">
         <table className="w-full min-w-[640px] border-collapse text-sm">
           <caption className="sr-only">
-            Tabla de posiciones de la fase de grupos hasta la fecha {JORNADA_ACTUAL}
+            Tabla de posiciones de la fase de grupos hasta la fecha {jornadaActual}
           </caption>
           <thead>
             <tr className="border-b border-amarillo/30 bg-amarillo/10">
@@ -63,7 +67,7 @@ export function TablaPosiciones() {
             </tr>
           </thead>
           <tbody>
-            {POSICIONES_LIGA.map((fila) => {
+            {posiciones.map((fila) => {
               const eq = getEquipo(fila.equipo);
               return (
                 <tr

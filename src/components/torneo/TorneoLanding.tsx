@@ -9,7 +9,8 @@ import { TorneoNav } from '@/components/torneo/TorneoNav';
 import { TablaPosiciones } from '@/components/torneo/TablaPosiciones';
 import { RankingGoleadores } from '@/components/torneo/RankingGoleadores';
 import { ALIANZA, ICONE_CYAN } from '@/lib/alianza';
-import { JORNADA_ACTUAL, TOTAL_JORNADAS } from '@/lib/liga';
+import { jornadaActualDe, TOTAL_JORNADAS } from '@/lib/liga';
+import { cargarLigaConAviso } from '@/lib/liga-supabase';
 import {
   CAMPEON_VIGENTE,
   TORNEO_BIO,
@@ -29,7 +30,9 @@ const STATS = [
   { v: 'F7', l: 'Formato' },
 ] as const;
 
-export function TorneoLanding() {
+export async function TorneoLanding() {
+  const datos = await cargarLigaConAviso();
+  const jornadaActual = jornadaActualDe(datos.partidos);
   const campeonSlug = ganadorDe(FINAL);
   const campeon = campeonSlug ? getEquipo(campeonSlug) : undefined;
   const loc = FINAL.local ? getEquipo(FINAL.local) : undefined;
@@ -115,12 +118,12 @@ export function TorneoLanding() {
         <div className="relative mx-auto max-w-7xl px-6 py-20 lg:px-8 lg:py-28">
           <span className="inline-flex items-center gap-2 rounded-full border border-amarillo/40 bg-amarillo/10 px-4 py-1.5 font-bufon text-xs font-bold uppercase tracking-[0.15em] text-amarillo">
             <span className="h-2 w-2 rounded-full bg-amarillo pulse-live" />
-            Cuarta edición en curso · Fecha {JORNADA_ACTUAL} de {TOTAL_JORNADAS}
+            Cuarta edición en curso · Fecha {jornadaActual} de {TOTAL_JORNADAS}
           </span>
 
           <div className="mt-10 space-y-24">
-            <TablaPosiciones />
-            <RankingGoleadores />
+            <TablaPosiciones datos={datos} />
+            <RankingGoleadores datos={datos} />
           </div>
         </div>
       </section>

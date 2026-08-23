@@ -21,6 +21,10 @@ const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || KEY_DEFECTO;
 
 export const supabaseConfigurado = url !== '' && anonKey !== '';
 
+/** Credenciales ya resueltas, para módulos que necesitan su propio cliente. */
+export const SUPABASE_URL = url;
+export const SUPABASE_ANON_KEY = anonKey;
+
 /**
  * Cliente principal (con sesión persistente). Lo usa el panel de admin para
  * autenticarse y leer/editar con RLS de usuario autenticado.

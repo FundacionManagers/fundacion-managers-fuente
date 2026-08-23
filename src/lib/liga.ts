@@ -212,9 +212,17 @@ export const JORNADA_ACTUAL = PARTIDOS_JUGADOS.reduce(
   0,
 );
 
+/** Última fecha con partidos jugados, sobre cualquier conjunto de partidos. */
+export function jornadaActualDe(partidos: readonly PartidoLiga[]): number {
+  return partidos.reduce((max, p) => (p.estado === 'jugado' && p.jornada > max ? p.jornada : max), 0);
+}
+
 /** Partidos de una fecha concreta, en el orden del fixture. */
-export function partidosDeJornada(jornada: number): PartidoLiga[] {
-  return PARTIDOS_LIGA.filter((p) => p.jornada === jornada);
+export function partidosDeJornada(
+  jornada: number,
+  partidos: readonly PartidoLiga[] = PARTIDOS_LIGA,
+): PartidoLiga[] {
+  return partidos.filter((p) => p.jornada === jornada);
 }
 
 /** Próximo partido programado, o null si ya se jugaron todos. */

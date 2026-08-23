@@ -1,11 +1,8 @@
 import { TeamCrest } from '@/components/torneo/TeamCrest';
 import { getEquipo } from '@/lib/torneo-data';
-import { GOLEADORES_LIGA, JORNADA_ACTUAL } from '@/lib/liga';
+import { jornadaActualDe } from '@/lib/liga';
+import type { DatosLiga } from '@/lib/liga-supabase';
 import { cn } from '@/lib/utils';
-
-const PODIO = GOLEADORES_LIGA.slice(0, 3);
-const RESTO = GOLEADORES_LIGA.slice(3);
-const TOTAL_GOLES = GOLEADORES_LIGA.reduce((s, g) => s + g.goles, 0);
 
 const METAL = [
   'from-amarillo to-naranja text-carbon',
@@ -14,7 +11,13 @@ const METAL = [
 ] as const;
 
 /** Ranking de goleadores: podio de los tres primeros y tabla con el resto. */
-export function RankingGoleadores() {
+export function RankingGoleadores({ datos }: { datos: DatosLiga }) {
+  const goleadores = datos.goleadores;
+  const podio = goleadores.slice(0, 3);
+  const resto = goleadores.slice(3);
+  const totalGoles = goleadores.reduce((s, g) => s + g.goles, 0);
+  const jornadaActual = jornadaActualDe(datos.partidos);
+
   return (
     <div>
       <div className="flex items-end justify-between gap-4">
@@ -27,14 +30,14 @@ export function RankingGoleadores() {
           </h2>
         </div>
         <span className="hidden shrink-0 rounded-full border border-amarillo/40 bg-amarillo/10 px-4 py-1.5 font-bufon text-xs font-bold uppercase tracking-[0.15em] text-amarillo sm:block">
-          {GOLEADORES_LIGA.length} anotadores · {TOTAL_GOLES} goles
+          {goleadores.length} anotadores · {totalGoles} goles
         </span>
       </div>
       <div className="mt-5 h-1 w-full rounded-full energy-bar opacity-70" />
 
       {/* Podio */}
       <div className="mt-8 grid gap-5 stagger-in sm:grid-cols-3">
-        {PODIO.map((g, i) => {
+        {podio.map((g, i) => {
           const eq = getEquipo(g.equipo);
           return (
             <div
@@ -82,7 +85,7 @@ export function RankingGoleadores() {
       <div className="mt-6 overflow-x-auto rounded-2xl border border-white/10 bg-black/40">
         <table className="w-full min-w-[520px] border-collapse text-sm">
           <caption className="sr-only">
-            Ranking completo de goleadores hasta la fecha {JORNADA_ACTUAL}
+            Ranking completo de goleadores hasta la fecha {jornadaActual}
           </caption>
           <thead>
             <tr className="border-b border-amarillo/30 bg-amarillo/10">
@@ -104,7 +107,7 @@ export function RankingGoleadores() {
             </tr>
           </thead>
           <tbody>
-            {RESTO.map((g) => {
+            {resto.map((g) => {
               const eq = getEquipo(g.equipo);
               return (
                 <tr

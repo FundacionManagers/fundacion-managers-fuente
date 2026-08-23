@@ -4,6 +4,7 @@ import { FixtureLiga } from '@/components/torneo/FixtureLiga';
 import { TorneoShell } from '@/components/torneo/TorneoShell';
 import { CUARTOS, SEMIS, TERCER_PUESTO, FINAL } from '@/lib/torneo-data';
 import { EDICION_ACTUAL } from '@/lib/liga';
+import { cargarLigaConAviso } from '@/lib/liga-supabase';
 
 export const metadata: Metadata = {
   title: 'Calendario · Torneo Managers',
@@ -19,14 +20,16 @@ const HISTORIAL = [
   { titulo: 'Gran Final', sub: 'El título', partidos: [FINAL] },
 ] as const;
 
-export default function CalendarioPage() {
+export default async function CalendarioPage() {
+  const datos = await cargarLigaConAviso();
+
   return (
     <TorneoShell
       eyebrow={`Cuarta edición · 2026-2`}
       title="Calendario"
       active="/torneo/calendario/"
     >
-      <FixtureLiga />
+      <FixtureLiga datos={datos} />
 
       {/* ===== Historial: la llave de la edición anterior ===== */}
       <div className="mt-24 border-t border-white/10 pt-16">

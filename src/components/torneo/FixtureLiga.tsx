@@ -4,11 +4,11 @@ import {
   CANCHA,
   FORMATO_LIGA,
   JORNADAS_INFO,
-  JORNADA_ACTUAL,
-  PARTIDOS_LIGA,
+  jornadaActualDe,
   partidosDeJornada,
   type PartidoLiga,
 } from '@/lib/liga';
+import type { DatosLiga } from '@/lib/liga-supabase';
 import { cn } from '@/lib/utils';
 
 function Marcador({ p }: { p: PartidoLiga }) {
@@ -72,18 +72,32 @@ function FilaPartido({ p }: { p: PartidoLiga }) {
   );
 }
 
-/** Fixture completo de la fase de grupos: 7 fechas, con marcador o con hora. */
-export function FixtureLiga() {
+/** Fixture completo de la fase de grupos, con marcador o con hora. */
+export function FixtureLiga({ datos }: { datos: DatosLiga }) {
+  const jornadaActual = jornadaActualDe(datos.partidos);
+
+  // Las fechas salen de los partidos, no de una lista fija: si el panel carga
+  // una jornada nueva, aparece sin tocar el codigo. El rotulo se busca en
+  // JORNADAS_INFO y, si no esta, se arma con la fecha del primer partido.
+  const jornadas = [...new Set(datos.partidos.map((p) => p.jornada))].sort((a, b) => a - b);
+
   return (
     <div className="space-y-14">
       <p className="text-sm text-neutral-400">
-        {FORMATO_LIGA} · {PARTIDOS_LIGA.length} partidos · Cancha {CANCHA}
+        {FORMATO_LIGA} · {datos.partidos.length} partidos · Cancha {CANCHA}
       </p>
 
-      {JORNADAS_INFO.map((info) => {
-        const partidos = partidosDeJornada(info.jornada);
+      {jornadas.map((jornada) => {
+        const partidos = partidosDeJornada(jornada, datos.partidos);
+        const info = {
+          jornada,
+          etiqueta:
+            JORNADAS_INFO.find((j) => j.jornada === jornada)?.etiqueta ??
+            partidos[0]?.fecha ??
+            '',
+        };
         const jugada = partidos.every((p) => p.estado === 'jugado');
-        const esActual = info.jornada === JORNADA_ACTUAL;
+        const esActual = info.jornada === jornadaActual;
 
         return (
           <section key={info.jornada}>
