@@ -68,7 +68,7 @@ export function TorneoLanding() {
           {/* CAMPEÓN — revelación épica de la Edición 3° */}
           <CampeonReveal
             slug={campeon?.slug ?? FINAL.visitante ?? 'the-originals'}
-            nombre={campeon?.nombre ?? 'The Originals FC'}
+            nombre={campeon?.nombre ?? 'The Originals'}
             scoreText={`${vis?.corto ?? 'ORI'} ${FINAL.golesVisitante}–${FINAL.golesLocal} ${loc?.corto ?? 'PIB'}`}
             edicion="Edición 3° (2026-1)"
           />

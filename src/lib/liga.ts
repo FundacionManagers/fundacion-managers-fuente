@@ -145,24 +145,17 @@ export const DISCIPLINA: Readonly<Record<string, Disciplina>> = {
 };
 
 /**
- * Orden publicado en la tabla oficial de la Fecha 4.
- *
- * Se respeta tal cual en vez de deducirlo, porque el criterio de desempate
- * del torneo no es la diferencia de gol: The Originals (DG 7) va por encima
- * de Los Pibes (DG 9) con los mismos 9 puntos. Encaja con un desempate por
- * juego limpio (Originals 5 tarjetas, Los Pibes 8), pero mientras no esté
- * confirmado por la organización no se codifica una regla inventada.
+ * Peso de cada tarjeta para el desempate por juego limpio: menos es mejor.
+ * La roja pesa el triple que la amarilla, como es habitual en el reglamento
+ * de fair play.
  */
-export const ORDEN_OFICIAL: readonly string[] = [
-  'pomada-alfa',
-  'the-originals',
-  'los-pibes',
-  'tp-fc',
-  'useche-fc',
-  'yonotomo-fc',
-  'la-banda-cruzada',
-  'managers-fc',
-] as const;
+export const PESO_AMARILLA = 1;
+export const PESO_ROJA = 3;
+
+/** Puntos de juego limpio de un club. Cuantos menos, mejor clasificado. */
+export function puntosJuegoLimpio(fila: Pick<FilaPosicion, 'ta' | 'tr'>): number {
+  return fila.ta * PESO_AMARILLA + fila.tr * PESO_ROJA;
+}
 
 /** Ranking de goleadores acumulado hasta la Fecha 4. 44 anotadores, 87 goles. */
 export const GOLEADORES_LIGA: readonly Goleador[] = [
@@ -231,14 +224,14 @@ export const PROXIMO_PARTIDO =
 /**
  * Calcula la tabla de posiciones a partir de los partidos jugados.
  *
- * El orden lo fija `ORDEN_OFICIAL` mientras la organización no confirme su
- * criterio de desempate. Si se pasa `orden: null`, ordena por puntos,
- * diferencia de gol y goles a favor.
+ * Desempate confirmado por la organización (Jorge, agosto 2026):
+ * puntos, luego diferencia de gol, luego juego limpio. Se añade goles a
+ * favor y orden alfabético como último recurso, para que la tabla sea
+ * estable entre compilaciones aunque dos clubes empaten en todo.
  */
 export function calcularPosiciones(
   partidos: readonly PartidoLiga[] = PARTIDOS_LIGA,
   disciplina: Readonly<Record<string, Disciplina>> = DISCIPLINA,
-  orden: readonly string[] | null = ORDEN_OFICIAL,
 ): FilaPosicion[] {
   const tabla = new Map<string, Omit<FilaPosicion, 'posicion' | 'dg'>>();
 
@@ -284,14 +277,14 @@ export function calcularPosiciones(
 
   const filas = [...tabla.values()].map((f) => ({ ...f, dg: f.gf - f.gc }));
 
-  filas.sort((a, b) => {
-    if (orden) {
-      const ia = orden.indexOf(a.equipo);
-      const ib = orden.indexOf(b.equipo);
-      if (ia !== -1 && ib !== -1) return ia - ib;
-    }
-    return b.pts - a.pts || b.dg - a.dg || b.gf - a.gf || a.equipo.localeCompare(b.equipo);
-  });
+  filas.sort(
+    (a, b) =>
+      b.pts - a.pts ||
+      b.dg - a.dg ||
+      puntosJuegoLimpio(a) - puntosJuegoLimpio(b) ||
+      b.gf - a.gf ||
+      a.equipo.localeCompare(b.equipo),
+  );
 
   return filas.map((f, i) => ({ ...f, posicion: i + 1 }));
 }

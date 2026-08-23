@@ -25,22 +25,22 @@ export const EDICIONES: readonly Edicion[] = [
     numero: 1,
     periodo: '2025-1',
     estado: 'jugada',
-    campeon: 'Pomada Alfa FC',
+    campeon: 'Pomada Alfa',
     notas: 'Primera edición del torneo.',
   },
   {
     numero: 2,
     periodo: '2025-2',
     estado: 'jugada',
-    campeon: 'Pomada Alfa FC',
+    campeon: 'Pomada Alfa',
     notas: 'Bicampeonato. Pomada Alfa firma la segunda estrella.',
   },
   {
     numero: 3,
     periodo: '2026-1',
     estado: 'jugada',
-    campeon: 'The Originals FC',
-    notas: 'Tercera edición — campeón The Originals FC.',
+    campeon: 'The Originals',
+    notas: 'Tercera edición — campeón The Originals.',
   },
   {
     numero: 4,
@@ -51,25 +51,25 @@ export const EDICIONES: readonly Edicion[] = [
 ] as const;
 
 export const CAMPEON_VIGENTE = {
-  equipo: 'The Originals FC',
+  equipo: 'The Originals',
   titulos: 1,
   descripcion: 'Vigente Campeón — 3° Edición Torneo Managers (2026-1).',
 };
 
 /** Equipos identificados en el bracket de la edición 2026. */
 export const EQUIPOS_2026: readonly string[] = [
-  'Pomada Alfa FC',
+  'Pomada Alfa',
   'Managers FC',
-  'The Originals FC',
+  'The Originals',
   'La Banda Cruzada FC',
   'Los Pibes del Barrio',
-  'Useche FC',
-  'Yonotomo FC',
-  'TP F.C.',
+  'Useches',
+  'Yonotomo',
+  'Tranquilo Papi',
 ] as const;
 
 export const TORNEO_STATS = [
-  { valor: '3', etiqueta: 'Ediciones' },
+  { valor: '4', etiqueta: 'Ediciones' },
   { valor: '8+', etiqueta: 'Equipos por edición' },
   { valor: '28+', etiqueta: 'Edad mínima' },
   { valor: 'F7', etiqueta: 'Formato' },
