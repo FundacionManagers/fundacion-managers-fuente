@@ -51,6 +51,8 @@ export function InscripcionesDashboard() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [authError, setAuthError] = useState('');
+  const [enviandoEnlace, setEnviandoEnlace] = useState(false);
+  const [enlaceEnviado, setEnlaceEnviado] = useState(false);
 
   // ── Datos ────────────────────────────────────────────────────────────
   const [lista, setLista] = useState<Inscripcion[]>([]);
@@ -120,6 +122,37 @@ export function InscripcionesDashboard() {
       password,
     });
     if (error) setAuthError('Credenciales incorrectas.');
+  }
+
+  /**
+   * Ingreso sin contraseña: Supabase manda un enlace de un solo uso al correo.
+   *
+   * Convive con el ingreso por contraseña en vez de reemplazarlo, para que
+   * nadie se quede fuera si el correo tarda o el enlace falla.
+   *
+   * No hace falta restringir aquí quién puede pedir el enlace: aunque alguien
+   * ajeno se cree una cuenta, las políticas RLS solo dejan ver datos a los
+   * correos de `public.admins`, así que no vería nada.
+   */
+  async function enviarEnlace() {
+    if (!supabase) return;
+    const correo = email.trim();
+    if (!correo) {
+      setAuthError('Escribe tu correo primero.');
+      return;
+    }
+    setAuthError('');
+    setEnviandoEnlace(true);
+    const { error } = await supabase.auth.signInWithOtp({
+      email: correo,
+      options: { emailRedirectTo: window.location.origin + window.location.pathname },
+    });
+    setEnviandoEnlace(false);
+    if (error) {
+      setAuthError('No se pudo enviar el enlace. Intenta con tu contraseña.');
+      return;
+    }
+    setEnlaceEnviado(true);
   }
 
   async function logout() {
@@ -238,6 +271,34 @@ export function InscripcionesDashboard() {
             Ingresar
           </button>
         </form>
+
+        {/* Alternativa sin contraseña. No reemplaza al formulario de arriba. */}
+        <div className="mt-6 flex items-center gap-3">
+          <span className="h-px flex-1 bg-white/10" />
+          <span className="font-bufon text-[10px] uppercase tracking-[0.2em] text-neutral-500">
+            o
+          </span>
+          <span className="h-px flex-1 bg-white/10" />
+        </div>
+
+        {enlaceEnviado ? (
+          <p className="mt-4 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-300">
+            Te enviamos un enlace a <strong>{email.trim()}</strong>. Ábrelo desde este
+            mismo dispositivo para entrar.
+          </p>
+        ) : (
+          <button
+            type="button"
+            onClick={() => void enviarEnlace()}
+            disabled={enviandoEnlace}
+            className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-full border border-white/20 px-7 py-3 text-sm font-semibold text-neutral-200 transition-colors hover:border-amarillo/60 hover:text-amarillo disabled:opacity-50"
+          >
+            {enviandoEnlace ? 'Enviando…' : 'Enviarme un enlace al correo'}
+          </button>
+        )}
+        <p className="mt-3 text-center text-xs text-neutral-500">
+          Sin contraseña: te llega un enlace de un solo uso.
+        </p>
       </div>
     );
   }
