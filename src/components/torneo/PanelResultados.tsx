@@ -93,6 +93,26 @@ export function PanelResultados({
     void recargar();
   }, [recargar]);
 
+  // Resumen de arriba: da contexto de un vistazo y de paso rompe la sensacion
+  // de formulario pelado.
+  const resumen = useMemo(() => {
+    if (!estado) return null;
+    const jugados = estado.partidos.filter((p) => p.jugado);
+    const fechas = [...new Set(estado.partidos.map((p) => p.jornada))].filter((j) =>
+      estado.partidos.filter((p) => p.jornada === j).every((p) => p.jugado),
+    );
+    const goles = jugados.reduce(
+      (s, p) => s + (p.golesLocal ?? 0) + (p.golesVisitante ?? 0),
+      0,
+    );
+    return {
+      fechas: `${fechas.length}/${TOTAL_JORNADAS}`,
+      partidos: `${jugados.length}/${estado.partidos.length}`,
+      goles: String(goles),
+      anotadores: String(estado.goleadores.length),
+    };
+  }, [estado]);
+
   const problemas = useMemo(() => (estado ? descuadres(estado) : []), [estado]);
 
   // Tabla calculada con lo que hay AHORA en pantalla, aunque no se haya
@@ -179,6 +199,28 @@ export function PanelResultados({
 
   return (
     <div>
+      {/* Resumen */}
+      {resumen ? (
+        <div className="mb-10 grid grid-cols-2 gap-4 stagger-in lg:grid-cols-4">
+          {[
+            { v: resumen.fechas, l: 'Fechas completas' },
+            { v: resumen.partidos, l: 'Partidos cargados' },
+            { v: resumen.goles, l: 'Goles anotados' },
+            { v: resumen.anotadores, l: 'Anotadores' },
+          ].map((s) => (
+            <div
+              key={s.l}
+              className="rounded-2xl border border-white/10 bg-black/50 px-5 py-6 text-center backdrop-blur-sm"
+            >
+              <div className="font-sport text-4xl leading-none text-energy lg:text-5xl">{s.v}</div>
+              <div className="mt-2 font-mono text-[10px] uppercase tracking-[0.2em] text-neutral-500">
+                {s.l}
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : null}
+
       {/* Barra superior */}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-wrap gap-2">
