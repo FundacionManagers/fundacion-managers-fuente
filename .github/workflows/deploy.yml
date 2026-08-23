@@ -1,8 +1,21 @@
 name: Desplegar web (GitHub Pages)
 
+# Se publica en tres casos:
+#   - push a main: cambios de codigo o de imagenes.
+#   - cada 15 minutos: por si el panel de administracion cambio datos en
+#     Supabase. El sitio es estatico, asi que guardar en el panel no basta;
+#     hay que recompilar para que el cambio se vea.
+#   - a mano, desde la pestana Actions.
+#
+# La revision programada NO compila siempre. Consulta la vista
+# public.torneo_marca —ultimo cambio y total de filas— y solo sigue adelante
+# si ese estado no se ha publicado todavia. Una ejecucion sin cambios tarda
+# unos segundos.
 on:
   push:
     branches: [main]
+  schedule:
+    - cron: '*/15 * * * *'
   workflow_dispatch:
 
 permissions:
@@ -10,12 +23,69 @@ permissions:
   pages: write
   id-token: write
 
+# Las ejecuciones se encolan en vez de cancelarse. Con el cron cada 15
+# minutos, cancelar significaria que una revision de rutina —que casi siempre
+# no hace nada— tumbe un despliegue en curso a mitad de camino.
 concurrency:
   group: pages
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
+  revisar:
+    runs-on: ubuntu-latest
+    outputs:
+      publicar: ${{ steps.decidir.outputs.publicar }}
+      marca: ${{ steps.leer.outputs.marca }}
+    steps:
+      # En un push siempre se publica: cambio el codigo, no solo los datos.
+      - name: Leer la marca del torneo
+        id: leer
+        run: |
+          RESPUESTA=$(curl -sS --max-time 30 \
+            "${SUPABASE_URL}/rest/v1/torneo_marca?select=*" \
+            -H "apikey: ${SUPABASE_KEY}" \
+            -H "Authorization: Bearer ${SUPABASE_KEY}" || echo '')
+          if [ -z "$RESPUESTA" ]; then
+            echo "Supabase no respondio; se publica igual para no quedarse atras."
+            echo "marca=sin-respuesta-${GITHUB_RUN_ID}" >> "$GITHUB_OUTPUT"
+          else
+            echo "marca=$(printf '%s' "$RESPUESTA" | sha256sum | cut -c1-32)" >> "$GITHUB_OUTPUT"
+          fi
+        env:
+          # La clave publicable esta pensada para exponerse: ya viaja en el
+          # bundle del navegador. Quien manda es Row Level Security, y esta
+          # vista solo devuelve una fecha y un conteo.
+          SUPABASE_URL: https://rlgakgpcfbwhigjdumiv.supabase.co
+          SUPABASE_KEY: sb_publishable_VJ4JIosQfATwORGErcb0Dw_VxcrSngy
+
+      # La cache hace de registro de "esto ya se publico". Si la clave existe,
+      # este mismo estado ya salio al aire y no hay nada que hacer.
+      - name: Ver si este estado ya se publico
+        id: yapublicado
+        if: github.event_name == 'schedule'
+        uses: actions/cache/restore@v4
+        with:
+          path: .marca
+          key: torneo-publicado-${{ steps.leer.outputs.marca }}
+          lookup-only: true
+
+      - name: Decidir
+        id: decidir
+        run: |
+          if [ "${{ github.event_name }}" != "schedule" ]; then
+            echo "Disparado por ${{ github.event_name }}: se publica."
+            echo "publicar=si" >> "$GITHUB_OUTPUT"
+          elif [ "${{ steps.yapublicado.outputs.cache-hit }}" == "true" ]; then
+            echo "Sin cambios en el torneo desde la ultima publicacion."
+            echo "publicar=no" >> "$GITHUB_OUTPUT"
+          else
+            echo "El torneo cambio: hay que republicar."
+            echo "publicar=si" >> "$GITHUB_OUTPUT"
+          fi
+
   build:
+    needs: revisar
+    if: needs.revisar.outputs.publicar == 'si'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -35,7 +105,7 @@ jobs:
           path: out
 
   deploy:
-    needs: build
+    needs: [revisar, build]
     runs-on: ubuntu-latest
     environment:
       name: github-pages
@@ -43,3 +113,16 @@ jobs:
     steps:
       - id: deployment
         uses: actions/deploy-pages@v4
+
+      # La marca se guarda DESPUES de desplegar, no antes: si el despliegue
+      # falla, el estado sigue contando como no publicado y el siguiente cron
+      # lo reintenta en vez de darlo por hecho.
+      - name: Anotar el estado publicado
+        if: success() && github.event_name == 'schedule'
+        run: mkdir -p .marca && echo "${{ needs.revisar.outputs.marca }}" > .marca/publicado.txt
+      - name: Guardar la marca
+        if: success() && github.event_name == 'schedule'
+        uses: actions/cache/save@v4
+        with:
+          path: .marca
+          key: torneo-publicado-${{ needs.revisar.outputs.marca }}
