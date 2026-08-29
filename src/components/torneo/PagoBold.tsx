@@ -155,17 +155,23 @@ export function PagoBold() {
         ) : null}
       </div>
 
+      {/* El paso siguiente. El rotulo decia "Ya coordine mi pago", de cuando
+          el pago se arreglaba por WhatsApp; con Bold el capitan paga en el
+          momento, asi que lo que necesita despues es un "ya pague". */}
       <a
         href={`${process.env.NEXT_PUBLIC_BASE_PATH ?? ''}/torneo/inscripciones/listo/`}
         className="cta-glow inline-flex w-full items-center justify-center gap-2.5 rounded-full border-2 border-amarillo bg-amarillo/10 px-6 py-3.5 text-sm font-bold text-amarillo transition-all duration-200 ease-managers hover:-translate-y-0.5 hover:bg-amarillo/20"
       >
         <GoldCoin size={26} className="coin-spin drop-shadow-none" ariaLabel="" />
-        Ya coordiné mi pago — ver paso 5 (programación)
+        {pagoConfigurado
+          ? 'Ya pagué — ver paso 5 (programación)'
+          : 'Ya coordiné mi pago — ver paso 5 (programación)'}
       </a>
 
       <p className="text-center text-xs text-neutral-500">
-        Tras confirmar tu pago, el <strong className="text-neutral-300">paso 5</strong> es recibir
-        la programación del torneo. Te la enviamos por el grupo de WhatsApp.
+        Cuando termines el pago en Bold, vuelve aquí y entra al{' '}
+        <strong className="text-neutral-300">paso 5</strong>: ahí tienes tu comprobante de
+        inscripción y la programación del torneo.
       </p>
     </div>
   );
