@@ -15,9 +15,11 @@ function urlSoporte(equipo: string): string {
 }
 
 function urlPagoWhatsApp(equipo: string): string {
+  // El valor solo se nombra si está publicado: si no, el mensaje saldría con
+  // un "(valor )" vacío.
   const msg = `Hola, quiero pagar la inscripción de mi equipo${
     equipo ? ` "${equipo}"` : ''
-  } al Torneo Managers (valor ${BOLD_PAGO.VALOR}). ¿Cómo realizo el pago?`;
+  } al Torneo Managers${BOLD_PAGO.VALOR ? ` (valor ${BOLD_PAGO.VALOR})` : ''}. ¿Cómo realizo el pago?`;
   return `https://wa.me/${BOLD_PAGO.WHATSAPP}?text=${encodeURIComponent(msg)}`;
 }
 
@@ -79,23 +81,36 @@ export function PagoBold() {
           <strong className="text-neutral-100">Bold</strong>.
         </p>
 
-        <div className="mt-5 rounded-2xl border border-white/10 bg-[#0d1218]/70 p-5">
-          <p className="text-xs uppercase tracking-wide text-neutral-400">
-            Valor de la inscripción
-          </p>
-          <p className="mt-1 font-sport text-4xl text-amarillo">
-            {BOLD_PAGO.VALOR || 'Por confirmar'}
-          </p>
-          {/* El link de Bold es de monto abierto: pregunta cuánto se va a
-              pagar y arranca en $0. Si no se avisa aquí, es facilísimo que
-              alguien teclee otra cifra sin darse cuenta. */}
-          {pagoConfigurado && BOLD_PAGO.MONTO_ABIERTO && BOLD_PAGO.VALOR ? (
-            <p className="mt-3 text-xs leading-relaxed text-neutral-400">
-              Bold te va a preguntar cuánto vas a pagar y el campo empieza en $0. Escribe{' '}
-              <strong className="text-neutral-200">{BOLD_PAGO.VALOR}</strong> exacto.
+        {/* El recuadro del importe solo existe si hay precio publicado. Sin
+            valor no se pinta nada: un "Por confirmar" ahí sería el mismo
+            placeholder que la auditoría quitó del resto del sitio. */}
+        {BOLD_PAGO.VALOR ? (
+          <div className="mt-5 rounded-2xl border border-white/10 bg-[#0d1218]/70 p-5">
+            <p className="text-xs uppercase tracking-wide text-neutral-400">
+              Valor de la inscripción
             </p>
-          ) : null}
-        </div>
+            <p className="mt-1 font-sport text-4xl text-amarillo">{BOLD_PAGO.VALOR}</p>
+          </div>
+        ) : null}
+
+        {/* El link de Bold es de monto abierto: pregunta cuánto se va a pagar
+            y el campo arranca en $0. Sin este aviso el capitán llega a la
+            pasarela sin saber qué teclear. */}
+        {pagoConfigurado && BOLD_PAGO.MONTO_ABIERTO ? (
+          <p className="mt-5 rounded-2xl border border-white/10 bg-[#0d1218]/70 p-5 text-sm leading-relaxed text-neutral-300">
+            Bold te va a preguntar cuánto vas a pagar y el campo empieza en $0.{' '}
+            {BOLD_PAGO.VALOR ? (
+              <>
+                Escribe <strong className="text-neutral-100">{BOLD_PAGO.VALOR}</strong> exacto.
+              </>
+            ) : (
+              <>
+                Escribe el valor de la inscripción que te confirmó la organización. Si no lo tienes
+                a mano, pregúntalo antes de pagar con el botón de abajo.
+              </>
+            )}
+          </p>
+        ) : null}
 
         {pagoConfigurado ? (
           <a

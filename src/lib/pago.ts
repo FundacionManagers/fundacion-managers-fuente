@@ -9,8 +9,16 @@
 export const BOLD_PAGO = {
   /** URL del link de pago generado en el panel de Bold. Vacío = aún no configurado. */
   LINK: 'https://checkout.bold.co/payment/LNK_C1AF228EMX',
-  /** Valor visible de la inscripción, ej. '$350.000 COP'. Vacío = por definir. */
-  VALOR: '$1.000.000 COP',
+  /**
+   * Valor visible de la inscripción, ej. '$350.000 COP'.
+   *
+   * VACÍO A PROPÓSITO: la organización decidió no publicar el precio en la
+   * web. Con el valor vacío no se pinta el recuadro del importe —nada de
+   * "Por confirmar", que es justo el placeholder que la auditoría quitó de
+   * todo el sitio— y el aviso del monto pasa a remitir a la cifra que la
+   * organización le dio al capitán.
+   */
+  VALOR: '',
   /** Celular de soporte (WhatsApp) para dudas de pago. */
   WHATSAPP: '573126299744',
   /**
