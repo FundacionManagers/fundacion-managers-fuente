@@ -8,7 +8,6 @@ import { CampeonReveal } from '@/components/torneo/CampeonReveal';
 import { TorneoNav } from '@/components/torneo/TorneoNav';
 import { TablaPosiciones } from '@/components/torneo/TablaPosiciones';
 import { RankingGoleadores } from '@/components/torneo/RankingGoleadores';
-import { PalmaresTorneo } from '@/components/torneo/PalmaresTorneo';
 import { ALIANZA, ICONE_CYAN } from '@/lib/alianza';
 import { jornadaActualDe, TOTAL_JORNADAS } from '@/lib/liga';
 import { cargarLigaConAviso } from '@/lib/liga-supabase';
@@ -193,14 +192,20 @@ export async function TorneoLanding() {
               {CAMPEON_VIGENTE.descripcion} Defenderá su corona en la {EDICION_EN_CURSO.numero}°
               Edición ({EDICION_EN_CURSO.periodo}).
             </p>
+            {/* El palmarés completo vive en su propia pestaña: estuvo como
+                sección al final de esta página y ahí no lo encontraba nadie. */}
+            <Link
+              href="/torneo/palmares/"
+              className="group mt-8 inline-flex items-center gap-2 rounded-full border border-amarillo/40 px-6 py-3 text-sm font-bold text-amarillo transition-all duration-200 ease-managers hover:-translate-y-0.5 hover:bg-amarillo/10"
+            >
+              Ver el palmarés de las {EDICIONES.length} ediciones
+              <ArrowRight
+                size={18}
+                aria-hidden
+                className="transition-transform duration-200 ease-managers group-hover:translate-x-1"
+              />
+            </Link>
           </div>
-        </div>
-      </section>
-
-      {/* ===== PALMARÉS: TODAS LAS EDICIONES ===== */}
-      <section id="palmares" className="grain relative z-10 scroll-mt-24 overflow-hidden">
-        <div className="relative mx-auto max-w-7xl px-6 py-20 lg:px-8">
-          <PalmaresTorneo />
         </div>
       </section>
 

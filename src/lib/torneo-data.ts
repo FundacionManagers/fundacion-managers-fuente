@@ -81,5 +81,8 @@ export const TORNEO_TABS: readonly SubRuta[] = [
   { href: '/torneo/calendario/', label: 'Calendario' },
   { href: '/torneo/equipos/', label: 'Equipos' },
   { href: '/torneo/estadisticas/', label: 'Estadísticas' },
+  // El palmarés tiene pestaña propia porque se busca a propósito. Estuvo un
+  // rato como sección al final del Resumen y ahí no lo encontraba nadie.
+  { href: '/torneo/palmares/', label: 'Palmarés' },
   { href: '/torneo/inscripciones/', label: 'Inscripciones' },
 ] as const;
