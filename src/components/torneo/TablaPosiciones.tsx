@@ -15,9 +15,16 @@ import { cn } from '@/lib/utils';
  * Las cifras vienen de `calcularPosiciones()`, que las deriva de los
  * marcadores: la tabla no puede contradecir al calendario.
  *
- * En móvil la tabla se desplaza en horizontal dentro de su propio contenedor
- * — la página nunca se desplaza de lado — y las columnas de disciplina se
- * ocultan por debajo de `sm`, porque son las menos consultadas.
+ * En móvil la tabla se desplaza en horizontal dentro de su propio contenedor:
+ * la página nunca se desplaza de lado.
+ *
+ * TA y TR se muestran SIEMPRE, también en móvil. Estuvieron ocultas por
+ * debajo de `sm` con el argumento de que eran las columnas menos
+ * consultadas, y resultó ser justo al revés: un capitán preguntó por ellas
+ * porque no entendía el orden de la tabla desde el teléfono. Es coherente
+ * con el reglamento — el Fair Play es el segundo criterio de desempate, por
+ * encima de la diferencia de gol—, así que esconder las tarjetas dejaba a la
+ * vista el criterio menos decisivo y escondía el que manda.
  */
 export function TablaPosiciones({ datos }: { datos: DatosLiga }) {
   const posiciones = calcularPosiciones(datos.partidos, datos.disciplina);
@@ -41,7 +48,7 @@ export function TablaPosiciones({ datos }: { datos: DatosLiga }) {
       <div className="energy-bar mt-5 h-1 w-full rounded-full opacity-70" />
 
       <div className="mt-8 overflow-x-auto rounded-2xl border border-white/10 bg-black/40">
-        <table className="w-full min-w-[640px] border-collapse text-sm">
+        <table className="w-full min-w-[720px] border-collapse text-sm">
           <caption className="sr-only">
             Tabla de posiciones de la fase de grupos hasta la fecha {jornadaActual}
           </caption>
@@ -66,7 +73,6 @@ export function TablaPosiciones({ datos }: { datos: DatosLiga }) {
                   title={c.largo}
                   className={cn(
                     'px-2 py-3 text-center font-bufon text-xs font-bold uppercase tracking-wider text-amarillo',
-                    (c.key === 'ta' || c.key === 'tr') && 'hidden sm:table-cell',
                     c.key === 'pts' && 'px-3',
                   )}
                 >
@@ -110,7 +116,6 @@ export function TablaPosiciones({ datos }: { datos: DatosLiga }) {
                       key={c.key}
                       className={cn(
                         'px-2 py-3 text-center tabular-nums',
-                        (c.key === 'ta' || c.key === 'tr') && 'hidden sm:table-cell',
                         c.key === 'pts'
                           ? 'px-3 font-sport text-lg text-amarillo'
                           : 'text-neutral-300',

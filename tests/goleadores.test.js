@@ -1,16 +1,23 @@
 /**
  * El ranking público de goleadores.
  *
- * Dos cosas se vigilan aquí. Una, que nadie aparezca dos veces: un jugador
+ * Tres cosas se vigilan aquí. Una, que nadie aparezca dos veces: un jugador
  * partido en dos filas se ve en la web como dos personas distintas con la
- * mitad de los goles cada una. Y dos, que el ranking no reparta más goles de
- * los que el club marcó de verdad.
+ * mitad de los goles cada una. Dos, que el ranking no reparta más goles de
+ * los que el club marcó de verdad. Y tres, que cada gol del marcador tenga
+ * explicación: o lo marcó un jugador, o es un autogol registrado. Ningún
+ * gol puede quedar suelto sin que la web dé cuenta de él.
  */
 
 const test = require('node:test');
 const assert = require('node:assert/strict');
 
-const { GOLEADORES_LIGA, POSICIONES_LIGA } = require('../.test-build/lib/liga.js');
+const {
+  AUTOGOLES,
+  GOLEADORES_LIGA,
+  POSICIONES_LIGA,
+  autogolesDe,
+} = require('../.test-build/lib/liga.js');
 const { EQUIPOS } = require('../.test-build/lib/torneo-data.js');
 
 test('ningún jugador aparece dos veces', () => {
@@ -69,25 +76,42 @@ test('ningún club reparte más goles de los que marcó', () => {
       (s, g) => s + g.goles,
       0,
     );
-    assert.ok(
-      asignados <= f.gf,
-      `${f.equipo} reparte ${asignados} goles pero solo marcó ${f.gf}`,
-    );
+    assert.ok(asignados <= f.gf, `${f.equipo} reparte ${asignados} goles pero solo marcó ${f.gf}`);
   }
 });
 
-test('el único gol sin autor conocido es uno de La Banda Cruzada', () => {
-  const sinAsignar = POSICIONES_LIGA.map((f) => {
+test('todo gol sin goleador está explicado por un autogol registrado', () => {
+  const sinExplicar = POSICIONES_LIGA.map((f) => {
     const asignados = GOLEADORES_LIGA.filter((g) => g.equipo === f.equipo).reduce(
       (s, g) => s + g.goles,
       0,
     );
-    return { equipo: f.equipo, faltan: f.gf - asignados };
-  }).filter((x) => x.faltan > 0);
+    return { equipo: f.equipo, faltan: f.gf - asignados - autogolesDe(f.equipo) };
+  }).filter((x) => x.faltan !== 0);
 
   assert.deepEqual(
-    sinAsignar,
-    [{ equipo: 'la-banda-cruzada', faltan: 1 }],
-    'si esto falla, o llegó el dato que faltaba o se coló un gol sin dueño en otro club',
+    sinExplicar,
+    [],
+    'hay goles que no salen ni de un goleador ni de un autogol: falta registrarlos',
   );
+});
+
+test('el autogol de la fase de grupos es a favor de La Banda Cruzada', () => {
+  assert.equal(AUTOGOLES.length, 1);
+  assert.equal(autogolesDe('la-banda-cruzada'), 1);
+});
+
+test('ningún autogol se le acredita a un jugador del ranking', () => {
+  const nombres = new Set(GOLEADORES_LIGA.map((g) => g.jugador.toLowerCase()));
+  assert.ok(
+    !nombres.has('autogol') && !nombres.has('gol en propia puerta'),
+    'los autogoles van en AUTOGOLES, no como una fila más de la bota de oro',
+  );
+});
+
+test('todo autogol beneficia a un club del torneo', () => {
+  const slugs = new Set(EQUIPOS.map((e) => e.slug));
+  for (const a of AUTOGOLES) {
+    assert.ok(slugs.has(a.equipo), `autogol a favor de un club inexistente: ${a.equipo}`);
+  }
 });

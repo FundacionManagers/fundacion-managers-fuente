@@ -1,6 +1,6 @@
 import { TeamCrest } from '@/components/torneo/TeamCrest';
 import { getEquipo } from '@/lib/torneo-data';
-import { jornadaActualDe } from '@/lib/liga';
+import { AUTOGOLES, jornadaActualDe } from '@/lib/liga';
 import type { DatosLiga } from '@/lib/liga-supabase';
 import { cn } from '@/lib/utils';
 
@@ -19,14 +19,24 @@ export function RankingGoleadores({ datos }: { datos: DatosLiga }) {
   const jornadaActual = jornadaActualDe(datos.partidos);
 
   // Los goles del ranking y los del marcador no tienen por qué cuadrar: un
-  // autogol suma al equipo pero no a ningún goleador, y a veces la planilla
-  // llega sin el autor de un gol. Se cuentan los dos y se publica la
-  // diferencia, en vez de titular con el número menor como si fuera el total.
+  // autogol suma al equipo pero no a ningún goleador. Se cuentan los dos y se
+  // publica la diferencia, en vez de titular con el número menor como si
+  // fuera el total.
   const golesJugados = datos.partidos.reduce(
     (s, p) => (p.estado === 'jugado' ? s + (p.golesLocal ?? 0) + (p.golesVisitante ?? 0) : s),
     0,
   );
-  const sinAutor = Math.max(0, golesJugados - totalGoles);
+
+  // Cuántos autogoles se llevó cada club, para nombrar a los beneficiados.
+  const autogolesPorClub = AUTOGOLES.reduce<Record<string, number>>((acc, a) => {
+    acc[a.equipo] = (acc[a.equipo] ?? 0) + 1;
+    return acc;
+  }, {});
+  const beneficiados = Object.entries(autogolesPorClub);
+
+  // Lo que aún no explica ni un goleador ni un autogol registrado. Hoy es 0;
+  // si algún día no lo fuera, la web lo dice en vez de callarlo.
+  const sinExplicar = Math.max(0, golesJugados - totalGoles - AUTOGOLES.length);
 
   return (
     <div>
@@ -45,11 +55,32 @@ export function RankingGoleadores({ datos }: { datos: DatosLiga }) {
       </div>
       <div className="energy-bar mt-5 h-1 w-full rounded-full opacity-70" />
 
-      {sinAutor > 0 ? (
+      {golesJugados > totalGoles ? (
         <p className="mt-4 max-w-3xl text-xs leading-relaxed text-neutral-500">
-          {totalGoles} de esos goles tienen autor confirmado y {sinAutor} sigue
-          {sinAutor === 1 ? '' : 'n'} sin asignar: autogoles, o goles que la planilla todavía no
-          atribuye. No se reparten a ojo — quedan sin dueño hasta que la organización los confirme.
+          {totalGoles} los marcó un jugador
+          {AUTOGOLES.length > 0 ? (
+            <>
+              {' '}
+              y {AUTOGOLES.length}{' '}
+              {AUTOGOLES.length === 1 ? 'fue en propia puerta' : 'fueron en propia puerta'}, a favor
+              de{' '}
+              {beneficiados.map(([slug, n], i) => (
+                <span key={slug}>
+                  {i > 0 ? (i === beneficiados.length - 1 ? ' y ' : ', ') : ''}
+                  {getEquipo(slug)?.nombre ?? slug}
+                  {n > 1 ? ` (${n})` : ''}
+                </span>
+              ))}
+            </>
+          ) : null}
+          . Un gol en propia puerta cuenta para el club, no para la bota de oro.
+          {sinExplicar > 0 ? (
+            <>
+              {' '}
+              Quedan {sinExplicar} sin atribuir: no se reparten a ojo, esperan a que la organización
+              los confirme.
+            </>
+          ) : null}
         </p>
       ) : null}
 
@@ -166,6 +197,39 @@ export function RankingGoleadores({ datos }: { datos: DatosLiga }) {
                   </td>
                   <td className="px-3 py-2.5 text-center font-sport text-lg text-amarillo">
                     {g.goles}
+                  </td>
+                </tr>
+              );
+            })}
+
+            {/* Los autogoles cierran la tabla. Van sin número de posición
+                —no compiten por la bota de oro— pero sí con el club que se
+                los llevó, para que la suma cuadre con los goles del
+                marcador y nadie tenga que preguntar por el gol que falta. */}
+            {beneficiados.map(([slug, n]) => {
+              const eq = getEquipo(slug);
+              return (
+                <tr key={`autogol-${slug}`} className="border-t border-amarillo/20 bg-white/[0.02]">
+                  <td className="px-3 py-2.5 text-center text-neutral-600">—</td>
+                  <td className="whitespace-nowrap px-3 py-2.5 font-semibold italic text-neutral-400">
+                    Gol en propia puerta
+                  </td>
+                  <td className="px-3 py-2.5">
+                    <div className="flex items-center gap-2">
+                      <TeamCrest slug={slug} size={22} />
+                      <span className="whitespace-nowrap text-neutral-400">
+                        {eq?.nombre ?? slug}{' '}
+                        <span className="text-[11px] uppercase tracking-widest text-neutral-600">
+                          a favor
+                        </span>
+                      </span>
+                    </div>
+                  </td>
+                  <td className="hidden px-3 py-2.5 text-center text-neutral-600 sm:table-cell">
+                    —
+                  </td>
+                  <td className="px-3 py-2.5 text-center font-sport text-lg text-neutral-400">
+                    {n}
                   </td>
                 </tr>
               );

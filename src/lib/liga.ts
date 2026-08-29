@@ -15,8 +15,10 @@
  * son -9). El resto de la tabla oficial coincide celda por celda.
  *
  * Al día en la Fecha 5. Los 8 clubes suman 97 goles a favor y el ranking de
- * goleadores reparte 96: hay un gol de La Banda Cruzada sin autor conocido.
- * Se deja sin asignar a propósito, no se reparte a ojo.
+ * goleadores reparte 96. La diferencia no es un error: es el autogol que la
+ * organización confirmó a favor de La Banda Cruzada, y está en `AUTOGOLES`.
+ * Un gol en propia puerta suma al club beneficiado pero no a ningún
+ * goleador, así que se registra aparte en vez de adjudicárselo a alguien.
  */
 
 import { EQUIPOS } from './torneo-data';
@@ -443,10 +445,11 @@ export function puntosJuegoLimpio(fila: Pick<FilaPosicion, 'ta' | 'tr'>): number
 /**
  * Ranking de goleadores acumulado hasta la Fecha 5. 45 anotadores, 96 goles.
  *
- * Los equipos suman 97 goles a favor y aquí hay 96: falta por asignar un
- * gol de La Banda Cruzada de la Fecha 5. No se reparte a ojo — queda sin
- * dueño hasta que la organización confirme quién lo hizo. La verificación
- * "goles sin asignar" de tests/ vigila que esa diferencia no crezca.
+ * Los equipos suman 97 goles a favor y aquí hay 96. El que falta es el
+ * autogol de `AUTOGOLES`: cuenta para el club, no para la bota de oro. La
+ * verificación de tests/ exige que toda diferencia entre la tabla y este
+ * ranking quede explicada por un autogol registrado, para que nunca vuelva
+ * a haber un gol suelto sin dar cuenta de él.
  */
 export const GOLEADORES_LIGA: readonly Goleador[] = [
   { posicion: 1, jugador: 'David Rincón', equipo: 'los-pibes', numero: 10, goles: 6 },
@@ -495,6 +498,36 @@ export const GOLEADORES_LIGA: readonly Goleador[] = [
   { posicion: 44, jugador: 'Sebastián Galindo', equipo: 'pomada-alfa', numero: 11, goles: 1 },
   { posicion: 45, jugador: 'William Castiblanco', equipo: 'tp-fc', numero: 3, goles: 1 },
 ] as const;
+
+/**
+ * Gol en propia puerta: suma al club beneficiado, no a ningún goleador.
+ *
+ * Se guarda con el club que se llevó el gol, no con quien lo marcó en su
+ * propia portería. Es deliberado: el reglamento se lo acredita al equipo
+ * beneficiado, y señalar públicamente a quien tuvo la mala suerte no aporta
+ * nada. Si más adelante la organización quiere registrar la fecha, para eso
+ * está `jornada`.
+ */
+export interface Autogol {
+  /** Slug del club al que se le contó el gol a favor. */
+  equipo: string;
+  /** Fecha en que ocurrió, si está confirmada. */
+  jornada?: number;
+}
+
+/**
+ * Autogoles de la fase de grupos.
+ *
+ * Este es el gol que faltaba: los clubes suman 97 goles a favor y los
+ * goleadores reparten 96. La diferencia estaba sin explicar en la web y
+ * ahora tiene nombre — no de jugador, sino de club beneficiado.
+ */
+export const AUTOGOLES: readonly Autogol[] = [{ equipo: 'la-banda-cruzada' }];
+
+/** Autogoles a favor de un club. */
+export function autogolesDe(equipo: string, autogoles: readonly Autogol[] = AUTOGOLES): number {
+  return autogoles.filter((a) => a.equipo === equipo).length;
+}
 
 export const PARTIDOS_JUGADOS = PARTIDOS_LIGA.filter((p) => p.estado === 'jugado');
 
