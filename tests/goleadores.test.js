@@ -93,19 +93,15 @@ test('el total del torneo cuadra: goles del marcador = goleadores + autogoles', 
 });
 
 /**
- * El descuadre que sigue abierto en la planilla, club por club.
+ * El cuadre club por club, que es más exigente que el total.
  *
- * La organización confirmó que el autogol de la Fecha 2 lo marcó un jugador
- * de Managers FC en el 0–1 contra Pomada Alfa, así que el gol es a favor de
- * Pomada Alfa. Pero los ocho goleadores de Pomada Alfa ya suman sus 23 goles
- * exactos: alguno sigue acreditado con ese autogol y hay que descontárselo.
- * Y a La Banda Cruzada le falta un gol por atribuir, que es otro asunto.
- *
- * Esta prueba fija ese estado conocido en vez de taparlo. En cuanto llegue
- * la planilla corregida falla, y obliga a actualizar el recuento en lugar de
- * dejar pasar el cambio en silencio.
+ * El total puede cuadrar por casualidad —un club con un gol de más y otro
+ * con uno de menos se compensan— y eso fue exactamente lo que pasó: Pomada
+ * Alfa tenía acreditado a un jugador el autogol de Managers FC, y a La Banda
+ * Cruzada le faltaba un goleador. Con esta prueba, ese tipo de descuadre no
+ * se puede esconder detrás de una suma que da bien.
  */
-test('el descuadre por club es exactamente el que está documentado', () => {
+test('cada club cuadra: sus goleadores más sus autogoles son sus goles', () => {
   const descuadre = POSICIONES_LIGA.map((f) => {
     const deJugador = GOLEADORES_LIGA.filter((g) => g.equipo === f.equipo).reduce(
       (s, g) => s + g.goles,
@@ -114,12 +110,18 @@ test('el descuadre por club es exactamente el que está documentado', () => {
     return { equipo: f.equipo, diferencia: deJugador + autogolesDe(f.equipo) - f.gf };
   }).filter((x) => x.diferencia !== 0);
 
-  assert.deepEqual(descuadre, [
-    // Un jugador de Pomada Alfa tiene acreditado el autogol de Managers FC.
-    { equipo: 'pomada-alfa', diferencia: 1 },
-    // A La Banda Cruzada le falta el goleador de uno de sus goles.
-    { equipo: 'la-banda-cruzada', diferencia: -1 },
-  ]);
+  assert.deepEqual(descuadre, [], 'algún club reparte más o menos goles de los que marcó');
+});
+
+test('Pomada Alfa marca 23: 22 de sus jugadores y el autogol de Managers FC', () => {
+  const fila = POSICIONES_LIGA.find((f) => f.equipo === 'pomada-alfa');
+  const deJugador = GOLEADORES_LIGA.filter((g) => g.equipo === 'pomada-alfa').reduce(
+    (s, g) => s + g.goles,
+    0,
+  );
+  assert.equal(fila.gf, 23);
+  assert.equal(deJugador, 22);
+  assert.equal(autogolesDe('pomada-alfa'), 1);
 });
 
 test('el autogol lo marcó Managers FC en la Fecha 2, a favor de Pomada Alfa', () => {

@@ -14,11 +14,10 @@
  * diferencia de gol de Useches (dice -2, son -1) y la de Yonotomo (dice -13,
  * son -9). El resto de la tabla oficial coincide celda por celda.
  *
- * Al día en la Fecha 5. Los 8 clubes suman 97 goles a favor y el ranking de
- * goleadores reparte 96. La diferencia es el autogol de `AUTOGOLES`: lo
- * marcó Managers FC en su propia portería en la Fecha 2, así que cuenta
- * para Pomada Alfa y no para ningún goleador. Por club queda un descuadre
- * pendiente de planilla, documentado en `AUTOGOLES` y fijado por tests/.
+ * Al día en la Fecha 5, y cuadrado: los 8 clubes suman 97 goles a favor, el
+ * ranking reparte 96 entre 46 anotadores y el que falta es el autogol de
+ * `AUTOGOLES`, que lo marcó Managers FC en su propia portería y cuenta para
+ * Pomada Alfa. Club por club también cuadra, y tests/ lo vigila.
  */
 
 import { EQUIPOS } from './torneo-data';
@@ -443,12 +442,16 @@ export function puntosJuegoLimpio(fila: Pick<FilaPosicion, 'ta' | 'tr'>): number
 }
 
 /**
- * Ranking de goleadores acumulado hasta la Fecha 5. 45 anotadores, 96 goles.
+ * Ranking de goleadores acumulado hasta la Fecha 5. 46 anotadores, 96 goles.
  *
- * Los equipos suman 97 goles a favor y aquí hay 96. El que falta es el
- * autogol de `AUTOGOLES`: cuenta para el club, no para la bota de oro. La
- * verificación de tests/ exige que toda diferencia entre la tabla y este
- * ranking quede explicada por un autogol registrado, para que nunca vuelva
+ * Es una copia de lo que hay en Supabase, que es la fuente real: esto solo
+ * se usa si la base no responde durante el build. Conviene resincronizarlo
+ * de vez en cuando para que el respaldo no publique un ranking viejo.
+ *
+ * Los equipos suman 97 goles y aquí hay 96. El que falta es el autogol de
+ * `AUTOGOLES`: cuenta para el club, no para la bota de oro. La verificación
+ * de tests/ exige que toda diferencia entre la tabla y este ranking quede
+ * explicada por un autogol registrado, club por club, para que nunca vuelva
  * a haber un gol suelto sin dar cuenta de él.
  */
 export const GOLEADORES_LIGA: readonly Goleador[] = [
@@ -465,18 +468,18 @@ export const GOLEADORES_LIGA: readonly Goleador[] = [
   { posicion: 11, jugador: 'Daniel Hernández', equipo: 'pomada-alfa', numero: 4, goles: 3 },
   { posicion: 12, jugador: 'Germán Cruz', equipo: 'tp-fc', numero: 9, goles: 3 },
   { posicion: 13, jugador: 'Leider López', equipo: 'la-banda-cruzada', numero: 23, goles: 3 },
-  { posicion: 14, jugador: 'Yesid Malagón', equipo: 'pomada-alfa', numero: 91, goles: 3 },
-  { posicion: 15, jugador: 'Carlos Cepeda', equipo: 'pomada-alfa', numero: 7, goles: 2 },
-  { posicion: 16, jugador: 'Carlos Neira', equipo: 'los-pibes', numero: 8, goles: 2 },
-  { posicion: 17, jugador: 'Daniel Delgado', equipo: 'los-pibes', numero: 14, goles: 2 },
-  { posicion: 18, jugador: 'Diego Camacho', equipo: 'la-banda-cruzada', numero: 8, goles: 2 },
-  { posicion: 19, jugador: 'Guillermo Alvira', equipo: 'yonotomo-fc', numero: 19, goles: 2 },
-  { posicion: 20, jugador: 'Isnardo Zárate', equipo: 'useche-fc', numero: 19, goles: 2 },
-  { posicion: 21, jugador: 'Jeferson Pedraza', equipo: 'the-originals', numero: 37, goles: 2 },
-  { posicion: 22, jugador: 'Mauricio Altamar', equipo: 'yonotomo-fc', numero: 10, goles: 2 },
-  { posicion: 23, jugador: 'Nelson Mora', equipo: 'the-originals', numero: 8, goles: 2 },
-  { posicion: 24, jugador: 'Omar Flórez', equipo: 'la-banda-cruzada', numero: 7, goles: 2 },
-  { posicion: 25, jugador: 'Wilson Wilches', equipo: 'useche-fc', numero: 94, goles: 2 },
+  { posicion: 14, jugador: 'Carlos Cepeda', equipo: 'pomada-alfa', numero: 7, goles: 2 },
+  { posicion: 15, jugador: 'Carlos Neira', equipo: 'los-pibes', numero: 8, goles: 2 },
+  { posicion: 16, jugador: 'Daniel Delgado', equipo: 'los-pibes', numero: 14, goles: 2 },
+  { posicion: 17, jugador: 'Diego Camacho', equipo: 'la-banda-cruzada', numero: 8, goles: 2 },
+  { posicion: 18, jugador: 'Guillermo Alvira', equipo: 'yonotomo-fc', numero: 19, goles: 2 },
+  { posicion: 19, jugador: 'Isnardo Zárate', equipo: 'useche-fc', numero: 19, goles: 2 },
+  { posicion: 20, jugador: 'Jeferson Pedraza', equipo: 'the-originals', numero: 37, goles: 2 },
+  { posicion: 21, jugador: 'Mauricio Altamar', equipo: 'yonotomo-fc', numero: 10, goles: 2 },
+  { posicion: 22, jugador: 'Nelson Mora', equipo: 'the-originals', numero: 8, goles: 2 },
+  { posicion: 23, jugador: 'Omar Flórez', equipo: 'la-banda-cruzada', numero: 7, goles: 2 },
+  { posicion: 24, jugador: 'Wilson Wilches', equipo: 'useche-fc', numero: 94, goles: 2 },
+  { posicion: 25, jugador: 'Yesid Malagón', equipo: 'pomada-alfa', numero: 91, goles: 2 },
   { posicion: 26, jugador: 'Alfredo Tapia', equipo: 'the-originals', numero: 7, goles: 1 },
   { posicion: 27, jugador: 'Arturo Castro', equipo: 'la-banda-cruzada', numero: 51, goles: 1 },
   { posicion: 28, jugador: 'Christian López', equipo: 'yonotomo-fc', numero: 77, goles: 1 },
@@ -484,19 +487,20 @@ export const GOLEADORES_LIGA: readonly Goleador[] = [
   { posicion: 30, jugador: 'Daniel Rodríguez', equipo: 'los-pibes', numero: 5, goles: 1 },
   { posicion: 31, jugador: 'Gustavo Páez', equipo: 'managers-fc', numero: 18, goles: 1 },
   { posicion: 32, jugador: 'James Guerrero', equipo: 'managers-fc', numero: 90, goles: 1 },
-  { posicion: 33, jugador: 'Jesús Amaya', equipo: 'los-pibes', numero: 9, goles: 1 },
-  { posicion: 34, jugador: 'Jhon Tovaria', equipo: 'the-originals', numero: 16, goles: 1 },
-  { posicion: 35, jugador: 'Joan Jurado', equipo: 'tp-fc', numero: 17, goles: 1 },
-  { posicion: 36, jugador: 'Juan Álvarez', equipo: 'the-originals', numero: 23, goles: 1 },
-  { posicion: 37, jugador: 'Juan Mejía', equipo: 'pomada-alfa', numero: 14, goles: 1 },
-  { posicion: 38, jugador: 'Julián Garzón', equipo: 'tp-fc', numero: 4, goles: 1 },
-  { posicion: 39, jugador: 'Leonardo Espitia', equipo: 'tp-fc', numero: 19, goles: 1 },
-  { posicion: 40, jugador: 'Néstor Useche', equipo: 'useche-fc', numero: 7, goles: 1 },
-  { posicion: 41, jugador: 'Nicolás Muñoz', equipo: 'managers-fc', numero: 13, goles: 1 },
-  { posicion: 42, jugador: 'Rafael Quilindo', equipo: 'los-pibes', numero: 28, goles: 1 },
-  { posicion: 43, jugador: 'Ronald Serna', equipo: 'the-originals', numero: 43, goles: 1 },
-  { posicion: 44, jugador: 'Sebastián Galindo', equipo: 'pomada-alfa', numero: 11, goles: 1 },
-  { posicion: 45, jugador: 'William Castiblanco', equipo: 'tp-fc', numero: 3, goles: 1 },
+  { posicion: 33, jugador: 'Jaxon Murillo', equipo: 'la-banda-cruzada', numero: 2, goles: 1 },
+  { posicion: 34, jugador: 'Jesús Amaya', equipo: 'los-pibes', numero: 9, goles: 1 },
+  { posicion: 35, jugador: 'Jhon Tovaria', equipo: 'the-originals', numero: 16, goles: 1 },
+  { posicion: 36, jugador: 'Joan Jurado', equipo: 'tp-fc', numero: 17, goles: 1 },
+  { posicion: 37, jugador: 'Juan Álvarez', equipo: 'the-originals', numero: 23, goles: 1 },
+  { posicion: 38, jugador: 'Juan Mejía', equipo: 'pomada-alfa', numero: 14, goles: 1 },
+  { posicion: 39, jugador: 'Julián Garzón', equipo: 'tp-fc', numero: 4, goles: 1 },
+  { posicion: 40, jugador: 'Leonardo Espitia', equipo: 'tp-fc', numero: 19, goles: 1 },
+  { posicion: 41, jugador: 'Néstor Useche', equipo: 'useche-fc', numero: 7, goles: 1 },
+  { posicion: 42, jugador: 'Nicolás Muñoz', equipo: 'managers-fc', numero: 13, goles: 1 },
+  { posicion: 43, jugador: 'Rafael Quilindo', equipo: 'los-pibes', numero: 28, goles: 1 },
+  { posicion: 44, jugador: 'Ronald Serna', equipo: 'the-originals', numero: 43, goles: 1 },
+  { posicion: 45, jugador: 'Sebastián Galindo', equipo: 'pomada-alfa', numero: 11, goles: 1 },
+  { posicion: 46, jugador: 'William Castiblanco', equipo: 'tp-fc', numero: 3, goles: 1 },
 ] as const;
 
 /**
@@ -525,10 +529,10 @@ export interface Autogol {
  * atribuirlo a La Banda Cruzada, que era una deducción equivocada — se dio
  * por hecho que el autogol explicaba el hueco de ese club.
  *
- * PENDIENTE DE PLANILLA, y está a la vista en la prueba de cuadre: los ocho
- * goleadores de Pomada Alfa ya suman sus 23 goles exactos, así que uno de
- * ellos sigue acreditado con este autogol y hay que descontárselo. Y a La
- * Banda Cruzada le sigue faltando un gol por atribuir, que es otro asunto.
+ * La planilla ya está conciliada: el gol estaba acreditado a Yesid Malagón
+ * y se le descontó en el panel, así que Pomada Alfa marca 23 con 22 de sus
+ * jugadores más este autogol. El hueco de La Banda Cruzada era otra cosa y
+ * se cerró aparte, cargando a Jaxon Murillo.
  */
 export const AUTOGOLES: readonly Autogol[] = [{ autor: 'managers-fc', jornada: 2 }];
 
