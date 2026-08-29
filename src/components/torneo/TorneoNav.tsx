@@ -1,13 +1,20 @@
 import Link from 'next/link';
+import { PuntoAviso } from '@/components/torneo/PuntoAviso';
 import { TORNEO_TABS } from '@/lib/torneo-data';
 import { cn } from '@/lib/utils';
 
 interface TorneoNavProps {
   active: string;
+  /**
+   * Momento del próximo partido, en ISO. Enciende el punto de aviso en la
+   * pestaña de Calendario cuando la fecha es hoy, mañana, o ya se jugó y
+   * faltan los resultados. Si no se pasa, no hay punto.
+   */
+  avisoISO?: string;
 }
 
 /** Sub-navegación del hub del torneo (estilo Premier League). */
-export function TorneoNav({ active }: TorneoNavProps) {
+export function TorneoNav({ active, avisoISO }: TorneoNavProps) {
   return (
     <nav
       aria-label="Secciones del torneo"
@@ -16,6 +23,7 @@ export function TorneoNav({ active }: TorneoNavProps) {
       <div className="mx-auto flex max-w-7xl gap-1 overflow-x-auto px-6 lg:px-8">
         {TORNEO_TABS.map((t) => {
           const isActive = t.href === active;
+          const conAviso = avisoISO && t.href === '/torneo/calendario/';
           return (
             <Link
               key={t.href}
@@ -26,6 +34,7 @@ export function TorneoNav({ active }: TorneoNavProps) {
               )}
             >
               {t.label}
+              {conAviso ? <PuntoAviso iso={avisoISO} /> : null}
               {isActive ? (
                 <span
                   aria-hidden

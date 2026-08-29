@@ -9,7 +9,7 @@ import { TorneoNav } from '@/components/torneo/TorneoNav';
 import { TablaPosiciones } from '@/components/torneo/TablaPosiciones';
 import { RankingGoleadores } from '@/components/torneo/RankingGoleadores';
 import { ALIANZA, ICONE_CYAN } from '@/lib/alianza';
-import { jornadaActualDe, TOTAL_JORNADAS } from '@/lib/liga';
+import { isoDe, jornadaActualDe, proximoPartidoDe, TOTAL_JORNADAS } from '@/lib/liga';
 import { cargarLigaConAviso } from '@/lib/liga-supabase';
 import {
   CAMPEON_VIGENTE,
@@ -37,6 +37,7 @@ export async function TorneoLanding() {
   const campeonSlug = ganadorDe(FINAL);
   const campeon = campeonSlug ? getEquipo(campeonSlug) : undefined;
   const campeonVigente = EQUIPOS.find((e) => e.nombre === CAMPEON_VIGENTE.equipo);
+  const proximoPartido = proximoPartidoDe(datos.partidos);
   const loc = FINAL.local ? getEquipo(FINAL.local) : undefined;
   const vis = FINAL.visitante ? getEquipo(FINAL.visitante) : undefined;
 
@@ -98,7 +99,7 @@ export async function TorneoLanding() {
         </div>
       </section>
 
-      <TorneoNav active="/torneo/" />
+      <TorneoNav active="/torneo/" avisoISO={proximoPartido ? isoDe(proximoPartido) : undefined} />
 
       {/* ===== NÚMEROS ===== */}
       <section className="grain relative z-10 overflow-hidden border-y border-white/10 bg-black/30 backdrop-blur-sm">

@@ -43,7 +43,15 @@ export function ProximaFecha({
       const soloDia = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
       const dias = Math.round((soloDia(inicio) - soloDia(ahora)) / 86400000);
 
-      if (dias < 0) return 'En juego';
+      /**
+       * El día después, antes de que carguen los resultados.
+       *
+       * Un partido sigue marcado como "programado" hasta que la organización
+       * sube el marcador, así que el lunes por la mañana esta tarjeta seguía
+       * apuntando a la fecha del domingo. Decir "En juego" ahí es falso: ya
+       * se jugó. Lo honesto es admitir que faltan los resultados.
+       */
+      if (dias < 0) return 'Resultados en camino';
       if (dias === 0) return 'Hoy';
       if (dias === 1) return 'Mañana';
       if (dias < 7) return `En ${dias} días`;
@@ -59,7 +67,9 @@ export function ProximaFecha({
   if (!partidos.length) return null;
 
   const horas = [...new Set(partidos.map((p) => p.hora))].sort();
-  const inminente = cuando === 'Hoy' || cuando === 'Mañana' || cuando === 'En juego';
+  const pendiente = cuando === 'Resultados en camino';
+  const inminente = cuando === 'Hoy' || cuando === 'Mañana' || pendiente;
+  const rotulo = pendiente ? 'Última fecha' : 'Próxima fecha';
 
   return (
     <div
@@ -70,7 +80,7 @@ export function ProximaFecha({
       <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-2">
         <p className="flex items-center gap-2 font-bufon text-xs font-bold uppercase tracking-[0.25em] text-naranja">
           <CalendarClock size={16} aria-hidden />
-          Próxima fecha
+          {rotulo}
         </p>
         {/* Reserva el hueco antes de saber el día, para que la tarjeta no
             dé un salto al montar. */}

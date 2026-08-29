@@ -2,6 +2,8 @@ import { GoldCoin } from '@/components/shared/GoldCoin';
 import { TeamCrest } from '@/components/torneo/TeamCrest';
 import { TorneoBackdrop } from '@/components/torneo/TorneoBackdrop';
 import { TorneoNav } from '@/components/torneo/TorneoNav';
+import { isoDe, proximoPartidoDe } from '@/lib/liga';
+import { cargarLigaConAviso } from '@/lib/liga-supabase';
 import { EQUIPOS } from '@/lib/torneo-data';
 
 interface TorneoShellProps {
@@ -11,8 +13,18 @@ interface TorneoShellProps {
   children: React.ReactNode;
 }
 
-/** Shell común de las subpáginas: foto de fondo a pantalla completa. */
-export function TorneoShell({ eyebrow, title, active, children }: TorneoShellProps) {
+/**
+ * Shell común de las subpáginas: foto de fondo a pantalla completa.
+ *
+ * Carga el calendario para saber cuándo es el próximo partido y encender el
+ * punto de aviso de la pestaña. Se hace aquí, y no en cada página, para que
+ * el aviso salga en todas por igual: un punto que aparece en unas secciones
+ * y en otras no se lee como un fallo, no como un aviso.
+ */
+export async function TorneoShell({ eyebrow, title, active, children }: TorneoShellProps) {
+  const datos = await cargarLigaConAviso();
+  const proximo = proximoPartidoDe(datos.partidos);
+
   return (
     <div className="tournament-section relative">
       <TorneoBackdrop seed={47} query="stadium,floodlights,night" />
@@ -60,7 +72,7 @@ export function TorneoShell({ eyebrow, title, active, children }: TorneoShellPro
           </div>
         </section>
 
-        <TorneoNav active={active} />
+        <TorneoNav active={active} avisoISO={proximo ? isoDe(proximo) : undefined} />
 
         {/* CONTENIDO (panel translúcido para que la foto se vea detrás) */}
         <section className="grain relative">

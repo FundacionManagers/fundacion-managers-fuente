@@ -8,7 +8,14 @@ import { PlayerAvatar } from '@/components/torneo/PlayerAvatar';
 import { TeamCrest } from '@/components/torneo/TeamCrest';
 import { TorneoBackdrop } from '@/components/torneo/TorneoBackdrop';
 import { TorneoNav } from '@/components/torneo/TorneoNav';
-import { EDICION_ACTUAL, PERIODO_ACTUAL, calcularPosiciones, type PartidoLiga } from '@/lib/liga';
+import {
+  EDICION_ACTUAL,
+  PERIODO_ACTUAL,
+  calcularPosiciones,
+  isoDe,
+  proximoPartidoDe,
+  type PartidoLiga,
+} from '@/lib/liga';
 import { cargarLigaConAviso } from '@/lib/liga-supabase';
 import { etiquetaTitulos } from '@/lib/torneo';
 import { BRACKET_2026, EQUIPOS, getEquipo } from '@/lib/torneo-data';
@@ -159,7 +166,13 @@ export default async function EquipoPage({ params }: Props) {
         </div>
       </section>
 
-      <TorneoNav active="/torneo/equipos/" />
+      <TorneoNav
+        active="/torneo/equipos/"
+        avisoISO={(() => {
+          const p = proximoPartidoDe(datos.partidos);
+          return p ? isoDe(p) : undefined;
+        })()}
+      />
 
       {/* CONTENIDO */}
       <section className="grain relative z-10 overflow-hidden">
