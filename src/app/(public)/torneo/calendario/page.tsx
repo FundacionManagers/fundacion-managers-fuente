@@ -1,10 +1,10 @@
 import type { Metadata } from 'next';
+import { ChevronRight } from 'lucide-react';
 import { MatchCard } from '@/components/torneo/MatchCard';
 import { FixtureLiga } from '@/components/torneo/FixtureLiga';
 import { EliminatoriaLiga } from '@/components/torneo/EliminatoriaLiga';
 import { TorneoShell } from '@/components/torneo/TorneoShell';
 import { CUARTOS, SEMIS, TERCER_PUESTO, FINAL } from '@/lib/torneo-data';
-import { EDICION_ACTUAL } from '@/lib/liga';
 import { cargarLigaConAviso } from '@/lib/liga-supabase';
 import { EDICION_ANTERIOR, EDICION_EN_CURSO, ordinalFemenino, pillEdicion } from '@/lib/torneo';
 
@@ -48,45 +48,62 @@ export default async function CalendarioPage() {
         </div>
       ) : null}
 
-      {/* ===== Historial: la llave de la edición anterior ===== */}
-      <div className="mt-24 border-t border-white/10 pt-16">
-        <p className="font-bufon text-sm font-bold uppercase tracking-[0.25em] text-neutral-500">
-          Historial
-        </p>
-        <h2 className="mt-1 font-sport text-4xl uppercase leading-none text-neutral-300 md:text-5xl">
-          {pillEdicion(EDICION_ANTERIOR)}
-        </h2>
-        <p className="mt-3 max-w-2xl text-sm text-neutral-500">
-          La edición {EDICION_ACTUAL - 1} se jugó por eliminación directa. Se conserva aquí el
-          recorrido completo hasta la final.
-        </p>
+      {/* ===== Historial de la edición anterior, plegado =====
 
-        <div className="mt-14 space-y-16 opacity-90">
-          {HISTORIAL.map((b) => (
-            <div key={b.titulo}>
-              <div className="flex items-end justify-between gap-4">
-                <div>
-                  <p className="font-bufon text-xs font-bold uppercase tracking-[0.25em] text-naranja">
-                    {b.sub}
-                  </p>
-                  <h3 className="mt-1 font-sport text-4xl uppercase leading-none text-neutral-50 md:text-5xl">
-                    {b.titulo}
-                  </h3>
+          Ocupaba media página con titulares del mismo tamaño que los de la
+          edición en curso, y competía con lo único que la gente viene a ver
+          aquí: el calendario de ahora. Va plegado, en letra pequeña y en gris,
+          para que solo lo abra quien de verdad quiera mirar atrás.
+
+          Es un <details> nativo: no necesita JavaScript, funciona con teclado
+          y el buscador igual lo indexa. */}
+      <details className="group mt-12 border-t border-white/5 pt-5">
+        <summary className="flex cursor-pointer list-none items-center gap-2 text-[11px] uppercase tracking-[0.2em] text-neutral-600 transition-colors hover:text-neutral-400">
+          <ChevronRight
+            size={12}
+            aria-hidden
+            className="shrink-0 transition-transform duration-200 group-open:rotate-90"
+          />
+          Historial · ¿quieres ver qué pasó en la {ordinalFemenino(EDICION_ANTERIOR.numero)}{' '}
+          edición?
+        </summary>
+
+        <div className="mt-8">
+          <p className="font-bufon text-xs font-bold uppercase tracking-[0.25em] text-neutral-600">
+            Historial · {pillEdicion(EDICION_ANTERIOR)}
+          </p>
+          <p className="mt-2 max-w-2xl text-xs text-neutral-500">
+            Esta edición ya terminó. Se jugó por eliminación directa y se conserva aquí el recorrido
+            completo hasta la final. No forma parte del torneo en curso.
+          </p>
+
+          <div className="mt-10 space-y-12 opacity-80">
+            {HISTORIAL.map((b) => (
+              <div key={b.titulo}>
+                <div className="flex items-end justify-between gap-4">
+                  <div>
+                    <p className="font-bufon text-[10px] font-bold uppercase tracking-[0.25em] text-neutral-600">
+                      {b.sub}
+                    </p>
+                    <h3 className="mt-1 font-sport text-2xl uppercase leading-none text-neutral-400">
+                      {b.titulo}
+                    </h3>
+                  </div>
+                  <span className="hidden font-sport text-xl text-white/10 sm:block">
+                    {String(b.partidos.length).padStart(2, '0')}
+                  </span>
                 </div>
-                <span className="hidden font-sport text-2xl text-white/15 sm:block">
-                  {String(b.partidos.length).padStart(2, '0')}
-                </span>
+                <div className="mt-3 h-px w-full bg-white/10" />
+                <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                  {b.partidos.map((p) => (
+                    <MatchCard key={p.id} p={p} />
+                  ))}
+                </div>
               </div>
-              <div className="energy-bar mt-4 h-1 w-full rounded-full opacity-50" />
-              <div className="mt-7 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-                {b.partidos.map((p) => (
-                  <MatchCard key={p.id} p={p} />
-                ))}
-              </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
-      </div>
+      </details>
     </TorneoShell>
   );
 }
