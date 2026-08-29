@@ -1,11 +1,15 @@
 /**
- * El palmarés se gana en la cancha, no se teclea.
+ * El palmarés sale de una sola lista, y cada título dice de dónde viene.
  *
- * Un club solo suma un título si en el sitio está publicada la Gran Final
- * que ganó. La web llegó a presentar a Pomada Alfa como "bicampeón vigente"
- * con dos títulos que ningún partido publicado respaldaba, y encima le
- * quitaba la corona a The Originals, que sí ganó la final de la 3ª edición.
- * Estas pruebas existen para que ese tipo de dato no pueda volver a entrar.
+ * La web llegó a presentar a Pomada Alfa como "bicampeón vigente" con dos
+ * títulos fechados en 2024 y 2025 que no encajaban con la numeración del
+ * resto del sitio, mientras la 3ª edición la había ganado The Originals. El
+ * número vivía suelto en la ficha del club, sin ninguna lista detrás.
+ *
+ * Ahora todo sale de EDICIONES, y cada campeón declara su respaldo: la llave
+ * publicada, o el palmarés que aporta la organización. Estas pruebas vigilan
+ * que no vuelva a haber un título sin procedencia, y que campeón vigente y
+ * máximo ganador no se confundan.
  */
 
 const test = require('node:test');
@@ -18,20 +22,26 @@ const {
   MAXIMO_GANADOR_ES_OTRO,
   TITULOS_POR_CLUB,
   campeonDe,
+  respaldoDe,
 } = require('../.test-build/lib/torneo.js');
 const { EQUIPOS } = require('../.test-build/lib/torneo-data.js');
 
-test('ningún título existe sin una final publicada que lo respalde', () => {
+test('ningún título existe sin declarar de dónde sale', () => {
   const titulosContados = Object.values(TITULOS_POR_CLUB).reduce((s, n) => s + n, 0);
-  const finalesPublicadas = EDICIONES.filter((e) => campeonDe(e) !== undefined).length;
-  assert.equal(
-    titulosContados,
-    finalesPublicadas,
-    'hay títulos repartidos que no salen de ninguna final publicada',
-  );
+  const conRespaldo = EDICIONES.filter((e) => respaldoDe(e) !== undefined).length;
+  assert.equal(titulosContados, conRespaldo, 'hay títulos repartidos sin procedencia declarada');
+
+  for (const e of EDICIONES) {
+    const tieneCampeon = campeonDe(e) !== undefined;
+    assert.equal(
+      tieneCampeon,
+      respaldoDe(e) !== undefined,
+      `la edición ${e.numero} corona a alguien sin decir de dónde sale el dato`,
+    );
+  }
 });
 
-test('el campeón de una edición sale de quién ganó su Gran Final', () => {
+test('el campeón de una edición con llave sale de quién ganó su Gran Final', () => {
   const tercera = EDICIONES.find((e) => e.numero === 3);
   const final = tercera.partidos.find((p) => p.fase === 'final');
   assert.equal(final.local, 'los-pibes');
@@ -39,26 +49,25 @@ test('el campeón de una edición sale de quién ganó su Gran Final', () => {
   assert.equal(final.golesLocal, 1);
   assert.equal(final.golesVisitante, 2);
   assert.equal(campeonDe(tercera), 'The Originals', 'ganó la final, luego es el campeón');
+  assert.equal(respaldoDe(tercera), 'llave-publicada');
 });
 
-test('las ediciones sin partidos publicados no otorgan título', () => {
-  for (const e of EDICIONES.filter((x) => x.partidos === undefined)) {
+test('las dos primeras ediciones las ganó Pomada Alfa, sin llave publicada', () => {
+  for (const numero of [1, 2]) {
+    const e = EDICIONES.find((x) => x.numero === numero);
+    assert.equal(campeonDe(e), 'Pomada Alfa');
     assert.equal(
-      campeonDe(e),
-      undefined,
-      `la edición ${e.numero} no tiene partidos publicados: no puede coronar a nadie`,
+      respaldoDe(e),
+      'declarado',
+      'si se publica su llave, el respaldo pasa a llave-publicada y hay que actualizar esta prueba',
     );
   }
 });
 
-test('Pomada Alfa no figura con títulos mientras no se publiquen sus finales', () => {
-  assert.equal(
-    TITULOS_POR_CLUB['Pomada Alfa'],
-    undefined,
-    'si se publican las llaves de las ediciones 1 y 2, esta prueba debe actualizarse',
-  );
+test('Pomada Alfa es bicampeón y el escudo lo refleja', () => {
+  assert.equal(TITULOS_POR_CLUB['Pomada Alfa'], 2);
   const pomada = EQUIPOS.find((e) => e.slug === 'pomada-alfa');
-  assert.equal(pomada.titulos, 0);
+  assert.equal(pomada.titulos, 2, 'los títulos del club se cuentan sobre EDICIONES, no a mano');
 });
 
 test('el campeón vigente es The Originals, de la 3ª edición', () => {
@@ -67,27 +76,32 @@ test('el campeón vigente es The Originals, de la 3ª edición', () => {
   assert.equal(CAMPEON_VIGENTE.periodo, '2026-1');
 });
 
-test('el campeón vigente sale de la última edición con final publicada', () => {
+test('el campeón vigente sale de la última edición ya jugada', () => {
   const conCampeon = EDICIONES.filter((e) => e.estado === 'jugada' && campeonDe(e) !== undefined);
   const ultima = conCampeon[conCampeon.length - 1];
   assert.equal(CAMPEON_VIGENTE.equipo, campeonDe(ultima));
   assert.equal(CAMPEON_VIGENTE.edicion, ultima.numero);
 });
 
-test('el máximo ganador es The Originals, con 1 título', () => {
-  assert.equal(MAXIMO_GANADOR.equipo, 'The Originals');
-  assert.equal(MAXIMO_GANADOR.titulos, 1);
+test('el máximo ganador es Pomada Alfa, con 2 títulos', () => {
+  assert.equal(MAXIMO_GANADOR.equipo, 'Pomada Alfa');
+  assert.equal(MAXIMO_GANADOR.titulos, 2);
 });
 
-test('el bloque de máximo ganador se oculta cuando coincide con el campeón vigente', () => {
+test('máximo ganador y campeón vigente son cosas distintas', () => {
+  assert.notEqual(
+    MAXIMO_GANADOR.equipo,
+    CAMPEON_VIGENTE.equipo,
+    'hoy son clubes distintos: Pomada Alfa acumula más, The Originals tiene la corona',
+  );
   assert.equal(
     MAXIMO_GANADOR_ES_OTRO,
-    MAXIMO_GANADOR.equipo !== CAMPEON_VIGENTE.equipo,
-    'la web no debe nombrar al mismo club dos veces con dos rótulos distintos',
+    true,
+    'con clubes distintos, la web debe mostrar los dos bloques',
   );
 });
 
-test('los títulos de cada club cuadran con las finales que ganaron', () => {
+test('los títulos de cada club cuadran con las ediciones que ganaron', () => {
   for (const e of EQUIPOS) {
     const ganadas = EDICIONES.filter((ed) => campeonDe(ed) === e.nombre).length;
     assert.equal(e.titulos, ganadas, `${e.nombre} dice ${e.titulos} títulos y ganó ${ganadas}`);

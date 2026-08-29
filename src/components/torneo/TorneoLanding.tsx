@@ -8,15 +8,22 @@ import { CampeonReveal } from '@/components/torneo/CampeonReveal';
 import { TorneoNav } from '@/components/torneo/TorneoNav';
 import { TablaPosiciones } from '@/components/torneo/TablaPosiciones';
 import { RankingGoleadores } from '@/components/torneo/RankingGoleadores';
+import { PalmaresTorneo } from '@/components/torneo/PalmaresTorneo';
 import { ALIANZA, ICONE_CYAN } from '@/lib/alianza';
 import { jornadaActualDe, TOTAL_JORNADAS } from '@/lib/liga';
 import { cargarLigaConAviso } from '@/lib/liga-supabase';
-import { CAMPEON_VIGENTE, TORNEO_BIO, TORNEO_INSTAGRAM_URL } from '@/lib/torneo';
+import {
+  CAMPEON_VIGENTE,
+  EDICIONES,
+  EDICION_EN_CURSO,
+  TORNEO_BIO,
+  TORNEO_INSTAGRAM_URL,
+} from '@/lib/torneo';
 import { EQUIPOS, FINAL, ganadorDe, getEquipo } from '@/lib/torneo-data';
 
 const STATS = [
-  { v: '4', l: 'Ediciones' },
-  { v: '8', l: 'Equipos' },
+  { v: String(EDICIONES.length), l: 'Ediciones' },
+  { v: String(EQUIPOS.length), l: 'Equipos' },
   { v: '28+', l: 'Edad líderes' },
   { v: 'F7', l: 'Formato' },
 ] as const;
@@ -26,6 +33,7 @@ export async function TorneoLanding() {
   const jornadaActual = jornadaActualDe(datos.partidos);
   const campeonSlug = ganadorDe(FINAL);
   const campeon = campeonSlug ? getEquipo(campeonSlug) : undefined;
+  const campeonVigente = EQUIPOS.find((e) => e.nombre === CAMPEON_VIGENTE.equipo);
   const loc = FINAL.local ? getEquipo(FINAL.local) : undefined;
   const vis = FINAL.visitante ? getEquipo(FINAL.visitante) : undefined;
 
@@ -59,12 +67,13 @@ export async function TorneoLanding() {
             </a>
           </div>
 
-          {/* CAMPEÓN — revelación épica de la Edición 3° */}
+          {/* CAMPEÓN — revelación épica del vigente. La edición sale de
+              EDICIONES, no escrita aquí: al cerrar la 4ª se actualiza sola. */}
           <CampeonReveal
             slug={campeon?.slug ?? FINAL.visitante ?? 'the-originals'}
             nombre={campeon?.nombre ?? 'The Originals'}
             scoreText={`${vis?.corto ?? 'ORI'} ${FINAL.golesVisitante}–${FINAL.golesLocal} ${loc?.corto ?? 'PIB'}`}
-            edicion="Edición 3° (2026-1)"
+            edicion={`Edición ${CAMPEON_VIGENTE.edicion}° (${CAMPEON_VIGENTE.periodo})`}
           />
 
           <p className="mt-10 max-w-2xl text-lg text-neutral-300">{TORNEO_BIO}</p>
@@ -163,11 +172,14 @@ export async function TorneoLanding() {
       <section className="grain relative z-10 overflow-hidden">
         <div className="relative mx-auto grid max-w-7xl items-center gap-12 px-6 py-24 lg:grid-cols-[0.8fr_1.2fr] lg:px-8">
           <div className="flex justify-center">
-            <TeamCrest slug="the-originals" size={220} showStars />
+            {/* El escudo y la edición salen de EDICIONES, no escritos aquí:
+                esta seccion llego a decir "3° Edición" a mano. */}
+            <TeamCrest slug={campeonVigente?.slug ?? ''} size={220} showStars />
           </div>
           <div>
             <p className="flex items-center gap-2 font-bufon text-sm font-bold uppercase tracking-[0.25em] text-naranja">
-              <Trophy size={18} aria-hidden /> Vigente Campeón · 3° Edición (2026-1)
+              <Trophy size={18} aria-hidden /> Vigente Campeón · {CAMPEON_VIGENTE.edicion}° Edición
+              ({CAMPEON_VIGENTE.periodo})
             </p>
             <h2 className="mt-3 font-sport text-6xl uppercase leading-none text-neutral-50 md:text-8xl">
               {CAMPEON_VIGENTE.equipo}
@@ -178,9 +190,17 @@ export async function TorneoLanding() {
               ))}
             </div>
             <p className="mt-6 max-w-lg text-lg text-neutral-300">
-              {CAMPEON_VIGENTE.descripcion} Defenderá su corona en la 4° Edición (2026-2).
+              {CAMPEON_VIGENTE.descripcion} Defenderá su corona en la {EDICION_EN_CURSO.numero}°
+              Edición ({EDICION_EN_CURSO.periodo}).
             </p>
           </div>
+        </div>
+      </section>
+
+      {/* ===== PALMARÉS: TODAS LAS EDICIONES ===== */}
+      <section id="palmares" className="grain relative z-10 scroll-mt-24 overflow-hidden">
+        <div className="relative mx-auto max-w-7xl px-6 py-20 lg:px-8">
+          <PalmaresTorneo />
         </div>
       </section>
 

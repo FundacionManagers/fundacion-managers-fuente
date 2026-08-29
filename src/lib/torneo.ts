@@ -1,22 +1,29 @@
 /**
  * Identidad del Torneo Managers y palmarés por edición.
  *
- * REGLA DE LA CASA: un título no se escribe, se gana en la cancha y se
- * demuestra con la final publicada. `EDICIONES` no lleva un campo `campeon`
- * que alguien teclee; lleva los partidos de esa edición, y el campeón sale
- * de quién ganó la Gran Final.
+ * `EDICIONES` es la ÚNICA lista de la que sale todo lo relacionado con
+ * títulos: cuántos tiene cada club, quién es el campeón vigente, quién el
+ * máximo ganador y qué se muestra en la sección de Palmarés. Ningún club
+ * lleva su número de títulos escrito a mano en otro sitio.
  *
- * Por qué. La web llegó a presentar a Pomada Alfa como "bicampeón vigente"
- * con dos títulos de 2024 y 2025 que nadie podía comprobar: no hay un solo
- * partido de esas ediciones publicado en el sitio, y de hecho el único
- * partido suyo que sí está —cuartos de la 3ª— lo perdió por penales. El
- * dato estaba escrito a mano y nunca se reconcilió con los resultados.
+ * Por qué. La web llegó a presentar a Pomada Alfa como "bicampeón vigente",
+ * con dos títulos fechados en 2024 y 2025 que no encajaban ni con la
+ * numeración del resto del sitio, mientras la 3ª edición la había ganado
+ * The Originals. El número vivía suelto en la ficha del club, sin ninguna
+ * lista que lo respaldara ni nadie a quien preguntarle de dónde salía.
  *
- * Consecuencia de la regla: las ediciones 1ª y 2ª existieron, y aquí siguen
- * listadas, pero mientras no se publiquen sus partidos no otorgan títulos.
- * El día que se carguen —creando su `edicion-1.ts` y `edicion-2.ts` como el
- * de la 3ª y enlazándolos abajo— los títulos vuelven a contarse solos, sin
- * tocar ni un texto de la web.
+ * Cada campeón declara ahora de dónde sale, y eso es lo que la sección de
+ * Palmarés publica junto al título:
+ *
+ *   - `partidos`: la llave está en el sitio y quien quiera puede ir a ver
+ *     quién ganó la final. Es el caso de la 3ª edición.
+ *   - `campeonDeclarado`: el palmarés que aporta la organización de las dos
+ *     primeras ediciones, cuyos partidos nunca se publicaron.
+ *
+ * Si algún día se cargan esas llaves —creando su `edicion-1.ts` y
+ * `edicion-2.ts` como el de la 3ª— basta con enlazarlas aquí: el campeón
+ * pasará a salir de la final y el respaldo cambiará solo, sin tocar ni un
+ * texto de la web.
  */
 
 import { BRACKET_2026, ganadorDe, type Partido } from './edicion-3';
@@ -39,16 +46,26 @@ const NOMBRE_POR_SLUG: Readonly<Record<string, string>> = {
   'useche-fc': 'Useches',
 };
 
+/**
+ * De dónde sale el nombre del campeón de una edición.
+ *
+ * `llave-publicada` es el respaldo fuerte: el sitio publica la Gran Final y
+ * cualquiera puede comprobar quién la ganó. `declarado` es el palmarés que
+ * aporta la organización de ediciones cuyos partidos no se publicaron nunca.
+ * Ambos cuentan como título; la diferencia se dice en la sección de Palmarés
+ * en vez de esconderla, que fue el problema original.
+ */
+export type RespaldoCampeon = 'llave-publicada' | 'declarado';
+
 export interface Edicion {
   numero: number;
   /** Periodo semestral, ej. '2025-1'. */
   periodo: string;
   estado: 'jugada' | 'en-curso' | 'proxima';
-  /**
-   * Partidos publicados de esa edición. Sin ellos no hay campeón que probar.
-   * `undefined` = la edición se jugó pero su registro no está en el sitio.
-   */
+  /** Partidos publicados. Si están, el campeón sale de la Gran Final. */
   partidos?: readonly Partido[];
+  /** Campeón aportado por la organización, para ediciones sin llave publicada. */
+  campeonDeclarado?: string;
   notas?: string;
 }
 
@@ -57,13 +74,15 @@ export const EDICIONES: readonly Edicion[] = [
     numero: 1,
     periodo: '2025-1',
     estado: 'jugada',
-    notas: 'Primera edición. Sin registro de partidos publicado en el sitio.',
+    campeonDeclarado: 'Pomada Alfa',
+    notas: 'Primera edición del torneo. Sus partidos no se publicaron en el sitio.',
   },
   {
     numero: 2,
     periodo: '2025-2',
     estado: 'jugada',
-    notas: 'Segunda edición. Sin registro de partidos publicado en el sitio.',
+    campeonDeclarado: 'Pomada Alfa',
+    notas: 'Segunda estrella de Pomada Alfa. Sus partidos no se publicaron en el sitio.',
   },
   {
     numero: 3,
@@ -80,15 +99,27 @@ export const EDICIONES: readonly Edicion[] = [
   },
 ];
 
-/** Campeón de una edición: quien ganó su Gran Final, si está publicada. */
-export function campeonDe(edicion: Edicion): string | undefined {
+/** El campeón que se puede demostrar con la Gran Final publicada. */
+function campeonSegunLlave(edicion: Edicion): string | undefined {
   const final = edicion.partidos?.find((p) => p.fase === 'final');
   if (!final) return undefined;
   const slug = ganadorDe(final);
   return slug ? NOMBRE_POR_SLUG[slug] : undefined;
 }
 
-/** Ediciones cerradas cuyo campeón se puede demostrar con la final. */
+/** Campeón de una edición: el de la llave si está publicada, o el declarado. */
+export function campeonDe(edicion: Edicion): string | undefined {
+  return campeonSegunLlave(edicion) ?? edicion.campeonDeclarado;
+}
+
+/** Cómo está respaldado el campeón de esa edición. */
+export function respaldoDe(edicion: Edicion): RespaldoCampeon | undefined {
+  if (campeonSegunLlave(edicion)) return 'llave-publicada';
+  if (edicion.campeonDeclarado) return 'declarado';
+  return undefined;
+}
+
+/** Ediciones ya cerradas que tienen campeón. */
 const EDICIONES_CON_CAMPEON = EDICIONES.filter(
   (e) => e.estado === 'jugada' && campeonDe(e) !== undefined,
 );
