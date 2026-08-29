@@ -15,10 +15,10 @@
  * son -9). El resto de la tabla oficial coincide celda por celda.
  *
  * Al día en la Fecha 5. Los 8 clubes suman 97 goles a favor y el ranking de
- * goleadores reparte 96. La diferencia no es un error: es el autogol que la
- * organización confirmó a favor de La Banda Cruzada, y está en `AUTOGOLES`.
- * Un gol en propia puerta suma al club beneficiado pero no a ningún
- * goleador, así que se registra aparte en vez de adjudicárselo a alguien.
+ * goleadores reparte 96. La diferencia es el autogol de `AUTOGOLES`: lo
+ * marcó Managers FC en su propia portería en la Fecha 2, así que cuenta
+ * para Pomada Alfa y no para ningún goleador. Por club queda un descuadre
+ * pendiente de planilla, documentado en `AUTOGOLES` y fijado por tests/.
  */
 
 import { EQUIPOS } from './torneo-data';
@@ -502,31 +502,61 @@ export const GOLEADORES_LIGA: readonly Goleador[] = [
 /**
  * Gol en propia puerta: suma al club beneficiado, no a ningún goleador.
  *
- * Se guarda con el club que se llevó el gol, no con quien lo marcó en su
- * propia portería. Es deliberado: el reglamento se lo acredita al equipo
- * beneficiado, y señalar públicamente a quien tuvo la mala suerte no aporta
- * nada. Si más adelante la organización quiere registrar la fecha, para eso
- * está `jornada`.
+ * Se registra el CLUB que lo marcó en su propia portería y la fecha, nunca
+ * el jugador: el reglamento acredita el gol al equipo, y señalar a quien
+ * tuvo la mala suerte no aporta nada.
+ *
+ * El club beneficiado no se escribe, se deduce del calendario — es el rival
+ * de ese partido. Misma regla que el resto del sitio: si el dato se puede
+ * sacar de los resultados, no se teclea.
  */
 export interface Autogol {
-  /** Slug del club al que se le contó el gol a favor. */
-  equipo: string;
-  /** Fecha en que ocurrió, si está confirmada. */
-  jornada?: number;
+  /** Slug del club que lo marcó en su propia portería. */
+  autor: string;
+  /** Fecha en que ocurrió. */
+  jornada: number;
 }
 
 /**
- * Autogoles de la fase de grupos.
+ * Autogoles de la fase de grupos, confirmados por la organización.
  *
- * Este es el gol que faltaba: los clubes suman 97 goles a favor y los
- * goleadores reparten 96. La diferencia estaba sin explicar en la web y
- * ahora tiene nombre — no de jugador, sino de club beneficiado.
+ * El de la Fecha 2 lo marcó un jugador de Managers FC en su propia portería,
+ * en el 0–1 contra Pomada Alfa: fue el único gol del partido. La web llegó a
+ * atribuirlo a La Banda Cruzada, que era una deducción equivocada — se dio
+ * por hecho que el autogol explicaba el hueco de ese club.
+ *
+ * PENDIENTE DE PLANILLA, y está a la vista en la prueba de cuadre: los ocho
+ * goleadores de Pomada Alfa ya suman sus 23 goles exactos, así que uno de
+ * ellos sigue acreditado con este autogol y hay que descontárselo. Y a La
+ * Banda Cruzada le sigue faltando un gol por atribuir, que es otro asunto.
  */
-export const AUTOGOLES: readonly Autogol[] = [{ equipo: 'la-banda-cruzada' }];
+export const AUTOGOLES: readonly Autogol[] = [{ autor: 'managers-fc', jornada: 2 }];
+
+/**
+ * Club beneficiado por un autogol: el rival de ese partido.
+ *
+ * Sale del calendario, no de un campo escrito a mano, así que no puede
+ * contradecir al fixture ni quedarse viejo si cambia un resultado.
+ */
+export function beneficiadoDe(
+  autogol: Autogol,
+  partidos: readonly PartidoLiga[] = PARTIDOS_LIGA,
+): string | undefined {
+  const partido = partidos.find(
+    (p) =>
+      p.jornada === autogol.jornada && (p.local === autogol.autor || p.visitante === autogol.autor),
+  );
+  if (!partido) return undefined;
+  return partido.local === autogol.autor ? partido.visitante : partido.local;
+}
 
 /** Autogoles a favor de un club. */
-export function autogolesDe(equipo: string, autogoles: readonly Autogol[] = AUTOGOLES): number {
-  return autogoles.filter((a) => a.equipo === equipo).length;
+export function autogolesDe(
+  equipo: string,
+  partidos: readonly PartidoLiga[] = PARTIDOS_LIGA,
+  autogoles: readonly Autogol[] = AUTOGOLES,
+): number {
+  return autogoles.filter((a) => beneficiadoDe(a, partidos) === equipo).length;
 }
 
 export const PARTIDOS_JUGADOS = PARTIDOS_LIGA.filter((p) => p.estado === 'jugado');

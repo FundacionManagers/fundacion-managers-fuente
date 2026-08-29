@@ -1,6 +1,6 @@
 import { TeamCrest } from '@/components/torneo/TeamCrest';
 import { getEquipo } from '@/lib/torneo-data';
-import { AUTOGOLES, jornadaActualDe } from '@/lib/liga';
+import { AUTOGOLES, beneficiadoDe, jornadaActualDe } from '@/lib/liga';
 import type { DatosLiga } from '@/lib/liga-supabase';
 import { cn } from '@/lib/utils';
 
@@ -27,16 +27,31 @@ export function RankingGoleadores({ datos }: { datos: DatosLiga }) {
     0,
   );
 
-  // Cuántos autogoles se llevó cada club, para nombrar a los beneficiados.
-  const autogolesPorClub = AUTOGOLES.reduce<Record<string, number>>((acc, a) => {
-    acc[a.equipo] = (acc[a.equipo] ?? 0) + 1;
+  /**
+   * Un autogol solo se publica si CABE en el marcador.
+   *
+   * Los goleadores los carga la organización desde el panel, y los autogoles
+   * viven en el repositorio: son dos fuentes que pueden desincronizarse un
+   * rato. Si la planilla ya le puso autor a todos los goles, añadir el
+   * autogol haría que la tabla sumara más goles de los que se marcaron. Ante
+   * la duda no se inventa nada: se calla el autogol hasta que la planilla le
+   * haga sitio, y en cuanto se lo haga aparece solo en la siguiente
+   * publicación. Así la página nunca puede contradecirse a sí misma.
+   */
+  const autogolesCaben = totalGoles + AUTOGOLES.length <= golesJugados;
+  const autogoles = autogolesCaben
+    ? AUTOGOLES.map((a) => ({ ...a, beneficiado: beneficiadoDe(a, datos.partidos) }))
+    : [];
+
+  const autogolesPorClub = autogoles.reduce<Record<string, number>>((acc, a) => {
+    if (a.beneficiado) acc[a.beneficiado] = (acc[a.beneficiado] ?? 0) + 1;
     return acc;
   }, {});
   const beneficiados = Object.entries(autogolesPorClub);
 
-  // Lo que aún no explica ni un goleador ni un autogol registrado. Hoy es 0;
-  // si algún día no lo fuera, la web lo dice en vez de callarlo.
-  const sinExplicar = Math.max(0, golesJugados - totalGoles - AUTOGOLES.length);
+  // Lo que no explica ni un goleador ni un autogol publicado. Si algún día no
+  // fuera cero, la web lo dice en vez de callarlo.
+  const sinExplicar = Math.max(0, golesJugados - totalGoles - autogoles.length);
 
   return (
     <div>
@@ -58,11 +73,11 @@ export function RankingGoleadores({ datos }: { datos: DatosLiga }) {
       {golesJugados > totalGoles ? (
         <p className="mt-4 max-w-3xl text-xs leading-relaxed text-neutral-500">
           {totalGoles} los marcó un jugador
-          {AUTOGOLES.length > 0 ? (
+          {autogoles.length > 0 ? (
             <>
               {' '}
-              y {AUTOGOLES.length}{' '}
-              {AUTOGOLES.length === 1 ? 'fue en propia puerta' : 'fueron en propia puerta'}, a favor
+              y {autogoles.length}{' '}
+              {autogoles.length === 1 ? 'fue en propia puerta' : 'fueron en propia puerta'}, a favor
               de{' '}
               {beneficiados.map(([slug, n], i) => (
                 <span key={slug}>
@@ -71,14 +86,13 @@ export function RankingGoleadores({ datos }: { datos: DatosLiga }) {
                   {n > 1 ? ` (${n})` : ''}
                 </span>
               ))}
+              . Un gol en propia puerta cuenta para el club, no para la bota de oro.
             </>
           ) : null}
-          . Un gol en propia puerta cuenta para el club, no para la bota de oro.
           {sinExplicar > 0 ? (
             <>
-              {' '}
-              Quedan {sinExplicar} sin atribuir: no se reparten a ojo, esperan a que la organización
-              los confirme.
+              {autogoles.length > 0 ? ' Quedan' : ' y quedan'} {sinExplicar} por atribuir: no se
+              reparten a ojo, esperan a que la organización confirme la planilla.
             </>
           ) : null}
         </p>
@@ -206,19 +220,28 @@ export function RankingGoleadores({ datos }: { datos: DatosLiga }) {
                 —no compiten por la bota de oro— pero sí con el club que se
                 los llevó, para que la suma cuadre con los goles del
                 marcador y nadie tenga que preguntar por el gol que falta. */}
-            {beneficiados.map(([slug, n]) => {
-              const eq = getEquipo(slug);
+            {autogoles.map((a, i) => {
+              const autor = getEquipo(a.autor);
+              const favorecido = a.beneficiado ? getEquipo(a.beneficiado) : undefined;
               return (
-                <tr key={`autogol-${slug}`} className="border-t border-amarillo/20 bg-white/[0.02]">
+                <tr
+                  key={`autogol-${a.autor}-${a.jornada}-${i}`}
+                  className="border-t border-amarillo/20 bg-white/[0.02]"
+                >
                   <td className="px-3 py-2.5 text-center text-neutral-600">—</td>
-                  <td className="whitespace-nowrap px-3 py-2.5 font-semibold italic text-neutral-400">
-                    Gol en propia puerta
+                  <td className="px-3 py-2.5">
+                    <p className="whitespace-nowrap font-semibold italic text-neutral-400">
+                      Gol en propia puerta
+                    </p>
+                    <p className="mt-0.5 whitespace-nowrap text-[11px] uppercase tracking-widest text-neutral-600">
+                      Fecha {a.jornada} · lo marcó {autor?.nombre ?? a.autor}
+                    </p>
                   </td>
                   <td className="px-3 py-2.5">
                     <div className="flex items-center gap-2">
-                      <TeamCrest slug={slug} size={22} />
+                      <TeamCrest slug={a.beneficiado ?? ''} size={22} />
                       <span className="whitespace-nowrap text-neutral-400">
-                        {eq?.nombre ?? slug}{' '}
+                        {favorecido?.nombre ?? a.beneficiado ?? '—'}{' '}
                         <span className="text-[11px] uppercase tracking-widest text-neutral-600">
                           a favor
                         </span>
@@ -228,9 +251,7 @@ export function RankingGoleadores({ datos }: { datos: DatosLiga }) {
                   <td className="hidden px-3 py-2.5 text-center text-neutral-600 sm:table-cell">
                     —
                   </td>
-                  <td className="px-3 py-2.5 text-center font-sport text-lg text-neutral-400">
-                    {n}
-                  </td>
+                  <td className="px-3 py-2.5 text-center font-sport text-lg text-neutral-400">1</td>
                 </tr>
               );
             })}
