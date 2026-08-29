@@ -97,6 +97,12 @@ export const EDICIONES: readonly Edicion[] = [
     estado: 'en-curso',
     notas: 'Fase de grupos, 8 equipos a 7 fechas. La final se juega en septiembre.',
   },
+  {
+    numero: 5,
+    periodo: '2027-1',
+    estado: 'proxima',
+    notas: 'Inscripciones abiertas. Es la edición a la que se apunta un equipo nuevo hoy.',
+  },
 ];
 
 /** El campeón que se puede demostrar con la Gran Final publicada. */
@@ -155,6 +161,53 @@ export const CAMPEON_VIGENTE = {
 export const EDICION_EN_CURSO =
   EDICIONES.find((e) => e.estado === 'en-curso') ?? EDICIONES[EDICIONES.length - 1]!;
 
+/**
+ * Ediciones que ya existen: jugadas o en juego. Las próximas no cuentan.
+ *
+ * Es lo que hay que contar cuando la web dice "N ediciones", en el palmarés
+ * o en los números del torneo. Anunciar una edición que aún no ha empezado
+ * como si ya se hubiera jugado infla el historial.
+ */
+export const EDICIONES_DISPUTADAS = EDICIONES.filter((e) => e.estado !== 'proxima');
+
+/**
+ * La edición a la que se inscribe un equipo hoy.
+ *
+ * No es la que se está jugando: cuando la 4ª va por la Fecha 5, quien llega
+ * al formulario se está apuntando a la 5ª. La web decía "Inscripciones ·
+ * Edición 4° (2026-2)" y "¿Tu equipo va por la cuarta moneda?" con la cuarta
+ * ya empezada, así que un equipo nuevo leía que se inscribía a un torneo que
+ * llevaba cinco fechas jugadas.
+ *
+ * Si no hay ninguna edición marcada como próxima, se cae a la que está en
+ * curso: es preferible a no poder nombrar ninguna.
+ */
+export const EDICION_INSCRIPCIONES =
+  EDICIONES.find((e) => e.estado === 'proxima') ?? EDICION_EN_CURSO;
+
+/** 'la cuarta moneda', 'la quinta moneda'… El número no se escribe a mano. */
+const ORDINALES_FEMENINOS = [
+  'primera',
+  'segunda',
+  'tercera',
+  'cuarta',
+  'quinta',
+  'sexta',
+  'séptima',
+  'octava',
+  'novena',
+  'décima',
+] as const;
+
+export function ordinalFemenino(n: number): string {
+  return ORDINALES_FEMENINOS[n - 1] ?? `${n}ª`;
+}
+
+/** 'Edición 5° (2027-1)', tal como se rotula en la web. */
+export function rotuloEdicion(edicion: Edicion): string {
+  return `Edición ${edicion.numero}° (${edicion.periodo})`;
+}
+
 /** El club con más títulos. Empate resuelto por orden de aparición. */
 export const MAXIMO_GANADOR = Object.entries(TITULOS_POR_CLUB).reduce(
   (mejor, [equipo, titulos]) => (titulos > mejor.titulos ? { equipo, titulos } : mejor),
@@ -182,7 +235,7 @@ export const EQUIPOS_2026: readonly string[] = [
 ] as const;
 
 export const TORNEO_STATS = [
-  { valor: String(EDICIONES.length), etiqueta: 'Ediciones' },
+  { valor: String(EDICIONES_DISPUTADAS.length), etiqueta: 'Ediciones' },
   { valor: '8+', etiqueta: 'Equipos por edición' },
   { valor: '28+', etiqueta: 'Edad mínima' },
   { valor: 'F7', etiqueta: 'Formato' },

@@ -13,15 +13,18 @@ import { jornadaActualDe, TOTAL_JORNADAS } from '@/lib/liga';
 import { cargarLigaConAviso } from '@/lib/liga-supabase';
 import {
   CAMPEON_VIGENTE,
-  EDICIONES,
+  EDICIONES_DISPUTADAS,
   EDICION_EN_CURSO,
+  EDICION_INSCRIPCIONES,
   TORNEO_BIO,
   TORNEO_INSTAGRAM_URL,
+  ordinalFemenino,
+  rotuloEdicion,
 } from '@/lib/torneo';
 import { EQUIPOS, FINAL, ganadorDe, getEquipo } from '@/lib/torneo-data';
 
 const STATS = [
-  { v: String(EDICIONES.length), l: 'Ediciones' },
+  { v: String(EDICIONES_DISPUTADAS.length), l: 'Ediciones' },
   { v: String(EQUIPOS.length), l: 'Equipos' },
   { v: '28+', l: 'Edad líderes' },
   { v: 'F7', l: 'Formato' },
@@ -198,7 +201,7 @@ export async function TorneoLanding() {
               href="/torneo/palmares/"
               className="group mt-8 inline-flex items-center gap-2 rounded-full border border-amarillo/40 px-6 py-3 text-sm font-bold text-amarillo transition-all duration-200 ease-managers hover:-translate-y-0.5 hover:bg-amarillo/10"
             >
-              Ver el palmarés de las {EDICIONES.length} ediciones
+              Ver el palmarés de las {EDICIONES_DISPUTADAS.length} ediciones
               <ArrowRight
                 size={18}
                 aria-hidden
@@ -247,14 +250,18 @@ export async function TorneoLanding() {
       {/* ===== CTA ===== */}
       <section className="grain relative z-10 overflow-hidden">
         <div className="relative mx-auto max-w-4xl px-6 py-28 text-center lg:px-8">
+          {/* La moneda y la edición son las de INSCRIPCIONES, no las de la
+              edición en curso: quien llega aquí se apunta a la siguiente. */}
           <h2 className="font-sport text-5xl uppercase leading-[0.9] text-neutral-50 md:text-7xl">
             ¿Tu equipo quiere
             <br />
-            <span className="text-energy">la cuarta moneda?</span>
+            <span className="text-energy">
+              la {ordinalFemenino(EDICION_INSCRIPCIONES.numero)} moneda?
+            </span>
           </h2>
           <p className="mx-auto mt-6 max-w-xl text-neutral-300">
-            Inscripciones de la Edición 4° (2026-2) llegan pronto. Déjanos tus datos y te avisamos
-            primero.
+            Inscripciones de la {rotuloEdicion(EDICION_INSCRIPCIONES)} abiertas. Déjanos tus datos y
+            te contamos los siguientes pasos.
           </p>
           <div className="mt-10 flex flex-wrap justify-center gap-4">
             <Link

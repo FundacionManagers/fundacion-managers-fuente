@@ -2,11 +2,16 @@ import type { Metadata } from 'next';
 import { TorneoBackdrop } from '@/components/torneo/TorneoBackdrop';
 import { TorneoNav } from '@/components/torneo/TorneoNav';
 import { InscripcionForm } from '@/components/torneo/InscripcionForm';
+import { EDICION_INSCRIPCIONES, ordinalFemenino, rotuloEdicion } from '@/lib/torneo';
+
+// La edición a la que se inscribe un equipo NO es la que se está jugando.
+// Sale de EDICIONES y cambia sola cuando se abre la siguiente.
+const EDICION = rotuloEdicion(EDICION_INSCRIPCIONES);
+const MONEDA = ordinalFemenino(EDICION_INSCRIPCIONES.numero);
 
 export const metadata: Metadata = {
   title: 'Inscripciones · Torneo Managers',
-  description:
-    'Inscribe tu equipo al Torneo Managers F7 — Edición 4° (2026-2). Conoce el proceso paso a paso.',
+  description: `Inscribe tu equipo al Torneo Managers F7 — ${EDICION}. Conoce el proceso paso a paso.`,
 };
 
 interface Paso {
@@ -56,7 +61,7 @@ export default function InscripcionesPage() {
         <section className="grain relative overflow-hidden">
           <div className="relative mx-auto max-w-7xl px-6 py-20 lg:px-8 lg:py-28">
             <span className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-amarillo to-naranja px-4 py-1.5 font-bufon text-xs font-bold uppercase tracking-[0.18em] text-carbon">
-              Inscripciones · Edición 4° (2026-2)
+              Inscripciones · {EDICION}
             </span>
             <h1 className="mt-6 font-sport text-[14vw] uppercase leading-[0.85] text-neutral-50 drop-shadow-[0_6px_24px_rgba(0,0,0,0.7)] lg:text-[100px]">
               Inscribe
@@ -65,7 +70,7 @@ export default function InscripcionesPage() {
             </h1>
             <div className="energy-bar mt-5 h-1.5 w-32 rounded-full" />
             <p className="mt-6 max-w-2xl text-lg text-neutral-300">
-              ¿Tu equipo va por la cuarta moneda? Empieza dejándonos tus datos. Te unimos al grupo
+              ¿Tu equipo va por la {MONEDA} moneda? Empieza dejándonos tus datos. Te unimos al grupo
               de WhatsApp y te guiamos en cada paso hasta la cancha.
             </p>
           </div>

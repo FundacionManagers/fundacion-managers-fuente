@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { Trophy } from 'lucide-react';
 import { TeamCrest } from '@/components/torneo/TeamCrest';
-import { EDICIONES, TITULOS_POR_CLUB, campeonDe, respaldoDe } from '@/lib/torneo';
+import { EDICIONES_DISPUTADAS, TITULOS_POR_CLUB, campeonDe, respaldoDe } from '@/lib/torneo';
 import { EQUIPOS } from '@/lib/torneo-data';
 import { cn } from '@/lib/utils';
 
@@ -18,7 +18,9 @@ import { cn } from '@/lib/utils';
  */
 export function PalmaresTorneo() {
   // De la más reciente hacia atrás: lo último jugado es lo que más se busca.
-  const ediciones = [...EDICIONES].sort((a, b) => b.numero - a.numero);
+  // Solo las disputadas — una edición que aún no ha empezado no tiene sitio
+  // en un palmarés, por mucho que ya esté abierta la inscripción.
+  const ediciones = [...EDICIONES_DISPUTADAS].sort((a, b) => b.numero - a.numero);
 
   const palmares = Object.entries(TITULOS_POR_CLUB).sort((a, b) => b[1] - a[1]);
 
@@ -34,7 +36,7 @@ export function PalmaresTorneo() {
           </h2>
         </div>
         <span className="hidden shrink-0 rounded-full border border-amarillo/40 bg-amarillo/10 px-4 py-1.5 font-bufon text-xs font-bold uppercase tracking-[0.15em] text-amarillo sm:block">
-          {EDICIONES.length} ediciones
+          {ediciones.length} ediciones
         </span>
       </div>
       <div className="energy-bar mt-5 h-1 w-full rounded-full opacity-70" />

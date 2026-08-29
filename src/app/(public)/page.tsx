@@ -6,7 +6,12 @@ import { SectionBackdrop } from '@/components/shared/SectionBackdrop';
 import { EJES } from '@/lib/navigation';
 import { ALIANZA, ICONE_CYAN } from '@/lib/alianza';
 import { NORTE, OCIO_SERIO, PILARES } from '@/lib/strategy';
-import { CAMPEON_VIGENTE, EDICIONES, MAXIMO_GANADOR, MAXIMO_GANADOR_ES_OTRO } from '@/lib/torneo';
+import {
+  CAMPEON_VIGENTE,
+  EDICIONES_DISPUTADAS,
+  MAXIMO_GANADOR,
+  MAXIMO_GANADOR_ES_OTRO,
+} from '@/lib/torneo';
 
 export default function HomePage() {
   return (
@@ -239,8 +244,8 @@ export default function HomePage() {
                   coincida con el campeon vigente, nombrarlo dos veces con dos
                   rotulos distintos solo confunde. */}
               <p className="mt-6 max-w-xl text-neutral-300">
-                F7 para líderes mayores de 28 años. {EDICIONES.length} ediciones. Campeón vigente:{' '}
-                {CAMPEON_VIGENTE.equipo}
+                F7 para líderes mayores de 28 años. {EDICIONES_DISPUTADAS.length} ediciones. Campeón
+                vigente: {CAMPEON_VIGENTE.equipo}
                 {MAXIMO_GANADOR_ES_OTRO ? (
                   <>
                     ; máximo ganador: {MAXIMO_GANADOR.equipo}, con {MAXIMO_GANADOR.titulos} títulos.
