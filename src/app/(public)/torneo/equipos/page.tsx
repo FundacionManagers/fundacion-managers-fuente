@@ -3,12 +3,19 @@ import Link from 'next/link';
 import { ArrowRight, Star, Trophy } from 'lucide-react';
 import { TeamCrest } from '@/components/torneo/TeamCrest';
 import { TorneoShell } from '@/components/torneo/TorneoShell';
-import { CAMPEON_VIGENTE, MAXIMO_GANADOR, MAXIMO_GANADOR_ES_OTRO } from '@/lib/torneo';
+import {
+  CAMPEON_VIGENTE,
+  EDICION_EN_CURSO,
+  MAXIMO_GANADOR,
+  MAXIMO_GANADOR_ES_OTRO,
+  ordinalFemenino,
+  pillEdicion,
+} from '@/lib/torneo';
 import { EQUIPOS } from '@/lib/torneo-data';
 
 export const metadata: Metadata = {
   title: 'Equipos · Torneo Managers',
-  description: 'Los ocho clubes de la cuarta edición del Torneo Managers F7.',
+  description: `Los ocho clubes de la ${ordinalFemenino(EDICION_EN_CURSO.numero)} edición del Torneo Managers F7.`,
 };
 
 export default function EquiposPage() {
@@ -25,7 +32,7 @@ export default function EquiposPage() {
     : undefined;
 
   return (
-    <TorneoShell eyebrow="Cuarta edición · 2026-2" title="Clubes" active="/torneo/equipos/">
+    <TorneoShell eyebrow={pillEdicion(EDICION_EN_CURSO)} title="Clubes" active="/torneo/equipos/">
       {/* Campeón vigente destacado */}
       <Link
         href={`/torneo/equipos/${campeon.slug}/`}
@@ -53,7 +60,7 @@ export default function EquiposPage() {
               </span>
             </div>
             <p className="mt-4 max-w-md text-sm text-neutral-400">
-              Defiende la corona en la cuarta edición.
+              Defiende la corona en la {ordinalFemenino(EDICION_EN_CURSO.numero)} edición.
             </p>
           </div>
         </div>

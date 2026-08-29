@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Download, Loader2, Share2 } from 'lucide-react';
 import { supabasePublico } from '@/lib/supabase';
+import { EDICION_INSCRIPCIONES, rotuloEdicion } from '@/lib/torneo';
 
 const BASE = process.env.NEXT_PUBLIC_BASE_PATH ?? '';
 
@@ -54,7 +55,9 @@ async function generarComprobante(equipo: string, capitan: string, fecha: string
   // Eyebrow
   ctx.fillStyle = '#E8722C';
   ctx.font = 'bold 30px Arial, sans-serif';
-  ctx.fillText('TORNEO MANAGERS · EDICIÓN 4° (2026-2)', cx, 440);
+  // La edición sale de EDICIONES: el comprobante se queda en el teléfono del
+  // capitán, así que un número viejo aquí sobrevive a cualquier corrección.
+  ctx.fillText(`TORNEO MANAGERS · ${rotuloEdicion(EDICION_INSCRIPCIONES).toUpperCase()}`, cx, 440);
 
   // Título
   ctx.fillStyle = '#f4f6f8';

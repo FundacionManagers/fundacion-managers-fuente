@@ -7,6 +7,7 @@ import { SectionBackdrop } from '@/components/shared/SectionBackdrop';
 import { ALIANZA, ICONE_CYAN } from '@/lib/alianza';
 import { EJES } from '@/lib/navigation';
 import { NORTE, OCIO_SERIO, PILARES } from '@/lib/strategy';
+import { CAMPEON_VIGENTE, EDICION_EN_CURSO, ordinalFemenino } from '@/lib/torneo';
 
 export const metadata: Metadata = {
   title: 'Ocio serio',
@@ -185,8 +186,9 @@ export default function NosotrosPage() {
                 <Link href="/torneo/" className="font-bold text-gold hover:underline">
                   Torneo Managers
                 </Link>{' '}
-                va por su cuarta edición, con The Originals como campeón vigente. La historia,
-                misión y equipo completos se integran desde el documento maestro en la Fase 1.
+                va por su {ordinalFemenino(EDICION_EN_CURSO.numero)} edición, con{' '}
+                {CAMPEON_VIGENTE.equipo} como campeón vigente. La historia, misión y equipo
+                completos se integran desde el documento maestro en la Fase 1.
               </p>
               <Link
                 href="/contacto/"

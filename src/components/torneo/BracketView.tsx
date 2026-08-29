@@ -10,6 +10,7 @@ import {
   type Partido,
 } from '@/lib/torneo-data';
 import { cn } from '@/lib/utils';
+import { EDICION_EN_CURSO, ordinalFemenino } from '@/lib/torneo';
 
 function Slot({
   slug,
@@ -142,7 +143,7 @@ export function BracketView() {
               <GoldCoin size={110} animate />
             </div>
             <p className="text-center font-serif text-base italic text-neutral-300">
-              La cuarta moneda dorada
+              La {ordinalFemenino(EDICION_EN_CURSO.numero)} moneda dorada
             </p>
           </div>
 

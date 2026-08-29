@@ -6,11 +6,11 @@ import { TorneoShell } from '@/components/torneo/TorneoShell';
 import { CUARTOS, SEMIS, TERCER_PUESTO, FINAL } from '@/lib/torneo-data';
 import { EDICION_ACTUAL } from '@/lib/liga';
 import { cargarLigaConAviso } from '@/lib/liga-supabase';
+import { EDICION_ANTERIOR, EDICION_EN_CURSO, ordinalFemenino, pillEdicion } from '@/lib/torneo';
 
 export const metadata: Metadata = {
   title: 'Calendario · Torneo Managers',
-  description:
-    'Fixture y resultados de la fase de grupos de la cuarta edición del Torneo Managers F7.',
+  description: `Fixture y resultados de la fase de grupos de la ${ordinalFemenino(EDICION_EN_CURSO.numero)} edición del Torneo Managers F7.`,
 };
 
 /** Llave de la 3ª edición, que queda como historial bajo el fixture actual. */
@@ -26,7 +26,7 @@ export default async function CalendarioPage() {
 
   return (
     <TorneoShell
-      eyebrow={`Cuarta edición · 2026-2`}
+      eyebrow={pillEdicion(EDICION_EN_CURSO)}
       title="Calendario"
       active="/torneo/calendario/"
     >
@@ -54,7 +54,7 @@ export default async function CalendarioPage() {
           Historial
         </p>
         <h2 className="mt-1 font-sport text-4xl uppercase leading-none text-neutral-300 md:text-5xl">
-          Tercera edición · 2026-1
+          {pillEdicion(EDICION_ANTERIOR)}
         </h2>
         <p className="mt-3 max-w-2xl text-sm text-neutral-500">
           La edición {EDICION_ACTUAL - 1} se jugó por eliminación directa. Se conserva aquí el

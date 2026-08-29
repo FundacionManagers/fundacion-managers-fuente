@@ -6,13 +6,23 @@ import { CheckCircle2, ShieldCheck } from 'lucide-react';
 import { GoldCoin } from '@/components/shared/GoldCoin';
 import { WhatsAppIcon } from '@/components/shared/WhatsAppIcon';
 import { supabasePublico, supabaseConfigurado } from '@/lib/supabase';
+import { EDICION_INSCRIPCIONES, rotuloEdicion } from '@/lib/torneo';
 
 /** Celular oficial al que llega la pre-inscripción por WhatsApp. */
 const WHATSAPP_NUMERO = '573126299744';
 
+/**
+ * Mensaje que el capitán envía por WhatsApp al pre-inscribirse.
+ *
+ * La edición sale de EDICIONES, no escrita aquí. Este texto llegó a decir
+ * "Edición 4° (2026-2)" con la cuarta ya jugándose: el capitán mandaba un
+ * mensaje pidiendo entrar a un torneo que llevaba cinco fechas. Es el texto
+ * más fácil de olvidar de todo el sitio, porque no se ve hasta que alguien
+ * pulsa el botón.
+ */
 function construirMensaje(capitan: string, equipo: string): string {
   return [
-    'Hola, ya hice mi pre-inscripción al Torneo Managers — Edición 4° (2026-2) y quiero solicitar unirme al grupo de WhatsApp.',
+    `Hola, ya hice mi pre-inscripción al Torneo Managers — ${rotuloEdicion(EDICION_INSCRIPCIONES)} y quiero solicitar unirme al grupo de WhatsApp.`,
     `Capitán: ${capitan}`,
     `Equipo: ${equipo}`,
   ].join('\n');

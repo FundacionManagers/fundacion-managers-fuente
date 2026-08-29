@@ -11,11 +11,11 @@ import {
   jornadaActualDe,
 } from '@/lib/liga';
 import { cargarLigaConAviso } from '@/lib/liga-supabase';
+import { EDICION_EN_CURSO, ordinalFemenino, pillEdicion } from '@/lib/torneo';
 
 export const metadata: Metadata = {
   title: 'Llave · Torneo Managers',
-  description:
-    'Llave de la fase final de la cuarta edición del Torneo Managers F7, derivada de la tabla de posiciones.',
+  description: `Llave de la fase final de la ${ordinalFemenino(EDICION_EN_CURSO.numero)} edición del Torneo Managers F7, derivada de la tabla de posiciones.`,
 };
 
 export default async function BracketPage() {
@@ -33,7 +33,7 @@ export default async function BracketPage() {
   const hayCrucesReales = datos.eliminatoria.length > 0;
 
   return (
-    <TorneoShell eyebrow="Cuarta edición · 2026-2" title="La llave" active="/torneo/bracket/">
+    <TorneoShell eyebrow={pillEdicion(EDICION_EN_CURSO)} title="La llave" active="/torneo/bracket/">
       {hayCrucesReales ? (
         <EliminatoriaLiga partidos={datos.eliminatoria} />
       ) : (

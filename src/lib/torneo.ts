@@ -208,6 +208,16 @@ export function rotuloEdicion(edicion: Edicion): string {
   return `Edición ${edicion.numero}° (${edicion.periodo})`;
 }
 
+/** 'Cuarta edición · 2026-2', el pill que encabeza las páginas del torneo. */
+export function pillEdicion(edicion: Edicion): string {
+  const o = ordinalFemenino(edicion.numero);
+  return `${o[0]!.toUpperCase()}${o.slice(1)} edición · ${edicion.periodo}`;
+}
+
+/** La última edición ya cerrada: la que se muestra como historial. */
+export const EDICION_ANTERIOR =
+  [...EDICIONES].reverse().find((e) => e.estado === 'jugada') ?? EDICIONES[0]!;
+
 /** El club con más títulos. Empate resuelto por orden de aparición. */
 export const MAXIMO_GANADOR = Object.entries(TITULOS_POR_CLUB).reduce(
   (mejor, [equipo, titulos]) => (titulos > mejor.titulos ? { equipo, titulos } : mejor),

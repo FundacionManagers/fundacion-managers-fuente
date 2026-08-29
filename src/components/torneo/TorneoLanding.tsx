@@ -19,6 +19,7 @@ import {
   TORNEO_BIO,
   TORNEO_INSTAGRAM_URL,
   ordinalFemenino,
+  pillEdicion,
   rotuloEdicion,
 } from '@/lib/torneo';
 import { EQUIPOS, FINAL, ganadorDe, getEquipo } from '@/lib/torneo-data';
@@ -56,7 +57,7 @@ export async function TorneoLanding() {
           <div className="animate-fade-up flex flex-wrap items-center justify-between gap-4">
             <span className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-amarillo to-naranja px-4 py-1.5 font-bufon text-xs font-bold uppercase tracking-[0.15em] text-carbon">
               <span className="pulse-live h-2 w-2 rounded-full bg-carbon" />
-              Torneo Managers F7 · Cuarta edición 2026-2
+              Torneo Managers F7 · {pillEdicion(EDICION_EN_CURSO)}
             </span>
             <a
               href={TORNEO_INSTAGRAM_URL}
@@ -118,7 +119,7 @@ export async function TorneoLanding() {
         <div className="relative mx-auto max-w-7xl px-6 py-20 lg:px-8 lg:py-28">
           <span className="inline-flex items-center gap-2 rounded-full border border-amarillo/40 bg-amarillo/10 px-4 py-1.5 font-bufon text-xs font-bold uppercase tracking-[0.15em] text-amarillo">
             <span className="pulse-live h-2 w-2 rounded-full bg-amarillo" />
-            Cuarta edición en curso · Fecha {jornadaActual} de {TOTAL_JORNADAS}
+            {pillEdicion(EDICION_EN_CURSO)} en curso · Fecha {jornadaActual} de {TOTAL_JORNADAS}
           </span>
 
           <div className="mt-10 space-y-24">

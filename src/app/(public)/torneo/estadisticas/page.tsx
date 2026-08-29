@@ -6,10 +6,11 @@ import { TorneoShell } from '@/components/torneo/TorneoShell';
 import { EDICION_ACTUAL, jornadaActualDe, puntosJuegoLimpio, calcularPosiciones } from '@/lib/liga';
 import { cargarLigaConAviso } from '@/lib/liga-supabase';
 import { getEquipo } from '@/lib/torneo-data';
+import { EDICION_EN_CURSO, ordinalFemenino, pillEdicion } from '@/lib/torneo';
 
 export const metadata: Metadata = {
   title: 'Estadísticas · Torneo Managers',
-  description: 'Goleadores y juego limpio de la cuarta edición del Torneo Managers F7.',
+  description: `Goleadores y juego limpio de la ${ordinalFemenino(EDICION_EN_CURSO.numero)} edición del Torneo Managers F7.`,
 };
 
 /**
@@ -37,7 +38,7 @@ export default async function EstadisticasPage() {
 
   return (
     <TorneoShell
-      eyebrow="Cuarta edición · 2026-2"
+      eyebrow={pillEdicion(EDICION_EN_CURSO)}
       title="Estadísticas"
       active="/torneo/estadisticas/"
     >
