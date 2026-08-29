@@ -86,6 +86,15 @@ export function PagoBold() {
           <p className="mt-1 font-sport text-4xl text-amarillo">
             {BOLD_PAGO.VALOR || 'Por confirmar'}
           </p>
+          {/* El link de Bold es de monto abierto: pregunta cuánto se va a
+              pagar y arranca en $0. Si no se avisa aquí, es facilísimo que
+              alguien teclee otra cifra sin darse cuenta. */}
+          {pagoConfigurado && BOLD_PAGO.MONTO_ABIERTO && BOLD_PAGO.VALOR ? (
+            <p className="mt-3 text-xs leading-relaxed text-neutral-400">
+              Bold te va a preguntar cuánto vas a pagar y el campo empieza en $0. Escribe{' '}
+              <strong className="text-neutral-200">{BOLD_PAGO.VALOR}</strong> exacto.
+            </p>
+          ) : null}
         </div>
 
         {pagoConfigurado ? (

@@ -8,7 +8,7 @@
  */
 export const BOLD_PAGO = {
   /** URL del link de pago generado en el panel de Bold. Vacío = aún no configurado. */
-  LINK: '',
+  LINK: 'https://checkout.bold.co/payment/LNK_C1AF228EMX',
   /** Valor visible de la inscripción, ej. '$350.000 COP'. Vacío = por definir. */
   VALOR: '$1.000.000 COP',
   /** Celular de soporte (WhatsApp) para dudas de pago. */
@@ -17,7 +17,17 @@ export const BOLD_PAGO = {
    * Temporal: mientras no haya link de Bold, el pago se coordina por WhatsApp.
    * Poner en false cuando se configure `LINK` con el link real de Bold.
    */
-  POR_WHATSAPP: true,
+  POR_WHATSAPP: false,
+  /**
+   * El link es de MONTO ABIERTO: Bold pregunta «¿Cuánto vas a pagar?» y
+   * arranca en $0, así que no cobra `VALOR` por su cuenta — el monto lo
+   * teclea el capitán. Por eso la web se lo repite justo antes de mandarlo
+   * a la pasarela: si escribe de menos, el cupo queda mal pagado y hay que
+   * perseguir la diferencia después.
+   *
+   * Si algún día se genera un link con monto fijo, poner esto en false.
+   */
+  MONTO_ABIERTO: true,
 } as const;
 
 /** Hay link de Bold configurado. */
