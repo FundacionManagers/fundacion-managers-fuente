@@ -22,8 +22,9 @@ interface TeamCrestProps {
  * el reflector lo integra cinematográficamente con la paleta del sitio.
  *
  * - Equipos normales: valla blanca + halo cálido + ring sutil dorado.
- * - Bicampeón (Pomada Alfa): valla blanca + halo dorado intenso + ring
- *   dorado más visible + estrellas.
+ * - Campeones: valla blanca + halo dorado intenso + ring dorado más visible
+ *   + una estrella por título. Quién es campeón no se decide aquí: sale de
+ *   `titulos`, que se cuenta sobre las finales publicadas.
  */
 export function TeamCrest({ slug, size = 56, showStars = false }: TeamCrestProps) {
   const eq = slug ? getEquipo(slug) : undefined;
@@ -56,7 +57,10 @@ export function TeamCrest({ slug, size = 56, showStars = false }: TeamCrestProps
 
   return (
     <div className="inline-flex shrink-0 flex-col items-center">
-      <div className="relative inline-flex items-center justify-center" style={{ width: size, height: size }}>
+      <div
+        className="relative inline-flex items-center justify-center"
+        style={{ width: size, height: size }}
+      >
         {/* Reflector (halo) detrás de todo */}
         <span
           aria-hidden

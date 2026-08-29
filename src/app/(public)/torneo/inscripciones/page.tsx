@@ -53,7 +53,7 @@ export default function InscripcionesPage() {
 
       <div className="relative z-10">
         {/* HERO */}
-        <section className="relative overflow-hidden grain">
+        <section className="grain relative overflow-hidden">
           <div className="relative mx-auto max-w-7xl px-6 py-20 lg:px-8 lg:py-28">
             <span className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-amarillo to-naranja px-4 py-1.5 font-bufon text-xs font-bold uppercase tracking-[0.18em] text-carbon">
               Inscripciones · Edición 4° (2026-2)
@@ -63,17 +63,17 @@ export default function InscripcionesPage() {
               <br />
               tu equipo
             </h1>
-            <div className="mt-5 h-1.5 w-32 rounded-full energy-bar" />
+            <div className="energy-bar mt-5 h-1.5 w-32 rounded-full" />
             <p className="mt-6 max-w-2xl text-lg text-neutral-300">
-              ¿Tu equipo va por la cuarta moneda? Empieza dejándonos tus datos. Te unimos al
-              grupo de WhatsApp y te guiamos en cada paso hasta la cancha.
+              ¿Tu equipo va por la cuarta moneda? Empieza dejándonos tus datos. Te unimos al grupo
+              de WhatsApp y te guiamos en cada paso hasta la cancha.
             </p>
           </div>
         </section>
 
         <TorneoNav active="/torneo/inscripciones/" />
 
-        <section className="relative grain">
+        <section className="grain relative">
           <div className="relative mx-auto grid max-w-7xl gap-16 px-6 py-16 lg:grid-cols-[1.1fr_0.9fr] lg:px-8 lg:py-24">
             {/* PROCESO */}
             <div>
@@ -83,7 +83,7 @@ export default function InscripcionesPage() {
               <h2 className="mt-2 font-sport text-5xl uppercase leading-none text-neutral-50 md:text-6xl">
                 El proceso
               </h2>
-              <div className="mt-5 h-1 w-full rounded-full energy-bar opacity-70" />
+              <div className="energy-bar mt-5 h-1 w-full rounded-full opacity-70" />
 
               <ol className="mt-10 space-y-5">
                 {PASOS.map((p) => (
@@ -95,9 +95,7 @@ export default function InscripcionesPage() {
                       {p.numero}
                     </span>
                     <div>
-                      <h3 className="font-serif text-xl font-bold text-neutral-50">
-                        {p.titulo}
-                      </h3>
+                      <h3 className="font-serif text-xl font-bold text-neutral-50">{p.titulo}</h3>
                       <p className="mt-1 text-sm text-neutral-300">{p.detalle}</p>
                     </div>
                   </li>

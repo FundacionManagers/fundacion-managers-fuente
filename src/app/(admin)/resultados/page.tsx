@@ -18,14 +18,14 @@ export default function ResultadosPage() {
           no parezca una herramienta ajena al torneo. */}
       <TorneoBackdrop />
 
-      <div className="relative z-10 grain">
+      <div className="grain relative z-10">
         <div className="mx-auto max-w-5xl px-6 py-12 lg:px-8 lg:py-16">
           <NavAdmin actual="/resultados/" />
 
           <div className="mt-10 flex flex-wrap items-center justify-between gap-8">
             <div className="animate-fade-up">
               <span className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-amarillo to-naranja px-4 py-1.5 font-bufon text-xs font-bold uppercase tracking-[0.15em] text-carbon">
-                <span className="h-2 w-2 rounded-full bg-carbon pulse-live" />
+                <span className="pulse-live h-2 w-2 rounded-full bg-carbon" />
                 Edición {EDICION_ACTUAL} · {PERIODO_ACTUAL}
               </span>
               <h1 className="mt-4 font-sport text-6xl uppercase leading-none text-neutral-50 md:text-7xl">
@@ -34,16 +34,16 @@ export default function ResultadosPage() {
                 <span className="text-energy">resultados</span>
               </h1>
               <p className="mt-5 max-w-lg text-sm text-neutral-300">
-                Marcadores, tarjetas y goleadores de cada fecha. La tabla de posiciones no se
-                edita aquí: se calcula sola a partir de los marcadores, y por eso nunca puede
-                contradecir al calendario.
+                Marcadores, tarjetas y goleadores de cada fecha. La tabla de posiciones no se edita
+                aquí: se calcula sola a partir de los marcadores, y por eso nunca puede contradecir
+                al calendario.
               </p>
             </div>
 
             <GoldCoin size={190} animate className="hidden shrink-0 lg:block" />
           </div>
 
-          <div className="mt-10 h-1 w-full rounded-full energy-bar opacity-80" />
+          <div className="energy-bar mt-10 h-1 w-full rounded-full opacity-80" />
 
           <div className="mt-12">
             <PanelTorneoCliente />

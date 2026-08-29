@@ -42,9 +42,7 @@ export function PlaceholderSection({ title, bullets, dark = false }: Placeholder
       <p
         className={cn(
           'mt-8 rounded-md border border-dashed px-4 py-3 text-xs uppercase tracking-widest',
-          dark
-            ? 'border-neutral-700 text-neutral-500'
-            : 'border-neutral-300 text-neutral-500',
+          dark ? 'border-neutral-700 text-neutral-500' : 'border-neutral-300 text-neutral-500',
         )}
       >
         Contenido por integrar desde Managers_Especificaciones_v2.docx

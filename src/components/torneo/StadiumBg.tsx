@@ -71,14 +71,23 @@ export function StadiumBg({ tint = '#D4A437', className }: StadiumBgProps) {
       {[0, 1, 2, 3, 4].map((i) => (
         <polygon
           key={i}
-          points={`${220 + i * 152},260 ${220 + (i + 1) * 152},260 ${1200 -
-            i * 120},600 ${1200 - (i + 1) * 120},600`}
+          points={`${220 + i * 152},260 ${220 + (i + 1) * 152},260 ${
+            1200 - i * 120
+          },600 ${1200 - (i + 1) * 120},600`}
           fill="#ffffff"
           opacity={i % 2 === 0 ? 0.04 : 0}
         />
       ))}
       {/* Línea de medio campo + círculo */}
-      <line x1="220" y1="320" x2="980" y2="320" stroke="#ffffff" strokeOpacity="0.16" strokeWidth="2" />
+      <line
+        x1="220"
+        y1="320"
+        x2="980"
+        y2="320"
+        stroke="#ffffff"
+        strokeOpacity="0.16"
+        strokeWidth="2"
+      />
       <ellipse
         cx="600"
         cy="430"

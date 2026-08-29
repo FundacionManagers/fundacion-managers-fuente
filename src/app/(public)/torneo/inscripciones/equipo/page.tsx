@@ -15,7 +15,7 @@ export default function EquipoPage() {
       <TorneoBackdrop seed={73} query="stadium,locker,team" />
 
       <div className="relative z-10">
-        <section className="relative overflow-hidden grain">
+        <section className="grain relative overflow-hidden">
           <div className="relative mx-auto max-w-7xl px-6 py-16 lg:px-8 lg:py-20">
             <span className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-amarillo to-naranja px-4 py-1.5 font-bufon text-xs font-bold uppercase tracking-[0.18em] text-carbon">
               Inscripción · Paso 3 de 5
@@ -25,7 +25,7 @@ export default function EquipoPage() {
               <br />
               tu plantel
             </h1>
-            <div className="mt-5 h-1.5 w-32 rounded-full energy-bar" />
+            <div className="energy-bar mt-5 h-1.5 w-32 rounded-full" />
             <p className="mt-6 max-w-2xl text-lg text-neutral-300">
               Diligencia los datos de cada jugador y sube su foto. Se guarda solo: puedes salir y
               continuar después con el mismo enlace.
@@ -35,7 +35,7 @@ export default function EquipoPage() {
 
         <TorneoNav active="/torneo/inscripciones/" />
 
-        <section className="relative grain">
+        <section className="grain relative">
           <div className="relative mx-auto max-w-4xl px-6 py-16 lg:px-8 lg:py-20">
             <RosterForm />
           </div>

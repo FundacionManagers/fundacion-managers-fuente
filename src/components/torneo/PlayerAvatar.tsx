@@ -34,11 +34,7 @@ export function PlayerAvatar({ color, numero, size = 96 }: PlayerAvatarProps) {
         fill={color}
       />
       {/* Hombros/sombra */}
-      <path
-        d="M22 104 V64 C22 56 26 51 31 48 L31 104 Z"
-        fill="#000"
-        opacity="0.18"
-      />
+      <path d="M22 104 V64 C22 56 26 51 31 48 L31 104 Z" fill="#000" opacity="0.18" />
       {/* Dorsal */}
       <text
         x="50"

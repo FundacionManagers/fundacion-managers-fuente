@@ -16,12 +16,7 @@ export function EjeHero({ eje }: EjeHeroProps) {
       )}
     >
       <div className="mx-auto max-w-7xl px-6 py-24 lg:px-8 lg:py-32">
-        <p
-          className={cn(
-            'font-mono text-caption uppercase tracking-widest',
-            eje.accent,
-          )}
-        >
+        <p className={cn('font-mono text-caption uppercase tracking-widest', eje.accent)}>
           {eje.tagline}
         </p>
         <h1
@@ -33,10 +28,7 @@ export function EjeHero({ eje }: EjeHeroProps) {
           {eje.nombre}
         </h1>
         <p
-          className={cn(
-            'mt-6 max-w-2xl text-lg',
-            isDark ? 'text-neutral-300' : 'text-neutral-700',
-          )}
+          className={cn('mt-6 max-w-2xl text-lg', isDark ? 'text-neutral-300' : 'text-neutral-700')}
         >
           {eje.descripcion}
         </p>

@@ -19,7 +19,7 @@ export function TorneoShell({ eyebrow, title, active, children }: TorneoShellPro
 
       <div className="relative z-10">
         {/* HERO */}
-        <section className="relative overflow-hidden grain">
+        <section className="grain relative overflow-hidden">
           <span
             aria-hidden
             className="pointer-events-none absolute -right-8 top-1/2 -translate-y-1/2 select-none font-sport text-[30vw] leading-none text-white/[0.04] lg:text-[230px]"
@@ -35,7 +35,7 @@ export function TorneoShell({ eyebrow, title, active, children }: TorneoShellPro
               <h1 className="mt-6 font-sport text-[16vw] uppercase leading-[0.85] text-neutral-50 drop-shadow-[0_6px_24px_rgba(0,0,0,0.7)] lg:text-[110px]">
                 {title}
               </h1>
-              <div className="mt-5 h-1.5 w-32 rounded-full energy-bar" />
+              <div className="energy-bar mt-5 h-1.5 w-32 rounded-full" />
             </div>
             <div className="hidden shrink-0 lg:block">
               <div className="float-y">
@@ -46,7 +46,7 @@ export function TorneoShell({ eyebrow, title, active, children }: TorneoShellPro
 
           {/* Marquee de equipos */}
           <div className="relative border-y border-white/10 bg-black/40 py-4 backdrop-blur-sm">
-            <div className="flex w-max marquee gap-12 px-6">
+            <div className="marquee flex w-max gap-12 px-6">
               {[...EQUIPOS, ...EQUIPOS].map((e, i) => (
                 <span
                   key={`${e.slug}-${i}`}
@@ -63,10 +63,8 @@ export function TorneoShell({ eyebrow, title, active, children }: TorneoShellPro
         <TorneoNav active={active} />
 
         {/* CONTENIDO (panel translúcido para que la foto se vea detrás) */}
-        <section className="relative grain">
-          <div className="relative mx-auto max-w-7xl px-6 py-16 lg:px-8 lg:py-24">
-            {children}
-          </div>
+        <section className="grain relative">
+          <div className="relative mx-auto max-w-7xl px-6 py-16 lg:px-8 lg:py-24">{children}</div>
         </section>
       </div>
     </div>

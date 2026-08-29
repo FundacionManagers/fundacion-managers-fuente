@@ -113,9 +113,7 @@ async function generarComprobante(equipo: string, capitan: string, fecha: string
   ctx.fillText('Fundación Managers', cx, 1230);
   ctx.fillText(fecha, cx, 1270);
 
-  return new Promise<Blob>((resolve) =>
-    c.toBlob((b) => resolve(b as Blob), 'image/png', 0.95),
-  );
+  return new Promise<Blob>((resolve) => c.toBlob((b) => resolve(b as Blob), 'image/png', 0.95));
 }
 
 export function ComprobanteInscripcion() {
@@ -175,9 +173,13 @@ export function ComprobanteInscripcion() {
     setTrabajando(true);
     try {
       const blob = await obtenerBlob();
-      const file = new File([blob], `inscripcion-${(equipo || 'equipo').replace(/[^\w]+/g, '_')}.png`, {
-        type: 'image/png',
-      });
+      const file = new File(
+        [blob],
+        `inscripcion-${(equipo || 'equipo').replace(/[^\w]+/g, '_')}.png`,
+        {
+          type: 'image/png',
+        },
+      );
       const nav = navigator as Navigator & {
         canShare?: (d: { files: File[] }) => boolean;
         share?: (d: { files?: File[]; title?: string; text?: string }) => Promise<void>;

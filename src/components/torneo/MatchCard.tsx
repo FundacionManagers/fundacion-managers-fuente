@@ -1,16 +1,11 @@
 import Link from 'next/link';
 import { ChevronRight } from 'lucide-react';
 import { TeamCrest } from '@/components/torneo/TeamCrest';
+import { etiquetaTitulos } from '@/lib/torneo';
 import { type Partido, getEquipo } from '@/lib/torneo-data';
 import { cn } from '@/lib/utils';
 
-function Side({
-  slug,
-  align,
-}: {
-  slug: string | null;
-  align: 'left' | 'right';
-}) {
+function Side({ slug, align }: { slug: string | null; align: 'left' | 'right' }) {
   const eq = slug ? getEquipo(slug) : undefined;
   return (
     <div
@@ -49,7 +44,7 @@ export function MatchCard({ p }: { p: Partido }) {
         </span>
         {enVivo ? (
           <span className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-amarillo to-naranja px-2.5 py-0.5 font-bufon text-[10px] font-bold text-carbon">
-            <span className="h-1.5 w-1.5 rounded-full bg-carbon pulse-live" /> EN VIVO
+            <span className="pulse-live h-1.5 w-1.5 rounded-full bg-carbon" /> EN VIVO
           </span>
         ) : (
           <span
@@ -114,11 +109,9 @@ export function TeamBadge({ slug }: { slug: string }) {
       />
       <TeamCrest slug={eq.slug} size={56} showStars />
       <div className="relative min-w-0 flex-1">
-        <p className="truncate font-serif text-lg font-bold text-neutral-50">
-          {eq.nombre}
-        </p>
+        <p className="truncate font-serif text-lg font-bold text-neutral-50">{eq.nombre}</p>
         <p className="mt-0.5 text-xs uppercase tracking-widest text-neutral-500">
-          {eq.titulos > 0 ? `Bicampeón · ${eq.titulos} títulos` : 'Tercera edición'}
+          {etiquetaTitulos(eq.titulos)}
         </p>
       </div>
       <ChevronRight

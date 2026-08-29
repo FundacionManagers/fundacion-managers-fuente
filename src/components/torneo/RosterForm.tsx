@@ -77,19 +77,17 @@ export function RosterForm() {
     setEq(id);
     setToken(tk);
 
-    supabase
-      .rpc('fm_get_equipo', { p_id: id, p_token: tk })
-      .then(({ data, error }) => {
-        if (error || !data) {
-          setEstado('sin-acceso');
-          return;
-        }
-        const insc = (data as { inscripcion?: { equipo?: string } }).inscripcion;
-        const jug = (data as { jugadores?: Record<string, unknown>[] }).jugadores ?? [];
-        setEquipoNombre(insc?.equipo ?? '');
-        setFilas(jug.length ? jug.map(aFila) : [{ ...jugadorVacio(), _key: nuevaKey() }]);
-        setEstado('ok');
-      });
+    supabase.rpc('fm_get_equipo', { p_id: id, p_token: tk }).then(({ data, error }) => {
+      if (error || !data) {
+        setEstado('sin-acceso');
+        return;
+      }
+      const insc = (data as { inscripcion?: { equipo?: string } }).inscripcion;
+      const jug = (data as { jugadores?: Record<string, unknown>[] }).jugadores ?? [];
+      setEquipoNombre(insc?.equipo ?? '');
+      setFilas(jug.length ? jug.map(aFila) : [{ ...jugadorVacio(), _key: nuevaKey() }]);
+      setEstado('ok');
+    });
   }, []);
 
   const guardarFila = useCallback(
@@ -114,16 +112,16 @@ export function RosterForm() {
           orden: idx,
         };
         setGuardando(true);
-        sb
-          .rpc('fm_upsert_jugador', { p_id: eq, p_token: token, p_jugador: payload })
-          .then(({ data, error }) => {
+        sb.rpc('fm_upsert_jugador', { p_id: eq, p_token: token, p_jugador: payload }).then(
+          ({ data, error }) => {
             if (!error && data) {
               setFilas((cur) =>
                 cur.map((f) => (f._key === key && !f.id ? { ...f, id: String(data) } : f)),
               );
             }
             setGuardando(false);
-          });
+          },
+        );
         return prev;
       });
     },
@@ -217,10 +215,7 @@ export function RosterForm() {
     const base = process.env.NEXT_PUBLIC_BASE_PATH ?? '';
     return (
       <div className="mx-auto max-w-lg rounded-3xl border border-white/10 bg-[#0b0f14]/80 p-8 text-center">
-        <Check
-          size={48}
-          className={`mx-auto ${listo ? 'text-[#25D366]' : 'text-amarillo'}`}
-        />
+        <Check size={48} className={`mx-auto ${listo ? 'text-[#25D366]' : 'text-amarillo'}`} />
         {listo ? (
           <>
             <h3 className="mt-3 font-sport text-3xl uppercase text-neutral-50">
@@ -230,8 +225,9 @@ export function RosterForm() {
               Paso 3 completado
             </p>
             <p className="mt-4 text-sm text-neutral-300">
-              Tu plantel quedó registrado con <strong className="text-neutral-100">{completos}</strong>{' '}
-              jugadores completos. ¡Ya tienes tu cupo!
+              Tu plantel quedó registrado con{' '}
+              <strong className="text-neutral-100">{completos}</strong> jugadores completos. ¡Ya
+              tienes tu cupo!
             </p>
           </>
         ) : (
@@ -248,8 +244,14 @@ export function RosterForm() {
         <div className="mt-6 rounded-2xl border border-white/10 bg-[#0d1218]/70 p-4 text-left text-sm text-neutral-300">
           <p className="font-bold text-neutral-100">¿Qué sigue?</p>
           <ul className="mt-2 space-y-1.5">
-            <li>💳 <strong className="text-neutral-100">Paso 4 — Pago:</strong> asegura tu cupo pagando la inscripción con Bold (botón abajo).</li>
-            <li>📅 <strong className="text-neutral-100">Paso 5 — Programación:</strong> te enviamos el calendario y las reglas por el grupo.</li>
+            <li>
+              💳 <strong className="text-neutral-100">Paso 4 — Pago:</strong> asegura tu cupo
+              pagando la inscripción con Bold (botón abajo).
+            </li>
+            <li>
+              📅 <strong className="text-neutral-100">Paso 5 — Programación:</strong> te enviamos el
+              calendario y las reglas por el grupo.
+            </li>
           </ul>
         </div>
 
@@ -257,9 +259,9 @@ export function RosterForm() {
         <div className="mt-6 rounded-2xl border border-amarillo/30 bg-amarillo/5 p-4 text-left">
           <p className="text-sm font-bold text-neutral-100">📌 Guarda tu enlace</p>
           <p className="mt-1 text-xs text-neutral-400">
-            Cópialo y guárdalo: ábrelo en tu navegador y <strong>agrégalo a la pantalla de inicio
-            de tu celular</strong>. Así vuelves a tu equipo y sigues informado del torneo en todo
-            momento.
+            Cópialo y guárdalo: ábrelo en tu navegador y{' '}
+            <strong>agrégalo a la pantalla de inicio de tu celular</strong>. Así vuelves a tu equipo
+            y sigues informado del torneo en todo momento.
           </p>
           <button
             type="button"
@@ -364,7 +366,9 @@ export function RosterForm() {
           <article
             key={f._key}
             className={`rounded-2xl border p-5 ${
-              jugadorCompleto(f) ? 'border-[#25D366]/30 bg-[#0d1a12]/40' : 'border-white/10 bg-[#0d1218]/70'
+              jugadorCompleto(f)
+                ? 'border-[#25D366]/30 bg-[#0d1a12]/40'
+                : 'border-white/10 bg-[#0d1218]/70'
             }`}
           >
             <div className="flex items-center justify-between">
@@ -385,10 +389,28 @@ export function RosterForm() {
             </div>
 
             <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-              <Campo label="Nombre completo" value={f.nombre} onChange={(v) => editar(f._key, 'nombre', v)} />
-              <Campo label="Documento (cédula)" value={f.documento} onChange={(v) => editar(f._key, 'documento', v)} />
-              <Campo label="Celular" type="tel" value={f.celular} onChange={(v) => editar(f._key, 'celular', v)} />
-              <Campo label="N° camiseta" type="number" value={f.numero} onChange={(v) => editar(f._key, 'numero', v)} />
+              <Campo
+                label="Nombre completo"
+                value={f.nombre}
+                onChange={(v) => editar(f._key, 'nombre', v)}
+              />
+              <Campo
+                label="Documento (cédula)"
+                value={f.documento}
+                onChange={(v) => editar(f._key, 'documento', v)}
+              />
+              <Campo
+                label="Celular"
+                type="tel"
+                value={f.celular}
+                onChange={(v) => editar(f._key, 'celular', v)}
+              />
+              <Campo
+                label="N° camiseta"
+                type="number"
+                value={f.numero}
+                onChange={(v) => editar(f._key, 'numero', v)}
+              />
               <div>
                 <Etiqueta>Posición</Etiqueta>
                 <select
@@ -396,7 +418,9 @@ export function RosterForm() {
                   onChange={(e) => editar(f._key, 'posicion', e.target.value)}
                   className="mt-1 block w-full rounded-md border border-white/15 bg-transparent px-3 py-2.5 text-sm text-neutral-100 focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
                 >
-                  <option value="" className="bg-carbon">Selecciona…</option>
+                  <option value="" className="bg-carbon">
+                    Selecciona…
+                  </option>
                   {POSICIONES_JUGADOR.map((p) => (
                     <option key={p.value} value={p.value} className="bg-carbon">
                       {p.label}
@@ -404,7 +428,12 @@ export function RosterForm() {
                   ))}
                 </select>
               </div>
-              <Campo label="Fecha de nacimiento" type="date" value={f.fechaNacimiento} onChange={(v) => editar(f._key, 'fechaNacimiento', v)} />
+              <Campo
+                label="Fecha de nacimiento"
+                type="date"
+                value={f.fechaNacimiento}
+                onChange={(v) => editar(f._key, 'fechaNacimiento', v)}
+              />
               <Campo label="EPS" value={f.eps} onChange={(v) => editar(f._key, 'eps', v)} />
               <div>
                 <Etiqueta>Talla de camiseta</Etiqueta>
@@ -413,7 +442,9 @@ export function RosterForm() {
                   onChange={(e) => editar(f._key, 'talla', e.target.value)}
                   className="mt-1 block w-full rounded-md border border-white/15 bg-transparent px-3 py-2.5 text-sm text-neutral-100 focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
                 >
-                  <option value="" className="bg-carbon">Selecciona…</option>
+                  <option value="" className="bg-carbon">
+                    Selecciona…
+                  </option>
                   {TALLAS.map((t) => (
                     <option key={t} value={t} className="bg-carbon">
                       {t}
@@ -480,7 +511,12 @@ export function RosterForm() {
         <button
           type="button"
           onClick={() => {
-            if (!listo && !window.confirm(`Tienes ${completos} de ${MIN_JUGADORES} jugadores completos. ¿Finalizar de todas formas? Podrás volver a editar con tu enlace.`))
+            if (
+              !listo &&
+              !window.confirm(
+                `Tienes ${completos} de ${MIN_JUGADORES} jugadores completos. ¿Finalizar de todas formas? Podrás volver a editar con tu enlace.`,
+              )
+            )
               return;
             setFinalizado(true);
             window.scrollTo({ top: 0, behavior: 'smooth' });

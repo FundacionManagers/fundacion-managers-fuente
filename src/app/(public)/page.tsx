@@ -6,7 +6,7 @@ import { SectionBackdrop } from '@/components/shared/SectionBackdrop';
 import { EJES } from '@/lib/navigation';
 import { ALIANZA, ICONE_CYAN } from '@/lib/alianza';
 import { NORTE, OCIO_SERIO, PILARES } from '@/lib/strategy';
-import { CAMPEON_VIGENTE } from '@/lib/torneo';
+import { CAMPEON_VIGENTE, EDICIONES, MAXIMO_GANADOR, MAXIMO_GANADOR_ES_OTRO } from '@/lib/torneo';
 
 export default function HomePage() {
   return (
@@ -15,12 +15,11 @@ export default function HomePage() {
 
       <div className="relative z-10 text-neutral-200">
         {/* ===== HERO ===== */}
-        <section className="relative overflow-hidden grain">
-          <div className="relative mx-auto grid min-h-[64vh] max-w-7xl items-center gap-10 px-6 py-14 sm:py-20 lg:grid-cols-[1.2fr_0.8fr] lg:gap-14 lg:px-8 lg:py-24 lg:min-h-[78vh]">
+        <section className="grain relative overflow-hidden">
+          <div className="relative mx-auto grid min-h-[64vh] max-w-7xl items-center gap-10 px-6 py-14 sm:py-20 lg:min-h-[78vh] lg:grid-cols-[1.2fr_0.8fr] lg:gap-14 lg:px-8 lg:py-24">
             <div className="animate-fade-up">
               <h1 className="font-serif text-[38px] font-bold leading-[1.05] text-neutral-50 drop-shadow-[0_6px_24px_rgba(0,0,0,0.7)] sm:text-[52px] md:text-[78px]">
-                Ayudamos a líderes a{' '}
-                <span className="text-energy">tomar mejores decisiones.</span>
+                Ayudamos a líderes a <span className="text-energy">tomar mejores decisiones.</span>
               </h1>
               <p className="mt-7 max-w-xl text-lg text-neutral-300">
                 Los líderes se entrenan jugando, aprendiendo y compitiendo. No es solo
@@ -71,7 +70,7 @@ export default function HomePage() {
         </section>
 
         {/* ===== OCIO SERIO ===== */}
-        <section className="relative overflow-hidden grain">
+        <section className="grain relative overflow-hidden">
           <div className="relative mx-auto max-w-7xl px-6 py-16 lg:px-8 lg:py-24">
             <div className="grid gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
               <div>
@@ -96,7 +95,7 @@ export default function HomePage() {
         </section>
 
         {/* ===== 3 PILARES ===== */}
-        <section className="relative overflow-hidden grain border-y border-white/10 bg-black/25 backdrop-blur-sm">
+        <section className="grain relative overflow-hidden border-y border-white/10 bg-black/25 backdrop-blur-sm">
           <div className="relative mx-auto max-w-7xl px-6 py-16 lg:px-8 lg:py-24">
             <div className="max-w-3xl">
               <p className="font-mono text-caption uppercase tracking-[0.3em] text-gold">
@@ -106,15 +105,13 @@ export default function HomePage() {
                 Tres pilares, un mismo destino.
               </h2>
             </div>
-            <ol className="mt-16 grid gap-px overflow-hidden rounded-2xl border border-white/10 stagger-in lg:grid-cols-3">
+            <ol className="stagger-in mt-16 grid gap-px overflow-hidden rounded-2xl border border-white/10 lg:grid-cols-3">
               {PILARES.map((p) => (
                 <li key={p.numero} className="bg-[#0d1218]/80 p-7 sm:p-10">
                   <span aria-hidden className="ghost-number text-7xl">
                     {p.numero}
                   </span>
-                  <h3 className="mt-6 font-serif text-2xl font-bold text-neutral-50">
-                    {p.titulo}
-                  </h3>
+                  <h3 className="mt-6 font-serif text-2xl font-bold text-neutral-50">{p.titulo}</h3>
                   <p className="mt-3 text-sm text-gold">{p.promesa}</p>
                   <ul className="mt-6 space-y-2">
                     {p.componentes.map((c) => (
@@ -131,7 +128,7 @@ export default function HomePage() {
         </section>
 
         {/* ===== EJES ===== */}
-        <section className="relative overflow-hidden grain">
+        <section className="grain relative overflow-hidden">
           <div className="relative mx-auto max-w-7xl px-6 py-16 lg:px-8 lg:py-24">
             <div className="max-w-2xl">
               <p className="font-mono text-caption uppercase tracking-[0.3em] text-naranja">
@@ -141,7 +138,7 @@ export default function HomePage() {
                 Seis ejes. Una sola comunidad.
               </h2>
             </div>
-            <ul className="mt-14 grid gap-5 stagger-in sm:grid-cols-2 lg:grid-cols-3">
+            <ul className="stagger-in mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
               {EJES.map((eje) => {
                 const Icon = eje.icon;
                 return (
@@ -169,9 +166,7 @@ export default function HomePage() {
                       <h3 className="mt-1 font-serif text-2xl font-bold text-neutral-50">
                         {eje.nombre}
                       </h3>
-                      <p className="mt-3 flex-1 text-sm text-neutral-400">
-                        {eje.descripcion}
-                      </p>
+                      <p className="mt-3 flex-1 text-sm text-neutral-400">{eje.descripcion}</p>
                     </Link>
                   </li>
                 );
@@ -181,7 +176,7 @@ export default function HomePage() {
         </section>
 
         {/* ===== MANAGERS LAB ===== */}
-        <section className="relative overflow-hidden grain border-y border-white/10 bg-black/25 backdrop-blur-sm">
+        <section className="grain relative overflow-hidden border-y border-white/10 bg-black/25 backdrop-blur-sm">
           <div className="relative mx-auto max-w-7xl px-6 py-16 lg:px-8 lg:py-24">
             <div
               className="overflow-hidden rounded-3xl border p-6 sm:p-10 lg:p-16"
@@ -229,8 +224,8 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* ===== TORNEO / BICAMPEÓN ===== */}
-        <section className="relative overflow-hidden grain">
+        {/* ===== TORNEO ===== */}
+        <section className="grain relative overflow-hidden">
           <div className="relative mx-auto grid max-w-7xl items-center gap-12 px-6 py-16 lg:grid-cols-[1.1fr_0.9fr] lg:px-8 lg:py-24">
             <div>
               <p className="font-mono text-caption uppercase tracking-[0.3em] text-gold">
@@ -240,9 +235,19 @@ export default function HomePage() {
                 El torneo no es fútbol.{' '}
                 <span className="text-energy">Es decidir bajo presión.</span>
               </h2>
+              {/* El maximo ganador solo se menciona si es otro club: mientras
+                  coincida con el campeon vigente, nombrarlo dos veces con dos
+                  rotulos distintos solo confunde. */}
               <p className="mt-6 max-w-xl text-neutral-300">
-                F7 para líderes mayores de 28 años. Tres ediciones, un bicampeón vigente:{' '}
-                {CAMPEON_VIGENTE.equipo}.
+                F7 para líderes mayores de 28 años. {EDICIONES.length} ediciones. Campeón vigente:{' '}
+                {CAMPEON_VIGENTE.equipo}
+                {MAXIMO_GANADOR_ES_OTRO ? (
+                  <>
+                    ; máximo ganador: {MAXIMO_GANADOR.equipo}, con {MAXIMO_GANADOR.titulos} títulos.
+                  </>
+                ) : (
+                  '.'
+                )}
               </p>
               <Link
                 href="/torneo/"

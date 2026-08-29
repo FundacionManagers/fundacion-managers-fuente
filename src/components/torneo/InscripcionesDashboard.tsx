@@ -243,9 +243,7 @@ export function InscripcionesDashboard() {
     return (
       <div className="mx-auto max-w-sm rounded-3xl border border-white/10 bg-[#0b0f14]/80 p-8">
         <h2 className="font-sport text-2xl uppercase text-neutral-50">Ingreso de administrador</h2>
-        <p className="mt-2 text-sm text-neutral-400">
-          Solo personal autorizado de la Fundación.
-        </p>
+        <p className="mt-2 text-sm text-neutral-400">Solo personal autorizado de la Fundación.</p>
         <form onSubmit={login} className="mt-6 space-y-4">
           <input
             type="email"
@@ -283,8 +281,8 @@ export function InscripcionesDashboard() {
 
         {enlaceEnviado ? (
           <p className="mt-4 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-300">
-            Te enviamos un enlace a <strong>{email.trim()}</strong>. Ábrelo desde este
-            mismo dispositivo para entrar.
+            Te enviamos un enlace a <strong>{email.trim()}</strong>. Ábrelo desde este mismo
+            dispositivo para entrar.
           </p>
         ) : (
           <button
@@ -516,9 +514,7 @@ export function InscripcionesDashboard() {
                 <>
                   <button
                     type="button"
-                    onClick={() =>
-                      setExpandido((prev) => ({ ...prev, [ins.id]: !prev[ins.id] }))
-                    }
+                    onClick={() => setExpandido((prev) => ({ ...prev, [ins.id]: !prev[ins.id] }))}
                     className="mt-4 inline-flex items-center gap-2 rounded-full border border-white/15 px-4 py-2 text-xs font-bold text-neutral-200 transition-colors hover:border-gold hover:text-gold"
                   >
                     <Users size={14} aria-hidden />

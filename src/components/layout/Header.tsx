@@ -9,11 +9,7 @@ export function Header() {
   return (
     <header className="sticky top-0 z-40 w-full border-b border-white/10 bg-[#0b0f14]/85 backdrop-blur-md">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6 lg:px-8">
-        <Link
-          href="/"
-          className="flex items-center"
-          aria-label="Inicio Fundación Managers"
-        >
+        <Link href="/" className="flex items-center" aria-label="Inicio Fundación Managers">
           <Image
             src={asset('/logo-fundacion.png')}
             alt="Fundación Managers"

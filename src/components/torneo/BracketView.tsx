@@ -62,7 +62,7 @@ function Tie({ p, highlight = false }: { p: Partido; highlight?: boolean }) {
         highlight ? 'border-amarillo/60' : 'border-white/10',
       )}
     >
-      <div className="relative flex items-center justify-between border-b border-white/8 px-4 py-2">
+      <div className="border-white/8 relative flex items-center justify-between border-b px-4 py-2">
         <span className="font-bufon text-[11px] font-bold uppercase tracking-[0.15em] text-naranja">
           {p.etiqueta}
         </span>
@@ -84,7 +84,7 @@ function Tie({ p, highlight = false }: { p: Partido; highlight?: boolean }) {
         ganador={ganador != null && ganador === p.visitante}
       />
       {p.penales ? (
-        <p className="border-t border-white/8 px-4 py-1.5 text-center font-mono text-[10px] uppercase tracking-widest text-neutral-500">
+        <p className="border-white/8 border-t px-4 py-1.5 text-center font-mono text-[10px] uppercase tracking-widest text-neutral-500">
           Definido por penales
         </p>
       ) : null}
@@ -105,7 +105,7 @@ export function BracketView() {
   return (
     <div className="overflow-x-auto pb-4">
       <div className="flex min-w-[1000px] items-stretch gap-0 lg:min-w-0">
-        <div className="flex flex-1 flex-col justify-around gap-6 stagger-in">
+        <div className="stagger-in flex flex-1 flex-col justify-around gap-6">
           <p className="mb-1 font-bufon text-sm font-bold uppercase tracking-[0.2em] text-naranja">
             Cuartos de final
           </p>
@@ -116,7 +116,7 @@ export function BracketView() {
 
         <Connector />
 
-        <div className="flex flex-1 flex-col justify-around gap-6 stagger-in">
+        <div className="stagger-in flex flex-1 flex-col justify-around gap-6">
           <p className="mb-1 font-bufon text-sm font-bold uppercase tracking-[0.2em] text-naranja">
             Semifinales
           </p>
@@ -132,10 +132,7 @@ export function BracketView() {
             Gran Final
           </p>
           <div className="relative">
-            <span
-              aria-hidden
-              className="absolute -inset-6 rounded-3xl bg-amarillo/15 blur-2xl"
-            />
+            <span aria-hidden className="absolute -inset-6 rounded-3xl bg-amarillo/15 blur-2xl" />
             <div className="relative rounded-2xl bg-gradient-to-br from-amarillo/30 via-transparent to-transparent p-[2px]">
               <Tie p={FINAL} highlight />
             </div>

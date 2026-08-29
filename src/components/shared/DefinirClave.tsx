@@ -58,8 +58,8 @@ export function DefinirClave({ correo }: { correo: string }) {
         directo la próxima vez. Sirve también para el panel de inscripciones.
       </p>
       <p className="mt-1 text-xs text-neutral-500">
-        Sesión de <strong className="text-neutral-400">{correo}</strong>. Solo tú la escribes: no
-        se le muestra a nadie más.
+        Sesión de <strong className="text-neutral-400">{correo}</strong>. Solo tú la escribes: no se
+        le muestra a nadie más.
       </p>
 
       {listo ? (

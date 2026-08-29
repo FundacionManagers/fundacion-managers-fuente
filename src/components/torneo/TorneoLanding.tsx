@@ -11,17 +11,8 @@ import { RankingGoleadores } from '@/components/torneo/RankingGoleadores';
 import { ALIANZA, ICONE_CYAN } from '@/lib/alianza';
 import { jornadaActualDe, TOTAL_JORNADAS } from '@/lib/liga';
 import { cargarLigaConAviso } from '@/lib/liga-supabase';
-import {
-  CAMPEON_VIGENTE,
-  TORNEO_BIO,
-  TORNEO_INSTAGRAM_URL,
-} from '@/lib/torneo';
-import {
-  EQUIPOS,
-  FINAL,
-  ganadorDe,
-  getEquipo,
-} from '@/lib/torneo-data';
+import { CAMPEON_VIGENTE, TORNEO_BIO, TORNEO_INSTAGRAM_URL } from '@/lib/torneo';
+import { EQUIPOS, FINAL, ganadorDe, getEquipo } from '@/lib/torneo-data';
 
 const STATS = [
   { v: '4', l: 'Ediciones' },
@@ -42,7 +33,7 @@ export async function TorneoLanding() {
     <div className="tournament-section relative">
       <TorneoBackdrop seed={24} query="stadium,floodlights,crowd" />
       {/* ===== HERO ===== */}
-      <section className="relative z-10 overflow-hidden grain">
+      <section className="grain relative z-10 overflow-hidden">
         <span
           aria-hidden
           className="pointer-events-none absolute -left-10 top-10 select-none font-sport text-[34vw] leading-none text-white/[0.035]"
@@ -52,9 +43,9 @@ export async function TorneoLanding() {
 
         <div className="relative mx-auto max-w-7xl px-6 pb-16 pt-20 lg:px-8 lg:pt-24">
           {/* Cintillo torneo */}
-          <div className="flex flex-wrap items-center justify-between gap-4 animate-fade-up">
+          <div className="animate-fade-up flex flex-wrap items-center justify-between gap-4">
             <span className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-amarillo to-naranja px-4 py-1.5 font-bufon text-xs font-bold uppercase tracking-[0.15em] text-carbon">
-              <span className="h-2 w-2 rounded-full bg-carbon pulse-live" />
+              <span className="pulse-live h-2 w-2 rounded-full bg-carbon" />
               Torneo Managers F7 · Cuarta edición 2026-2
             </span>
             <a
@@ -81,7 +72,7 @@ export async function TorneoLanding() {
 
         {/* Marquee de equipos */}
         <div className="relative border-y border-white/10 bg-black/30 py-5">
-          <div className="flex w-max marquee gap-12 px-6">
+          <div className="marquee flex w-max gap-12 px-6">
             {[...EQUIPOS, ...EQUIPOS].map((e, i) => (
               <span
                 key={`${e.slug}-${i}`}
@@ -98,13 +89,11 @@ export async function TorneoLanding() {
       <TorneoNav active="/torneo/" />
 
       {/* ===== NÚMEROS ===== */}
-      <section className="relative z-10 overflow-hidden grain border-y border-white/10 bg-black/30 backdrop-blur-sm">
+      <section className="grain relative z-10 overflow-hidden border-y border-white/10 bg-black/30 backdrop-blur-sm">
         <div className="relative mx-auto grid max-w-7xl grid-cols-2 gap-y-12 px-6 py-20 lg:grid-cols-4 lg:px-8">
           {STATS.map((s) => (
             <div key={s.l} className="text-center">
-              <div className="font-sport text-7xl leading-none text-energy lg:text-8xl">
-                {s.v}
-              </div>
+              <div className="text-energy font-sport text-7xl leading-none lg:text-8xl">{s.v}</div>
               <div className="mt-3 font-mono text-xs uppercase tracking-[0.25em] text-neutral-500">
                 {s.l}
               </div>
@@ -114,10 +103,10 @@ export async function TorneoLanding() {
       </section>
 
       {/* ===== FASE DE GRUPOS: TABLA Y GOLEADORES ===== */}
-      <section id="fase-de-grupos" className="relative z-10 overflow-hidden grain scroll-mt-24">
+      <section id="fase-de-grupos" className="grain relative z-10 scroll-mt-24 overflow-hidden">
         <div className="relative mx-auto max-w-7xl px-6 py-20 lg:px-8 lg:py-28">
           <span className="inline-flex items-center gap-2 rounded-full border border-amarillo/40 bg-amarillo/10 px-4 py-1.5 font-bufon text-xs font-bold uppercase tracking-[0.15em] text-amarillo">
-            <span className="h-2 w-2 rounded-full bg-amarillo pulse-live" />
+            <span className="pulse-live h-2 w-2 rounded-full bg-amarillo" />
             Cuarta edición en curso · Fecha {jornadaActual} de {TOTAL_JORNADAS}
           </span>
 
@@ -129,7 +118,7 @@ export async function TorneoLanding() {
       </section>
 
       {/* ===== CAMINO AL TÍTULO ===== */}
-      <section className="relative z-10 overflow-hidden grain">
+      <section className="grain relative z-10 overflow-hidden">
         <div className="relative mx-auto max-w-7xl px-6 py-20 lg:px-8 lg:py-28">
           <p className="font-bufon text-sm font-bold uppercase tracking-[0.25em] text-naranja">
             Camino al título
@@ -171,7 +160,7 @@ export async function TorneoLanding() {
       </section>
 
       {/* ===== CAMPEÓN VIGENTE ===== */}
-      <section className="relative z-10 overflow-hidden grain">
+      <section className="grain relative z-10 overflow-hidden">
         <div className="relative mx-auto grid max-w-7xl items-center gap-12 px-6 py-24 lg:grid-cols-[0.8fr_1.2fr] lg:px-8">
           <div className="flex justify-center">
             <TeamCrest slug="the-originals" size={220} showStars />
@@ -196,7 +185,7 @@ export async function TorneoLanding() {
       </section>
 
       {/* ===== MANAGERS LAB (alianza transversal) ===== */}
-      <section className="relative z-10 overflow-hidden grain">
+      <section className="grain relative z-10 overflow-hidden">
         <div className="relative mx-auto max-w-7xl px-6 py-16 lg:px-8">
           <Link
             href="/alianza/"
@@ -214,9 +203,9 @@ export async function TorneoLanding() {
                 El torneo también decide con datos
               </h2>
               <p className="mt-3 max-w-2xl text-neutral-300">
-                Analítica de rendimiento, lectura de partido y decisiones en cancha
-                potenciadas con la inteligencia artificial de la alianza ICONE ialabs. El
-                mismo músculo que se entrena jugando, amplificado con IA.
+                Analítica de rendimiento, lectura de partido y decisiones en cancha potenciadas con
+                la inteligencia artificial de la alianza ICONE ialabs. El mismo músculo que se
+                entrena jugando, amplificado con IA.
               </p>
             </div>
             <span
@@ -231,7 +220,7 @@ export async function TorneoLanding() {
       </section>
 
       {/* ===== CTA ===== */}
-      <section className="relative z-10 overflow-hidden grain">
+      <section className="grain relative z-10 overflow-hidden">
         <div className="relative mx-auto max-w-4xl px-6 py-28 text-center lg:px-8">
           <h2 className="font-sport text-5xl uppercase leading-[0.9] text-neutral-50 md:text-7xl">
             ¿Tu equipo quiere
@@ -239,8 +228,8 @@ export async function TorneoLanding() {
             <span className="text-energy">la cuarta moneda?</span>
           </h2>
           <p className="mx-auto mt-6 max-w-xl text-neutral-300">
-            Inscripciones de la Edición 4° (2026-2) llegan pronto. Déjanos tus datos y te
-            avisamos primero.
+            Inscripciones de la Edición 4° (2026-2) llegan pronto. Déjanos tus datos y te avisamos
+            primero.
           </p>
           <div className="mt-10 flex flex-wrap justify-center gap-4">
             <Link

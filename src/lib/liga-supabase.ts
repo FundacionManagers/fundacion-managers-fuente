@@ -116,17 +116,16 @@ export async function cargarLiga(edicion = 4): Promise<DatosLiga> {
     const [partidosRes, disciplinaRes, goleadoresRes] = await Promise.all([
       supabase
         .from('partidos')
-        .select('id, fase, jornada, fecha, hora, local, visitante, goles_local, goles_visitante, estado')
+        .select(
+          'id, fase, jornada, fecha, hora, local, visitante, goles_local, goles_visitante, estado',
+        )
         .eq('edicion', edicion)
         // Por fecha antes que por hora: hay jornadas repartidas en dos dias
         // (miercoles y jueves) y ordenar solo por hora las intercala mal.
         .order('jornada')
         .order('fecha')
         .order('hora'),
-      supabase
-        .from('disciplina')
-        .select('equipo, amarillas, rojas')
-        .eq('edicion', edicion),
+      supabase.from('disciplina').select('equipo, amarillas, rojas').eq('edicion', edicion),
       supabase
         .from('goleadores')
         .select('jugador, equipo, numero, goles')

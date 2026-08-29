@@ -29,8 +29,16 @@ export function LandscapeMotif({ variant = 'campo', tint = '#2D7A4F' }: Landscap
 
         {variant === 'montana' ? (
           <>
-            <polygon points="0,420 0,210 220,90 430,230 540,150 760,300 760,420" fill={tint} opacity="0.18" />
-            <polygon points="600,420 600,250 820,120 1020,260 1180,170 1440,300 1440,420" fill={tint} opacity="0.13" />
+            <polygon
+              points="0,420 0,210 220,90 430,230 540,150 760,300 760,420"
+              fill={tint}
+              opacity="0.18"
+            />
+            <polygon
+              points="600,420 600,250 820,120 1020,260 1180,170 1440,300 1440,420"
+              fill={tint}
+              opacity="0.13"
+            />
             <circle cx="1140" cy="120" r="46" fill={tint} opacity="0.16" />
           </>
         ) : (

@@ -50,7 +50,9 @@ function NumeroInput({
       inputMode="numeric"
       min={min}
       value={valor ?? ''}
-      onChange={(e) => onChange(e.target.value === '' ? null : Math.max(min, Number(e.target.value)))}
+      onChange={(e) =>
+        onChange(e.target.value === '' ? null : Math.max(min, Number(e.target.value)))
+      }
       className={cn(
         ancho,
         'rounded-md border border-white/25 bg-[#05070a] px-2 py-2 text-center tabular-nums',
@@ -61,13 +63,7 @@ function NumeroInput({
   );
 }
 
-export function PanelResultados({
-  salir,
-  correo,
-}: {
-  salir: () => Promise<void>;
-  correo: string;
-}) {
+export function PanelResultados({ salir, correo }: { salir: () => Promise<void>; correo: string }) {
   const [estado, setEstado] = useState<EstadoTorneo | null>(null);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState('');
@@ -104,10 +100,7 @@ export function PanelResultados({
     const fechas = [...new Set(estado.partidos.map((p) => p.jornada))].filter((j) =>
       estado.partidos.filter((p) => p.jornada === j).every((p) => p.jugado),
     );
-    const goles = jugados.reduce(
-      (s, p) => s + (p.golesLocal ?? 0) + (p.golesVisitante ?? 0),
-      0,
-    );
+    const goles = jugados.reduce((s, p) => s + (p.golesLocal ?? 0) + (p.golesVisitante ?? 0), 0);
     return {
       fechas: `${fechas.length}/${TOTAL_JORNADAS}`,
       partidos: `${jugados.length}/${estado.partidos.length}`,
@@ -131,7 +124,8 @@ export function PanelResultados({
       visitante: p.visitante,
       golesLocal: p.jugado ? p.golesLocal : null,
       golesVisitante: p.jugado ? p.golesVisitante : null,
-      estado: p.jugado && p.golesLocal != null && p.golesVisitante != null ? 'jugado' : 'programado',
+      estado:
+        p.jugado && p.golesLocal != null && p.golesVisitante != null ? 'jugado' : 'programado',
     }));
     const disciplina = Object.fromEntries(
       estado.disciplina.map((d) => [d.equipo, { amarillas: d.amarillas, rojas: d.rojas }]),
@@ -204,7 +198,7 @@ export function PanelResultados({
     <div>
       {/* Resumen */}
       {resumen ? (
-        <div className="mb-10 grid grid-cols-2 gap-4 stagger-in lg:grid-cols-4">
+        <div className="stagger-in mb-10 grid grid-cols-2 gap-4 lg:grid-cols-4">
           {[
             { v: resumen.fechas, l: 'Fechas completas' },
             { v: resumen.partidos, l: 'Partidos cargados' },
@@ -215,7 +209,7 @@ export function PanelResultados({
               key={s.l}
               className="rounded-2xl border border-white/10 bg-black/50 px-5 py-6 text-center backdrop-blur-sm"
             >
-              <div className="font-sport text-4xl leading-none text-energy lg:text-5xl">{s.v}</div>
+              <div className="text-energy font-sport text-4xl leading-none lg:text-5xl">{s.v}</div>
               <div className="mt-2 font-mono text-[10px] uppercase tracking-[0.2em] text-neutral-500">
                 {s.l}
               </div>
@@ -334,7 +328,10 @@ export function PanelResultados({
 
           <ul className="mt-6 space-y-3">
             {partidosJornada.map((p) => (
-              <li key={p.id} className="rounded-xl border border-white/10 bg-black/70 p-4 backdrop-blur-sm">
+              <li
+                key={p.id}
+                className="rounded-xl border border-white/10 bg-black/70 p-4 backdrop-blur-sm"
+              >
                 <p className="text-xs text-neutral-500">
                   {p.fecha} · {p.hora}
                 </p>
@@ -511,7 +508,9 @@ export function PanelResultados({
                         key={c.key}
                         className={cn(
                           'px-2 py-2.5 text-center tabular-nums',
-                          c.key === 'pts' ? 'font-sport text-base text-amarillo' : 'text-neutral-300',
+                          c.key === 'pts'
+                            ? 'font-sport text-base text-amarillo'
+                            : 'text-neutral-300',
                           c.key === 'dg' && f.dg > 0 && 'text-emerald-400',
                           c.key === 'dg' && f.dg < 0 && 'text-red-400',
                         )}
@@ -532,16 +531,13 @@ export function PanelResultados({
   );
 }
 
-function SeccionGoleadores({
-  estado,
-  onCambio,
-}: {
-  estado: EstadoTorneo;
-  onCambio: () => void;
-}) {
-  const [nuevo, setNuevo] = useState<{ jugador: string; equipo: string; numero: number | null; goles: number | null }>(
-    { jugador: '', equipo: EQUIPOS[0]?.slug ?? '', numero: null, goles: 1 },
-  );
+function SeccionGoleadores({ estado, onCambio }: { estado: EstadoTorneo; onCambio: () => void }) {
+  const [nuevo, setNuevo] = useState<{
+    jugador: string;
+    equipo: string;
+    numero: number | null;
+    goles: number | null;
+  }>({ jugador: '', equipo: EQUIPOS[0]?.slug ?? '', numero: null, goles: 1 });
   const [trabajando, setTrabajando] = useState(false);
   const [error, setError] = useState('');
 
@@ -678,8 +674,8 @@ function SeccionGoleadores({
         ))}
       </ul>
       <p className="mt-3 text-xs text-neutral-500">
-        {estado.goleadores.length} anotadores ·{' '}
-        {estado.goleadores.reduce((s, g) => s + g.goles, 0)} goles
+        {estado.goleadores.length} anotadores · {estado.goleadores.reduce((s, g) => s + g.goles, 0)}{' '}
+        goles
       </p>
     </div>
   );

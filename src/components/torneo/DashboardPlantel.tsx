@@ -45,12 +45,10 @@ export function DashboardPlantel({ inscripcionId, equipoNombre }: Props) {
     // URLs firmadas para las fotos (bucket privado).
     const conFoto = rows.filter((r) => r.foto_url);
     if (conFoto.length) {
-      const { data: signed } = await supabase.storage
-        .from('jugadores')
-        .createSignedUrls(
-          conFoto.map((r) => r.foto_url as string),
-          3600,
-        );
+      const { data: signed } = await supabase.storage.from('jugadores').createSignedUrls(
+        conFoto.map((r) => r.foto_url as string),
+        3600,
+      );
       if (signed) {
         const map: Record<string, string> = {};
         signed.forEach((s, i) => {
@@ -121,7 +119,12 @@ export function DashboardPlantel({ inscripcionId, equipoNombre }: Props) {
           >
             {/* Foto */}
             {fotos[j.id] ? (
-              <a href={fotos[j.id]} target="_blank" rel="noopener noreferrer" title="Ver / descargar foto">
+              <a
+                href={fotos[j.id]}
+                target="_blank"
+                rel="noopener noreferrer"
+                title="Ver / descargar foto"
+              >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={fotos[j.id]}

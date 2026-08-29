@@ -22,11 +22,7 @@ interface Node {
  * pocos nodos, líneas de baja opacidad, respeta prefers-reduced-motion,
  * se pausa fuera de viewport. Pensado para secciones oscuras.
  */
-export function NeuralBg({
-  color = '#00D4FF',
-  density = 0.00009,
-  className,
-}: NeuralBgProps) {
+export function NeuralBg({ color = '#00D4FF', density = 0.00009, className }: NeuralBgProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {

@@ -128,8 +128,8 @@ export function CelebracionTrofeo() {
           </span>
         </h3>
         <p className="mx-auto mt-3 max-w-md text-sm text-neutral-300">
-          🏆 El <strong className="text-neutral-100">trofeo de la inscripción</strong>. Tu equipo
-          ya es parte del Torneo Managers. ¡Que empiece la batalla!
+          🏆 El <strong className="text-neutral-100">trofeo de la inscripción</strong>. Tu equipo ya
+          es parte del Torneo Managers. ¡Que empiece la batalla!
         </p>
 
         <button

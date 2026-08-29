@@ -1,6 +1,11 @@
 import { TeamCrest } from '@/components/torneo/TeamCrest';
 import { getEquipo } from '@/lib/torneo-data';
-import { COLUMNAS_TABLA, CRITERIOS_DESEMPATE, calcularPosiciones, jornadaActualDe } from '@/lib/liga';
+import {
+  COLUMNAS_TABLA,
+  CRITERIOS_DESEMPATE,
+  calcularPosiciones,
+  jornadaActualDe,
+} from '@/lib/liga';
 import type { DatosLiga } from '@/lib/liga-supabase';
 import { cn } from '@/lib/utils';
 
@@ -33,7 +38,7 @@ export function TablaPosiciones({ datos }: { datos: DatosLiga }) {
           Hasta la fecha {jornadaActual}
         </span>
       </div>
-      <div className="mt-5 h-1 w-full rounded-full energy-bar opacity-70" />
+      <div className="energy-bar mt-5 h-1 w-full rounded-full opacity-70" />
 
       <div className="mt-8 overflow-x-auto rounded-2xl border border-white/10 bg-black/40">
         <table className="w-full min-w-[640px] border-collapse text-sm">
@@ -42,10 +47,16 @@ export function TablaPosiciones({ datos }: { datos: DatosLiga }) {
           </caption>
           <thead>
             <tr className="border-b border-amarillo/30 bg-amarillo/10">
-              <th scope="col" className="px-3 py-3 text-center font-bufon text-xs font-bold uppercase tracking-wider text-amarillo">
+              <th
+                scope="col"
+                className="px-3 py-3 text-center font-bufon text-xs font-bold uppercase tracking-wider text-amarillo"
+              >
                 Pos
               </th>
-              <th scope="col" className="px-3 py-3 text-left font-bufon text-xs font-bold uppercase tracking-wider text-amarillo">
+              <th
+                scope="col"
+                className="px-3 py-3 text-left font-bufon text-xs font-bold uppercase tracking-wider text-amarillo"
+              >
                 Equipo
               </th>
               {COLUMNAS_TABLA.map((c) => (
@@ -146,8 +157,9 @@ export function TablaPosiciones({ datos }: { datos: DatosLiga }) {
           ))}
         </ol>
         <p className="mt-3 text-xs text-neutral-500">
-          Se aplican en ese orden. El Fair Play pesa más que la diferencia de gol: por eso un
-          club con menos tarjetas puede ir por encima de otro que marcó más.
+          Se aplican en ese orden. El Fair Play pesa más que la diferencia de gol: ante igualdad de
+          puntos, el club con menos tarjetas queda por encima aunque el otro tenga mejor diferencia.
+          Es el criterio del reglamento, no la descripción de un cruce concreto de la tabla de hoy.
         </p>
       </div>
     </div>

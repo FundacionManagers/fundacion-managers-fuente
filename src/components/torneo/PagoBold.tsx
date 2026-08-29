@@ -40,12 +40,10 @@ export function PagoBold() {
       }
     }
     if (id && t) {
-      supabasePublico
-        .rpc('fm_get_equipo', { p_id: id, p_token: t })
-        .then(({ data }) => {
-          const nombre = (data as { inscripcion?: { equipo?: string } } | null)?.inscripcion?.equipo;
-          if (nombre) setEquipo(nombre);
-        });
+      supabasePublico.rpc('fm_get_equipo', { p_id: id, p_token: t }).then(({ data }) => {
+        const nombre = (data as { inscripcion?: { equipo?: string } } | null)?.inscripcion?.equipo;
+        if (nombre) setEquipo(nombre);
+      });
     }
   }, []);
 
@@ -82,7 +80,9 @@ export function PagoBold() {
         </p>
 
         <div className="mt-5 rounded-2xl border border-white/10 bg-[#0d1218]/70 p-5">
-          <p className="text-xs uppercase tracking-wide text-neutral-400">Valor de la inscripción</p>
+          <p className="text-xs uppercase tracking-wide text-neutral-400">
+            Valor de la inscripción
+          </p>
           <p className="mt-1 font-sport text-4xl text-amarillo">
             {BOLD_PAGO.VALOR || 'Por confirmar'}
           </p>
@@ -140,8 +140,8 @@ export function PagoBold() {
       </a>
 
       <p className="text-center text-xs text-neutral-500">
-        Tras confirmar tu pago, el <strong className="text-neutral-300">paso 5</strong> es recibir la
-        programación del torneo. Te la enviamos por el grupo de WhatsApp.
+        Tras confirmar tu pago, el <strong className="text-neutral-300">paso 5</strong> es recibir
+        la programación del torneo. Te la enviamos por el grupo de WhatsApp.
       </p>
     </div>
   );

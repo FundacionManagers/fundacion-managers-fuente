@@ -16,7 +16,7 @@ export default function GuiaPage() {
     <div className="tournament-section relative min-h-screen">
       <TorneoBackdrop />
 
-      <div className="relative z-10 grain">
+      <div className="grain relative z-10">
         <div className="mx-auto max-w-3xl px-6 py-12 lg:py-16">
           <Link
             href="/resultados/"
@@ -45,7 +45,7 @@ export default function GuiaPage() {
             <GoldCoin size={130} className="hidden shrink-0 sm:block" />
           </div>
 
-          <div className="mt-10 h-1 w-full rounded-full energy-bar opacity-80" />
+          <div className="energy-bar mt-10 h-1 w-full rounded-full opacity-80" />
 
           <div className="mt-10">
             <GuiaPanel />

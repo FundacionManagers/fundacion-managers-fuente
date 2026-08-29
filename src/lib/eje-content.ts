@@ -100,10 +100,8 @@ export const EJE_CONTENT: Record<string, EjeContent> = {
       },
     ],
     ctaTitle: '¿Tu organización está en un punto de inflexión?',
-    ctaBody:
-      'Conversemos. Una primera reunión exploratoria sin compromiso para entender el reto.',
-    cierre:
-      'El criterio que se construye acá se nota en cada decisión de junta directiva.',
+    ctaBody: 'Conversemos. Una primera reunión exploratoria sin compromiso para entender el reto.',
+    cierre: 'El criterio que se construye acá se nota en cada decisión de junta directiva.',
     labAngle:
       'Diagnósticos, escenarios y modelos de decisión potenciados con la IA de ICONE ialabs.',
   },
@@ -140,8 +138,7 @@ export const EJE_CONTENT: Record<string, EjeContent> = {
     ctaTitle: '¿Quieres viajar con la fundación?',
     ctaBody:
       'Próximas salidas y cupos abiertos llegan a este sitio en cuanto el calendario esté listo.',
-    cierre:
-      'Salir del entorno habitual destraba la cabeza para volver a decidir mejor.',
+    cierre: 'Salir del entorno habitual destraba la cabeza para volver a decidir mejor.',
     labAngle:
       'Itinerarios, logística y experiencias diseñados y optimizados con la IA de ICONE ialabs.',
   },
@@ -178,8 +175,7 @@ export const EJE_CONTENT: Record<string, EjeContent> = {
     ctaTitle: '¿Tienes un evento en mente?',
     ctaBody: 'Cuéntanos la idea y te respondemos con una propuesta inicial.',
     cierre: 'Las mejores decisiones casi siempre nacen de la conversación correcta.',
-    labAngle:
-      'Convocatoria, contenido y producción amplificados con la IA de ICONE ialabs.',
+    labAngle: 'Convocatoria, contenido y producción amplificados con la IA de ICONE ialabs.',
   },
   emprendimiento: {
     intro:
@@ -251,7 +247,6 @@ export const EJE_CONTENT: Record<string, EjeContent> = {
     ctaBody:
       'Si tienes una organización productiva, una alcaldía o un proyecto en marcha, conversemos.',
     cierre: 'Decisiones que cambian territorios, no solo balances.',
-    labAngle:
-      'Datos, trazabilidad y acceso a mercados para el campo con la IA de ICONE ialabs.',
+    labAngle: 'Datos, trazabilidad y acceso a mercados para el campo con la IA de ICONE ialabs.',
   },
 };

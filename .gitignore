@@ -66,3 +66,6 @@ fundacion-managers-web-codigo.zip
 cand*.jpg
 tsconfig.tsbuildinfo
 /.claude/
+
+# Compilacion temporal de las verificaciones
+.test-build/

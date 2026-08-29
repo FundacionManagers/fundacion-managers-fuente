@@ -28,11 +28,21 @@ function Marcador({ p }: { p: PartidoLiga }) {
 
   return (
     <div className="flex shrink-0 items-center gap-1 rounded-lg bg-white/[0.06] px-3 py-1.5">
-      <span className={cn('font-sport text-2xl leading-none', ganaLocal ? 'text-amarillo' : 'text-neutral-400')}>
+      <span
+        className={cn(
+          'font-sport text-2xl leading-none',
+          ganaLocal ? 'text-amarillo' : 'text-neutral-400',
+        )}
+      >
         {p.golesLocal}
       </span>
       <span className="font-sport text-lg leading-none text-neutral-600">–</span>
-      <span className={cn('font-sport text-2xl leading-none', ganaVisita ? 'text-amarillo' : 'text-neutral-400')}>
+      <span
+        className={cn(
+          'font-sport text-2xl leading-none',
+          ganaVisita ? 'text-amarillo' : 'text-neutral-400',
+        )}
+      >
         {p.golesVisitante}
       </span>
     </div>
@@ -92,9 +102,7 @@ export function FixtureLiga({ datos }: { datos: DatosLiga }) {
         const info = {
           jornada,
           etiqueta:
-            JORNADAS_INFO.find((j) => j.jornada === jornada)?.etiqueta ??
-            partidos[0]?.fecha ??
-            '',
+            JORNADAS_INFO.find((j) => j.jornada === jornada)?.etiqueta ?? partidos[0]?.fecha ?? '',
         };
         const jugada = partidos.every((p) => p.estado === 'jugado');
         const esActual = info.jornada === jornadaActual;

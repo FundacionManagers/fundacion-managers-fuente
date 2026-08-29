@@ -151,7 +151,9 @@ export function PuertaAdmin({
 
         <div className="mt-6 flex items-center gap-3">
           <span className="h-px flex-1 bg-white/10" />
-          <span className="font-bufon text-[10px] uppercase tracking-[0.2em] text-neutral-500">o</span>
+          <span className="font-bufon text-[10px] uppercase tracking-[0.2em] text-neutral-500">
+            o
+          </span>
           <span className="h-px flex-1 bg-white/10" />
         </div>
 
@@ -183,8 +185,8 @@ export function PuertaAdmin({
       <div className="mx-auto max-w-md rounded-3xl border border-red-500/30 bg-red-500/5 p-8 text-center">
         <h2 className="font-sport text-2xl uppercase text-neutral-50">Sin autorización</h2>
         <p className="mt-3 text-sm text-neutral-300">
-          La cuenta <strong>{correoSesion}</strong> tiene sesión válida, pero no está en la lista
-          de administradores del torneo.
+          La cuenta <strong>{correoSesion}</strong> tiene sesión válida, pero no está en la lista de
+          administradores del torneo.
         </p>
         <p className="mt-2 text-xs text-neutral-500">
           Pide que agreguen tu correo a la lista para poder cargar resultados.

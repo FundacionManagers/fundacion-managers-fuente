@@ -48,8 +48,7 @@ export function InscripcionForm() {
   const [equipoId, setEquipoId] = useState('');
   const [token, setToken] = useState('');
 
-  const listo =
-    capitan.trim() !== '' && equipo.trim() !== '' && contacto.trim() !== '' && autoriza;
+  const listo = capitan.trim() !== '' && equipo.trim() !== '' && contacto.trim() !== '' && autoriza;
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -217,9 +216,7 @@ export function InscripcionForm() {
         <h2 className="mt-2 font-sport text-3xl uppercase leading-none text-neutral-50">
           Empieza aquí
         </h2>
-        <p className="mt-3 text-sm text-neutral-400">
-          Solo necesitamos tres datos para arrancar.
-        </p>
+        <p className="mt-3 text-sm text-neutral-400">Solo necesitamos tres datos para arrancar.</p>
       </div>
 
       <div>

@@ -41,7 +41,7 @@ export default async function CalendarioPage() {
           <h2 className="mt-1 font-sport text-5xl uppercase leading-none text-neutral-50 md:text-6xl">
             La llave
           </h2>
-          <div className="mt-5 h-1 w-full rounded-full energy-bar opacity-70" />
+          <div className="energy-bar mt-5 h-1 w-full rounded-full opacity-70" />
           <div className="mt-8">
             <EliminatoriaLiga partidos={datos.eliminatoria} />
           </div>
@@ -57,8 +57,8 @@ export default async function CalendarioPage() {
           Tercera edición · 2026-1
         </h2>
         <p className="mt-3 max-w-2xl text-sm text-neutral-500">
-          La edición {EDICION_ACTUAL - 1} se jugó por eliminación directa. Se conserva
-          aquí el recorrido completo hasta la final.
+          La edición {EDICION_ACTUAL - 1} se jugó por eliminación directa. Se conserva aquí el
+          recorrido completo hasta la final.
         </p>
 
         <div className="mt-14 space-y-16 opacity-90">
@@ -77,7 +77,7 @@ export default async function CalendarioPage() {
                   {String(b.partidos.length).padStart(2, '0')}
                 </span>
               </div>
-              <div className="mt-4 h-1 w-full rounded-full energy-bar opacity-50" />
+              <div className="energy-bar mt-4 h-1 w-full rounded-full opacity-50" />
               <div className="mt-7 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
                 {b.partidos.map((p) => (
                   <MatchCard key={p.id} p={p} />

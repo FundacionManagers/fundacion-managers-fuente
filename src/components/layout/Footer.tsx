@@ -9,7 +9,7 @@ export function Footer() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="relative overflow-hidden border-t border-white/10 canvas-dark text-neutral-100">
+    <footer className="canvas-dark relative overflow-hidden border-t border-white/10 text-neutral-100">
       <div className="relative mx-auto max-w-7xl px-6 py-20 lg:px-8">
         <div className="grid gap-12 lg:grid-cols-4">
           <div className="lg:col-span-1">
@@ -95,9 +95,7 @@ export function Footer() {
                   Términos de uso
                 </Link>
               </li>
-              <li className="pt-1 text-xs text-neutral-500">
-                Ley 1581 de 2012 · Habeas Data
-              </li>
+              <li className="pt-1 text-xs text-neutral-500">Ley 1581 de 2012 · Habeas Data</li>
             </ul>
           </div>
         </div>
@@ -107,24 +105,18 @@ export function Footer() {
           href="/alianza/"
           className="mt-16 flex flex-wrap items-center gap-x-3 gap-y-1 rounded-xl border border-white/10 bg-white/[0.03] px-5 py-4 text-sm text-neutral-400 transition-colors duration-200 ease-managers hover:border-white/20"
         >
-          <span className="font-serif text-base font-bold text-neutral-200">
-            {ALIANZA.nombre}
-          </span>
-          <span
-            className="font-bufon text-caption uppercase tracking-[0.18em] text-neutral-400"
-          >
+          <span className="font-serif text-base font-bold text-neutral-200">{ALIANZA.nombre}</span>
+          <span className="font-bufon text-caption uppercase tracking-[0.18em] text-neutral-400">
             powered by
           </span>
           <IconeBrand className="text-base" />
           <span className="ml-auto text-xs text-neutral-500">{ALIANZA.claim}</span>
         </Link>
 
-        <div className="mt-10 h-px rule-gold" />
+        <div className="rule-gold mt-10 h-px" />
         <div className="mt-6 flex flex-col gap-2 text-xs text-neutral-500 sm:flex-row sm:items-center sm:justify-between">
           <span>© {year} Fundación Managers · Bogotá, Colombia</span>
-          <span className="font-mono uppercase tracking-[0.2em] text-neutral-600">
-            {NORTE}
-          </span>
+          <span className="font-mono uppercase tracking-[0.2em] text-neutral-600">{NORTE}</span>
         </div>
       </div>
     </footer>

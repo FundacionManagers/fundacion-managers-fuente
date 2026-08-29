@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "//": "Compila solo la lógica pura de la liga a CommonJS para que `node --test` la pueda cargar sin dependencias extra. No toca el build de Next.",
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["esnext"],
+    "module": "CommonJS",
+    "moduleResolution": "Node",
+    "rootDir": "src",
+    "outDir": ".test-build",
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "noEmitOnError": true,
+    "incremental": false
+  },
+  "include": ["src/lib/liga.ts", "src/lib/torneo.ts", "src/lib/torneo-data.ts"]
+}

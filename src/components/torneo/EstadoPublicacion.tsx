@@ -70,8 +70,7 @@ export function EstadoPublicacion() {
       if (error || !data) return setEstado({ tipo: 'desconocido' });
 
       const actual = data as Marca;
-      const igual =
-        actual.ultimo_cambio === info.ultimo_cambio && actual.filas === info.filas;
+      const igual = actual.ultimo_cambio === info.ultimo_cambio && actual.filas === info.filas;
 
       setEstado({
         tipo: igual ? 'al-dia' : 'pendiente',

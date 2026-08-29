@@ -20,7 +20,7 @@ export default function AdminInscripcionesPage() {
         <h1 className="mt-2 font-sport text-5xl uppercase leading-none text-neutral-50 md:text-6xl">
           Inscripciones
         </h1>
-        <div className="mt-5 h-1 w-32 rounded-full energy-bar" />
+        <div className="energy-bar mt-5 h-1 w-32 rounded-full" />
 
         <p className="mt-6 flex items-start gap-2 rounded-md border border-dashed border-amarillo/40 bg-amarillo/5 p-4 text-xs text-neutral-300">
           <ShieldAlert size={16} className="mt-0.5 shrink-0 text-amarillo" aria-hidden />

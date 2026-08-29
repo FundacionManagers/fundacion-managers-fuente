@@ -115,14 +115,17 @@ export function CampeonReveal({ slug, nombre, scoreText, edicion }: Props) {
   return (
     <div className="campeon-reveal relative mt-10 overflow-hidden rounded-3xl border border-amarillo/40 bg-gradient-to-b from-[#1a1206]/80 via-[#0b0f14]/70 to-[#0b0f14]/80 shadow-[0_40px_120px_rgba(242,194,48,0.18)] backdrop-blur-sm">
       {/* Confeti */}
-      <canvas ref={canvasRef} className="pointer-events-none absolute inset-0 h-full w-full" aria-hidden />
+      <canvas
+        ref={canvasRef}
+        className="pointer-events-none absolute inset-0 h-full w-full"
+        aria-hidden
+      />
 
       {/* Reflector superior */}
       <div
         className="pointer-events-none absolute inset-x-0 top-0 h-2/3 opacity-70"
         style={{
-          background:
-            'radial-gradient(60% 80% at 50% 0%, rgba(242,194,48,0.22), transparent 70%)',
+          background: 'radial-gradient(60% 80% at 50% 0%, rgba(242,194,48,0.22), transparent 70%)',
         }}
         aria-hidden
       />

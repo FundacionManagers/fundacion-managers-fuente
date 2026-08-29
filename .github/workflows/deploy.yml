@@ -102,9 +102,21 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          # La 22 es la que exige "engines" en package.json, y ademas es desde
+          # donde el runner de pruebas de Node expande patrones como
+          # tests/**/*.test.js. Con la 20 el paso de verificaciones no correria.
+          node-version: 22
           cache: npm
       - run: npm ci
+
+      # Las verificaciones corren ANTES de compilar: si la tabla, la llave, el
+      # palmares o el ranking de goleadores se contradicen entre si, el sitio
+      # no sale al aire. Son pruebas puras sobre los datos del repositorio —no
+      # consultan Supabase—, asi que una republicacion programada nunca puede
+      # fallar por un cambio hecho desde el panel de administracion.
+      - name: Verificaciones
+        run: npm test
+
       - name: Build estático
         env:
           GITHUB_PAGES: 'true'
