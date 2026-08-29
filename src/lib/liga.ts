@@ -589,6 +589,58 @@ export function partidosDeJornada(
 /** Próximo partido programado, o null si ya se jugaron todos. */
 export const PROXIMO_PARTIDO = PARTIDOS_LIGA.find((p) => p.estado === 'programado') ?? null;
 
+/** Primer partido sin jugar de un conjunto: el próximo del calendario. */
+export function proximoPartidoDe(partidos: readonly PartidoLiga[]): PartidoLiga | null {
+  return partidos.find((p) => p.estado === 'programado') ?? null;
+}
+
+/**
+ * Momento exacto del partido en ISO con la zona de Colombia.
+ *
+ * '30/08/2026' + '07:00' → '2026-08-30T07:00:00-05:00'. Lleva el huso
+ * escrito: sin él, el navegador de quien mire desde otro país lo
+ * interpretaría en su propia hora y la cuenta atrás saldría corrida.
+ */
+export function isoDe(partido: PartidoLiga): string {
+  const [d, m, a] = partido.fecha.split('/');
+  return `${a}-${m}-${d}T${partido.hora}:00-05:00`;
+}
+
+/** Día de un partido en formato corto: '30/08/2026' → 'dom 30 ago'. */
+const DIAS = ['dom', 'lun', 'mar', 'mié', 'jue', 'vie', 'sáb'] as const;
+const MESES = [
+  'ene',
+  'feb',
+  'mar',
+  'abr',
+  'may',
+  'jun',
+  'jul',
+  'ago',
+  'sep',
+  'oct',
+  'nov',
+  'dic',
+] as const;
+
+export function diaCortoDe(partido: PartidoLiga): string {
+  const [d, m, a] = partido.fecha.split('/').map(Number) as [number, number, number];
+  // Mediodía UTC para que el día no se corra por el huso al formatear.
+  const dia = new Date(Date.UTC(a, m - 1, d, 12));
+  return `${DIAS[dia.getUTCDay()]} ${d} ${MESES[m - 1]}`;
+}
+
+/**
+ * ¿Esta fecha del torneo se reparte en más de un día?
+ *
+ * Las fechas 3 y 4 se juegan miércoles y jueves. El rótulo lo decía
+ * ("Miércoles 5 y jueves 6"), pero ningún partido decía cuál era el suyo, y
+ * la diferencia entre un día y otro es pedir permiso en el trabajo.
+ */
+export function jornadaEnVariosDias(partidos: readonly PartidoLiga[]): boolean {
+  return new Set(partidos.map((p) => p.fecha)).size > 1;
+}
+
 /**
  * Calcula la tabla de posiciones a partir de los partidos jugados.
  *

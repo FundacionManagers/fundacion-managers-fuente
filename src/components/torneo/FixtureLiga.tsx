@@ -4,54 +4,83 @@ import {
   CANCHA,
   FORMATO_LIGA,
   JORNADAS_INFO,
+  diaCortoDe,
   jornadaActualDe,
+  jornadaEnVariosDias,
   partidosDeJornada,
+  proximoPartidoDe,
   type PartidoLiga,
 } from '@/lib/liga';
 import type { DatosLiga } from '@/lib/liga-supabase';
 import { cn } from '@/lib/utils';
 
-function Marcador({ p }: { p: PartidoLiga }) {
-  if (p.estado !== 'jugado' || p.golesLocal == null || p.golesVisitante == null) {
-    return (
-      <div className="flex shrink-0 flex-col items-center">
-        <span className="font-sport text-xl leading-none text-neutral-500">vs</span>
-        <span className="mt-1 font-bufon text-[10px] uppercase tracking-widest text-neutral-600">
-          {p.hora}
-        </span>
-      </div>
-    );
-  }
+/**
+ * Nombre del club: completo desde `sm`, código corto en móvil.
+ *
+ * A 375 px el nombre completo no cabe y seis de los ocho clubes salían
+ * cortados —"The Ori…", "La Band…", "Manage…"—, a veces en los dos lados del
+ * mismo partido. El código corto ya existe en los datos de cada club y está
+ * pensado justo para esto.
+ */
+function NombreClub({ slug, alinear }: { slug: string; alinear: 'izq' | 'der' }) {
+  const eq = getEquipo(slug);
+  return (
+    <span
+      className={cn(
+        'min-w-0 text-sm font-semibold text-neutral-200 sm:text-base',
+        alinear === 'der' ? 'text-right' : 'text-left',
+      )}
+    >
+      <span className="sm:hidden">{eq?.corto ?? slug}</span>
+      <span className="hidden truncate sm:inline">{eq?.nombre ?? slug}</span>
+    </span>
+  );
+}
 
-  const ganaLocal = p.golesLocal > p.golesVisitante;
-  const ganaVisita = p.golesVisitante > p.golesLocal;
+/** Marcador del partido, o la hora si todavía no se ha jugado. */
+function Marcador({ p, mostrarDia }: { p: PartidoLiga; mostrarDia: boolean }) {
+  const jugado = p.estado === 'jugado' && p.golesLocal != null && p.golesVisitante != null;
+  const ganaLocal = jugado && p.golesLocal! > p.golesVisitante!;
+  const ganaVisita = jugado && p.golesVisitante! > p.golesLocal!;
 
   return (
-    <div className="flex shrink-0 items-center gap-1 rounded-lg bg-white/[0.06] px-3 py-1.5">
-      <span
-        className={cn(
-          'font-sport text-2xl leading-none',
-          ganaLocal ? 'text-amarillo' : 'text-neutral-400',
-        )}
-      >
-        {p.golesLocal}
-      </span>
-      <span className="font-sport text-lg leading-none text-neutral-600">–</span>
-      <span
-        className={cn(
-          'font-sport text-2xl leading-none',
-          ganaVisita ? 'text-amarillo' : 'text-neutral-400',
-        )}
-      >
-        {p.golesVisitante}
+    <div className="flex shrink-0 flex-col items-center gap-1">
+      {jugado ? (
+        <span className="flex items-center gap-1 rounded-lg bg-white/[0.06] px-3 py-1.5">
+          <span
+            className={cn(
+              'font-sport text-2xl leading-none',
+              ganaLocal ? 'text-amarillo' : 'text-neutral-400',
+            )}
+          >
+            {p.golesLocal}
+          </span>
+          <span className="font-sport text-lg leading-none text-neutral-600">–</span>
+          <span
+            className={cn(
+              'font-sport text-2xl leading-none',
+              ganaVisita ? 'text-amarillo' : 'text-neutral-400',
+            )}
+          >
+            {p.golesVisitante}
+          </span>
+        </span>
+      ) : (
+        <span className="font-sport text-xl leading-none text-neutral-500">vs</span>
+      )}
+
+      {/* Cuándo se juega. El día solo cuando la fecha del torneo se reparte
+          en varios días: si todos son el mismo, ya lo dice el encabezado y
+          repetirlo cuatro veces es ruido. */}
+      <span className="whitespace-nowrap font-bufon text-[10px] uppercase tracking-widest text-neutral-600">
+        {mostrarDia ? `${diaCortoDe(p)} · ` : ''}
+        {p.hora}
       </span>
     </div>
   );
 }
 
-function FilaPartido({ p }: { p: PartidoLiga }) {
-  const local = getEquipo(p.local);
-  const visitante = getEquipo(p.visitante);
+function FilaPartido({ p, mostrarDia }: { p: PartidoLiga; mostrarDia: boolean }) {
   const jugado = p.estado === 'jugado';
 
   return (
@@ -63,20 +92,16 @@ function FilaPartido({ p }: { p: PartidoLiga }) {
     >
       {/* Local */}
       <div className="flex min-w-0 flex-1 items-center justify-end gap-2 sm:gap-3">
-        <span className="min-w-0 truncate text-right text-sm font-semibold text-neutral-200 sm:text-base">
-          {local?.nombre ?? p.local}
-        </span>
+        <NombreClub slug={p.local} alinear="der" />
         <TeamCrest slug={p.local} size={34} />
       </div>
 
-      <Marcador p={p} />
+      <Marcador p={p} mostrarDia={mostrarDia} />
 
       {/* Visitante */}
       <div className="flex min-w-0 flex-1 items-center gap-2 sm:gap-3">
         <TeamCrest slug={p.visitante} size={34} />
-        <span className="min-w-0 truncate text-sm font-semibold text-neutral-200 sm:text-base">
-          {visitante?.nombre ?? p.visitante}
-        </span>
+        <NombreClub slug={p.visitante} alinear="izq" />
       </div>
     </li>
   );
@@ -85,6 +110,7 @@ function FilaPartido({ p }: { p: PartidoLiga }) {
 /** Fixture completo de la fase de grupos, con marcador o con hora. */
 export function FixtureLiga({ datos }: { datos: DatosLiga }) {
   const jornadaActual = jornadaActualDe(datos.partidos);
+  const proxima = proximoPartidoDe(datos.partidos)?.jornada ?? null;
 
   // Las fechas salen de los partidos, no de una lista fija: si el panel carga
   // una jornada nueva, aparece sin tocar el codigo. El rotulo se busca en
@@ -106,9 +132,11 @@ export function FixtureLiga({ datos }: { datos: DatosLiga }) {
         };
         const jugada = partidos.every((p) => p.estado === 'jugado');
         const esActual = info.jornada === jornadaActual;
+        const esProxima = info.jornada === proxima;
+        const variosDias = jornadaEnVariosDias(partidos);
 
         return (
-          <section key={info.jornada}>
+          <section key={info.jornada} id={`fecha-${info.jornada}`} className="scroll-mt-32">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
                 <h3 className="font-sport text-4xl uppercase leading-none text-neutral-50 md:text-5xl">
@@ -116,6 +144,9 @@ export function FixtureLiga({ datos }: { datos: DatosLiga }) {
                 </h3>
                 <p className="mt-1 text-sm text-neutral-500">{info.etiqueta}</p>
               </div>
+              {/* La próxima fecha se distingue de las demás programadas: era
+                  lo único que la gente viene a buscar y salía igual que una
+                  que falta un mes. */}
               <span
                 className={cn(
                   'rounded-full px-3 py-1 font-bufon text-[10px] font-bold uppercase tracking-[0.15em]',
@@ -123,17 +154,25 @@ export function FixtureLiga({ datos }: { datos: DatosLiga }) {
                     ? esActual
                       ? 'bg-gradient-to-r from-amarillo to-naranja text-carbon'
                       : 'border border-white/15 text-neutral-400'
-                    : 'border border-dashed border-white/20 text-neutral-500',
+                    : esProxima
+                      ? 'border border-amarillo/60 bg-amarillo/10 text-amarillo'
+                      : 'border border-dashed border-white/20 text-neutral-500',
                 )}
               >
-                {jugada ? (esActual ? 'Última jugada' : 'Jugada') : 'Programada'}
+                {jugada
+                  ? esActual
+                    ? 'Última jugada'
+                    : 'Jugada'
+                  : esProxima
+                    ? 'Próxima'
+                    : 'Programada'}
               </span>
             </div>
             <div className="mt-4 h-px w-full bg-gradient-to-r from-amarillo/40 to-transparent" />
 
             <ul className="mt-5 space-y-2.5">
               {partidos.map((p) => (
-                <FilaPartido key={p.id} p={p} />
+                <FilaPartido key={p.id} p={p} mostrarDia={variosDias} />
               ))}
             </ul>
           </section>

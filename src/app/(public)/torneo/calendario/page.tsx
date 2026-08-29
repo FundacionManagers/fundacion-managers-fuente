@@ -3,8 +3,10 @@ import { ChevronRight } from 'lucide-react';
 import { MatchCard } from '@/components/torneo/MatchCard';
 import { FixtureLiga } from '@/components/torneo/FixtureLiga';
 import { EliminatoriaLiga } from '@/components/torneo/EliminatoriaLiga';
+import { ProximaFecha } from '@/components/torneo/ProximaFecha';
 import { TorneoShell } from '@/components/torneo/TorneoShell';
 import { CUARTOS, SEMIS, TERCER_PUESTO, FINAL } from '@/lib/torneo-data';
+import { JORNADAS_INFO, partidosDeJornada, proximoPartidoDe } from '@/lib/liga';
 import { cargarLigaConAviso } from '@/lib/liga-supabase';
 import { EDICION_ANTERIOR, EDICION_EN_CURSO, ordinalFemenino, pillEdicion } from '@/lib/torneo';
 
@@ -24,12 +26,29 @@ const HISTORIAL = [
 export default async function CalendarioPage() {
   const datos = await cargarLigaConAviso();
 
+  // La fecha que viene, para destacarla arriba del fixture.
+  const proxima = proximoPartidoDe(datos.partidos);
+  const partidosProxima = proxima ? partidosDeJornada(proxima.jornada, datos.partidos) : [];
+  const etiquetaProxima = proxima
+    ? (JORNADAS_INFO.find((j) => j.jornada === proxima.jornada)?.etiqueta ?? proxima.fecha)
+    : '';
+
   return (
     <TorneoShell
       eyebrow={pillEdicion(EDICION_EN_CURSO)}
       title="Calendario"
       active="/torneo/calendario/"
     >
+      {proxima ? (
+        <div className="mb-14">
+          <ProximaFecha
+            jornada={proxima.jornada}
+            etiqueta={etiquetaProxima}
+            partidos={partidosProxima}
+          />
+        </div>
+      ) : null}
+
       <FixtureLiga datos={datos} />
 
       {/* Fase final de la 4a edicion: aparece sola en cuanto existan cruces. */}
