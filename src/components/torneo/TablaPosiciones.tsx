@@ -49,7 +49,11 @@ export function TablaPosiciones({ datos }: { datos: DatosLiga }) {
       <div className="energy-bar mt-5 h-1 w-full rounded-full opacity-70" />
 
       <div className="mt-8 overflow-x-auto rounded-2xl border border-white/10 bg-black/40">
-        <table className="w-full min-w-[720px] border-collapse text-sm">
+        {/* El ancho mínimo baja en móvil. Con el código corto la columna de
+            equipo pasó de 250 a 140 px, pero un min-width fijo de 720
+            repartía el sobrante entre las demás y seguía empujando PTS fuera
+            de pantalla. */}
+        <table className="w-full min-w-[560px] border-collapse text-sm sm:min-w-[720px]">
           <caption className="sr-only">
             Tabla de posiciones de la fase de grupos hasta la fecha {jornadaActual}
           </caption>
