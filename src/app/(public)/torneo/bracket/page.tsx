@@ -1,13 +1,11 @@
 import type { Metadata } from 'next';
-import { EliminatoriaLiga } from '@/components/torneo/EliminatoriaLiga';
-import { LlaveProyectada } from '@/components/torneo/LlaveProyectada';
+import Link from 'next/link';
+import { LlaveArbol } from '@/components/torneo/LlaveArbol';
 import { TorneoShell } from '@/components/torneo/TorneoShell';
 import {
-  CALENDARIO_FASE_FINAL,
-  FECHA_FASE_FINAL,
   TOTAL_JORNADAS,
-  fechaLargaDe,
   calcularPosiciones,
+  caminoFaseFinal,
   cruzarCuartos,
   faseDeGruposCompleta,
   jornadaActualDe,
@@ -24,79 +22,97 @@ export default async function BracketPage() {
   const datos = await cargarLigaConAviso();
 
   // La llave sale de la tabla, y la tabla sale de los marcadores. Nada de
-  // esto se escribe a mano: asi no puede contradecir el resultado del campo.
+  // esto se escribe a mano: así no puede contradecir el resultado del campo.
   const posiciones = calcularPosiciones(datos.partidos, datos.disciplina);
   const cruces = cruzarCuartos(posiciones);
   const definitiva = faseDeGruposCompleta(datos.partidos);
-  const jornadaActual = jornadaActualDe(datos.partidos);
-  const faltan = TOTAL_JORNADAS - jornadaActual;
+  const faltan = TOTAL_JORNADAS - jornadaActualDe(datos.partidos);
 
-  // Si la organizacion ya cargo los cruces reales en el panel, mandan esos.
-  const hayCrucesReales = datos.eliminatoria.length > 0;
+  // El camino a la final, ronda por ronda y con su estado. Se calcula siempre,
+  // haya o no partidos cargados: es lo que permite dibujar la llave completa.
+  const camino = caminoFaseFinal(datos.eliminatoria);
+  const arrancoFinal = datos.eliminatoria.length > 0;
+
+  // Puesto de cada club, para etiquetar los cruces que ya estén programados.
+  const siembra = new Map(posiciones.map((f) => [f.equipo, f.posicion]));
 
   return (
     <TorneoShell eyebrow={pillEdicion(EDICION_EN_CURSO)} title="La llave" active="/torneo/bracket/">
-      {hayCrucesReales ? (
-        <EliminatoriaLiga partidos={datos.eliminatoria} />
-      ) : (
-        <>
-          <div className="rounded-2xl border border-white/10 bg-black/30 p-6 lg:p-8">
-            <p className="font-bufon text-xs font-bold uppercase tracking-[0.25em] text-naranja">
-              {definitiva ? 'Cuartos de final' : 'Proyección'}
-            </p>
-            <h2 className="mt-1 font-sport text-4xl uppercase leading-none text-neutral-50 md:text-5xl">
-              {definitiva ? 'Así quedaron los cruces' : 'Así irían los cruces hoy'}
-            </h2>
-            <p className="mt-4 max-w-2xl text-sm leading-relaxed text-neutral-400">
-              {definitiva ? (
-                <>
-                  Terminada la fase de grupos, cruzan 1º-8º, 2º-7º, 3º-6º y 4º-5º. El mejor ubicado
-                  hace de local. La fase final arranca el {FECHA_FASE_FINAL}.
-                </>
-              ) : (
-                <>
-                  Esto <strong className="text-neutral-200">todavía puede cambiar</strong>: faltan{' '}
-                  {faltan === 1 ? 'la última fecha' : `${faltan} fechas`} por jugar. La llave se
-                  calcula sola desde la tabla —cruzan 1º-8º, 2º-7º, 3º-6º y 4º-5º— y se actualiza
-                  con cada resultado que cargue la organización. La fase final arranca el{' '}
-                  {FECHA_FASE_FINAL}.
-                </>
-              )}
-            </p>
-          </div>
+      {/* El encabezado se muestra siempre, también cuando ya hay cruces
+          cargados. Antes la página cambiaba entera al llegar los partidos
+          reales y se quedaba sin una sola línea que explicara qué se está
+          viendo, justo el día en que más gente iba a entrar. */}
+      <div className="rounded-2xl border border-white/10 bg-black/30 p-6 lg:p-8">
+        <p className="font-bufon text-xs font-bold uppercase tracking-[0.25em] text-naranja">
+          {arrancoFinal ? 'Fase final' : definitiva ? 'Cuartos de final' : 'Proyección'}
+        </p>
+        <h2 className="mt-1 font-sport text-4xl uppercase leading-none text-neutral-50 md:text-5xl">
+          {arrancoFinal
+            ? 'El camino al título'
+            : definitiva
+              ? 'Así quedaron los cruces'
+              : 'Así irían los cruces hoy'}
+        </h2>
+        <p className="mt-4 max-w-2xl text-sm leading-relaxed text-neutral-400">
+          {arrancoFinal ? (
+            <>
+              Ocho equipos, tres rondas y un título. Cada resultado que carga la organización se
+              refleja aquí y va cerrando el camino. El mejor ubicado en{' '}
+              <Link href="/torneo/#fase-de-grupos" className="text-amarillo hover:text-naranja">
+                la tabla
+              </Link>{' '}
+              hace de local.
+            </>
+          ) : definitiva ? (
+            <>
+              Terminada la fase de grupos, cruzan 1º-8º, 2º-7º, 3º-6º y 4º-5º. Los puestos salen de{' '}
+              <Link href="/torneo/#fase-de-grupos" className="text-amarillo hover:text-naranja">
+                la tabla
+              </Link>{' '}
+              y el mejor ubicado hace de local.
+            </>
+          ) : (
+            <>
+              Esto <strong className="text-neutral-200">todavía puede cambiar</strong>: faltan{' '}
+              {faltan === 1 ? 'la última fecha' : `${faltan} fechas`} por jugar. La llave se calcula
+              sola desde{' '}
+              <Link href="/torneo/#fase-de-grupos" className="text-amarillo hover:text-naranja">
+                la tabla
+              </Link>{' '}
+              —cruzan 1º-8º, 2º-7º, 3º-6º y 4º-5º— y se actualiza con cada resultado que cargue la
+              organización. El mejor ubicado hace de local.
+            </>
+          )}
+        </p>
+      </div>
 
-          <div className="mt-8">
-            <LlaveProyectada cruces={cruces} provisional={!definitiva} />
-          </div>
+      {/* La llave completa. Las fechas viven aquí, dentro de cada ronda y junto
+          a su estado: el Calendario responde "cuándo se juega" y esta página
+          responde "quién juega y hasta dónde llegó". */}
+      <div className="mt-10">
+        <LlaveArbol
+          cruces={cruces}
+          camino={camino}
+          provisional={!definitiva}
+          siembra={siembra}
+        />
+      </div>
 
-          {/* Las tres rondas con su fecha. La página anunciaba solo el día de
-              cuartos, en mitad de un párrafo; el camino completo hasta la
-              final es justo lo que esta página quiere contar. */}
-          <div className="mt-10 rounded-2xl border border-white/10 bg-black/30 p-6 lg:p-8">
-            <p className="font-bufon text-xs font-bold uppercase tracking-[0.25em] text-amarillo">
-              Camino a la final
-            </p>
-            <ol className="mt-4 space-y-2.5">
-              {CALENDARIO_FASE_FINAL.map((r, i) => (
-                <li key={r.fase} className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-                  <span className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-md border border-white/15 font-mono text-[10px] text-neutral-400">
-                    {i + 1}
-                  </span>
-                  <span className="font-semibold text-neutral-200">{r.titulo}</span>
-                  <span className="text-sm text-neutral-400">{fechaLargaDe(r.fecha)}</span>
-                </li>
-              ))}
-            </ol>
-            <p className="mt-4 text-xs text-neutral-500">
-              Horarios por definir. El mejor ubicado en la tabla hace de local.
-            </p>
-          </div>
-        </>
-      )}
+      <p className="mt-8 border-t border-white/5 pt-5 text-xs leading-relaxed text-neutral-600">
+        Horarios por definir. Los puestos que aparecen junto a cada club son los de{' '}
+        <Link href="/torneo/#fase-de-grupos" className="text-neutral-400 hover:text-amarillo">
+          la tabla de la fase de grupos
+        </Link>
+        . El calendario completo, fecha por fecha, está en{' '}
+        <Link href="/torneo/calendario/" className="text-neutral-400 hover:text-amarillo">
+          Calendario
+        </Link>
+        .
+      </p>
 
-      {/* Esta pagina es solo de la edicion en curso. La llave de la 3a se
-          consulta en el Historial de /torneo/calendario/, donde acompana al
-          resto de resultados de esa edicion. */}
+      {/* Esta página es solo de la edición en curso. La llave de la 3ª se
+          consulta en el Historial de /torneo/calendario/, donde acompaña al
+          resto de resultados de esa edición. */}
     </TorneoShell>
   );
 }

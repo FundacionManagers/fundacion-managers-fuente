@@ -946,6 +946,73 @@ export const CALENDARIO_FASE_FINAL: readonly RondaFinal[] = [
 /** Día en que arranca la fase final. Sale de la primera ronda, no a mano. */
 export const FECHA_FASE_FINAL = CALENDARIO_FASE_FINAL[0]!.fecha;
 
+/** Orden en que se juegan las rondas, para dibujarlas siempre igual. */
+export const ORDEN_FASES: readonly FaseFinal[] = ['cuartos', 'semifinal', 'tercer-puesto', 'final'];
+
+/** Cuántos cruces tiene cada ronda cuando todavía no hay partidos cargados. */
+export const CRUCES_POR_FASE: Record<FaseFinal, number> = {
+  cuartos: 4,
+  semifinal: 2,
+  'tercer-puesto': 1,
+  final: 1,
+};
+
+const TITULO_FASE: Record<FaseFinal, string> = {
+  cuartos: 'Cuartos de final',
+  semifinal: 'Semifinales',
+  'tercer-puesto': 'Tercer puesto',
+  final: 'Gran Final',
+};
+
+/** En qué va una ronda de la fase final. */
+export type EstadoRonda = 'jugada' | 'en-juego' | 'pendiente';
+
+/** Una parada del camino a la final, con su estado y sus partidos. */
+export interface ParadaFinal {
+  fase: FaseFinal;
+  titulo: string;
+  /** La fecha del partido cargado si ya existe; si no, la que anunció la organización. */
+  fecha: string;
+  estado: EstadoRonda;
+  partidos: PartidoEliminatoria[];
+}
+
+/**
+ * El camino a la final, ronda por ronda y con el estado de cada una.
+ *
+ * El estado se deduce de lo que haya cargado la organización, no del reloj:
+ * sin partidos la ronda está `pendiente`, con partidos a medio jugar está
+ * `en-juego`, y con todos jugados está `jugada`. Si dependiera de "hoy",
+ * quedaría congelado en la fecha en que se compiló el sitio.
+ *
+ * Devuelve siempre las tres rondas, incluso vacías: es lo que permite dibujar
+ * la llave completa —cuartos, semifinales y final— desde el primer día, en vez
+ * de mostrar solo los cruces que ya existen y dejar el resto sin explicar.
+ */
+export function caminoFaseFinal(eliminatoria: readonly PartidoEliminatoria[] = []): ParadaFinal[] {
+  const anunciadas = new Map(CALENDARIO_FASE_FINAL.map((r) => [r.fase, r]));
+  const cargadas = new Set(eliminatoria.map((p) => p.fase));
+
+  // Entra toda ronda anunciada y, además, toda ronda que la organización haya
+  // cargado aunque no estuviera anunciada —un tercer puesto, por ejemplo—.
+  // Su fecha sale del propio partido, así que no hay que inventarla, y ningún
+  // partido cargado se queda fuera del camino.
+  return ORDEN_FASES.filter((f) => anunciadas.has(f) || cargadas.has(f)).map((fase) => {
+    const suyos = eliminatoria.filter((p) => p.fase === fase);
+    const jugados = suyos.filter((p) => p.estado === 'jugado').length;
+    const estado: EstadoRonda =
+      suyos.length === 0 ? 'pendiente' : jugados === suyos.length ? 'jugada' : 'en-juego';
+
+    return {
+      fase,
+      titulo: anunciadas.get(fase)?.titulo ?? TITULO_FASE[fase],
+      fecha: suyos[0]?.fecha ?? anunciadas.get(fase)?.fecha ?? '',
+      estado,
+      partidos: suyos,
+    };
+  });
+}
+
 const DIAS_LARGOS = [
   'Domingo',
   'Lunes',

@@ -13,11 +13,30 @@ const assert = require('node:assert/strict');
 
 const {
   CALENDARIO_FASE_FINAL,
+  CRUCES_POR_FASE,
   FECHA_FASE_FINAL,
   PARTIDOS_LIGA,
+  caminoFaseFinal,
   fechaLargaDe,
   proximoCompromiso,
 } = require('../.test-build/lib/liga.js');
+
+/** Un partido de eliminatoria de mentira, para simular lo que carga el panel. */
+function cruce(fase, id, extra = {}) {
+  return {
+    id,
+    fase,
+    jornada: 8,
+    fecha: '13/09/2026',
+    hora: '08:00',
+    local: 'pomada-alfa',
+    visitante: 'la-banda-cruzada',
+    golesLocal: null,
+    golesVisitante: null,
+    estado: 'programado',
+    ...extra,
+  };
+}
 
 /** El fixture con todas las fechas de grupos ya jugadas. */
 function gruposTerminados() {
@@ -119,6 +138,78 @@ test('la ronda pendiente no depende de la fecha de compilación', () => {
   const b = proximoCompromiso(gruposTerminados(), []);
   assert.deepEqual(a, b);
   assert.equal(a.titulo, 'Cuartos de final');
+});
+
+/**
+ * El camino a la final, que es lo que dibuja la página de La llave.
+ *
+ * La página mostraba solo los cuatro cruces de cuartos y, en cuanto la
+ * organización cargara los partidos reales, cambiaba entera: se quedaba sin
+ * encabezado, sin fechas y sin explicación, justo el día de más visitas.
+ * Estas pruebas fijan que las tres rondas existan siempre y que su estado
+ * salga de los datos.
+ */
+test('sin nada cargado, el camino ya tiene sus tres rondas', () => {
+  const camino = caminoFaseFinal([]);
+  assert.deepEqual(
+    camino.map((p) => [p.fase, p.estado, p.fecha]),
+    [
+      ['cuartos', 'pendiente', '13/09/2026'],
+      ['semifinal', 'pendiente', '20/09/2026'],
+      ['final', 'pendiente', '26/09/2026'],
+    ],
+  );
+  assert.ok(
+    camino.every((p) => p.partidos.length === 0),
+    'sin partidos cargados no se inventa ninguno',
+  );
+});
+
+test('las casillas en blanco de cada ronda son las que corresponden', () => {
+  assert.equal(CRUCES_POR_FASE.cuartos, 4);
+  assert.equal(CRUCES_POR_FASE.semifinal, 2);
+  assert.equal(CRUCES_POR_FASE.final, 1);
+});
+
+test('una ronda a medio jugar queda en juego, no jugada', () => {
+  const camino = caminoFaseFinal([
+    cruce('cuartos', 'cf1', { estado: 'jugado', golesLocal: 2, golesVisitante: 0 }),
+    cruce('cuartos', 'cf2'),
+  ]);
+  assert.equal(camino[0].estado, 'en-juego');
+  assert.equal(camino[1].estado, 'pendiente', 'las semifinales siguen sin jugarse');
+  assert.equal(camino[2].estado, 'pendiente');
+});
+
+test('con todos sus partidos jugados, la ronda queda jugada', () => {
+  const jugado = { estado: 'jugado', golesLocal: 2, golesVisitante: 0 };
+  const camino = caminoFaseFinal([
+    cruce('cuartos', 'cf1', jugado),
+    cruce('cuartos', 'cf2', jugado),
+  ]);
+  assert.equal(camino[0].estado, 'jugada');
+});
+
+test('la fecha del partido cargado manda sobre la anunciada', () => {
+  const camino = caminoFaseFinal([cruce('cuartos', 'cf1', { fecha: '14/09/2026' })]);
+  assert.equal(camino[0].fecha, '14/09/2026');
+  assert.equal(camino[1].fecha, '20/09/2026', 'las rondas sin cargar conservan lo anunciado');
+});
+
+/**
+ * Si la organización decide jugar un tercer puesto —hoy no está anunciado—,
+ * el partido no puede quedar huérfano: entra en el camino, en su orden y con
+ * la fecha que traiga el propio partido, sin que haya que tocar el código.
+ */
+test('una ronda no anunciada entra igual, y en su orden', () => {
+  const camino = caminoFaseFinal([cruce('tercer-puesto', 'tp1', { fecha: '26/09/2026' })]);
+  assert.deepEqual(
+    camino.map((p) => p.fase),
+    ['cuartos', 'semifinal', 'tercer-puesto', 'final'],
+  );
+  const tercero = camino.find((p) => p.fase === 'tercer-puesto');
+  assert.equal(tercero.fecha, '26/09/2026');
+  assert.equal(tercero.titulo, 'Tercer puesto');
 });
 
 test('con todo jugado y cargado, ya no hay próximo compromiso', () => {
