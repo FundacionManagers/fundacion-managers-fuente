@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { BarraDeslizable } from '@/components/torneo/BarraDeslizable';
 import { PuntoAviso } from '@/components/torneo/PuntoAviso';
 import { TORNEO_TABS } from '@/lib/torneo-data';
 import { cn } from '@/lib/utils';
@@ -20,7 +21,7 @@ export function TorneoNav({ active, avisoISO }: TorneoNavProps) {
       aria-label="Secciones del torneo"
       className="sticky top-16 z-30 border-b border-white/10 bg-[#0b0f14]/90 backdrop-blur-md"
     >
-      <div className="mx-auto flex max-w-7xl gap-1 overflow-x-auto px-6 lg:px-8">
+      <BarraDeslizable>
         {TORNEO_TABS.map((t) => {
           const isActive = t.href === active;
           const conAviso = avisoISO && t.href === '/torneo/calendario/';
@@ -28,8 +29,12 @@ export function TorneoNav({ active, avisoISO }: TorneoNavProps) {
             <Link
               key={t.href}
               href={t.href}
+              // Lo lee `BarraDeslizable` para centrar la pestaña en la que se
+              // está al entrar desde un enlace directo.
+              data-activa={isActive ? 'true' : undefined}
+              aria-current={isActive ? 'page' : undefined}
               className={cn(
-                'relative whitespace-nowrap px-4 py-4 text-sm font-semibold transition-colors duration-200 ease-managers',
+                'relative whitespace-nowrap px-3 py-4 text-[13px] font-semibold transition-colors duration-200 ease-managers sm:px-4 sm:text-sm',
                 isActive ? 'text-gold' : 'text-neutral-400 hover:text-neutral-100',
               )}
             >
@@ -44,7 +49,7 @@ export function TorneoNav({ active, avisoISO }: TorneoNavProps) {
             </Link>
           );
         })}
-      </div>
+      </BarraDeslizable>
     </nav>
   );
 }
