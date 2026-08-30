@@ -105,7 +105,12 @@ export default function PalmaresPage() {
                   </span>
                 </div>
                 <div className="mt-3 h-px w-full bg-white/10" />
-                <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                {/* Dos columnas y no tres: a tres, cada tarjeta se queda con
+                    unos 380 px y los nombres largos —"Los Pibes del Barrio",
+                    "La Banda Cruzada FC"— se cortaban en escritorio. Además
+                    los cuartos son cuatro partidos, así que caen en dos filas
+                    limpias. */}
+                <div className="mt-6 grid gap-5 sm:grid-cols-2">
                   {b.partidos.map((p) => (
                     <MatchCard key={p.id} p={p} />
                   ))}
