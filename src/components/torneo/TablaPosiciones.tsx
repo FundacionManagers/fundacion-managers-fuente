@@ -1,3 +1,4 @@
+import { ChevronRight } from 'lucide-react';
 import { TeamCrest } from '@/components/torneo/TeamCrest';
 import { getEquipo } from '@/lib/torneo-data';
 import {
@@ -104,10 +105,15 @@ export function TablaPosiciones({ datos }: { datos: DatosLiga }) {
                     </span>
                   </td>
                   <td className="px-3 py-3">
-                    <div className="flex items-center gap-3">
+                    {/* Nombre completo desde `sm`, codigo corto en movil. A
+                        375 px la columna de equipo se comia 250 de los 325
+                        disponibles y dejaba fuera hasta PTS, que es el dato
+                        que todo el mundo viene a mirar. */}
+                    <div className="flex items-center gap-2 sm:gap-3">
                       <TeamCrest slug={fila.equipo} size={32} />
                       <span className="whitespace-nowrap font-semibold text-neutral-100">
-                        {eq?.nombre ?? fila.equipo}
+                        <span className="sm:hidden">{eq?.corto ?? fila.equipo}</span>
+                        <span className="hidden sm:inline">{eq?.nombre ?? fila.equipo}</span>
                       </span>
                     </div>
                   </td>
@@ -135,38 +141,53 @@ export function TablaPosiciones({ datos }: { datos: DatosLiga }) {
         </table>
       </div>
 
-      <dl className="mt-4 flex flex-wrap gap-x-5 gap-y-1 text-xs text-neutral-500">
-        {COLUMNAS_TABLA.map((c) => (
-          <div key={c.key} className="flex gap-1.5">
-            <dt className="font-bold text-neutral-400">{c.corto}:</dt>
-            <dd>{c.largo}</dd>
-          </div>
-        ))}
-      </dl>
+      {/* La leyenda de las siglas y el Articulo 14 son material de consulta:
+          se miran una vez, cuando alguien no entiende por que su club esta
+          donde esta. No merecen estar siempre a la vista debajo de la tabla,
+          pero tampoco desaparecer: sin el Articulo 14 la tabla parece
+          arbitraria, porque un club puede ir sobre otro con peor diferencia
+          de gol y nadie sabria por que. */}
+      <details className="group mt-5 rounded-xl border border-white/10 bg-black/30">
+        <summary className="flex cursor-pointer list-none items-center gap-2 px-5 py-3 text-[11px] uppercase tracking-[0.2em] text-neutral-500 transition-colors hover:text-neutral-300">
+          <ChevronRight
+            size={12}
+            aria-hidden
+            className="shrink-0 transition-transform duration-200 group-open:rotate-90"
+          />
+          Qué significan las siglas y cómo se desempata
+        </summary>
 
-      {/* Articulo 14 del reglamento. Se publica porque sin esto la tabla
-          parece arbitraria: un club puede ir sobre otro con peor diferencia
-          de gol, y quien mira no sabe por que. */}
-      <div className="mt-6 rounded-xl border border-white/10 bg-black/30 px-5 py-4">
-        <p className="font-bufon text-xs font-bold uppercase tracking-[0.2em] text-amarillo">
-          Criterios de desempate · Artículo 14
-        </p>
-        <ol className="mt-3 flex flex-wrap gap-x-6 gap-y-2 text-sm text-neutral-300">
-          {CRITERIOS_DESEMPATE.map((c, i) => (
-            <li key={c} className="flex items-center gap-2">
-              <span className="inline-flex h-5 w-5 items-center justify-center rounded-md border border-white/15 font-mono text-[10px] text-neutral-400">
-                {i + 1}
-              </span>
-              {c}
-            </li>
-          ))}
-        </ol>
-        <p className="mt-3 text-xs text-neutral-500">
-          Se aplican en ese orden. El Fair Play pesa más que la diferencia de gol: ante igualdad de
-          puntos, el club con menos tarjetas queda por encima aunque el otro tenga mejor diferencia.
-          Es el criterio del reglamento, no la descripción de un cruce concreto de la tabla de hoy.
-        </p>
-      </div>
+        <div className="border-t border-white/5 px-5 pb-5 pt-4">
+          <dl className="flex flex-wrap gap-x-5 gap-y-1 text-xs text-neutral-500">
+            {COLUMNAS_TABLA.map((c) => (
+              <div key={c.key} className="flex gap-1.5">
+                <dt className="font-bold text-neutral-400">{c.corto}:</dt>
+                <dd>{c.largo}</dd>
+              </div>
+            ))}
+          </dl>
+
+          <p className="mt-5 font-bufon text-xs font-bold uppercase tracking-[0.2em] text-amarillo">
+            Criterios de desempate · Artículo 14
+          </p>
+          <ol className="mt-3 flex flex-wrap gap-x-6 gap-y-2 text-sm text-neutral-300">
+            {CRITERIOS_DESEMPATE.map((c, i) => (
+              <li key={c} className="flex items-center gap-2">
+                <span className="inline-flex h-5 w-5 items-center justify-center rounded-md border border-white/15 font-mono text-[10px] text-neutral-400">
+                  {i + 1}
+                </span>
+                {c}
+              </li>
+            ))}
+          </ol>
+          <p className="mt-3 text-xs text-neutral-500">
+            Se aplican en ese orden. El Fair Play pesa más que la diferencia de gol: ante igualdad
+            de puntos, el club con menos tarjetas queda por encima aunque el otro tenga mejor
+            diferencia. Es el criterio del reglamento, no la descripción de un cruce concreto de la
+            tabla de hoy.
+          </p>
+        </div>
+      </details>
     </div>
   );
 }

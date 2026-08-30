@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { TeamCrest } from '@/components/torneo/TeamCrest';
 import { getEquipo } from '@/lib/torneo-data';
 import { AUTOGOLES, beneficiadoDe, jornadaActualDe } from '@/lib/liga';
@@ -10,11 +11,29 @@ const METAL = [
   'from-amber-700 to-amber-900 text-amber-50',
 ] as const;
 
-/** Ranking de goleadores: podio de los tres primeros y tabla con el resto. */
-export function RankingGoleadores({ datos }: { datos: DatosLiga }) {
+/** Cuántos puestos, además del podio, se listan en la versión compacta. */
+const TOPE_COMPACTO = 7;
+
+/**
+ * Ranking de goleadores: podio de los tres primeros y tabla con el resto.
+ *
+ * En modo `compacto` se queda en el top 10 y remite a Estadísticas. El
+ * Resumen publicaba el ranking completo de 46 anotadores —4.289 px, el 42%
+ * de la página— exactamente igual que la pestaña de Estadísticas: una copia
+ * entera de otra sección, que dejaba a esa pestaña sin razón de ser y hacía
+ * que el Resumen no resumiera, sino que transcribiera.
+ */
+export function RankingGoleadores({
+  datos,
+  compacto = false,
+}: {
+  datos: DatosLiga;
+  compacto?: boolean;
+}) {
   const goleadores = datos.goleadores;
   const podio = goleadores.slice(0, 3);
-  const resto = goleadores.slice(3);
+  const restoCompleto = goleadores.slice(3);
+  const resto = compacto ? restoCompleto.slice(0, TOPE_COMPACTO) : restoCompleto;
   const totalGoles = goleadores.reduce((s, g) => s + g.goles, 0);
   const jornadaActual = jornadaActualDe(datos.partidos);
 
@@ -42,6 +61,11 @@ export function RankingGoleadores({ datos }: { datos: DatosLiga }) {
   const autogoles = autogolesCaben
     ? AUTOGOLES.map((a) => ({ ...a, beneficiado: beneficiadoDe(a, datos.partidos) }))
     : [];
+
+  // La fila del autogol cierra la tabla completa. En la versión compacta la
+  // tabla está cortada en el top 10, así que ahí no se pinta — pero la nota
+  // de arriba sí lo sigue contando, porque los totales son los mismos.
+  const filasAutogol = compacto ? [] : autogoles;
 
   const autogolesPorClub = autogoles.reduce<Record<string, number>>((acc, a) => {
     if (a.beneficiado) acc[a.beneficiado] = (acc[a.beneficiado] ?? 0) + 1;
@@ -220,7 +244,7 @@ export function RankingGoleadores({ datos }: { datos: DatosLiga }) {
                 —no compiten por la bota de oro— pero sí con el club que se
                 los llevó, para que la suma cuadre con los goles del
                 marcador y nadie tenga que preguntar por el gol que falta. */}
-            {autogoles.map((a, i) => {
+            {filasAutogol.map((a, i) => {
               const autor = getEquipo(a.autor);
               const favorecido = a.beneficiado ? getEquipo(a.beneficiado) : undefined;
               return (
@@ -258,6 +282,19 @@ export function RankingGoleadores({ datos }: { datos: DatosLiga }) {
           </tbody>
         </table>
       </div>
+
+      {/* El resto del ranking vive en Estadísticas, que es su pestaña. */}
+      {compacto && restoCompleto.length > TOPE_COMPACTO ? (
+        <Link
+          href="/torneo/estadisticas/"
+          className="group mt-4 inline-flex items-center gap-1.5 text-xs font-bold text-amarillo transition-colors hover:text-naranja"
+        >
+          Ver los {goleadores.length} anotadores en Estadísticas
+          <span aria-hidden className="transition-transform group-hover:translate-x-0.5">
+            →
+          </span>
+        </Link>
+      ) : null}
     </div>
   );
 }

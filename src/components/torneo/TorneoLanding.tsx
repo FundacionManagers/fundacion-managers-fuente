@@ -4,12 +4,19 @@ import { IconeBrand } from '@/components/shared/IconeBrand';
 import { GoldCoin } from '@/components/shared/GoldCoin';
 import { TorneoBackdrop } from '@/components/torneo/TorneoBackdrop';
 import { TeamCrest } from '@/components/torneo/TeamCrest';
-import { CampeonReveal } from '@/components/torneo/CampeonReveal';
 import { TorneoNav } from '@/components/torneo/TorneoNav';
 import { TablaPosiciones } from '@/components/torneo/TablaPosiciones';
 import { RankingGoleadores } from '@/components/torneo/RankingGoleadores';
+import { ProximaFecha } from '@/components/torneo/ProximaFecha';
 import { ALIANZA, ICONE_CYAN } from '@/lib/alianza';
-import { isoDe, jornadaActualDe, proximoPartidoDe, TOTAL_JORNADAS } from '@/lib/liga';
+import {
+  isoDe,
+  jornadaActualDe,
+  JORNADAS_INFO,
+  partidosDeJornada,
+  proximoPartidoDe,
+  TOTAL_JORNADAS,
+} from '@/lib/liga';
 import { cargarLigaConAviso } from '@/lib/liga-supabase';
 import {
   CAMPEON_VIGENTE,
@@ -22,7 +29,7 @@ import {
   pillEdicion,
   rotuloEdicion,
 } from '@/lib/torneo';
-import { EQUIPOS, FINAL, ganadorDe, getEquipo } from '@/lib/torneo-data';
+import { EQUIPOS } from '@/lib/torneo-data';
 
 const STATS = [
   { v: String(EDICIONES_DISPUTADAS.length), l: 'Ediciones' },
@@ -34,12 +41,13 @@ const STATS = [
 export async function TorneoLanding() {
   const datos = await cargarLigaConAviso();
   const jornadaActual = jornadaActualDe(datos.partidos);
-  const campeonSlug = ganadorDe(FINAL);
-  const campeon = campeonSlug ? getEquipo(campeonSlug) : undefined;
   const campeonVigente = EQUIPOS.find((e) => e.nombre === CAMPEON_VIGENTE.equipo);
   const proximoPartido = proximoPartidoDe(datos.partidos);
-  const loc = FINAL.local ? getEquipo(FINAL.local) : undefined;
-  const vis = FINAL.visitante ? getEquipo(FINAL.visitante) : undefined;
+  const proximaJornada = proximoPartido?.jornada ?? null;
+  const partidosProxima = proximaJornada ? partidosDeJornada(proximaJornada, datos.partidos) : [];
+  const etiquetaProxima = proximaJornada
+    ? (JORNADAS_INFO.find((j) => j.jornada === proximaJornada)?.etiqueta ?? proximoPartido!.fecha)
+    : '';
 
   return (
     <div className="tournament-section relative">
@@ -71,16 +79,34 @@ export async function TorneoLanding() {
             </a>
           </div>
 
-          {/* CAMPEÓN — revelación épica del vigente. La edición sale de
-              EDICIONES, no escrita aquí: al cerrar la 4ª se actualiza sola. */}
-          <CampeonReveal
-            slug={campeon?.slug ?? FINAL.visitante ?? 'the-originals'}
-            nombre={campeon?.nombre ?? 'The Originals'}
-            scoreText={`${vis?.corto ?? 'ORI'} ${FINAL.golesVisitante}–${FINAL.golesLocal} ${loc?.corto ?? 'PIB'}`}
-            edicion={`Edición ${CAMPEON_VIGENTE.edicion}° (${CAMPEON_VIGENTE.periodo})`}
-          />
+          {/* El hero abre con el torneo que se está jugando.
+              Antes abría con la revelación del campeón de la 3ª edición: lo
+              primero que se leía era "TORNEO FINALIZADO", justo debajo del
+              pill que anuncia la cuarta edición en curso. Dos líneas seguidas
+              diciendo lo contrario, y el estado real —Fecha 5 de 7— no
+              aparecía hasta el 17% de la página. La celebración del campeón
+              se mudó al Palmarés, que es su sitio. */}
+          <h1 className="mt-10 font-sport text-[15vw] uppercase leading-[0.85] text-neutral-50 drop-shadow-[0_6px_24px_rgba(0,0,0,0.7)] lg:text-[120px]">
+            Torneo
+            <br />
+            Managers
+          </h1>
+          <div className="energy-bar mt-6 h-1.5 w-40 rounded-full" />
 
-          <p className="mt-10 max-w-2xl text-lg text-neutral-300">{TORNEO_BIO}</p>
+          <p className="mt-8 max-w-2xl text-lg text-neutral-300">{TORNEO_BIO}</p>
+
+          {/* La próxima fecha, en la portada. El Calendario ya la anunciaba y
+              la pestaña titila, pero el Resumen era la única página que no
+              sabía que mañana se juega. */}
+          {proximaJornada ? (
+            <div className="mt-10 max-w-2xl">
+              <ProximaFecha
+                jornada={proximaJornada}
+                etiqueta={etiquetaProxima}
+                partidos={partidosProxima}
+              />
+            </div>
+          ) : null}
         </div>
 
         {/* Marquee de equipos */}
@@ -125,7 +151,9 @@ export async function TorneoLanding() {
 
           <div className="mt-10 space-y-24">
             <TablaPosiciones datos={datos} />
-            <RankingGoleadores datos={datos} />
+            {/* Top 10 y enlace: el ranking completo es la pestaña de
+                Estadísticas, no un bloque que el Resumen deba copiar. */}
+            <RankingGoleadores datos={datos} compacto />
           </div>
         </div>
       </section>
