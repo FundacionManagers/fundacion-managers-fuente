@@ -30,11 +30,18 @@ export function BarraDeslizable({ children }: { children: React.ReactNode }) {
   const medir = useCallback(() => {
     const el = carril.current;
     if (!el) return;
-    // 2 px de margen: los redondeos del navegador dejaban el degradado
-    // encendido de forma permanente en pantallas donde no sobraba nada.
+
+    /**
+     * El relleno lateral cuenta dentro de `scrollWidth`, así que al llegar al
+     * final quedaban 15 px sin recorrer y el degradado derecho seguía
+     * encendido sobre "Inscripciones" —la pestaña que todo esto viene a
+     * rescatar— anunciando un contenido que ya no existe. Se descuenta, más
+     * 2 px por los redondeos del navegador.
+     */
+    const relleno = parseFloat(getComputedStyle(el).paddingRight) || 0;
     setSobra({
       izquierda: el.scrollLeft > 2,
-      derecha: el.scrollLeft + el.clientWidth < el.scrollWidth - 2,
+      derecha: el.scrollLeft + el.clientWidth < el.scrollWidth - relleno - 2,
     });
   }, []);
 
