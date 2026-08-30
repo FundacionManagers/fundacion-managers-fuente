@@ -1,3 +1,4 @@
+import { ChevronRight } from 'lucide-react';
 import { TeamCrest } from '@/components/torneo/TeamCrest';
 import { getEquipo } from '@/lib/torneo-data';
 import {
@@ -90,7 +91,6 @@ function FilaPartido({ p, mostrarDia }: { p: PartidoLiga; mostrarDia: boolean })
         jugado ? 'border-white/10 bg-black/40' : 'border-dashed border-white/10 bg-black/20',
       )}
     >
-      {/* Local */}
       <div className="flex min-w-0 flex-1 items-center justify-end gap-2 sm:gap-3">
         <NombreClub slug={p.local} alinear="der" />
         <TeamCrest slug={p.local} size={34} />
@@ -98,7 +98,6 @@ function FilaPartido({ p, mostrarDia }: { p: PartidoLiga; mostrarDia: boolean })
 
       <Marcador p={p} mostrarDia={mostrarDia} />
 
-      {/* Visitante */}
       <div className="flex min-w-0 flex-1 items-center gap-2 sm:gap-3">
         <TeamCrest slug={p.visitante} size={34} />
         <NombreClub slug={p.visitante} alinear="izq" />
@@ -107,15 +106,47 @@ function FilaPartido({ p, mostrarDia }: { p: PartidoLiga; mostrarDia: boolean })
   );
 }
 
-/** Fixture completo de la fase de grupos, con marcador o con hora. */
+function ListaPartidos({ partidos }: { partidos: PartidoLiga[] }) {
+  const variosDias = jornadaEnVariosDias(partidos);
+  return (
+    <ul className="space-y-2.5">
+      {partidos.map((p) => (
+        <FilaPartido key={p.id} p={p} mostrarDia={variosDias} />
+      ))}
+    </ul>
+  );
+}
+
+function etiquetaDe(jornada: number, partidos: PartidoLiga[]): string {
+  return JORNADAS_INFO.find((j) => j.jornada === jornada)?.etiqueta ?? partidos[0]?.fecha ?? '';
+}
+
+/**
+ * Fixture de la fase de grupos, ordenado por lo que importa hoy.
+ *
+ * Antes eran siete bloques idénticos del 1 al 7, y para llegar a lo actual
+ * había que pasar por cinco jornadas viejas. Ahora la página se ordena sola:
+ *
+ *   1. La próxima fecha, que va en su tarjeta aparte, sobre este componente.
+ *   2. La última fecha jugada, desplegada: es lo que la gente viene a mirar
+ *      al día siguiente de jugar.
+ *   3. Todas las demás, plegadas en acordeones. Se consultan, no se leen.
+ *
+ * Los tres bloques salen de los datos, así que al cargar una fecha nueva
+ * todo se recoloca sin tocar el código: la que estaba desplegada se pliega y
+ * la siguiente ocupa su lugar.
+ */
 export function FixtureLiga({ datos }: { datos: DatosLiga }) {
-  const jornadaActual = jornadaActualDe(datos.partidos);
+  const ultima = jornadaActualDe(datos.partidos);
   const proxima = proximoPartidoDe(datos.partidos)?.jornada ?? null;
 
-  // Las fechas salen de los partidos, no de una lista fija: si el panel carga
-  // una jornada nueva, aparece sin tocar el codigo. El rotulo se busca en
-  // JORNADAS_INFO y, si no esta, se arma con la fecha del primer partido.
   const jornadas = [...new Set(datos.partidos.map((p) => p.jornada))].sort((a, b) => a - b);
+  const partidosUltima = ultima ? partidosDeJornada(ultima, datos.partidos) : [];
+
+  // El resto: todo lo que no es ni la próxima ni la última. Incluye las
+  // fechas futuras que no son la siguiente —hoy, la 7— para que ninguna
+  // desaparezca de la página.
+  const plegadas = jornadas.filter((j) => j !== ultima && j !== proxima);
 
   return (
     <div className="space-y-14">
@@ -123,61 +154,75 @@ export function FixtureLiga({ datos }: { datos: DatosLiga }) {
         {FORMATO_LIGA} · {datos.partidos.length} partidos · Cancha {CANCHA}
       </p>
 
-      {jornadas.map((jornada) => {
-        const partidos = partidosDeJornada(jornada, datos.partidos);
-        const info = {
-          jornada,
-          etiqueta:
-            JORNADAS_INFO.find((j) => j.jornada === jornada)?.etiqueta ?? partidos[0]?.fecha ?? '',
-        };
-        const jugada = partidos.every((p) => p.estado === 'jugado');
-        const esActual = info.jornada === jornadaActual;
-        const esProxima = info.jornada === proxima;
-        const variosDias = jornadaEnVariosDias(partidos);
-
-        return (
-          <section key={info.jornada} id={`fecha-${info.jornada}`} className="scroll-mt-32">
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <div>
-                <h3 className="font-sport text-4xl uppercase leading-none text-neutral-50 md:text-5xl">
-                  Fecha {info.jornada}
-                </h3>
-                <p className="mt-1 text-sm text-neutral-500">{info.etiqueta}</p>
-              </div>
-              {/* La próxima fecha se distingue de las demás programadas: era
-                  lo único que la gente viene a buscar y salía igual que una
-                  que falta un mes. */}
-              <span
-                className={cn(
-                  'rounded-full px-3 py-1 font-bufon text-[10px] font-bold uppercase tracking-[0.15em]',
-                  jugada
-                    ? esActual
-                      ? 'bg-gradient-to-r from-amarillo to-naranja text-carbon'
-                      : 'border border-white/15 text-neutral-400'
-                    : esProxima
-                      ? 'border border-amarillo/60 bg-amarillo/10 text-amarillo'
-                      : 'border border-dashed border-white/20 text-neutral-500',
-                )}
-              >
-                {jugada
-                  ? esActual
-                    ? 'Última jugada'
-                    : 'Jugada'
-                  : esProxima
-                    ? 'Próxima'
-                    : 'Programada'}
-              </span>
+      {/* ===== La última fecha jugada, desplegada ===== */}
+      {ultima ? (
+        <section id={`fecha-${ultima}`} className="scroll-mt-32">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <h3 className="font-sport text-4xl uppercase leading-none text-neutral-50 md:text-5xl">
+                Fecha {ultima}
+              </h3>
+              <p className="mt-1 text-sm text-neutral-500">{etiquetaDe(ultima, partidosUltima)}</p>
             </div>
-            <div className="mt-4 h-px w-full bg-gradient-to-r from-amarillo/40 to-transparent" />
+            <span className="rounded-full bg-gradient-to-r from-amarillo to-naranja px-3 py-1 font-bufon text-[10px] font-bold uppercase tracking-[0.15em] text-carbon">
+              Última fecha
+            </span>
+          </div>
+          <div className="mt-4 h-px w-full bg-gradient-to-r from-amarillo/40 to-transparent" />
+          <div className="mt-5">
+            <ListaPartidos partidos={partidosUltima} />
+          </div>
+        </section>
+      ) : null}
 
-            <ul className="mt-5 space-y-2.5">
-              {partidos.map((p) => (
-                <FilaPartido key={p.id} p={p} mostrarDia={variosDias} />
-              ))}
-            </ul>
-          </section>
-        );
-      })}
+      {/* ===== El resto, plegado ===== */}
+      {plegadas.length ? (
+        <section>
+          <p className="font-bufon text-xs font-bold uppercase tracking-[0.25em] text-neutral-600">
+            Las demás fechas
+          </p>
+          <div className="mt-4 space-y-2">
+            {plegadas.map((jornada) => {
+              const partidos = partidosDeJornada(jornada, datos.partidos);
+              const jugada = partidos.every((p) => p.estado === 'jugado');
+              return (
+                <details
+                  key={jornada}
+                  id={`fecha-${jornada}`}
+                  className="group scroll-mt-32 rounded-xl border border-white/10 bg-black/30"
+                >
+                  <summary className="flex cursor-pointer list-none items-center gap-3 px-4 py-3">
+                    <ChevronRight
+                      size={14}
+                      aria-hidden
+                      className="shrink-0 text-neutral-600 transition-transform duration-200 group-open:rotate-90"
+                    />
+                    <span className="font-sport text-xl uppercase leading-none text-neutral-300">
+                      Fecha {jornada}
+                    </span>
+                    <span className="min-w-0 flex-1 truncate text-xs text-neutral-600">
+                      {etiquetaDe(jornada, partidos)}
+                    </span>
+                    <span
+                      className={cn(
+                        'shrink-0 rounded-full px-2.5 py-0.5 font-bufon text-[10px] font-bold uppercase tracking-[0.15em]',
+                        jugada
+                          ? 'border border-white/15 text-neutral-500'
+                          : 'border border-dashed border-white/20 text-neutral-500',
+                      )}
+                    >
+                      {jugada ? 'Jugada' : 'Programada'}
+                    </span>
+                  </summary>
+                  <div className="border-t border-white/5 px-4 pb-4 pt-4">
+                    <ListaPartidos partidos={partidos} />
+                  </div>
+                </details>
+              );
+            })}
+          </div>
+        </section>
+      ) : null}
     </div>
   );
 }

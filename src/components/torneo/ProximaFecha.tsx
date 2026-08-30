@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { CalendarClock } from 'lucide-react';
 import { TeamCrest } from '@/components/torneo/TeamCrest';
-import { isoDe, type PartidoLiga } from '@/lib/liga';
+import { diaCortoDe, isoDe, jornadaEnVariosDias, type PartidoLiga } from '@/lib/liga';
 
 /**
  * Tarjeta de la próxima fecha, arriba del fixture.
@@ -44,19 +44,20 @@ export function ProximaFecha({
       const dias = Math.round((soloDia(inicio) - soloDia(ahora)) / 86400000);
 
       /**
-       * El día después, antes de que carguen los resultados.
+       * Solo se destaca lo que de verdad cambia el plan de alguien: hoy y
+       * mañana. Un "en 5 días" no mueve a nadie y solo compite por atención
+       * con lo que sí importa; para eso ya está el rótulo "Próxima fecha".
        *
-       * Un partido sigue marcado como "programado" hasta que la organización
+       * La excepción es el día después, antes de que carguen los resultados:
+       * un partido sigue marcado como "programado" hasta que la organización
        * sube el marcador, así que el lunes por la mañana esta tarjeta seguía
-       * apuntando a la fecha del domingo. Decir "En juego" ahí es falso: ya
-       * se jugó. Lo honesto es admitir que faltan los resultados.
+       * apuntando al domingo. Llamar "próxima" a una fecha de ayer es
+       * mentira; lo honesto es admitir que faltan los resultados.
        */
       if (dias < 0) return 'Resultados en camino';
       if (dias === 0) return 'Hoy';
       if (dias === 1) return 'Mañana';
-      if (dias < 7) return `En ${dias} días`;
-      if (dias < 14) return 'La próxima semana';
-      return `En ${Math.round(dias / 7)} semanas`;
+      return null;
     }
 
     setCuando(calcular());
@@ -67,6 +68,7 @@ export function ProximaFecha({
   if (!partidos.length) return null;
 
   const horas = [...new Set(partidos.map((p) => p.hora))].sort();
+  const variosDias = jornadaEnVariosDias(partidos);
   const pendiente = cuando === 'Resultados en camino';
   const inminente = cuando === 'Hoy' || cuando === 'Mañana' || pendiente;
   const rotulo = pendiente ? 'Última fecha' : 'Próxima fecha';
@@ -100,6 +102,9 @@ export function ProximaFecha({
         {etiqueta} · {partidos.length} partidos desde las {horas[0]}
       </p>
 
+      {/* Los cuatro cruces con su hora. Esta fecha ya no se repite abajo en
+          el fixture, así que aquí va todo lo que hace falta para saber
+          cuándo juega tu equipo. */}
       <ul className="mt-5 flex flex-wrap gap-x-5 gap-y-3">
         {partidos.map((p) => (
           <li key={p.id} className="flex items-center gap-1.5">
@@ -108,17 +113,13 @@ export function ProximaFecha({
               vs
             </span>
             <TeamCrest slug={p.visitante} size={24} />
-            <span className="ml-1 font-mono text-[11px] text-neutral-500">{p.hora}</span>
+            <span className="ml-1 whitespace-nowrap font-mono text-[11px] text-neutral-500">
+              {variosDias ? `${diaCortoDe(p)} ` : ''}
+              {p.hora}
+            </span>
           </li>
         ))}
       </ul>
-
-      <a
-        href={`#fecha-${jornada}`}
-        className="mt-5 inline-flex items-center gap-1.5 text-xs font-bold text-amarillo transition-colors hover:text-naranja"
-      >
-        Ver los partidos de la Fecha {jornada} ↓
-      </a>
     </div>
   );
 }
