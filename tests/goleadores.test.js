@@ -19,6 +19,8 @@ const {
   POSICIONES_LIGA,
   autogolesDe,
   beneficiadoDe,
+  posicionesCompartidas,
+  tramosDeGoles,
 } = require('../.test-build/lib/liga.js');
 const { EQUIPOS } = require('../.test-build/lib/torneo-data.js');
 
@@ -169,6 +171,65 @@ test('ningún autogol se le acredita a un jugador del ranking', () => {
     !nombres.has('autogol') && !nombres.has('gol en propia puerta'),
     'los autogoles van en AUTOGOLES, no como una fila más de la bota de oro',
   );
+});
+
+/**
+ * El puesto lo dan los goles, no el orden alfabético.
+ *
+ * El ranking numeraba de 1 a N por orden de llegada, así que siete jugadores
+ * con 4 goles ocupaban los puestos 3 al 9 y el bronce del podio se lo
+ * quedaba el primero por abecedario. De los 46 anotadores, 44 están dentro
+ * de algún grupo de empate: no es un caso raro, es el caso normal.
+ */
+test('los empatados a goles comparten puesto', () => {
+  const clasificados = posicionesCompartidas(GOLEADORES_LIGA);
+  for (const a of clasificados) {
+    for (const b of clasificados) {
+      if (a.goles === b.goles) {
+        assert.equal(
+          a.posicion,
+          b.posicion,
+          `${a.jugador} y ${b.jugador} tienen ${a.goles} goles y puestos distintos`,
+        );
+      } else if (a.goles > b.goles) {
+        assert.ok(
+          a.posicion < b.posicion,
+          `${a.jugador} marca más que ${b.jugador} y va por debajo`,
+        );
+      }
+    }
+  }
+});
+
+test('tras un empate el ranking salta al puesto que corresponde', () => {
+  const tramos = tramosDeGoles(posicionesCompartidas(GOLEADORES_LIGA));
+  let acumulado = 1;
+  for (const t of tramos) {
+    assert.equal(
+      t.posicion,
+      acumulado,
+      `el tramo de ${t.goles} goles debería empezar en ${acumulado}`,
+    );
+    acumulado += t.jugadores.length;
+  }
+});
+
+test('hoy el tercer puesto lo comparten siete jugadores con 4 goles', () => {
+  const tramos = tramosDeGoles(posicionesCompartidas(GOLEADORES_LIGA));
+  assert.equal(tramos[2].posicion, 3);
+  assert.equal(tramos[2].goles, 4);
+  assert.equal(
+    tramos[2].jugadores.length,
+    7,
+    'si cambia, el podio muestra otro número de empatados y hay que revisar el texto',
+  );
+});
+
+test('el reparto de puestos no pierde ni duplica goleadores', () => {
+  const clasificados = posicionesCompartidas(GOLEADORES_LIGA);
+  assert.equal(clasificados.length, GOLEADORES_LIGA.length);
+  const suma = (xs) => xs.reduce((s, g) => s + g.goles, 0);
+  assert.equal(suma(clasificados), suma(GOLEADORES_LIGA));
 });
 
 test('autor y beneficiado de cada autogol son clubes del torneo', () => {

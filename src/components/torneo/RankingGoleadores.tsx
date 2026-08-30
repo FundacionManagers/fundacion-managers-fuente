@@ -1,7 +1,13 @@
 import Link from 'next/link';
 import { TeamCrest } from '@/components/torneo/TeamCrest';
 import { getEquipo } from '@/lib/torneo-data';
-import { AUTOGOLES, beneficiadoDe, jornadaActualDe } from '@/lib/liga';
+import {
+  AUTOGOLES,
+  beneficiadoDe,
+  jornadaActualDe,
+  posicionesCompartidas,
+  tramosDeGoles,
+} from '@/lib/liga';
 import type { DatosLiga } from '@/lib/liga-supabase';
 import { cn } from '@/lib/utils';
 
@@ -30,9 +36,16 @@ export function RankingGoleadores({
   datos: DatosLiga;
   compacto?: boolean;
 }) {
-  const goleadores = datos.goleadores;
-  const podio = goleadores.slice(0, 3);
-  const restoCompleto = goleadores.slice(3);
+  // Puestos compartidos entre empatados: el ranking numeraba 1..N por orden
+  // de llegada y el desempate real acababa siendo el alfabético.
+  const goleadores = posicionesCompartidas(datos.goleadores);
+  const tramos = tramosDeGoles(goleadores);
+  const podio = tramos.slice(0, 3);
+  const hayEmpates = goleadores.some((g) => g.empatados > 1);
+
+  // La tabla arranca donde termina el podio, que ya no son tres filas fijas.
+  const enPodio = podio.reduce((s, t) => s + t.jugadores.length, 0);
+  const restoCompleto = goleadores.slice(enPodio);
   const resto = compacto ? restoCompleto.slice(0, TOPE_COMPACTO) : restoCompleto;
   const totalGoles = goleadores.reduce((s, g) => s + g.goles, 0);
   const jornadaActual = jornadaActualDe(datos.partidos);
@@ -122,51 +135,83 @@ export function RankingGoleadores({
         </p>
       ) : null}
 
-      {/* Podio */}
+      {/* Podio por tramos de goles, no por las tres primeras filas.
+          El bronce se lo llevaba uno de los siete jugadores empatados a 4
+          goles, elegido por orden alfabético y sin decirlo: Andrés Ospina
+          salía 3º y Wilson Rubiano 9º con los mismos goles. Cada escalón es
+          ahora una cifra de goles, y si varios la comparten, salen todos. */}
       <div className="stagger-in mt-8 grid gap-5 sm:grid-cols-3">
-        {podio.map((g, i) => {
-          const eq = getEquipo(g.equipo);
-          return (
-            <div
-              key={`${g.jugador}-${g.equipo}`}
-              className={cn(
-                'relative overflow-hidden rounded-2xl border bg-black/50 p-5',
-                i === 0 ? 'border-amarillo/50' : 'border-white/10',
-              )}
+        {podio.map((tramo, i) => (
+          <div
+            key={tramo.goles}
+            className={cn(
+              'relative overflow-hidden rounded-2xl border bg-black/50 p-5',
+              i === 0 ? 'border-amarillo/50' : 'border-white/10',
+            )}
+          >
+            <span
+              aria-hidden
+              className="pointer-events-none absolute -right-3 -top-6 select-none font-sport text-8xl leading-none text-white/[0.06]"
             >
+              {tramo.posicion}
+            </span>
+
+            <div className="relative flex items-center gap-3">
               <span
-                aria-hidden
-                className="pointer-events-none absolute -right-3 -top-6 select-none font-sport text-8xl leading-none text-white/[0.06]"
+                className={cn(
+                  'inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-b font-sport text-lg',
+                  METAL[i],
+                )}
               >
-                {g.posicion}
+                {tramo.posicion}
               </span>
-              <div className="relative flex items-center gap-3">
-                <span
-                  className={cn(
-                    'inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-b font-sport text-lg',
-                    METAL[i],
-                  )}
-                >
-                  {g.posicion}
-                </span>
-                <TeamCrest slug={g.equipo} size={36} />
-              </div>
-              <p className="relative mt-4 text-lg font-bold leading-tight text-neutral-50">
-                {g.jugador}
-              </p>
-              <p className="relative mt-1 text-sm text-neutral-400">
-                {eq?.nombre ?? g.equipo} · dorsal {g.numero}
-              </p>
-              <p className="relative mt-4 font-sport text-4xl leading-none text-amarillo">
-                {g.goles}
-                <span className="ml-2 font-bufon text-xs uppercase tracking-widest text-neutral-500">
-                  {g.goles === 1 ? 'gol' : 'goles'}
+              <p className="font-sport text-3xl leading-none text-amarillo">
+                {tramo.goles}
+                <span className="ml-2 font-bufon text-[10px] uppercase tracking-widest text-neutral-500">
+                  {tramo.goles === 1 ? 'gol' : 'goles'}
                 </span>
               </p>
             </div>
-          );
-        })}
+
+            {tramo.jugadores.length === 1 ? (
+              <>
+                <p className="relative mt-4 text-lg font-bold leading-tight text-neutral-50">
+                  {tramo.jugadores[0]!.jugador}
+                </p>
+                <p className="relative mt-1 text-sm text-neutral-400">
+                  {getEquipo(tramo.jugadores[0]!.equipo)?.nombre ?? tramo.jugadores[0]!.equipo} ·
+                  dorsal {tramo.jugadores[0]!.numero}
+                </p>
+              </>
+            ) : (
+              <>
+                <p className="relative mt-4 font-bufon text-[11px] uppercase tracking-widest text-neutral-500">
+                  {tramo.jugadores.length} jugadores empatados
+                </p>
+                <ul className="relative mt-2 space-y-1.5">
+                  {tramo.jugadores.map((g) => (
+                    <li key={`${g.jugador}-${g.equipo}`} className="flex items-center gap-2">
+                      <TeamCrest slug={g.equipo} size={20} />
+                      <span className="truncate text-sm font-semibold text-neutral-200">
+                        {g.jugador}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </>
+            )}
+          </div>
+        ))}
       </div>
+
+      {/* Se dice el criterio, igual que el Artículo 14 en la tabla: un orden
+          que no explica su regla parece arbitrario. */}
+      {hayEmpates ? (
+        <p className="mt-4 text-xs text-neutral-500">
+          Los jugadores con los mismos goles comparten puesto y van en orden alfabético. Tras un
+          empate, el ranking salta al puesto que corresponde.
+        </p>
+      ) : null}
 
       {/* Resto de la tabla */}
       <div className="mt-6 overflow-x-auto rounded-2xl border border-white/10 bg-black/40">

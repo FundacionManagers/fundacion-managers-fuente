@@ -536,6 +536,55 @@ export interface Autogol {
  */
 export const AUTOGOLES: readonly Autogol[] = [{ autor: 'managers-fc', jornada: 2 }];
 
+/** Un goleador con su puesto compartido y cuántos lo comparten. */
+export interface GoleadorClasificado extends Goleador {
+  /** Cuántos jugadores tienen exactamente los mismos goles. */
+  empatados: number;
+}
+
+/**
+ * Reparte los puestos del ranking dejando que los empatados compartan número.
+ *
+ * El ranking numeraba de 1 a N por orden de llegada, así que siete jugadores
+ * con 4 goles ocupaban los puestos 3 al 9 y el desempate real era el orden
+ * alfabético — sin decirlo en ninguna parte. Andrés Ospina salía tercero y
+ * Wilson Rubiano noveno con los mismos goles.
+ *
+ * Se usa la numeración estándar de competición: tras siete empatados en el
+ * puesto 3, el siguiente es el 10. De los 46 anotadores actuales, 44 están
+ * dentro de algún grupo de empate, así que esto no es un caso raro: es el
+ * caso normal.
+ */
+export function posicionesCompartidas(
+  goleadores: readonly Goleador[],
+): readonly GoleadorClasificado[] {
+  const ordenados = [...goleadores].sort(
+    (a, b) => b.goles - a.goles || a.jugador.localeCompare(b.jugador, 'es'),
+  );
+
+  const cuantos = new Map<number, number>();
+  for (const g of ordenados) cuantos.set(g.goles, (cuantos.get(g.goles) ?? 0) + 1);
+
+  let puesto = 0;
+  return ordenados.map((g, i) => {
+    if (i === 0 || g.goles !== ordenados[i - 1]!.goles) puesto = i + 1;
+    return { ...g, posicion: puesto, empatados: cuantos.get(g.goles) ?? 1 };
+  });
+}
+
+/** Los goleadores agrupados por número de goles, de más a menos. */
+export function tramosDeGoles(
+  goleadores: readonly GoleadorClasificado[],
+): { goles: number; posicion: number; jugadores: readonly GoleadorClasificado[] }[] {
+  const tramos: { goles: number; posicion: number; jugadores: GoleadorClasificado[] }[] = [];
+  for (const g of goleadores) {
+    const ultimo = tramos[tramos.length - 1];
+    if (ultimo && ultimo.goles === g.goles) ultimo.jugadores.push(g);
+    else tramos.push({ goles: g.goles, posicion: g.posicion, jugadores: [g] });
+  }
+  return tramos;
+}
+
 /**
  * Club beneficiado por un autogol: el rival de ese partido.
  *
