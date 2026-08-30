@@ -12,9 +12,11 @@ interface Props {
   nombre: string;
   scoreText: string;
   edicion: string;
+  /** A dónde lleva el botón. La llave de esa edición, no la de otra. */
+  href: string;
 }
 
-export function CampeonReveal({ slug, nombre, scoreText, edicion }: Props) {
+export function CampeonReveal({ slug, nombre, scoreText, edicion, href }: Props) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   useEffect(() => {
@@ -131,8 +133,11 @@ export function CampeonReveal({ slug, nombre, scoreText, edicion }: Props) {
       />
 
       <div className="relative flex flex-col items-center px-6 py-12 text-center lg:py-16">
+        {/* "Torneo finalizado" era lo primero que leía quien entraba desde el
+            menú, con la edición en curso todavía jugándose. Lo que esto
+            celebra es el último campeón, no el final del torneo. */}
         <span className="font-bufon text-xs font-bold uppercase tracking-[0.35em] text-neutral-400">
-          Torneo finalizado · {edicion}
+          Último campeón · {edicion}
         </span>
 
         {/* CAMPEÓN con brillo */}
@@ -173,8 +178,11 @@ export function CampeonReveal({ slug, nombre, scoreText, edicion }: Props) {
           Final · {scoreText}
         </span>
 
+        {/* Apuntaba fijo a /torneo/bracket/, que es la llave de la edición EN
+            CURSO: el botón prometía la final que acaba de celebrar y llevaba
+            a la proyección de cuartos de otro torneo. */}
         <Link
-          href="/torneo/bracket/"
+          href={href}
           className="group mt-8 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-amarillo to-naranja px-8 py-4 text-sm font-bold text-carbon shadow-[0_12px_40px_rgba(232,114,44,0.45)] transition-all duration-200 ease-managers hover:-translate-y-0.5"
         >
           Ver la llave completa

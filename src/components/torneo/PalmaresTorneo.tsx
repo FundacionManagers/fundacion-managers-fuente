@@ -1,9 +1,14 @@
 import Link from 'next/link';
 import { Trophy } from 'lucide-react';
 import { TeamCrest } from '@/components/torneo/TeamCrest';
+import { CALENDARIO_FASE_FINAL, fechaLargaDe } from '@/lib/liga';
 import { EDICIONES_DISPUTADAS, TITULOS_POR_CLUB, campeonDe, respaldoDe } from '@/lib/torneo';
 import { EQUIPOS } from '@/lib/torneo-data';
 import { cn } from '@/lib/utils';
+
+/** Día de la gran final de la edición en curso, según lo anunciado. */
+const RONDA_FINAL = CALENDARIO_FASE_FINAL.find((r) => r.fase === 'final');
+const FECHA_FINAL = RONDA_FINAL ? fechaLargaDe(RONDA_FINAL.fecha) : '';
 
 /**
  * Palmarés del torneo: todas las ediciones y quién ganó cada una.
@@ -24,6 +29,9 @@ export function PalmaresTorneo() {
 
   const palmares = Object.entries(TITULOS_POR_CLUB).sort((a, b) => b[1] - a[1]);
 
+  // Cuántas de esas ediciones tienen ya un campeón: la en curso no cuenta.
+  const conCampeon = ediciones.filter((e) => campeonDe(e) !== undefined).length;
+
   return (
     <div>
       <div className="flex items-end justify-between gap-4">
@@ -35,8 +43,11 @@ export function PalmaresTorneo() {
             Todas las ediciones
           </h2>
         </div>
+        {/* "4 ediciones" contaba también la que se está jugando, que todavía
+            no tiene campeón. Un palmarés cuenta títulos, así que se dicen las
+            dos cifras y ninguna infla a la otra. */}
         <span className="hidden shrink-0 rounded-full border border-amarillo/40 bg-amarillo/10 px-4 py-1.5 font-bufon text-xs font-bold uppercase tracking-[0.15em] text-amarillo sm:block">
-          {ediciones.length} ediciones
+          {conCampeon} {conCampeon === 1 ? 'campeón' : 'campeones'} en {ediciones.length} ediciones
         </span>
       </div>
       <div className="energy-bar mt-5 h-1 w-full rounded-full opacity-70" />
@@ -82,8 +93,11 @@ export function PalmaresTorneo() {
                       <p className="font-serif text-base font-bold text-neutral-400">
                         {enCurso ? 'En juego' : 'Sin campeón registrado'}
                       </p>
+                      {/* Decía "se juega en septiembre", escrito a mano.
+                          La fecha sale del calendario de la fase final, así
+                          que al moverse la final se mueve sola. */}
                       <p className="mt-0.5 font-bufon text-[11px] uppercase tracking-widest text-neutral-600">
-                        {enCurso ? 'La final se juega en septiembre' : ''}
+                        {enCurso && FECHA_FINAL ? `La final se juega el ${FECHA_FINAL}` : ''}
                       </p>
                     </>
                   )}
@@ -93,8 +107,12 @@ export function PalmaresTorneo() {
               {/* De dónde sale el dato */}
               <div className="w-full shrink-0 sm:w-auto sm:text-right">
                 {respaldo === 'llave-publicada' ? (
+                  // Iba al Calendario, donde la llave estaba dentro de un
+                  // acordeón cerrado bajo el fixture de la edición en curso:
+                  // el enlace llevaba a la página, pero no a lo que promete.
+                  // Ahora la llave vive en esta misma página, más abajo.
                   <Link
-                    href="/torneo/calendario/"
+                    href="#llave-anterior"
                     className="inline-flex items-center gap-1.5 rounded-full border border-white/15 px-3 py-1 font-bufon text-[10px] font-bold uppercase tracking-[0.15em] text-neutral-300 transition-colors hover:border-amarillo/50 hover:text-amarillo"
                   >
                     Ver la llave
