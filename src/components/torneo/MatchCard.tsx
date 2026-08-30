@@ -8,19 +8,29 @@ import { cn } from '@/lib/utils';
 function Side({ slug, align }: { slug: string | null; align: 'left' | 'right' }) {
   const eq = slug ? getEquipo(slug) : undefined;
   return (
+    // `min-w-0` es lo que faltaba: sin él, un hijo `flex-1` no encoge por
+    // debajo de su contenido, así que el `truncate` del nombre nunca entraba
+    // y la tarjeta desbordaba —431 px de ancho real dentro de 326 visibles—.
     <div
       className={cn(
-        'flex flex-1 items-center gap-3',
+        'flex min-w-0 flex-1 items-center gap-2 sm:gap-3',
         align === 'right' && 'flex-row-reverse text-right',
       )}
     >
-      <TeamCrest slug={slug} size={48} />
+      <TeamCrest slug={slug} size={40} />
+      {/* En un móvil los dos nombres no caben a los lados del marcador: "The
+          Originals" se quedaba con 71 px de los 102 que mide. Ahí manda la
+          sigla, que es corta y sin ambigüedad, y el nombre completo va debajo
+          en letra pequeña, envolviendo en vez de cortarse. Desde `sm` vuelve
+          el orden de siempre. */}
       <div className={cn('min-w-0', align === 'right' && 'items-end')}>
         <p className="truncate font-serif text-base font-bold leading-tight text-neutral-50">
-          {eq?.nombre ?? 'Por definir'}
+          <span className="sm:hidden">{eq?.corto ?? 'Por definir'}</span>
+          <span className="hidden sm:inline">{eq?.nombre ?? 'Por definir'}</span>
         </p>
-        <p className="text-[11px] uppercase tracking-widest text-neutral-500">
-          {eq ? eq.corto : '—'}
+        <p className="text-[11px] uppercase leading-tight tracking-widest text-neutral-500">
+          <span className="sm:hidden">{eq?.nombre ?? '—'}</span>
+          <span className="hidden sm:inline">{eq ? eq.corto : '—'}</span>
         </p>
       </div>
     </div>
@@ -58,11 +68,11 @@ export function MatchCard({ p }: { p: Partido }) {
         )}
       </div>
 
-      <div className="relative flex items-center gap-3 px-5 py-6">
+      <div className="relative flex items-center gap-2 px-4 py-6 sm:gap-3 sm:px-5">
         <Side slug={p.local} align="left" />
 
-        <div className="flex shrink-0 flex-col items-center px-1">
-          <div className="flex items-center gap-2 font-sport text-4xl leading-none text-neutral-50">
+        <div className="flex shrink-0 flex-col items-center">
+          <div className="flex items-center gap-1.5 font-sport text-3xl leading-none text-neutral-50 sm:gap-2 sm:text-4xl">
             <span className="tabular-nums">{p.golesLocal ?? '–'}</span>
             <span className="text-lg text-gold">:</span>
             <span className="tabular-nums">{p.golesVisitante ?? '–'}</span>

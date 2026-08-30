@@ -11,18 +11,19 @@ import {
   ordinalFemenino,
   pillEdicion,
 } from '@/lib/torneo';
-import { EQUIPOS } from '@/lib/torneo-data';
+import { calcularPosiciones } from '@/lib/liga';
+import { cargarLigaConAviso } from '@/lib/liga-supabase';
+import { EQUIPOS, getEquipo } from '@/lib/torneo-data';
 
 export const metadata: Metadata = {
   title: 'Equipos · Torneo Managers',
   description: `Los ocho clubes de la ${ordinalFemenino(EDICION_EN_CURSO.numero)} edición del Torneo Managers F7.`,
 };
 
-export default function EquiposPage() {
+export default async function EquiposPage() {
   // El destacado es el campeon VIGENTE, no el club con mas titulos: son dos
   // cosas distintas y la pagina llego a confundirlas.
   const campeon = EQUIPOS.find((e) => e.nombre === CAMPEON_VIGENTE.equipo)!;
-  const resto = EQUIPOS.filter((e) => e.slug !== campeon.slug);
 
   // El maximo ganador solo tiene bloque propio si es OTRO club. Hoy el unico
   // palmares demostrable con una final publicada es el de The Originals, asi
@@ -31,8 +32,25 @@ export default function EquiposPage() {
     ? EQUIPOS.find((e) => e.nombre === MAXIMO_GANADOR.equipo)
     : undefined;
 
+  /**
+   * La parrilla, ordenada como va la tabla hoy.
+   *
+   * Antes se titulaba "Los retadores" y excluía solo al campeón vigente, así
+   * que el líder de la tabla salía etiquetado de retador y el máximo ganador
+   * aparecía dos veces en la misma página. Y ninguna de las tarjetas decía
+   * nada de la edición en curso: ocho escudos iguales, sin puesto ni puntos.
+   *
+   * Ahora es el índice completo de los ocho, con su puesto y sus puntos
+   * leídos de la tabla. Nada de esto se escribe a mano.
+   */
+  const datos = await cargarLigaConAviso();
+  const clubes = calcularPosiciones(datos.partidos, datos.disciplina).flatMap((fila) => {
+    const equipo = getEquipo(fila.equipo);
+    return equipo ? [{ fila, equipo }] : [];
+  });
+
   return (
-    <TorneoShell eyebrow={pillEdicion(EDICION_EN_CURSO)} title="Clubes" active="/torneo/equipos/">
+    <TorneoShell eyebrow={pillEdicion(EDICION_EN_CURSO)} title="Equipos" active="/torneo/equipos/">
       {/* Campeón vigente destacado */}
       <Link
         href={`/torneo/equipos/${campeon.slug}/`}
@@ -95,22 +113,41 @@ export default function EquiposPage() {
         </Link>
       ) : null}
 
-      {/* Resto de clubes */}
+      {/* Los ocho, como van hoy */}
       <h3 className="mt-16 font-sport text-4xl uppercase leading-none text-neutral-50 md:text-5xl">
-        Los retadores
+        Los ocho clubes
       </h3>
+      <p className="mt-2 text-sm text-neutral-500">
+        Ordenados como van hoy en{' '}
+        <Link href="/torneo/#fase-de-grupos" className="text-amarillo hover:text-naranja">
+          la tabla
+        </Link>{' '}
+        de la {ordinalFemenino(EDICION_EN_CURSO.numero)} edición.
+      </p>
       <div className="energy-bar mt-4 h-1 w-full rounded-full opacity-70" />
 
       <ul className="stagger-in mt-10 grid grid-cols-2 gap-5 sm:grid-cols-3 lg:grid-cols-4">
-        {resto.map((e) => (
-          <li key={e.slug}>
+        {clubes.map(({ fila, equipo }) => (
+          <li key={equipo.slug}>
             <Link
-              href={`/torneo/equipos/${e.slug}/`}
-              className="group flex h-full flex-col items-center gap-5 rounded-2xl border border-white/10 bg-gradient-to-br from-[#11161d] to-[#0b0f14] p-7 transition-all duration-300 ease-managers hover:-translate-y-2 hover:border-amarillo/50 hover:shadow-[0_28px_70px_rgba(0,0,0,0.6)]"
+              href={`/torneo/equipos/${equipo.slug}/`}
+              className="group flex h-full flex-col items-center gap-4 rounded-2xl border border-white/10 bg-gradient-to-br from-[#11161d] to-[#0b0f14] p-6 transition-all duration-300 ease-managers hover:-translate-y-2 hover:border-amarillo/50 hover:shadow-[0_28px_70px_rgba(0,0,0,0.6)]"
             >
-              <TeamCrest slug={e.slug} size={92} />
+              {/* Un chip y no "1º de la tabla": ese texto envolvía a dos
+                  líneas en móvil, y el encabezado de arriba ya dice que la
+                  parrilla va ordenada por la tabla. */}
+              <span className="rounded-full border border-white/15 px-2.5 py-0.5 font-mono text-[11px] uppercase tracking-widest text-neutral-400">
+                {fila.posicion}º
+              </span>
+              <TeamCrest slug={equipo.slug} size={88} />
               <span className="text-center font-serif text-base font-bold text-neutral-100">
-                {e.nombre}
+                {equipo.nombre}
+              </span>
+              <span className="font-sport text-2xl leading-none text-amarillo">
+                {fila.pts}
+                <span className="ml-1.5 font-mono text-[10px] uppercase tracking-widest text-neutral-500">
+                  {fila.pts === 1 ? 'punto' : 'puntos'}
+                </span>
               </span>
               <span className="mt-auto inline-flex items-center gap-1 text-xs font-semibold text-neutral-500 transition-colors group-hover:text-amarillo">
                 Ver club

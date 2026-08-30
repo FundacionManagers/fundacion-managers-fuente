@@ -3,7 +3,13 @@
 import { useEffect, useState } from 'react';
 import { CalendarClock } from 'lucide-react';
 import { TeamCrest } from '@/components/torneo/TeamCrest';
-import { diaCortoDe, jornadaEnVariosDias, type Compromiso } from '@/lib/liga';
+import {
+  diaCortoDe,
+  diaRelativoDe,
+  jornadaEnVariosDias,
+  type Compromiso,
+  type DiaRelativo,
+} from '@/lib/liga';
 
 /**
  * Tarjeta de la próxima fecha, arriba del fixture.
@@ -22,36 +28,13 @@ export function ProximaFecha({ compromiso }: { compromiso: Compromiso }) {
   const { titulo, etiqueta, iso, partidos } = compromiso;
   // null hasta que monta en el navegador: en el servidor no hay "hoy" que
   // valga, y pintar uno provocaría un desajuste de hidratación.
-  const [cuando, setCuando] = useState<string | null>(null);
+  const [cuando, setCuando] = useState<DiaRelativo>(null);
 
+  // La cuenta vive en `diaRelativoDe`, en la librería, porque la comparten
+  // esta tarjeta y la ficha de cada club: una sola de las dos equivocándose
+  // sería peor que ninguna.
   useEffect(() => {
-    function calcular() {
-      const inicio = new Date(iso);
-      if (Number.isNaN(inicio.getTime())) return null;
-      const ahora = new Date();
-
-      // Se comparan días de calendario, no milisegundos: a las 23:00 de la
-      // víspera faltan 8 horas, pero para quien lo lee es "mañana".
-      const soloDia = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
-      const dias = Math.round((soloDia(inicio) - soloDia(ahora)) / 86400000);
-
-      /**
-       * Solo se destaca lo que de verdad cambia el plan de alguien: hoy y
-       * mañana. Un "en 5 días" no mueve a nadie y solo compite por atención
-       * con lo que sí importa; para eso ya está el rótulo "Próxima fecha".
-       *
-       * La excepción es el día después, antes de que carguen los resultados:
-       * un partido sigue marcado como "programado" hasta que la organización
-       * sube el marcador, así que el lunes por la mañana esta tarjeta seguía
-       * apuntando al domingo. Llamar "próxima" a una fecha de ayer es
-       * mentira; lo honesto es admitir que faltan los resultados.
-       */
-      if (dias < 0) return 'Resultados en camino';
-      if (dias === 0) return 'Hoy';
-      if (dias === 1) return 'Mañana';
-      return null;
-    }
-
+    const calcular = () => diaRelativoDe(iso, new Date());
     setCuando(calcular());
     const id = setInterval(() => setCuando(calcular()), 60_000);
     return () => clearInterval(id);

@@ -946,6 +946,38 @@ export const CALENDARIO_FASE_FINAL: readonly RondaFinal[] = [
 /** Día en que arranca la fase final. Sale de la primera ronda, no a mano. */
 export const FECHA_FASE_FINAL = CALENDARIO_FASE_FINAL[0]!.fecha;
 
+/** Lo único que de verdad cambia el plan de alguien. El resto es ruido. */
+export type DiaRelativo = 'Hoy' | 'Mañana' | 'Resultados en camino' | null;
+
+/**
+ * A cuántos días de distancia queda un compromiso, dicho en palabras.
+ *
+ * Se comparan días de calendario, no milisegundos: a las 23:00 de la víspera
+ * faltan 8 horas, pero para quien lo lee es "mañana".
+ *
+ * Un "en 5 días" no mueve a nadie y solo compite por atención con lo que sí
+ * importa, así que devuelve null. La excepción es el día después: un partido
+ * sigue marcado como "programado" hasta que la organización sube el marcador,
+ * y llamar "próximo" a un partido de ayer es mentira. Lo honesto es admitir
+ * que faltan los resultados.
+ *
+ * Vive aquí, y no dentro del componente, porque la usan la tarjeta del
+ * Calendario y la ficha de cada club, y una sola de las dos equivocándose
+ * sería peor que ninguna.
+ */
+export function diaRelativoDe(iso: string, ahora: Date): DiaRelativo {
+  const inicio = new Date(iso);
+  if (Number.isNaN(inicio.getTime())) return null;
+
+  const soloDia = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+  const dias = Math.round((soloDia(inicio) - soloDia(ahora)) / 86400000);
+
+  if (dias < 0) return 'Resultados en camino';
+  if (dias === 0) return 'Hoy';
+  if (dias === 1) return 'Mañana';
+  return null;
+}
+
 /** Orden en que se juegan las rondas, para dibujarlas siempre igual. */
 export const ORDEN_FASES: readonly FaseFinal[] = ['cuartos', 'semifinal', 'tercer-puesto', 'final'];
 
