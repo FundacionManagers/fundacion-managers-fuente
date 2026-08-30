@@ -644,6 +644,83 @@ export function proximoPartidoDe(partidos: readonly PartidoLiga[]): PartidoLiga 
 }
 
 /**
+ * Lo próximo que se juega, sea una fecha de grupos o una ronda de la final.
+ *
+ * Existe para que la web no se quede sin "próximo" el 6 de septiembre.
+ * Hasta ahora todo miraba `proximoPartidoDe`, que solo conoce la fase de
+ * grupos: en cuanto se jugara la Fecha 7 devolvería vacío y desaparecerían
+ * de golpe la tarjeta del Calendario y el punto de aviso de la pestaña,
+ * justo en la semana previa a cuartos.
+ *
+ * El orden de búsqueda es:
+ *   1. La siguiente fecha de grupos con partidos por jugar.
+ *   2. La siguiente ronda de la eliminatoria que ya esté cargada en el panel.
+ *   3. La siguiente ronda del calendario anunciado, aunque todavía no tenga
+ *      ni equipos ni horas.
+ *
+ * Cuál es la ronda pendiente se decide por los datos, no por la fecha de
+ * hoy: es la primera que no tiene todos sus partidos jugados. Así no
+ * depende de cuándo se compiló el sitio.
+ */
+export interface Compromiso {
+  tipo: 'jornada' | 'ronda';
+  /** 'Fecha 6' o 'Cuartos de final'. */
+  titulo: string;
+  /** 'Domingo 30 de agosto 2026'. */
+  etiqueta: string;
+  /** Momento de inicio en ISO, para la cuenta atrás del navegador. */
+  iso: string;
+  /** Los partidos, si ya se conocen. Vacío en una ronda sin sorteo. */
+  partidos: readonly PartidoLiga[];
+}
+
+export function proximoCompromiso(
+  partidos: readonly PartidoLiga[],
+  eliminatoria: readonly PartidoEliminatoria[] = [],
+): Compromiso | null {
+  // 1. Fase de grupos.
+  const siguiente = proximoPartidoDe(partidos);
+  if (siguiente) {
+    const suyos = partidosDeJornada(siguiente.jornada, partidos);
+    return {
+      tipo: 'jornada',
+      titulo: `Fecha ${siguiente.jornada}`,
+      etiqueta:
+        JORNADAS_INFO.find((j) => j.jornada === siguiente.jornada)?.etiqueta ??
+        fechaLargaDe(siguiente.fecha),
+      iso: isoDe(siguiente),
+      partidos: suyos,
+    };
+  }
+
+  // 2 y 3. La primera ronda de la final que aún no se ha jugado entera.
+  for (const ronda of CALENDARIO_FASE_FINAL) {
+    const suyos = eliminatoria.filter((p) => p.fase === ronda.fase);
+    const pendiente = suyos.length === 0 || suyos.some((p) => p.estado === 'programado');
+    if (!pendiente) continue;
+
+    // Si ya hay cruces cargados, mandan su fecha y su hora sobre lo anunciado.
+    const primero = suyos.find((p) => p.estado === 'programado') ?? suyos[0];
+    const fecha = primero?.fecha ?? ronda.fecha;
+    return {
+      tipo: 'ronda',
+      titulo: ronda.titulo,
+      etiqueta: fechaLargaDe(fecha),
+      iso: primero ? isoDe(primero) : `${aISO(fecha)}T00:00:00-05:00`,
+      partidos: suyos,
+    };
+  }
+
+  return null;
+}
+
+/** '13/09/2026' → '2026-09-13'. */
+function aISO(fecha: string): string {
+  const [d, m, a] = fecha.split('/');
+  return `${a}-${m}-${d}`;
+}
+
+/**
  * Momento exacto del partido en ISO con la zona de Colombia.
  *
  * '30/08/2026' + '07:00' → '2026-08-30T07:00:00-05:00'. Lleva el huso
@@ -829,8 +906,77 @@ export const COLUMNAS_TABLA = [
 
 /* ─────────────────────────── Fase final ─────────────────────────── */
 
-/** Día en que arranca la fase final de la 4ª edición. */
-export const FECHA_FASE_FINAL = '13/09/2026';
+/** Las rondas de la eliminatoria. Vive aquí y no en `liga-supabase` para
+ *  que el calendario de la fase final pueda tiparse sin importación
+ *  circular; `liga-supabase` lo reexporta para no romper a quien ya lo
+ *  importaba de allí. */
+export type FaseFinal = 'cuartos' | 'semifinal' | 'tercer-puesto' | 'final';
+
+/** Un partido de la eliminatoria: como los de liga, más su ronda. */
+export interface PartidoEliminatoria extends PartidoLiga {
+  fase: FaseFinal;
+}
+
+export interface RondaFinal {
+  fase: FaseFinal;
+  titulo: string;
+  /** Día de juego, ej. '13/09/2026'. */
+  fecha: string;
+}
+
+/**
+ * Calendario de la fase final, con las fechas que anunció la organización.
+ *
+ * Se guardan las fechas aunque todavía no se sepan ni los equipos ni las
+ * horas: los cruces salen de la tabla cuando termine la fase de grupos, y
+ * los horarios los fija la organización más adelante. Publicar el día ya
+ * sirve —un capitán puede reservarlo— y evita el hueco que se abriría el 6
+ * de septiembre, cuando se juegue la Fecha 7 y no quede ningún partido de
+ * grupos por delante.
+ *
+ * En cuanto se carguen los partidos reales en el panel, mandan ellos: este
+ * calendario solo se usa mientras la eliminatoria esté vacía.
+ */
+export const CALENDARIO_FASE_FINAL: readonly RondaFinal[] = [
+  { fase: 'cuartos', titulo: 'Cuartos de final', fecha: '13/09/2026' },
+  { fase: 'semifinal', titulo: 'Semifinales', fecha: '20/09/2026' },
+  { fase: 'final', titulo: 'Gran Final', fecha: '26/09/2026' },
+];
+
+/** Día en que arranca la fase final. Sale de la primera ronda, no a mano. */
+export const FECHA_FASE_FINAL = CALENDARIO_FASE_FINAL[0]!.fecha;
+
+const DIAS_LARGOS = [
+  'Domingo',
+  'Lunes',
+  'Martes',
+  'Miércoles',
+  'Jueves',
+  'Viernes',
+  'Sábado',
+] as const;
+const MESES_LARGOS = [
+  'enero',
+  'febrero',
+  'marzo',
+  'abril',
+  'mayo',
+  'junio',
+  'julio',
+  'agosto',
+  'septiembre',
+  'octubre',
+  'noviembre',
+  'diciembre',
+] as const;
+
+/** '13/09/2026' → 'Domingo 13 de septiembre 2026'. */
+export function fechaLargaDe(fecha: string): string {
+  const [d, m, a] = fecha.split('/').map(Number) as [number, number, number];
+  // Mediodía UTC para que el día de la semana no se corra por el huso.
+  const dia = new Date(Date.UTC(a, m - 1, d, 12));
+  return `${DIAS_LARGOS[dia.getUTCDay()]} ${d} de ${MESES_LARGOS[m - 1]} ${a}`;
+}
 
 /**
  * Emparejamientos de cuartos: el 1º con el 8º, el 2º con el 7º, y así.

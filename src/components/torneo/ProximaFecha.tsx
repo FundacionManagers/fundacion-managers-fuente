@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { CalendarClock } from 'lucide-react';
 import { TeamCrest } from '@/components/torneo/TeamCrest';
-import { diaCortoDe, isoDe, jornadaEnVariosDias, type PartidoLiga } from '@/lib/liga';
+import { diaCortoDe, jornadaEnVariosDias, type Compromiso } from '@/lib/liga';
 
 /**
  * Tarjeta de la próxima fecha, arriba del fixture.
@@ -18,24 +18,16 @@ import { diaCortoDe, isoDe, jornadaEnVariosDias, type PartidoLiga } from '@/lib/
  * build se quedaría congelado y mentiría a los pocos días. La cuenta se hace
  * en el navegador de quien mira, contra su reloj.
  */
-export function ProximaFecha({
-  jornada,
-  etiqueta,
-  partidos,
-}: {
-  jornada: number;
-  etiqueta: string;
-  partidos: readonly PartidoLiga[];
-}) {
+export function ProximaFecha({ compromiso }: { compromiso: Compromiso }) {
+  const { titulo, etiqueta, iso, partidos } = compromiso;
   // null hasta que monta en el navegador: en el servidor no hay "hoy" que
   // valga, y pintar uno provocaría un desajuste de hidratación.
   const [cuando, setCuando] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!partidos.length) return;
-
     function calcular() {
-      const inicio = new Date(isoDe(partidos[0]!));
+      const inicio = new Date(iso);
+      if (Number.isNaN(inicio.getTime())) return null;
       const ahora = new Date();
 
       // Se comparan días de calendario, no milisegundos: a las 23:00 de la
@@ -63,9 +55,7 @@ export function ProximaFecha({
     setCuando(calcular());
     const id = setInterval(() => setCuando(calcular()), 60_000);
     return () => clearInterval(id);
-  }, [partidos]);
-
-  if (!partidos.length) return null;
+  }, [iso]);
 
   const horas = [...new Set(partidos.map((p) => p.hora))].sort();
   const variosDias = jornadaEnVariosDias(partidos);
@@ -96,30 +86,41 @@ export function ProximaFecha({
       </div>
 
       <h3 className="mt-3 font-sport text-4xl uppercase leading-none text-neutral-50 md:text-5xl">
-        Fecha {jornada}
+        {titulo}
       </h3>
       <p className="mt-1 text-sm text-neutral-400">
-        {etiqueta} · {partidos.length} partidos desde las {horas[0]}
+        {etiqueta}
+        {partidos.length ? ` · ${partidos.length} partidos desde las ${horas[0]}` : ''}
       </p>
 
-      {/* Los cuatro cruces con su hora. Esta fecha ya no se repite abajo en
-          el fixture, así que aquí va todo lo que hace falta para saber
-          cuándo juega tu equipo. */}
-      <ul className="mt-5 flex flex-wrap gap-x-5 gap-y-3">
-        {partidos.map((p) => (
-          <li key={p.id} className="flex items-center gap-1.5">
-            <TeamCrest slug={p.local} size={24} />
-            <span className="font-bufon text-[11px] uppercase tracking-widest text-neutral-500">
-              vs
-            </span>
-            <TeamCrest slug={p.visitante} size={24} />
-            <span className="ml-1 whitespace-nowrap font-mono text-[11px] text-neutral-500">
-              {variosDias ? `${diaCortoDe(p)} ` : ''}
-              {p.hora}
-            </span>
-          </li>
-        ))}
-      </ul>
+      {/* Los cruces con su hora. Esta fecha ya no se repite abajo en el
+          fixture, así que aquí va todo lo que hace falta para saber cuándo
+          juega tu equipo.
+
+          Una ronda de la fase final llega sin partidos hasta que termine la
+          fase de grupos y se sorteen los cruces: entonces se dice eso, en
+          vez de dejar el hueco vacío. */}
+      {partidos.length ? (
+        <ul className="mt-5 flex flex-wrap gap-x-5 gap-y-3">
+          {partidos.map((p) => (
+            <li key={p.id} className="flex items-center gap-1.5">
+              <TeamCrest slug={p.local} size={24} />
+              <span className="font-bufon text-[11px] uppercase tracking-widest text-neutral-500">
+                vs
+              </span>
+              <TeamCrest slug={p.visitante} size={24} />
+              <span className="ml-1 whitespace-nowrap font-mono text-[11px] text-neutral-500">
+                {variosDias ? `${diaCortoDe(p)} ` : ''}
+                {p.hora}
+              </span>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="mt-4 text-sm text-neutral-500">
+          Equipos y horarios por definir. Los cruces salen de la tabla al cerrar la fase de grupos.
+        </p>
+      )}
     </div>
   );
 }

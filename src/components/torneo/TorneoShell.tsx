@@ -2,7 +2,7 @@ import { GoldCoin } from '@/components/shared/GoldCoin';
 import { TeamCrest } from '@/components/torneo/TeamCrest';
 import { TorneoBackdrop } from '@/components/torneo/TorneoBackdrop';
 import { TorneoNav } from '@/components/torneo/TorneoNav';
-import { isoDe, proximoPartidoDe } from '@/lib/liga';
+import { proximoCompromiso } from '@/lib/liga';
 import { cargarLigaConAviso } from '@/lib/liga-supabase';
 import { EQUIPOS } from '@/lib/torneo-data';
 
@@ -23,7 +23,7 @@ interface TorneoShellProps {
  */
 export async function TorneoShell({ eyebrow, title, active, children }: TorneoShellProps) {
   const datos = await cargarLigaConAviso();
-  const proximo = proximoPartidoDe(datos.partidos);
+  const proximo = proximoCompromiso(datos.partidos, datos.eliminatoria);
 
   return (
     <div className="tournament-section relative">
@@ -72,7 +72,7 @@ export async function TorneoShell({ eyebrow, title, active, children }: TorneoSh
           </div>
         </section>
 
-        <TorneoNav active={active} avisoISO={proximo ? isoDe(proximo) : undefined} />
+        <TorneoNav active={active} avisoISO={proximo?.iso} />
 
         {/* CONTENIDO (panel translúcido para que la foto se vea detrás) */}
         <section className="grain relative">

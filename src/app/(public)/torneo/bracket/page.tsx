@@ -3,8 +3,10 @@ import { EliminatoriaLiga } from '@/components/torneo/EliminatoriaLiga';
 import { LlaveProyectada } from '@/components/torneo/LlaveProyectada';
 import { TorneoShell } from '@/components/torneo/TorneoShell';
 import {
+  CALENDARIO_FASE_FINAL,
   FECHA_FASE_FINAL,
   TOTAL_JORNADAS,
+  fechaLargaDe,
   calcularPosiciones,
   cruzarCuartos,
   faseDeGruposCompleta,
@@ -65,6 +67,29 @@ export default async function BracketPage() {
 
           <div className="mt-8">
             <LlaveProyectada cruces={cruces} provisional={!definitiva} />
+          </div>
+
+          {/* Las tres rondas con su fecha. La página anunciaba solo el día de
+              cuartos, en mitad de un párrafo; el camino completo hasta la
+              final es justo lo que esta página quiere contar. */}
+          <div className="mt-10 rounded-2xl border border-white/10 bg-black/30 p-6 lg:p-8">
+            <p className="font-bufon text-xs font-bold uppercase tracking-[0.25em] text-amarillo">
+              Camino a la final
+            </p>
+            <ol className="mt-4 space-y-2.5">
+              {CALENDARIO_FASE_FINAL.map((r, i) => (
+                <li key={r.fase} className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                  <span className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-md border border-white/15 font-mono text-[10px] text-neutral-400">
+                    {i + 1}
+                  </span>
+                  <span className="font-semibold text-neutral-200">{r.titulo}</span>
+                  <span className="text-sm text-neutral-400">{fechaLargaDe(r.fecha)}</span>
+                </li>
+              ))}
+            </ol>
+            <p className="mt-4 text-xs text-neutral-500">
+              Horarios por definir. El mejor ubicado en la tabla hace de local.
+            </p>
           </div>
         </>
       )}

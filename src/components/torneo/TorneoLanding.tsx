@@ -9,14 +9,7 @@ import { TablaPosiciones } from '@/components/torneo/TablaPosiciones';
 import { RankingGoleadores } from '@/components/torneo/RankingGoleadores';
 import { ProximaFecha } from '@/components/torneo/ProximaFecha';
 import { ALIANZA, ICONE_CYAN } from '@/lib/alianza';
-import {
-  isoDe,
-  jornadaActualDe,
-  JORNADAS_INFO,
-  partidosDeJornada,
-  proximoPartidoDe,
-  TOTAL_JORNADAS,
-} from '@/lib/liga';
+import { jornadaActualDe, proximoCompromiso, TOTAL_JORNADAS } from '@/lib/liga';
 import { cargarLigaConAviso } from '@/lib/liga-supabase';
 import {
   CAMPEON_VIGENTE,
@@ -42,12 +35,9 @@ export async function TorneoLanding() {
   const datos = await cargarLigaConAviso();
   const jornadaActual = jornadaActualDe(datos.partidos);
   const campeonVigente = EQUIPOS.find((e) => e.nombre === CAMPEON_VIGENTE.equipo);
-  const proximoPartido = proximoPartidoDe(datos.partidos);
-  const proximaJornada = proximoPartido?.jornada ?? null;
-  const partidosProxima = proximaJornada ? partidosDeJornada(proximaJornada, datos.partidos) : [];
-  const etiquetaProxima = proximaJornada
-    ? (JORNADAS_INFO.find((j) => j.jornada === proximaJornada)?.etiqueta ?? proximoPartido!.fecha)
-    : '';
+  // Lo próximo que se juega: una fecha de grupos, o una ronda de la
+  // fase final cuando ya no queden fechas por delante.
+  const proximo = proximoCompromiso(datos.partidos, datos.eliminatoria);
 
   return (
     <div className="tournament-section relative">
@@ -98,13 +88,9 @@ export async function TorneoLanding() {
           {/* La próxima fecha, en la portada. El Calendario ya la anunciaba y
               la pestaña titila, pero el Resumen era la única página que no
               sabía que mañana se juega. */}
-          {proximaJornada ? (
+          {proximo ? (
             <div className="mt-10 max-w-2xl">
-              <ProximaFecha
-                jornada={proximaJornada}
-                etiqueta={etiquetaProxima}
-                partidos={partidosProxima}
-              />
+              <ProximaFecha compromiso={proximo} />
             </div>
           ) : null}
         </div>
@@ -125,7 +111,7 @@ export async function TorneoLanding() {
         </div>
       </section>
 
-      <TorneoNav active="/torneo/" avisoISO={proximoPartido ? isoDe(proximoPartido) : undefined} />
+      <TorneoNav active="/torneo/" avisoISO={proximo?.iso} />
 
       {/* ===== NÚMEROS ===== */}
       <section className="grain relative z-10 overflow-hidden border-y border-white/10 bg-black/30 backdrop-blur-sm">

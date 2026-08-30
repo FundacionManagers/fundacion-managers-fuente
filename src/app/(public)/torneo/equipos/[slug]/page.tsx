@@ -12,8 +12,7 @@ import {
   EDICION_ACTUAL,
   PERIODO_ACTUAL,
   calcularPosiciones,
-  isoDe,
-  proximoPartidoDe,
+  proximoCompromiso,
   type PartidoLiga,
 } from '@/lib/liga';
 import { cargarLigaConAviso } from '@/lib/liga-supabase';
@@ -168,10 +167,7 @@ export default async function EquipoPage({ params }: Props) {
 
       <TorneoNav
         active="/torneo/equipos/"
-        avisoISO={(() => {
-          const p = proximoPartidoDe(datos.partidos);
-          return p ? isoDe(p) : undefined;
-        })()}
+        avisoISO={proximoCompromiso(datos.partidos, datos.eliminatoria)?.iso}
       />
 
       {/* CONTENIDO */}

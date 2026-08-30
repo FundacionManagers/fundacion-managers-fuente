@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import { ChevronRight } from 'lucide-react';
 import { MatchCard } from '@/components/torneo/MatchCard';
 import { FixtureLiga } from '@/components/torneo/FixtureLiga';
@@ -6,7 +7,7 @@ import { EliminatoriaLiga } from '@/components/torneo/EliminatoriaLiga';
 import { ProximaFecha } from '@/components/torneo/ProximaFecha';
 import { TorneoShell } from '@/components/torneo/TorneoShell';
 import { CUARTOS, SEMIS, TERCER_PUESTO, FINAL } from '@/lib/torneo-data';
-import { JORNADAS_INFO, partidosDeJornada, proximoPartidoDe } from '@/lib/liga';
+import { CALENDARIO_FASE_FINAL, fechaLargaDe, proximoCompromiso } from '@/lib/liga';
 import { cargarLigaConAviso } from '@/lib/liga-supabase';
 import { EDICION_ANTERIOR, EDICION_EN_CURSO, ordinalFemenino, pillEdicion } from '@/lib/torneo';
 
@@ -26,12 +27,10 @@ const HISTORIAL = [
 export default async function CalendarioPage() {
   const datos = await cargarLigaConAviso();
 
-  // La fecha que viene, para destacarla arriba del fixture.
-  const proxima = proximoPartidoDe(datos.partidos);
-  const partidosProxima = proxima ? partidosDeJornada(proxima.jornada, datos.partidos) : [];
-  const etiquetaProxima = proxima
-    ? (JORNADAS_INFO.find((j) => j.jornada === proxima.jornada)?.etiqueta ?? proxima.fecha)
-    : '';
+  // Lo próximo que se juega. Puede ser una fecha de grupos o, cuando ya no
+  // queden, una ronda de la fase final: así el Calendario no se queda sin
+  // "próximo" el 6 de septiembre, al terminar la Fecha 7.
+  const proximo = proximoCompromiso(datos.partidos, datos.eliminatoria);
 
   return (
     <TorneoShell
@@ -39,33 +38,61 @@ export default async function CalendarioPage() {
       title="Calendario"
       active="/torneo/calendario/"
     >
-      {proxima ? (
+      {proximo ? (
         <div className="mb-14">
-          <ProximaFecha
-            jornada={proxima.jornada}
-            etiqueta={etiquetaProxima}
-            partidos={partidosProxima}
-          />
+          <ProximaFecha compromiso={proximo} />
         </div>
       ) : null}
 
       <FixtureLiga datos={datos} />
 
-      {/* Fase final de la 4a edicion: aparece sola en cuanto existan cruces. */}
-      {datos.eliminatoria.length > 0 ? (
-        <div className="mt-20">
-          <p className="font-bufon text-sm font-bold uppercase tracking-[0.25em] text-naranja">
-            Fase final
-          </p>
-          <h2 className="mt-1 font-sport text-5xl uppercase leading-none text-neutral-50 md:text-6xl">
-            La llave
-          </h2>
-          <div className="energy-bar mt-5 h-1 w-full rounded-full opacity-70" />
+      {/* ===== Fase final =====
+          Mientras no haya cruces cargados se publican las fechas que anunció
+          la organización, que ya sirven para reservar el día. En cuanto los
+          partidos entren por el panel, este bloque cede el sitio a la llave
+          real con sus equipos y horarios. */}
+      <div className="mt-20">
+        <p className="font-bufon text-sm font-bold uppercase tracking-[0.25em] text-naranja">
+          Fase final
+        </p>
+        <h2 className="mt-1 font-sport text-5xl uppercase leading-none text-neutral-50 md:text-6xl">
+          La llave
+        </h2>
+        <div className="energy-bar mt-5 h-1 w-full rounded-full opacity-70" />
+
+        {datos.eliminatoria.length > 0 ? (
           <div className="mt-8">
             <EliminatoriaLiga partidos={datos.eliminatoria} />
           </div>
-        </div>
-      ) : null}
+        ) : (
+          <>
+            <ul className="mt-8 space-y-2.5">
+              {CALENDARIO_FASE_FINAL.map((r) => (
+                <li
+                  key={r.fase}
+                  className="flex flex-wrap items-baseline gap-x-4 gap-y-1 rounded-xl border border-dashed border-white/10 bg-black/20 px-5 py-4"
+                >
+                  <span className="font-sport text-2xl uppercase leading-none text-neutral-200">
+                    {r.titulo}
+                  </span>
+                  <span className="text-sm text-neutral-400">{fechaLargaDe(r.fecha)}</span>
+                  <span className="ml-auto font-bufon text-[10px] uppercase tracking-[0.15em] text-neutral-600">
+                    Equipos y horarios por definir
+                  </span>
+                </li>
+              ))}
+            </ul>
+            <p className="mt-4 max-w-2xl text-xs leading-relaxed text-neutral-500">
+              Los cruces salen de la tabla al cerrar la fase de grupos —1º-8º, 2º-7º, 3º-6º y 4º-5º—
+              y se pueden ver proyectados en{' '}
+              <Link href="/torneo/bracket/" className="text-amarillo hover:text-naranja">
+                La llave
+              </Link>
+              .
+            </p>
+          </>
+        )}
+      </div>
 
       {/* ===== Historial de la edición anterior, plegado =====
 

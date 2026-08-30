@@ -23,9 +23,16 @@ import {
   GOLEADORES_LIGA,
   PARTIDOS_LIGA,
   type Disciplina,
+  type FaseFinal,
   type Goleador,
+  type PartidoEliminatoria,
   type PartidoLiga,
 } from './liga';
+
+// Los dos tipos viven ahora en `liga.ts`, junto al calendario de la fase
+// final que los usa. Se reexportan para no romper a quien los importaba
+// desde aquí.
+export type { FaseFinal, PartidoEliminatoria };
 
 export interface DatosLiga {
   /** Solo fase de grupos: es lo que alimenta la tabla de posiciones. */
@@ -36,12 +43,6 @@ export interface DatosLiga {
   goleadores: readonly Goleador[];
   /** De dónde salieron los datos. Se registra en el log del build. */
   origen: 'supabase' | 'respaldo';
-}
-
-export type FaseFinal = 'cuartos' | 'semifinal' | 'tercer-puesto' | 'final';
-
-export interface PartidoEliminatoria extends PartidoLiga {
-  fase: FaseFinal;
 }
 
 const RESPALDO: DatosLiga = {
