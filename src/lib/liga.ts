@@ -946,6 +946,70 @@ export const CALENDARIO_FASE_FINAL: readonly RondaFinal[] = [
 /** Día en que arranca la fase final. Sale de la primera ronda, no a mano. */
 export const FECHA_FASE_FINAL = CALENDARIO_FASE_FINAL[0]!.fecha;
 
+/** Las cifras gruesas de la edición, para la cabecera de Estadísticas. */
+export interface CifrasEdicion {
+  partidos: number;
+  goles: number;
+  /** Goles por partido, con dos decimales. Null si todavía no se ha jugado nada. */
+  promedio: number | null;
+  /** El partido con más goles de la edición. Null si no hay ninguno jugado. */
+  masGoleado: PartidoLiga | null;
+}
+
+/**
+ * Cuenta lo que ya se jugó: partidos, goles y el partido más goleado.
+ *
+ * La página de Estadísticas se llamaba así y solo tenía goleadores. Estas
+ * cifras salen del mismo calendario que la tabla, así que no pueden
+ * contradecirla; escribirlas a mano sí habría podido.
+ */
+export function cifrasDeEdicion(partidos: readonly PartidoLiga[] = PARTIDOS_LIGA): CifrasEdicion {
+  const jugados = partidos.filter(
+    (p) => p.estado === 'jugado' && p.golesLocal != null && p.golesVisitante != null,
+  );
+  const golesDe = (p: PartidoLiga) => (p.golesLocal ?? 0) + (p.golesVisitante ?? 0);
+  const goles = jugados.reduce((s, p) => s + golesDe(p), 0);
+
+  // El primero de la jornada más temprana gana los empates: así el resultado
+  // no depende del orden en que Supabase devuelva las filas.
+  const masGoleado = jugados.reduce<PartidoLiga | null>((mejor, p) => {
+    if (!mejor) return p;
+    if (golesDe(p) > golesDe(mejor)) return p;
+    if (golesDe(p) === golesDe(mejor) && p.jornada < mejor.jornada) return p;
+    return mejor;
+  }, null);
+
+  return {
+    partidos: jugados.length,
+    goles,
+    promedio: jugados.length ? Math.round((goles / jugados.length) * 100) / 100 : null,
+    masGoleado,
+  };
+}
+
+/** El club menos goleado. Empate resuelto por quien vaya mejor en la tabla. */
+export function mejorDefensa(posiciones: readonly FilaPosicion[]): FilaPosicion | null {
+  return posiciones.reduce<FilaPosicion | null>(
+    (mejor, f) => (!mejor || f.gc < mejor.gc ? f : mejor),
+    null,
+  );
+}
+
+/**
+ * Los ocho clubes ordenados por juego limpio, del más limpio al menos.
+ *
+ * La página publicaba solo al ganador —"4 amarillas · 0 rojas"— y sin nadie
+ * con quien compararlo eso no dice nada. Peor: se leía como una
+ * contradicción, porque quien gana puede tener más amarillas que otro y
+ * ganar igual (una roja pesa como tres amarillas, Artículo 14). Con la tabla
+ * entera delante, la regla se explica sola.
+ */
+export function tablaJuegoLimpio(posiciones: readonly FilaPosicion[]): FilaPosicion[] {
+  return [...posiciones].sort(
+    (a, b) => puntosJuegoLimpio(a) - puntosJuegoLimpio(b) || a.posicion - b.posicion,
+  );
+}
+
 /** Lo único que de verdad cambia el plan de alguien. El resto es ruido. */
 export type DiaRelativo = 'Hoy' | 'Mañana' | 'Resultados en camino' | null;
 

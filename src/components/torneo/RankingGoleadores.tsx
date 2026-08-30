@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { ChevronRight } from 'lucide-react';
 import { TeamCrest } from '@/components/torneo/TeamCrest';
 import { getEquipo } from '@/lib/torneo-data';
 import {
@@ -11,6 +12,14 @@ import {
 import type { DatosLiga } from '@/lib/liga-supabase';
 import { cn } from '@/lib/utils';
 
+/** Una fila del ranking, ya con su puesto compartido resuelto. */
+type GoleadorConPosicion = ReturnType<typeof posicionesCompartidas>[number];
+
+/** Un autogol con el club al que acabó beneficiando. */
+type AutogolPublicado = (typeof AUTOGOLES)[number] & {
+  beneficiado: ReturnType<typeof beneficiadoDe>;
+};
+
 const METAL = [
   'from-amarillo to-naranja text-carbon',
   'from-neutral-300 to-neutral-500 text-carbon',
@@ -19,6 +28,16 @@ const METAL = [
 
 /** Cuántos puestos, además del podio, se listan en la versión compacta. */
 const TOPE_COMPACTO = 7;
+
+/**
+ * A partir de cuántos empatados se pliega la cola del ranking.
+ *
+ * Hoy son 21 jugadores con 1 gol: veintiuna filas idénticas seguidas que
+ * hacían de Estadísticas la página más larga del torneo, 5.631 px en móvil.
+ * El umbral se compara con el tramo, no con un puesto fijo, para que la cosa
+ * siga teniendo sentido cuando el ranking cambie de forma.
+ */
+const COLA_PLEGABLE_DESDE = 8;
 
 /**
  * Ranking de goleadores: podio de los tres primeros y tabla con el resto.
@@ -47,6 +66,18 @@ export function RankingGoleadores({
   const enPodio = podio.reduce((s, t) => s + t.jugadores.length, 0);
   const restoCompleto = goleadores.slice(enPodio);
   const resto = compacto ? restoCompleto.slice(0, TOPE_COMPACTO) : restoCompleto;
+
+  /**
+   * La cola —el último tramo de goles— se pliega si está muy poblada.
+   *
+   * En el Resumen no aplica: allí la tabla ya viene cortada en el top 10 y
+   * plegar diez filas no ahorra nada.
+   */
+  const golesMinimos = resto.length ? resto[resto.length - 1]!.goles : 0;
+  const cola = resto.filter((g) => g.goles === golesMinimos);
+  const seDobla = !compacto && cola.length >= COLA_PLEGABLE_DESDE && cola.length < resto.length;
+  const restoVisible = seDobla ? resto.slice(0, resto.length - cola.length) : resto;
+  const restoPlegado = seDobla ? cola : [];
   const totalGoles = goleadores.reduce((s, g) => s + g.goles, 0);
   const jornadaActual = jornadaActualDe(datos.partidos);
 
@@ -214,12 +245,66 @@ export function RankingGoleadores({
       ) : null}
 
       {/* Resto de la tabla */}
-      <div className="mt-6 overflow-x-auto rounded-2xl border border-white/10 bg-black/40">
-        <table className="w-full min-w-[520px] border-collapse text-sm">
-          <caption className="sr-only">
-            Ranking completo de goleadores hasta la fecha {jornadaActual}
-          </caption>
-          <thead>
+      <TablaGoleadores
+        filas={restoVisible}
+        autogoles={filasAutogol}
+        rotulo={`Ranking de goleadores hasta la fecha ${jornadaActual}`}
+      />
+
+      {/* La cola del ranking, plegada.
+          Veintiún jugadores con un gol cada uno, en filas idénticas, eran el
+          40% final de la página. Van en acordeón: quien busca un nombre lo
+          abre, y quien viene a ver la bota de oro deja de tener que
+          atravesarlos. Es un <details> nativo, así que el buscador los indexa
+          igual y funciona con teclado. */}
+      {restoPlegado.length > 0 ? (
+        <details className="group mt-4">
+          <summary className="flex cursor-pointer list-none items-center gap-2 rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-xs uppercase tracking-[0.15em] text-neutral-500 transition-colors hover:text-neutral-300">
+            <ChevronRight
+              size={13}
+              aria-hidden
+              className="shrink-0 transition-transform duration-200 group-open:rotate-90"
+            />
+            Ver {restoPlegado.length} jugadores más, con{' '}
+            {restoPlegado[0]!.goles === 1 ? '1 gol' : `${restoPlegado[0]!.goles} goles`}
+          </summary>
+          <div className="mt-3">
+            <TablaGoleadores filas={restoPlegado} autogoles={[]} rotulo="Resto del ranking" />
+          </div>
+        </details>
+      ) : null}
+
+      {/* El resto del ranking vive en Estadísticas, que es su pestaña. */}
+      {compacto && restoCompleto.length > TOPE_COMPACTO ? (
+        <Link
+          href="/torneo/estadisticas/"
+          className="group mt-4 inline-flex items-center gap-1.5 text-xs font-bold text-amarillo transition-colors hover:text-naranja"
+        >
+          Ver los {goleadores.length} anotadores en Estadísticas
+          <span aria-hidden className="transition-transform group-hover:translate-x-0.5">
+            →
+          </span>
+        </Link>
+      ) : null}
+    </div>
+  );
+}
+
+/** La tabla del ranking. Se usa dos veces: la parte visible y la plegada. */
+function TablaGoleadores({
+  filas,
+  autogoles,
+  rotulo,
+}: {
+  filas: readonly GoleadorConPosicion[];
+  autogoles: readonly AutogolPublicado[];
+  rotulo: string;
+}) {
+  return (
+    <div className="mt-6 overflow-x-auto rounded-2xl border border-white/10 bg-black/40">
+      <table className="w-full min-w-[520px] border-collapse text-sm">
+        <caption className="sr-only">{rotulo}</caption>
+        <thead>
             <tr className="border-b border-amarillo/30 bg-amarillo/10">
               <th
                 scope="col"
@@ -254,7 +339,7 @@ export function RankingGoleadores({
             </tr>
           </thead>
           <tbody>
-            {resto.map((g) => {
+            {filas.map((g) => {
               const eq = getEquipo(g.equipo);
               return (
                 <tr
@@ -289,7 +374,7 @@ export function RankingGoleadores({
                 —no compiten por la bota de oro— pero sí con el club que se
                 los llevó, para que la suma cuadre con los goles del
                 marcador y nadie tenga que preguntar por el gol que falta. */}
-            {filasAutogol.map((a, i) => {
+            {autogoles.map((a, i) => {
               const autor = getEquipo(a.autor);
               const favorecido = a.beneficiado ? getEquipo(a.beneficiado) : undefined;
               return (
@@ -326,20 +411,6 @@ export function RankingGoleadores({
             })}
           </tbody>
         </table>
-      </div>
-
-      {/* El resto del ranking vive en Estadísticas, que es su pestaña. */}
-      {compacto && restoCompleto.length > TOPE_COMPACTO ? (
-        <Link
-          href="/torneo/estadisticas/"
-          className="group mt-4 inline-flex items-center gap-1.5 text-xs font-bold text-amarillo transition-colors hover:text-naranja"
-        >
-          Ver los {goleadores.length} anotadores en Estadísticas
-          <span aria-hidden className="transition-transform group-hover:translate-x-0.5">
-            →
-          </span>
-        </Link>
-      ) : null}
     </div>
   );
 }
