@@ -25,6 +25,10 @@ function urlPagoWhatsApp(equipo: string): string {
 
 export function PagoBold() {
   const [equipo, setEquipo] = useState('');
+  // El enlace al paso 5 tiene que llevar el token. Iba sin él, así que esa
+  // página no podía comprobar nada y acababa felicitando a cualquiera que
+  // tecleara su URL.
+  const [credenciales, setCredenciales] = useState({ eq: '', t: '' });
 
   useEffect(() => {
     if (!supabasePublico) return;
@@ -42,12 +46,19 @@ export function PagoBold() {
       }
     }
     if (id && t) {
+      setCredenciales({ eq: id, t });
       supabasePublico.rpc('fm_get_equipo', { p_id: id, p_token: t }).then(({ data }) => {
         const nombre = (data as { inscripcion?: { equipo?: string } } | null)?.inscripcion?.equipo;
         if (nombre) setEquipo(nombre);
       });
     }
   }, []);
+
+  const hrefPaso5 = `${process.env.NEXT_PUBLIC_BASE_PATH ?? ''}/torneo/inscripciones/listo/${
+    credenciales.eq && credenciales.t
+      ? `?eq=${encodeURIComponent(credenciales.eq)}&t=${encodeURIComponent(credenciales.t)}`
+      : ''
+  }`;
 
   return (
     <div className="mx-auto max-w-lg space-y-6">
@@ -159,7 +170,7 @@ export function PagoBold() {
           el pago se arreglaba por WhatsApp; con Bold el capitan paga en el
           momento, asi que lo que necesita despues es un "ya pague". */}
       <a
-        href={`${process.env.NEXT_PUBLIC_BASE_PATH ?? ''}/torneo/inscripciones/listo/`}
+        href={hrefPaso5}
         className="cta-glow inline-flex w-full items-center justify-center gap-2.5 rounded-full border-2 border-amarillo bg-amarillo/10 px-6 py-3.5 text-sm font-bold text-amarillo transition-all duration-200 ease-managers hover:-translate-y-0.5 hover:bg-amarillo/20"
       >
         <GoldCoin size={26} className="coin-spin drop-shadow-none" ariaLabel="" />

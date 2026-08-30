@@ -219,6 +219,24 @@ export function InscripcionForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
+      {/* La barra de pasos estaba en el 4 y en el 5 pero no aquí, que es por
+          donde entra todo el mundo: se sabía en qué paso se estaba justo
+          cuando ya daba igual. */}
+      <div className="mb-6 flex items-center justify-center gap-2" aria-hidden>
+        {[1, 2, 3, 4, 5].map((n) => (
+          <span
+            key={n}
+            className={`flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold ${
+              n === 1
+                ? 'bg-gradient-to-br from-amarillo to-naranja text-carbon'
+                : 'border border-white/15 text-neutral-500'
+            }`}
+          >
+            {n}
+          </span>
+        ))}
+      </div>
+
       <div className="mb-2">
         <p className="font-bufon text-xs font-bold uppercase tracking-[0.25em] text-naranja">
           Paso 1 · Pre-inscripción

@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { TorneoBackdrop } from '@/components/torneo/TorneoBackdrop';
 import { TorneoNav } from '@/components/torneo/TorneoNav';
+import { GuardiaInscripcion } from '@/components/torneo/GuardiaInscripcion';
 import { PagoBold } from '@/components/torneo/PagoBold';
 
 export const metadata: Metadata = {
@@ -35,8 +36,13 @@ export default function PagoPage() {
         <TorneoNav active="/torneo/inscripciones/" />
 
         <section className="grain relative">
+          {/* Sin token no se llega al botón de Bold: el link es de monto
+              abierto, así que un pago sin equipo detrás es dinero que después
+              no se sabe de quién es. */}
           <div className="relative mx-auto max-w-4xl px-6 py-16 lg:px-8 lg:py-20">
-            <PagoBold />
+            <GuardiaInscripcion>
+              <PagoBold />
+            </GuardiaInscripcion>
           </div>
         </section>
       </div>
