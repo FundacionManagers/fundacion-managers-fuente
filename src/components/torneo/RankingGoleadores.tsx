@@ -138,15 +138,18 @@ export function RankingGoleadores({
       </div>
       <div className="energy-bar mt-5 h-1 w-full rounded-full opacity-70" />
 
+      {/* Empezaba en seco por el número menor —"96 los marcó un jugador"—, que
+          se lee como que un solo jugador marcó los 96, y además dejaba ese 96
+          sin decir de qué total salía. Se parte del total y se reparte. */}
       {golesJugados > totalGoles ? (
         <p className="mt-4 max-w-3xl text-xs leading-relaxed text-neutral-500">
-          {totalGoles} los marcó un jugador
+          De los {golesJugados} goles del torneo,{' '}
+          {totalGoles === 1 ? '1 lo marcó un jugador' : `${totalGoles} los marcaron jugadores`}
           {autogoles.length > 0 ? (
             <>
               {' '}
-              y {autogoles.length}{' '}
-              {autogoles.length === 1 ? 'fue en propia puerta' : 'fueron en propia puerta'}, a favor
-              de{' '}
+              y {autogoles.length === 1 ? '1 fue' : `${autogoles.length} fueron`} en propia puerta, a
+              favor de{' '}
               {beneficiados.map(([slug, n], i) => (
                 <span key={slug}>
                   {i > 0 ? (i === beneficiados.length - 1 ? ' y ' : ', ') : ''}
@@ -154,13 +157,16 @@ export function RankingGoleadores({
                   {n > 1 ? ` (${n})` : ''}
                 </span>
               ))}
-              . Un gol en propia puerta cuenta para el club, no para la bota de oro.
+              . Un gol en propia puerta suma para el club, no para la bota de oro.
             </>
-          ) : null}
+          ) : (
+            '.'
+          )}
           {sinExplicar > 0 ? (
             <>
-              {autogoles.length > 0 ? ' Quedan' : ' y quedan'} {sinExplicar} por atribuir: no se
-              reparten a ojo, esperan a que la organización confirme la planilla.
+              {' '}
+              Quedan {sinExplicar} por atribuir: no se reparten a ojo, esperan a que la organización
+              confirme la planilla.
             </>
           ) : null}
         </p>
