@@ -70,10 +70,13 @@ export default function EquiposPage() {
       {maximoGanador ? (
         <Link
           href={`/torneo/equipos/${maximoGanador.slug}/`}
-          className="group mt-5 flex items-center gap-5 rounded-2xl border border-white/10 bg-black/30 px-6 py-5 transition-colors hover:border-amarillo/40"
+          className="group mt-5 flex flex-wrap items-center gap-x-5 gap-y-4 rounded-2xl border border-white/10 bg-black/30 px-6 py-5 transition-colors hover:border-amarillo/40 sm:flex-nowrap"
         >
           <TeamCrest slug={maximoGanador.slug} size={56} />
-          <div className="min-w-0">
+          {/* En móvil las estrellas se quedaban en la misma línea y estrujaban
+              el nombre a 54 px de los 76 que mide: se leía "POMADA ★★ 2 TÍTULOS
+              / ALFA". Ahora bajan a una segunda línea, alineadas con el nombre. */}
+          <div className="min-w-0 flex-1">
             <p className="font-bufon text-xs font-bold uppercase tracking-[0.25em] text-neutral-500">
               Máximo ganador
             </p>
@@ -81,7 +84,7 @@ export default function EquiposPage() {
               {maximoGanador.nombre}
             </p>
           </div>
-          <span className="ml-auto flex shrink-0 items-center gap-1">
+          <span className="flex w-full shrink-0 items-center gap-1 pl-[76px] sm:ml-auto sm:w-auto sm:pl-0">
             {Array.from({ length: MAXIMO_GANADOR.titulos }, (_, i) => (
               <Star key={i} size={18} className="fill-amarillo/70 text-amarillo/70" aria-hidden />
             ))}

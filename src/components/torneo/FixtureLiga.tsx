@@ -191,7 +191,12 @@ export function FixtureLiga({ datos }: { datos: DatosLiga }) {
                   id={`fecha-${jornada}`}
                   className="group scroll-mt-32 rounded-xl border border-white/10 bg-black/30"
                 >
-                  <summary className="flex cursor-pointer list-none items-center gap-3 px-4 py-3">
+                  {/* En una sola línea no cabe: a 375 px la fecha se cortaba
+                      siempre —"Miércoles 5 y jueve…"— y se perdían el día y el
+                      año en las cinco fechas plegadas. En móvil baja a una
+                      segunda línea, completa; desde `sm` vuelve a la misma
+                      línea, que ahí sí sobra sitio. */}
+                  <summary className="flex cursor-pointer list-none flex-wrap items-center gap-x-3 gap-y-1 px-4 py-3 sm:flex-nowrap">
                     <ChevronRight
                       size={14}
                       aria-hidden
@@ -200,12 +205,12 @@ export function FixtureLiga({ datos }: { datos: DatosLiga }) {
                     <span className="font-sport text-xl uppercase leading-none text-neutral-300">
                       Fecha {jornada}
                     </span>
-                    <span className="min-w-0 flex-1 truncate text-xs text-neutral-600">
+                    <span className="order-last w-full pl-[26px] text-xs text-neutral-600 sm:order-none sm:w-auto sm:min-w-0 sm:flex-1 sm:truncate sm:pl-0">
                       {etiquetaDe(jornada, partidos)}
                     </span>
                     <span
                       className={cn(
-                        'shrink-0 rounded-full px-2.5 py-0.5 font-bufon text-[10px] font-bold uppercase tracking-[0.15em]',
+                        'ml-auto shrink-0 rounded-full px-2.5 py-0.5 font-bufon text-[10px] font-bold uppercase tracking-[0.15em] sm:ml-0',
                         jugada
                           ? 'border border-white/15 text-neutral-500'
                           : 'border border-dashed border-white/20 text-neutral-500',
