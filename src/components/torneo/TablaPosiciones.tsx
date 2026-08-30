@@ -59,15 +59,21 @@ export function TablaPosiciones({ datos }: { datos: DatosLiga }) {
           </caption>
           <thead>
             <tr className="border-b border-amarillo/30 bg-amarillo/10">
+              {/* POS y EQUIPO se quedan fijas al deslizar en móvil.
+                  Doce columnas no caben en los 326 px útiles de un teléfono
+                  por mucho que se apriete, así que deslizar es inevitable; lo
+                  que se puede evitar es perder de vista de qué club es la
+                  fila que estás leyendo. Desde `sm` la tabla entra entera y
+                  no hace falta fijar nada. */}
               <th
                 scope="col"
-                className="px-3 py-3 text-center font-bufon text-xs font-bold uppercase tracking-wider text-amarillo"
+                className="sticky left-0 z-20 w-[52px] bg-[#191505] px-3 py-3 text-center font-bufon text-xs font-bold uppercase tracking-wider text-amarillo sm:static sm:w-auto sm:bg-transparent"
               >
                 Pos
               </th>
               <th
                 scope="col"
-                className="px-3 py-3 text-left font-bufon text-xs font-bold uppercase tracking-wider text-amarillo"
+                className="sticky left-[52px] z-20 bg-[#191505] px-3 py-3 text-left font-bufon text-xs font-bold uppercase tracking-wider text-amarillo sm:static sm:bg-transparent"
               >
                 Equipo
               </th>
@@ -96,7 +102,7 @@ export function TablaPosiciones({ datos }: { datos: DatosLiga }) {
                   key={fila.equipo}
                   className="border-b border-white/5 transition-colors last:border-0 hover:bg-white/[0.04]"
                 >
-                  <td className="px-3 py-3 text-center">
+                  <td className="sticky left-0 z-10 w-[52px] bg-[#0b0f14] px-3 py-3 text-center sm:static sm:w-auto sm:bg-transparent">
                     <span
                       className={cn(
                         'inline-flex h-7 w-7 items-center justify-center rounded-lg font-sport text-base',
@@ -108,7 +114,7 @@ export function TablaPosiciones({ datos }: { datos: DatosLiga }) {
                       {fila.posicion}
                     </span>
                   </td>
-                  <td className="px-3 py-3">
+                  <td className="sticky left-[52px] z-10 bg-[#0b0f14] px-3 py-3 sm:static sm:bg-transparent">
                     {/* Nombre completo desde `sm`, codigo corto en movil. A
                         375 px la columna de equipo se comia 250 de los 325
                         disponibles y dejaba fuera hasta PTS, que es el dato
