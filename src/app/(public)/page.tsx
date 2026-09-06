@@ -3,7 +3,7 @@ import { ArrowRight, ArrowUpRight, Compass } from 'lucide-react';
 import { GoldCoin } from '@/components/shared/GoldCoin';
 import { IconeBrand } from '@/components/shared/IconeBrand';
 import { SectionBackdrop } from '@/components/shared/SectionBackdrop';
-import { CANTIDAD_ENTRADAS_CAP, ENTRADAS, hrefDeEje } from '@/lib/navigation';
+import { CANTIDAD_EJES_CAP, DIAGNOSTICO, EJES_VISIBLES, hrefDeEje } from '@/lib/navigation';
 import { ALIANZA, ICONE_CYAN } from '@/lib/alianza';
 import { NORTE, OCIO_SERIO, PILARES } from '@/lib/strategy';
 import {
@@ -32,12 +32,16 @@ export default function HomePage() {
                 <span className="font-semibold text-neutral-100">ocio serio</span> para cumplir
                 objetivos.
               </p>
-              <div className="mt-10 flex flex-wrap gap-4">
+              {/* El botón principal es el diagnóstico: en celular es lo único
+                  que se ve sin hacer scroll, y hoy es la prioridad. El torneo
+                  baja a segundo, y «ocio serio» queda como enlace, sin peso de
+                  botón, para no llegar a tres botones apilados en móvil. */}
+              <div className="mt-10 flex flex-wrap items-center gap-4">
                 <Link
-                  href="/torneo/"
+                  href={hrefDeEje(DIAGNOSTICO)}
                   className="group inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-amarillo to-naranja px-7 py-3.5 text-sm font-bold text-carbon shadow-[0_12px_40px_rgba(232,114,44,0.4)] transition-all duration-200 ease-managers hover:-translate-y-0.5"
                 >
-                  Entra por el torneo
+                  Haz el diagnóstico
                   <ArrowRight
                     size={18}
                     aria-hidden
@@ -45,8 +49,14 @@ export default function HomePage() {
                   />
                 </Link>
                 <Link
-                  href="/nosotros/"
+                  href="/torneo/"
                   className="inline-flex items-center gap-2 rounded-full border border-white/25 px-7 py-3.5 text-sm font-semibold text-neutral-100 transition-colors duration-200 ease-managers hover:border-gold hover:text-gold"
+                >
+                  Entra por el torneo
+                </Link>
+                <Link
+                  href="/nosotros/"
+                  className="inline-flex items-center gap-2 py-2 text-sm font-semibold text-neutral-400 underline-offset-4 transition-colors duration-200 ease-managers hover:text-gold hover:underline"
                 >
                   Qué es el ocio serio
                 </Link>
@@ -71,6 +81,35 @@ export default function HomePage() {
               </span>
               <span className="font-serif text-xl italic text-neutral-100">{NORTE}</span>
             </div>
+          </div>
+        </section>
+
+        {/* ===== DIAGNÓSTICO =====
+            Va pegado al hero a propósito: en celular es la segunda pantalla,
+            antes del ocio serio y de los pilares. Es la prioridad de este
+            momento y no puede quedar a cuatro scrolls, dentro de una grilla. */}
+        <section className="relative overflow-hidden border-y border-gold/25 bg-gradient-to-br from-[#1a140a] via-[#0d1218] to-[#0d1218]">
+          <div className="relative mx-auto flex max-w-7xl flex-col gap-8 px-6 py-14 lg:flex-row lg:items-center lg:justify-between lg:px-8 lg:py-16">
+            <div className="max-w-2xl">
+              <p className="font-mono text-caption uppercase tracking-[0.3em] text-gold">
+                {DIAGNOSTICO.tagline}
+              </p>
+              <h2 className="mt-4 font-serif text-display-lg font-bold leading-[1.05] text-neutral-50">
+                ¿En qué punto está tu emprendimiento?
+              </h2>
+              <p className="mt-5 max-w-xl text-neutral-300">{DIAGNOSTICO.descripcion}</p>
+            </div>
+            <Link
+              href={hrefDeEje(DIAGNOSTICO)}
+              className="group inline-flex shrink-0 items-center justify-center gap-2 rounded-full bg-gradient-to-r from-amarillo to-naranja px-8 py-4 text-sm font-bold text-carbon shadow-[0_12px_40px_rgba(232,114,44,0.4)] transition-all duration-200 ease-managers hover:-translate-y-0.5"
+            >
+              Haz el diagnóstico
+              <ArrowRight
+                size={18}
+                aria-hidden
+                className="transition-transform duration-200 ease-managers group-hover:translate-x-1"
+              />
+            </Link>
           </div>
         </section>
 
@@ -140,11 +179,11 @@ export default function HomePage() {
                 Por dónde entrar
               </p>
               <h2 className="mt-4 font-serif text-display-lg font-bold leading-[1.05] text-neutral-50">
-                {CANTIDAD_ENTRADAS_CAP} maneras de entrar.
+                {CANTIDAD_EJES_CAP} ejes. Una sola comunidad.
               </h2>
             </div>
             <ul className="stagger-in mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              {ENTRADAS.map((eje) => {
+              {EJES_VISIBLES.map((eje) => {
                 const Icon = eje.icon;
                 return (
                   <li key={eje.slug}>
