@@ -12,7 +12,7 @@ export default function BlogPage() {
       <SimplePageHero
         eyebrow="Blog"
         title="Ideas y aprendizajes"
-        description="Aquí compartiremos historias, análisis y miradas desde los seis ejes de la fundación."
+        description="Aquí compartiremos historias, análisis y miradas desde los ejes de la fundación."
       />
       <section className="canvas-cream grain relative overflow-hidden">
         <div className="relative mx-auto max-w-3xl px-6 py-24 lg:px-8">

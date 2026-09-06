@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { Instagram, Mail, MapPin, MessageCircle, Phone, Send } from 'lucide-react';
 import { SectionBackdrop } from '@/components/shared/SectionBackdrop';
 import { TORNEO_INSTAGRAM, TORNEO_INSTAGRAM_URL } from '@/lib/torneo';
+import { EJES_VISIBLES } from '@/lib/navigation';
 
 export const metadata: Metadata = {
   title: 'Contacto',
@@ -47,15 +48,15 @@ const CANALES: readonly Canal[] = [
   },
 ];
 
+/**
+ * Se arma desde los ejes visibles para que el formulario nunca ofrezca un
+ * frente que ya no está en el sitio. Al volver a mostrar un eje reaparece aquí
+ * solo. Quien busque algo que no esté en la lista tiene «Otro».
+ */
 const EJES_SELECT = [
-  { value: 'consultoria', label: 'Consultoría empresarial' },
-  { value: 'torneo', label: 'Torneo Managers (F7)' },
-  { value: 'turismo', label: 'Turismo' },
-  { value: 'eventos', label: 'Eventos' },
-  { value: 'emprendimiento', label: 'Emprendimiento' },
-  { value: 'rural', label: 'Managers Rural' },
+  ...EJES_VISIBLES.map((e) => ({ value: e.slug, label: e.nombre })),
   { value: 'otro', label: 'Otro / no estoy seguro' },
-] as const;
+];
 
 export default function ContactoPage() {
   return (

@@ -24,7 +24,7 @@ export default function PrivacidadPage() {
             </p>
             <h2 className="font-display text-xl font-bold text-carbon">Responsable</h2>
             <p>
-              Fundación Managers, Bogotá, Colombia. Contacto: williammojica@fundacionmanagers.com.
+              Fundación Managers, Bogotá, Colombia. Contacto: administracion@fundacionmanagers.com.
             </p>
             <h2 className="font-display text-xl font-bold text-carbon">Finalidades</h2>
             <p>
@@ -34,7 +34,7 @@ export default function PrivacidadPage() {
             <h2 className="font-display text-xl font-bold text-carbon">Derechos del titular</h2>
             <p>
               Todo titular puede conocer, actualizar, rectificar y solicitar la supresión de sus
-              datos escribiendo a williammojica@fundacionmanagers.com.
+              datos escribiendo a administracion@fundacionmanagers.com.
             </p>
             <div className="mt-10 rounded-md border border-dashed border-neutral-300 p-4 text-xs uppercase tracking-widest text-neutral-500">
               Versión preliminar — texto definitivo por revisar con asesoría legal.

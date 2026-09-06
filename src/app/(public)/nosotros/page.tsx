@@ -5,7 +5,7 @@ import { GoldCoin } from '@/components/shared/GoldCoin';
 import { IconeBrand } from '@/components/shared/IconeBrand';
 import { SectionBackdrop } from '@/components/shared/SectionBackdrop';
 import { ALIANZA, ICONE_CYAN } from '@/lib/alianza';
-import { EJES } from '@/lib/navigation';
+import { CANTIDAD_EJES, CANTIDAD_EJES_CAP, EJES_VISIBLES } from '@/lib/navigation';
 import { NORTE, OCIO_SERIO, PILARES } from '@/lib/strategy';
 import { CAMPEON_VIGENTE, EDICION_EN_CURSO, ordinalFemenino } from '@/lib/torneo';
 
@@ -143,13 +143,13 @@ export default function NosotrosPage() {
         <section className="grain relative overflow-hidden">
           <div className="relative mx-auto max-w-7xl px-6 py-24 lg:px-8">
             <p className="font-mono text-caption uppercase tracking-[0.3em] text-terracotta">
-              Seis frentes de trabajo
+              {CANTIDAD_EJES_CAP} frentes de trabajo
             </p>
             <h2 className="mt-4 font-serif text-display-lg font-bold text-neutral-50">
-              Una marca, seis ejes
+              Una marca, {CANTIDAD_EJES} ejes
             </h2>
             <ul className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {EJES.map((eje) => {
+              {EJES_VISIBLES.map((eje) => {
                 const Icon = eje.icon;
                 return (
                   <li key={eje.slug}>

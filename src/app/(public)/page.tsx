@@ -3,7 +3,7 @@ import { ArrowRight, ArrowUpRight, Compass } from 'lucide-react';
 import { GoldCoin } from '@/components/shared/GoldCoin';
 import { IconeBrand } from '@/components/shared/IconeBrand';
 import { SectionBackdrop } from '@/components/shared/SectionBackdrop';
-import { EJES } from '@/lib/navigation';
+import { CANTIDAD_EJES_CAP, EJES_VISIBLES } from '@/lib/navigation';
 import { ALIANZA, ICONE_CYAN } from '@/lib/alianza';
 import { NORTE, OCIO_SERIO, PILARES } from '@/lib/strategy';
 import {
@@ -140,11 +140,11 @@ export default function HomePage() {
                 Por dónde entrar
               </p>
               <h2 className="mt-4 font-serif text-display-lg font-bold leading-[1.05] text-neutral-50">
-                Seis ejes. Una sola comunidad.
+                {CANTIDAD_EJES_CAP} ejes. Una sola comunidad.
               </h2>
             </div>
             <ul className="stagger-in mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              {EJES.map((eje) => {
+              {EJES_VISIBLES.map((eje) => {
                 const Icon = eje.icon;
                 return (
                   <li key={eje.slug}>

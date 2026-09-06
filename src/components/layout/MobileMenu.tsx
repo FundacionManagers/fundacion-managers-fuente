@@ -7,7 +7,7 @@ import Link from 'next/link';
 import { Menu, X } from 'lucide-react';
 import { asset } from '@/lib/asset';
 import { ICONE_CYAN } from '@/lib/alianza';
-import { EJES } from '@/lib/navigation';
+import { EJES_VISIBLES } from '@/lib/navigation';
 
 /**
  * Menú móvil (hamburguesa). Visible solo < lg.
@@ -62,7 +62,7 @@ export function MobileMenu() {
         aria-label="Navegación principal móvil"
         className="flex flex-1 flex-col gap-1 overflow-y-auto px-6 py-8"
       >
-        {EJES.map((eje) => (
+        {EJES_VISIBLES.map((eje) => (
           <Link
             key={eje.slug}
             href={`/${eje.slug}/`}

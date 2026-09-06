@@ -10,7 +10,7 @@
  * (/resultados/, /inscripciones/), que además llevan `noindex`.
  */
 
-import { EJES } from './navigation';
+import { EJES_VISIBLES } from './navigation';
 import { EQUIPOS } from './torneo-data';
 
 export const SITIO = process.env.NEXT_PUBLIC_APP_URL ?? 'https://fundacionmanagers.com';
@@ -40,9 +40,10 @@ export interface RutaPublica {
 
 export const RUTAS_PUBLICAS: readonly RutaPublica[] = [
   ...FIJAS,
-  // Los cinco ejes que tienen página propia. 'torneo' se excluye porque su
+  // Los ejes visibles que tienen página propia. 'torneo' se excluye porque su
   // página no es /torneo (eje) sino la sección completa, ya listada arriba.
-  ...EJES.filter((e) => e.slug !== 'torneo').map((e) => ({
+  // Un eje oculto no se anuncia en el sitemap, pero su página sigue existiendo.
+  ...EJES_VISIBLES.filter((e) => e.slug !== 'torneo').map((e) => ({
     ruta: `/${e.slug}/`,
     prioridad: 0.6,
   })),

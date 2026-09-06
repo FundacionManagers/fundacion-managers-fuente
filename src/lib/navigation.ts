@@ -9,7 +9,7 @@ import {
 } from 'lucide-react';
 
 /**
- * Los seis ejes de la fundación. Fuente única de verdad para navegación,
+ * Los ejes de la fundación. Fuente única de verdad para navegación,
  * footer, grid del home y páginas individuales.
  */
 export type EjeTheme = 'light' | 'dark';
@@ -23,6 +23,13 @@ export interface Eje {
   /** Clase de acento principal (Tailwind) para badges y bordes. */
   accent: string;
   icon: LucideIcon;
+  /**
+   * Si es false, el eje no aparece en el menú, el pie, el home ni la página
+   * de «nosotros», pero su página sigue existiendo y respondiendo en su URL.
+   * Se hace así —y no borrando el objeto— para que los enlaces ya compartidos
+   * no se rompan y para que devolver un eje sea cambiar una sola palabra.
+   */
+  visible?: boolean;
 }
 
 // Orden oficial definido por Jorge (mayo 2026):
@@ -46,6 +53,7 @@ export const EJES: readonly Eje[] = [
     theme: 'light',
     accent: 'text-success',
     icon: Plane,
+    visible: false,
   },
   {
     slug: 'emprendimiento',
@@ -64,6 +72,7 @@ export const EJES: readonly Eje[] = [
     theme: 'light',
     accent: 'text-gold',
     icon: Briefcase,
+    visible: false,
   },
   {
     slug: 'eventos',
@@ -82,8 +91,30 @@ export const EJES: readonly Eje[] = [
     theme: 'light',
     accent: 'text-success',
     icon: Sprout,
+    visible: false,
   },
 ] as const;
+
+/**
+ * Los ejes que hoy se muestran. Es lo que consumen el menú, el pie, el home y
+ * «nosotros». Las páginas individuales siguen generándose desde EJES, así que
+ * un eje oculto conserva su URL: lo que ya se compartió por WhatsApp o quedó
+ * en un correo sigue funcionando.
+ *
+ * Para volver a mostrar un eje, quítale `visible: false` arriba. Nada más.
+ */
+export const EJES_VISIBLES: readonly Eje[] = EJES.filter((e) => e.visible !== false);
+
+/**
+ * Cuántos ejes se muestran, en letras, para los títulos del sitio. Antes decían
+ * «seis» a mano y quedaban mintiendo apenas se ocultaba uno.
+ */
+const NUMEROS = ['cero', 'un', 'dos', 'tres', 'cuatro', 'cinco', 'seis', 'siete', 'ocho'] as const;
+export const CANTIDAD_EJES: string =
+  NUMEROS[EJES_VISIBLES.length] ?? String(EJES_VISIBLES.length);
+/** La misma palabra, para cuando abre frase. */
+export const CANTIDAD_EJES_CAP =
+  CANTIDAD_EJES.charAt(0).toUpperCase() + CANTIDAD_EJES.slice(1);
 
 export function getEje(slug: string): Eje | undefined {
   return EJES.find((e) => e.slug === slug);
