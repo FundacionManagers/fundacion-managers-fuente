@@ -3,6 +3,7 @@ import {
   Trophy,
   Plane,
   CalendarHeart,
+  Gauge,
   Rocket,
   Sprout,
   type LucideIcon,
@@ -30,6 +31,17 @@ export interface Eje {
    * no se rompan y para que devolver un eje sea cambiar una sola palabra.
    */
   visible?: boolean;
+  /**
+   * A dónde lleva. Por defecto, la página del eje: `/{slug}/`. Solo se escribe
+   * cuando la entrada apunta a algo que no es una página de este sitio, como el
+   * diagnóstico, que es un archivo estático en `public/`.
+   */
+  href?: string;
+}
+
+/** A dónde lleva una entrada del menú. */
+export function hrefDeEje(e: Eje): string {
+  return e.href ?? `/${e.slug}/`;
 }
 
 // Orden oficial definido por Jorge (mayo 2026):
@@ -106,15 +118,48 @@ export const EJES: readonly Eje[] = [
 export const EJES_VISIBLES: readonly Eje[] = EJES.filter((e) => e.visible !== false);
 
 /**
- * Cuántos ejes se muestran, en letras, para los títulos del sitio. Antes decían
+ * El diagnóstico de emprendedores. No es un eje de la fundación —es una
+ * herramienta—, pero sí es una puerta de entrada, así que va en el menú, en el
+ * pie y en la grilla del home junto a los ejes. No aparece en «nosotros», que
+ * habla de los frentes de trabajo, ni en el desplegable de contacto, que
+ * pregunta por servicios.
+ *
+ * Vive en `public/emprendedores.html`: es un archivo estático autocontenido,
+ * no una página de este sitio, y por eso lleva `href` propio.
+ */
+export const DIAGNOSTICO: Eje = {
+  slug: 'diagnostico',
+  nombre: 'Diagnóstico',
+  tagline: 'Para emprendedores',
+  descripcion:
+    'Veinticinco minutos y sabes en qué etapa está tu emprendimiento, qué tienes a favor y qué hacer en los próximos 8 días.',
+  theme: 'light',
+  accent: 'text-gold',
+  icon: Gauge,
+  href: '/emprendedores.html',
+};
+
+/**
+ * Por dónde se entra a la fundación: el diagnóstico primero, y después los
+ * ejes visibles. Es lo que consumen el menú, el menú móvil, el pie y la grilla
+ * del home.
+ */
+export const ENTRADAS: readonly Eje[] = [DIAGNOSTICO, ...EJES_VISIBLES];
+
+/**
+ * Cuántas cosas se listan, en letras, para los títulos del sitio. Antes decían
  * «seis» a mano y quedaban mintiendo apenas se ocultaba uno.
  */
-const NUMEROS = ['cero', 'un', 'dos', 'tres', 'cuatro', 'cinco', 'seis', 'siete', 'ocho'] as const;
-export const CANTIDAD_EJES: string =
-  NUMEROS[EJES_VISIBLES.length] ?? String(EJES_VISIBLES.length);
+const NUMEROS = ['cero', 'una', 'dos', 'tres', 'cuatro', 'cinco', 'seis', 'siete', 'ocho'] as const;
+const enLetras = (n: number) => NUMEROS[n] ?? String(n);
+const conMayuscula = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+
+export const CANTIDAD_EJES: string = enLetras(EJES_VISIBLES.length);
 /** La misma palabra, para cuando abre frase. */
-export const CANTIDAD_EJES_CAP =
-  CANTIDAD_EJES.charAt(0).toUpperCase() + CANTIDAD_EJES.slice(1);
+export const CANTIDAD_EJES_CAP = conMayuscula(CANTIDAD_EJES);
+
+export const CANTIDAD_ENTRADAS: string = enLetras(ENTRADAS.length);
+export const CANTIDAD_ENTRADAS_CAP = conMayuscula(CANTIDAD_ENTRADAS);
 
 export function getEje(slug: string): Eje | undefined {
   return EJES.find((e) => e.slug === slug);

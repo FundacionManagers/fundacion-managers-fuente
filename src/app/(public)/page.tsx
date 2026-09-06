@@ -3,7 +3,7 @@ import { ArrowRight, ArrowUpRight, Compass } from 'lucide-react';
 import { GoldCoin } from '@/components/shared/GoldCoin';
 import { IconeBrand } from '@/components/shared/IconeBrand';
 import { SectionBackdrop } from '@/components/shared/SectionBackdrop';
-import { CANTIDAD_EJES_CAP, EJES_VISIBLES } from '@/lib/navigation';
+import { CANTIDAD_ENTRADAS_CAP, ENTRADAS, hrefDeEje } from '@/lib/navigation';
 import { ALIANZA, ICONE_CYAN } from '@/lib/alianza';
 import { NORTE, OCIO_SERIO, PILARES } from '@/lib/strategy';
 import {
@@ -140,16 +140,16 @@ export default function HomePage() {
                 Por dónde entrar
               </p>
               <h2 className="mt-4 font-serif text-display-lg font-bold leading-[1.05] text-neutral-50">
-                {CANTIDAD_EJES_CAP} ejes. Una sola comunidad.
+                {CANTIDAD_ENTRADAS_CAP} maneras de entrar.
               </h2>
             </div>
             <ul className="stagger-in mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              {EJES_VISIBLES.map((eje) => {
+              {ENTRADAS.map((eje) => {
                 const Icon = eje.icon;
                 return (
                   <li key={eje.slug}>
                     <Link
-                      href={`/${eje.slug}/`}
+                      href={hrefDeEje(eje)}
                       className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-white/10 bg-[#0d1218]/80 p-8 transition-all duration-300 ease-managers hover:-translate-y-1.5 hover:border-gold/50 hover:shadow-[0_28px_70px_rgba(0,0,0,0.6)]"
                     >
                       <div className="flex items-center justify-between">

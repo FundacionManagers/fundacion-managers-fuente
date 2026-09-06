@@ -10,7 +10,7 @@
  * (/resultados/, /inscripciones/), que además llevan `noindex`.
  */
 
-import { EJES_VISIBLES } from './navigation';
+import { DIAGNOSTICO, EJES_VISIBLES, hrefDeEje } from './navigation';
 import { EQUIPOS } from './torneo-data';
 
 export const SITIO = process.env.NEXT_PUBLIC_APP_URL ?? 'https://fundacionmanagers.com';
@@ -47,6 +47,9 @@ export const RUTAS_PUBLICAS: readonly RutaPublica[] = [
     ruta: `/${e.slug}/`,
     prioridad: 0.6,
   })),
+  // El diagnóstico de emprendedores, que es un archivo estático de public/
+  // y no una página del sitio, pero sí una puerta de entrada pública.
+  { ruta: hrefDeEje(DIAGNOSTICO), prioridad: 0.8 },
   // La ficha de cada club.
   ...EQUIPOS.map((e) => ({ ruta: `/torneo/equipos/${e.slug}/`, prioridad: 0.6 })),
 ];

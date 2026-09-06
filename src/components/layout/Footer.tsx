@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { GoldCoin } from '@/components/shared/GoldCoin';
 import { IconeBrand } from '@/components/shared/IconeBrand';
 import { ALIANZA } from '@/lib/alianza';
-import { EJES_VISIBLES } from '@/lib/navigation';
+import { ENTRADAS, hrefDeEje } from '@/lib/navigation';
 import { NORTE } from '@/lib/strategy';
 
 export function Footer() {
@@ -25,10 +25,10 @@ export function Footer() {
           <div>
             <h3 className="text-caption uppercase tracking-[0.2em] text-gold">Ejes</h3>
             <ul className="mt-5 space-y-2.5 text-sm text-neutral-300">
-              {EJES_VISIBLES.map((eje) => (
+              {ENTRADAS.map((eje) => (
                 <li key={eje.slug}>
                   <Link
-                    href={`/${eje.slug}/`}
+                    href={hrefDeEje(eje)}
                     className="transition-colors duration-200 ease-managers hover:text-gold"
                   >
                     {eje.nombre}
