@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="es-CO">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Panel de caracterización · Fundación Managers</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#0F1419">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='15' fill='%23D4A437'/%3E%3Ccircle cx='16' cy='16' r='11' fill='none' stroke='%230F1419' stroke-width='1.5'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --gold:#D4A437; --gold-hover:#BD8E2A; --carbon:#0F1419;
+  --bg:#FAFAF7; --text:#1A1A1A; --muted:#57534E; --border:#E8E5DE;
+  --success:#2D7A4F; --danger:#C8362B; --warn:#B4790E;
+  --n100:#F2EFE8; --n200:#E8E5DE; --n300:#D6D3CC; --n400:#A8A29E; --n800:#1F1B16;
+  --r-sm:6px; --r-md:10px; --r-full:9999px;
+  --sh-md:0 4px 12px rgb(0 0 0 / .08); --sh-lg:0 12px 32px rgb(0 0 0 / .12);
+  --ease:cubic-bezier(.16,1,.3,1);
+  --font-body:'Inter',system-ui,-apple-system,sans-serif;
+  --font-display:'Plus Jakarta Sans',system-ui,sans-serif;
+  --font-sport:'Bebas Neue',Impact,sans-serif;
+  --coin:url("data:image/webp;base64,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");
+}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0; background:var(--bg); color:var(--text); font-family:var(--font-body);
+  font-size:15px; line-height:1.55; -webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:var(--font-display); font-weight:800; line-height:1.2; margin:0}
+p{margin:0}
+button{font:inherit; cursor:pointer}
+:focus-visible{outline:3px solid var(--gold); outline-offset:2px; border-radius:4px}
+
+header{background:var(--carbon); color:#FAFAF7; padding:14px 24px; display:flex;
+  align-items:center; gap:14px; flex-wrap:wrap; position:sticky; top:0; z-index:40}
+header .coin{width:30px; height:30px; background:var(--coin) center/contain no-repeat; flex:none}
+header h1{font-size:17px; font-weight:700}
+header .sub{font-size:11px; color:var(--n400); letter-spacing:.07em; text-transform:uppercase; font-weight:600}
+header .der{margin-left:auto; display:flex; gap:8px; align-items:center; flex-wrap:wrap}
+
+.tabs{background:var(--carbon); padding:0 24px; display:flex; gap:2px;
+  position:sticky; top:58px; z-index:39; border-bottom:1px solid var(--n800); overflow-x:auto}
+.tabs button{background:none; border:0; color:var(--n400); padding:11px 16px; font-size:14px;
+  font-weight:600; border-bottom:2px solid transparent; white-space:nowrap; transition:all .15s var(--ease)}
+.tabs button:hover{color:#FAFAF7}
+.tabs button.activo{color:var(--gold); border-bottom-color:var(--gold)}
+
+.wrap{max-width:1240px; margin:0 auto; padding:26px 24px 80px}
+.vista{display:none}
+.vista.activa{display:block}
+
+/* ---------- Login ---------- */
+.login{max-width:400px; margin:12vh auto; padding:0 24px}
+.login .caja{background:#fff; border:1px solid var(--border); border-radius:var(--r-md);
+  padding:32px; box-shadow:var(--sh-md)}
+.login h2{font-size:22px; margin-bottom:6px}
+.login p.intro{font-size:14px; color:var(--muted); margin-bottom:22px}
+.campo{margin-bottom:14px}
+.campo label{display:block; font-size:13px; font-weight:600; margin-bottom:6px}
+input[type=text],input[type=email],input[type=password],input[type=search],select{
+  width:100%; padding:11px 13px; font:inherit; font-size:15px; background:var(--bg); color:var(--text);
+  border:1px solid var(--n300); border-radius:var(--r-sm)}
+input:focus,select:focus{outline:none; border-color:var(--gold); box-shadow:0 0 0 3px rgb(212 164 55 / .15)}
+
+.btn{border:0; border-radius:var(--r-sm); padding:10px 17px; font-weight:600; font-size:14px;
+  transition:all .18s var(--ease); display:inline-flex; align-items:center; gap:7px}
+.btn-primary{background:var(--gold); color:var(--carbon)}
+.btn-primary:hover{background:var(--gold-hover)}
+.btn-primary:disabled{background:var(--n300); color:var(--muted); cursor:not-allowed}
+.btn-block{width:100%; justify-content:center; padding:13px}
+.btn-oscuro{background:#1F2833; color:#FAFAF7; border:1px solid #2E3945}
+.btn-oscuro:hover{background:#2A3541}
+
+.aviso{border-radius:var(--r-sm); padding:12px 14px; font-size:14px; margin-top:14px; display:none; line-height:1.5}
+.aviso.visible{display:block}
+.aviso.error{background:#FDF2F1; border:1px solid #F0C4C0; color:#8E2820}
+
+/* ---------- KPIs ---------- */
+.kpis{display:grid; grid-template-columns:repeat(auto-fit,minmax(112px,1fr)); gap:10px; margin-bottom:24px}
+.kpi{background:#fff; border:1px solid var(--border); border-radius:var(--r-md); padding:16px}
+.kpi b{display:block; font-family:var(--font-sport); font-size:clamp(30px,3.4vw,38px); line-height:1; color:var(--carbon)}
+.kpi span{display:block; font-size:11px; color:var(--muted); text-transform:uppercase;
+  letter-spacing:.06em; font-weight:600; margin-top:6px; line-height:1.35}
+.kpi.dorado b{color:var(--gold)}
+.kpi.alerta b{color:var(--danger)}
+
+/* ---------- Tarjetas ---------- */
+.grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(320px,1fr)); gap:16px}
+.card{background:#fff; border:1px solid var(--border); border-radius:var(--r-md); padding:22px}
+.card > h3{font-size:15px; font-weight:700; margin-bottom:3px; font-family:var(--font-display)}
+.card > .nota{font-size:12.5px; color:var(--muted); margin-bottom:16px; line-height:1.45}
+
+.barras{display:grid; gap:10px}
+.b{display:grid; gap:4px}
+.b .fila{display:flex; justify-content:space-between; align-items:baseline; gap:10px; font-size:13.5px}
+.b .fila span:first-child{flex:1; min-width:0}
+.b .fila strong{font-weight:600; flex:none; font-variant-numeric:tabular-nums}
+.b .fila em{font-style:normal; font-size:11.5px; color:var(--muted); flex:none}
+.b .pista{height:7px; background:var(--n200); border-radius:var(--r-full); overflow:hidden}
+.b .pista i{display:block; height:100%; background:var(--gold); border-radius:var(--r-full); width:0; transition:width .7s var(--ease)}
+.b.verde .pista i{background:var(--success)}
+.b.carbon .pista i{background:var(--carbon)}
+.vacio-card{font-size:13.5px; color:var(--muted); padding:8px 0}
+
+/* ---------- Oportunidades ---------- */
+.oportunidad{display:flex; gap:12px; padding:13px 0; border-top:1px solid var(--n100); align-items:flex-start}
+.oportunidad:first-child{border-top:0; padding-top:0}
+.oportunidad .n{font-family:var(--font-sport); font-size:24px; color:var(--gold); flex:none; width:34px; text-align:right; line-height:1.1}
+.oportunidad strong{display:block; font-size:14px; font-weight:600}
+.oportunidad span{font-size:12.5px; color:var(--muted); line-height:1.45}
+
+/* ---------- Fichas de miembro ---------- */
+.fichas{display:grid; gap:12px}
+.ficha{background:#fff; border:1px solid var(--border); border-radius:var(--r-md);
+  padding:0; overflow:hidden; border-left:4px solid var(--n300)}
+.ficha.alta{border-left-color:var(--danger)}
+.ficha.media{border-left-color:var(--gold)}
+.ficha > summary{padding:16px 20px; cursor:pointer; list-style:none; display:flex;
+  gap:12px; align-items:flex-start; flex-wrap:wrap}
+.ficha > summary::-webkit-details-marker{display:none}
+.ficha > summary:hover{background:#FFFCF4}
+.ficha .idn{flex:1; min-width:200px}
+.ficha .idn b{font-size:15.5px; font-weight:600; display:block}
+.ficha .idn .meta{font-size:12.5px; color:var(--muted); margin-top:2px}
+.ficha .lectura{flex-basis:100%; font-size:13px; color:var(--muted); line-height:1.5;
+  padding-left:0; border-left:2px solid var(--n200); padding-left:10px; margin-top:4px}
+.ficha .marcas{display:flex; gap:6px; flex-wrap:wrap; align-items:center}
+.pill{display:inline-block; padding:2px 9px; border-radius:var(--r-full); font-size:11px;
+  font-weight:600; background:var(--n100); color:var(--muted); white-space:nowrap}
+.pill.gold{background:#FBF3DF; color:#8A6A17}
+.pill.rojo{background:#FDF2F1; color:#8E2820}
+.pill.verde{background:#F0F7F3; color:#1F5638}
+.pill.carbon{background:var(--carbon); color:var(--gold)}
+
+.detalle{padding:0 20px 20px; border-top:1px solid var(--n100)}
+.bloque{margin-top:16px}
+.bloque > h4{font-size:11px; text-transform:uppercase; letter-spacing:.09em; color:var(--muted);
+  font-weight:600; font-family:var(--font-body); margin:0 0 8px}
+.datos{display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:10px 18px; font-size:13.5px}
+.datos div span{display:block; font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.05em; font-weight:600}
+.lista-mini{margin:0; padding-left:0; list-style:none; font-size:13.5px}
+.lista-mini li{padding:7px 0 7px 12px; border-left:2px solid var(--n200); margin-bottom:6px; line-height:1.45}
+.lista-mini li b{font-weight:600}
+.lista-mini li em{font-style:normal; color:var(--muted); font-size:12.5px; display:block}
+.cita{background:var(--n100); border-left:3px solid var(--gold); border-radius:var(--r-sm);
+  padding:11px 14px; font-size:13.5px; line-height:1.5; margin-bottom:7px}
+.cita em{font-style:normal; color:var(--muted); font-size:11px; text-transform:uppercase;
+  letter-spacing:.05em; font-weight:600; display:block; margin-bottom:3px}
+
+.filtros{display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:16px}
+.filtros input[type=search]{max-width:270px}
+.filtros select{max-width:200px}
+.filtros .cuenta{margin-left:auto; font-size:13px; color:var(--muted); font-weight:500}
+.vacio{padding:56px 24px; text-align:center; color:var(--muted); font-size:14.5px}
+
+table{border-collapse:collapse; width:100%; font-size:13.5px; min-width:640px}
+.tabla-caja{overflow-x:auto; border:1px solid var(--border); border-radius:var(--r-md); background:#fff}
+th{position:sticky; top:0; background:var(--n100); text-align:left; padding:10px 13px; font-size:11px;
+  text-transform:uppercase; letter-spacing:.06em; font-weight:600; color:var(--muted);
+  border-bottom:1px solid var(--border); white-space:nowrap; z-index:2}
+td{padding:10px 13px; border-bottom:1px solid var(--n100)}
+tbody tr:hover{background:#FFFCF4}
+td.num{font-variant-numeric:tabular-nums; white-space:nowrap}
+
+footer{text-align:center; padding:30px 24px; font-size:12.5px; color:var(--muted);
+  border-top:1px solid var(--border); margin-top:40px; line-height:1.7}
+
+@media (max-width:640px){
+  .wrap{padding:18px 14px 60px} header,.tabs{padding-left:14px; padding-right:14px} .card{padding:17px}
+}
+@media (prefers-reduced-motion:reduce){*{transition-duration:.01ms !important}}
+</style>
+</head>
+<body>
+
+<!-- ============ LOGIN ============ -->
+<div class="login" id="pantallaLogin">
+  <div class="caja">
+    <h2>Panel de caracterización</h2>
+    <p class="intro">Acceso restringido al equipo de la Fundación Managers. Usa tu usuario de Supabase.</p>
+    <form id="formLogin">
+      <div class="campo"><label for="email">Correo</label>
+        <input type="email" id="email" autocomplete="username" required></div>
+      <div class="campo"><label for="password">Contraseña</label>
+        <input type="password" id="password" autocomplete="current-password" required></div>
+      <button class="btn btn-primary btn-block" type="submit" id="btnEntrar">Entrar</button>
+    </form>
+    <div class="aviso error" id="avisoLogin"></div>
+  </div>
+</div>
+
+<!-- ============ PANEL ============ -->
+<div id="pantallaPanel" hidden>
+  <header>
+    <span class="coin" aria-hidden="true"></span>
+    <div><h1>Caracterización de la comunidad</h1><div class="sub">Fundación Managers</div></div>
+    <div class="der">
+      <button class="btn btn-oscuro" id="btnRecargar" type="button">Recargar</button>
+      <button class="btn btn-primary" id="btnCSV" type="button">Descargar CSV</button>
+      <button class="btn btn-oscuro" id="btnSalir" type="button">Salir</button>
+    </div>
+  </header>
+
+  <nav class="tabs" id="tabs">
+    <button data-vista="accion" class="activo">Dónde actuar</button>
+    <button data-vista="personas">Personas</button>
+    <button data-vista="comunidad">La comunidad</button>
+    <button data-vista="formacion">Formación y empresas</button>
+    <button data-vista="emprendedores">Emprendedores</button>
+  </nav>
+
+  <main class="wrap">
+    <div class="aviso error" id="avisoPanel"></div>
+    <div class="kpis" id="kpis"></div>
+
+    <section class="vista activa" id="v_accion"></section>
+    <section class="vista" id="v_personas">
+      <div class="filtros">
+        <input type="search" id="buscar" placeholder="Buscar por nombre, correo, empresa o universidad…" aria-label="Buscar">
+        <select id="fPrioridad" aria-label="Filtrar por prioridad"><option value="">Toda prioridad</option></select>
+        <select id="fRol" aria-label="Filtrar por rol potencial"><option value="">Todo rol potencial</option></select>
+        <select id="fEje" aria-label="Filtrar por eje"><option value="">Todo eje recomendado</option></select>
+        <span class="cuenta" id="cuentaFichas"></span>
+      </div>
+      <div class="fichas" id="fichas"></div>
+      <div class="vacio" id="sinDatos" hidden>Todavía no hay respuestas. Comparte el enlace con la comunidad.</div>
+    </section>
+    <section class="vista" id="v_comunidad"><div class="grid" id="gridComunidad"></div></section>
+    <section class="vista" id="v_formacion"><div class="grid" id="gridFormacion"></div></section>
+
+    <!-- Diagnóstico de emprendedores. Tabla aparte (`emprendedores`), así que
+         se carga aparte y no se mezcla con la caracterización de miembros. -->
+    <section class="vista" id="v_emprendedores">
+      <div class="filtros">
+        <input type="search" id="buscarEmp" placeholder="Buscar por nombre, correo, emprendimiento o ciudad…" aria-label="Buscar emprendedores">
+        <select id="fEtapa" aria-label="Filtrar por etapa"><option value="">Toda etapa</option></select>
+        <select id="fPrioridadEmp" aria-label="Filtrar por prioridad"><option value="">Toda prioridad</option></select>
+        <select id="fFreno" aria-label="Filtrar por freno"><option value="">Todo freno</option></select>
+        <span class="cuenta" id="cuentaEmp"></span>
+        <button class="btn btn-primary" id="btnCSVEmp" type="button">CSV emprendedores</button>
+      </div>
+      <div class="grid" id="gridEmprendedores"></div>
+      <div class="fichas" id="fichasEmp"></div>
+      <div class="vacio" id="sinEmprendedores" hidden>Todavía no hay diagnósticos de emprendedores.</div>
+    </section>
+  </main>
+
+  <footer>
+    <strong>Fundación Managers</strong> · Panel interno<br>
+    Datos personales sujetos a la Ley 1581 de 2012. No compartas esta información ni el CSV fuera del equipo.<br>
+    Ante una solicitud de supresión (Art. 8), elimina la fila desde Supabase.
+  </footer>
+</div>
+
+<script>
+'use strict';
+
+const SUPABASE_URL = 'https://rlgakgpcfbwhigjdumiv.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_VJ4JIosQfATwORGErcb0Dw_VxcrSngy';
+const SESION_KEY   = 'fm-panel-sesion-v2';
+
+const EJES = [
+  { col:'eje_consultoria',    titulo:'Consultoría empresarial' },
+  { col:'eje_deportes',       titulo:'Deportes · Torneo' },
+  { col:'eje_turismo',        titulo:'Turismo con propósito' },
+  { col:'eje_eventos',        titulo:'Eventos' },
+  { col:'eje_emprendimiento', titulo:'Emprendimiento' },
+  { col:'eje_rural',          titulo:'Managers Rural' },
+];
+const GRADOS = ['No me interesa','Curiosidad','Interés real','Es prioridad'];
+
+const $ = (s)=>document.querySelector(s);
+let TOKEN = null;
+let MIEMBROS = [];
+
+function esc(s){
+  return String(s ?? '').replace(/[&<>"']/g,(c)=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function fecha(iso){
+  if(!iso) return '—';
+  return new Date(iso).toLocaleDateString('es-CO',{day:'2-digit',month:'short',year:'2-digit'});
+}
+function mesLegible(m){
+  if(!m) return '';
+  const [a,mm] = String(m).split('-');
+  const meses = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+  return meses[Number(mm)-1] ? `${meses[Number(mm)-1]} ${a}` : m;
+}
+function soloDigitos(s){ return String(s||'').replace(/\D/g,''); }
+
+/* ============================================================
+   Autenticación y lectura
+   ============================================================ */
+
+async function entrar(correo, clave){
+  const res = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
+    method:'POST', headers:{ 'apikey':SUPABASE_KEY, 'Content-Type':'application/json' },
+    body: JSON.stringify({ email:correo, password:clave }),
+  });
+  const data = await res.json();
+  if(!res.ok) throw new Error(data.error_description || data.msg || data.message || 'No pudimos validar tus credenciales.');
+  return data.access_token;
+}
+
+async function cargarMiembros(){
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/miembros?select=*&order=creado_en.desc`, {
+    headers:{ 'apikey':SUPABASE_KEY, 'Authorization':'Bearer ' + TOKEN },
+  });
+  if(res.status === 401) throw new Error('Tu sesión expiró. Vuelve a entrar.');
+  if(!res.ok) throw new Error('Error ' + res.status + ': ' + (await res.text()).slice(0,180));
+  return res.json();
+}
+
+/* ============================================================
+   Agregaciones
+   ============================================================ */
+
+function contar(lista, campo){
+  const m = new Map();
+  lista.forEach((r)=>{
+    const v = r[campo];
+    if(v === null || v === undefined || v === '') return;
+    m.set(v, (m.get(v)||0)+1);
+  });
+  return [...m.entries()].map(([k,n])=>({k,n})).sort((a,b)=>b.n-a.n);
+}
+function contarArray(lista, campo){
+  const m = new Map();
+  lista.forEach((r)=>(r[campo]||[]).forEach((v)=>m.set(v,(m.get(v)||0)+1)));
+  return [...m.entries()].map(([k,n])=>({k,n})).sort((a,b)=>b.n-a.n);
+}
+/** Cuenta un campo dentro de un arreglo jsonb (ej. institución de cada posgrado). */
+function contarEnJson(lista, campos, llave){
+  const m = new Map();
+  lista.forEach((r)=>campos.forEach((c)=>(r[c]||[]).forEach((fila)=>{
+    const v = (fila && fila[llave] || '').trim();
+    if(v) m.set(v,(m.get(v)||0)+1);
+  })));
+  return [...m.entries()].map(([k,n])=>({k,n})).sort((a,b)=>b.n-a.n);
+}
+
+function renderBarras(items, opts){
+  const o = opts || {};
+  if(!items.length) return `<p class="vacio-card">Sin datos todavía.</p>`;
+  const max = o.max || Math.max(1, ...items.map((i)=>i.n));
+  return `<div class="barras">${items.slice(0, o.limite||99).map((i)=>`
+    <div class="b ${o.color||''}">
+      <div class="fila"><span>${esc(i.k)}</span>${i.extra?`<em>${esc(i.extra)}</em>`:''}
+        <strong>${o.decimales ? i.n.toFixed(o.decimales) : i.n}</strong></div>
+      <div class="pista"><i data-ancho="${Math.min(100,(i.n/max*100)).toFixed(1)}"></i></div>
+    </div>`).join('')}</div>`;
+}
+function tarjeta(titulo, nota, contenido){
+  return `<div class="card"><h3>${esc(titulo)}</h3><p class="nota">${esc(nota)}</p>${contenido}</div>`;
+}
+function animarBarras(){
+  requestAnimationFrame(()=>{
+    document.querySelectorAll('.pista i').forEach((el)=>{ el.style.width = el.dataset.ancho + '%'; });
+  });
+}
+
+/* ============================================================
+   KPIs
+   ============================================================ */
+
+function renderKPIs(lista){
+  const total = lista.length;
+  const hace7 = Date.now() - 7*24*3600*1000;
+  const nuevos = lista.filter((r)=>new Date(r.creado_en).getTime() > hace7).length;
+  const alta = lista.filter((r)=>r.prioridad_contacto === 'Alta').length;
+  const conPago = lista.filter((r)=>r.capacidad_inversion && !r.capacidad_inversion.startsWith('Solo')).length;
+  const aliados = lista.filter((r)=>['Aliado o patrocinador','Inversionista','Mentor'].includes(r.rol_potencial)).length;
+  const conWa = lista.filter((r)=>r.acepta_whatsapp).length;
+
+  $('#kpis').innerHTML = `
+    <div class="kpi dorado"><b>${total}</b><span>Caracterizados</span></div>
+    <div class="kpi"><b>${nuevos}</b><span>Últimos 7 días</span></div>
+    <div class="kpi alerta"><b>${alta}</b><span>Prioridad alta</span></div>
+    <div class="kpi"><b>${aliados}</b><span>Aliados o mentores</span></div>
+    <div class="kpi"><b>${total?Math.round(conPago/total*100):0}%</b><span>Con capacidad de pago</span></div>
+    <div class="kpi"><b>${total?Math.round(conWa/total*100):0}%</b><span>Acepta WhatsApp</span></div>`;
+}
+
+/* ============================================================
+   Vista 1 · Dónde actuar
+   ============================================================ */
+
+function renderAccion(lista){
+  // Demanda real por eje, según lo que calculó el instrumento.
+  const puntajes = EJES.map((e)=>{
+    const vals = lista.map((r)=>r[e.col]).filter((v)=>typeof v === 'number');
+    const prom = vals.length ? vals.reduce((a,b)=>a+b,0)/vals.length : 0;
+    const fuertes = vals.filter((v)=>v>=2).length;
+    return { k:e.titulo, n:prom, extra:`${fuertes} con interés alto` };
+  }).sort((a,b)=>b.n-a.n);
+
+  // Eje número 1 recomendado por persona (viene del análisis del formulario).
+  const ejeTop = new Map();
+  lista.forEach((r)=>{
+    const top = (r.ejes_recomendados||[])[0];
+    if(top && top.eje) ejeTop.set(top.eje, (ejeTop.get(top.eje)||0)+1);
+  });
+
+  const oportunidades = contarArray(lista,'oportunidades');
+  const necesidades   = contarArray(lista,'necesidades');
+
+  // Las tres cosas que más gente pidió, con nombre y apellido detrás.
+  const conNombre = (etiqueta)=>lista.filter((r)=>(r.oportunidades||[]).includes(etiqueta));
+
+  $('#v_accion').innerHTML = `
+    <div class="grid">
+      ${tarjeta('Oportunidades detectadas',
+        'Señales concretas que el instrumento encontró. Cada una es una razón para llamar a alguien.',
+        oportunidades.length ? `<div>${oportunidades.map((o,i)=>`
+          <div class="oportunidad">
+            <span class="n">${String(o.n).padStart(2,'0')}</span>
+            <div><strong>${esc(o.k)}</strong>
+              <span>${esc(conNombre(o.k).slice(0,4).map((r)=>r.nombre.split(' ')[0]).join(', '))}${
+                conNombre(o.k).length>4 ? ` y ${conNombre(o.k).length-4} más` : ''}</span></div>
+          </div>`).join('')}</div>` : '<p class="vacio-card">Sin datos todavía.</p>')}
+
+      ${tarjeta('Demanda por eje',
+        'Interés promedio declarado, de 0 a 3. Dice dónde concentrar la programación.',
+        renderBarras(puntajes, { max:3, decimales:2 }))}
+
+      ${tarjeta('Eje prioritario asignado',
+        'A cuántas personas les corresponde cada eje como primera recomendación, cruzando su interés con su situación real.',
+        renderBarras([...ejeTop.entries()].map(([k,n])=>({k,n})).sort((a,b)=>b.n-a.n), { color:'carbon' }))}
+
+      ${tarjeta('Qué necesita la comunidad',
+        'Lo que la gente dijo que le falta para lograr su prioridad del año. Es la lista de lo que podríamos ofrecer.',
+        renderBarras(necesidades, { color:'verde' }))}
+
+      ${tarjeta('Rol potencial en la comunidad',
+        'Quién puede dar, no solo recibir. Aquí están los mentores, aliados e inversionistas.',
+        renderBarras(contar(lista,'rol_potencial'), { color:'carbon' }))}
+
+      ${tarjeta('Prioridad de contacto',
+        'Calculada con oportunidades detectadas, nivel del cargo, capacidad de pago y tiempo disponible.',
+        renderBarras(contar(lista,'prioridad_contacto')))}
+    </div>`;
+  animarBarras();
+}
+
+/* ============================================================
+   Vista 2 · Personas (ficha detallada)
+   ============================================================ */
+
+function llenarFiltros(lista){
+  const llenar = (sel, items, etiqueta)=>{
+    const el = $(sel), actual = el.value;
+    el.innerHTML = `<option value="">${etiqueta}</option>` +
+      items.map((i)=>`<option value="${esc(i.k)}">${esc(i.k)} (${i.n})</option>`).join('');
+    el.value = actual;
+  };
+  llenar('#fPrioridad', contar(lista,'prioridad_contacto'), 'Toda prioridad');
+  llenar('#fRol',       contar(lista,'rol_potencial'), 'Todo rol potencial');
+  const ejeTop = new Map();
+  lista.forEach((r)=>{ const t = (r.ejes_recomendados||[])[0]; if(t&&t.eje) ejeTop.set(t.eje,(ejeTop.get(t.eje)||0)+1); });
+  llenar('#fEje', [...ejeTop.entries()].map(([k,n])=>({k,n})).sort((a,b)=>b.n-a.n), 'Todo eje recomendado');
+}
+
+function filtrar(){
+  const q = $('#buscar').value.trim().toLowerCase();
+  const p = $('#fPrioridad').value, rl = $('#fRol').value, ej = $('#fEje').value;
+  return MIEMBROS.filter((r)=>{
+    if(p && r.prioridad_contacto !== p) return false;
+    if(rl && r.rol_potencial !== rl) return false;
+    if(ej && ((r.ejes_recomendados||[])[0]||{}).eje !== ej) return false;
+    if(!q) return true;
+    const texto = [r.nombre, r.correo, r.ciudad, r.celular, r.colegio,
+      ...(r.experiencias||[]).map((e)=>`${e.empresa} ${e.cargo}`),
+      ...(r.pregrados||[]).map((e)=>`${e.institucion} ${e.programa}`),
+      ...(r.posgrados||[]).map((e)=>`${e.institucion} ${e.programa}`)].join(' ').toLowerCase();
+    return texto.includes(q);
+  });
+}
+
+function renderFicha(r){
+  const prio = (r.prioridad_contacto||'').toLowerCase();
+  const ejes = (r.ejes_recomendados||[]).slice(0,3);
+  const actual = (r.experiencias||[]).find((e)=>e.actual) || (r.experiencias||[])[0] || {};
+  const wa = soloDigitos(r.celular);
+
+  const dato = (etiqueta, valor)=>valor ? `<div><span>${esc(etiqueta)}</span>${esc(valor)}</div>` : '';
+  const citas = [['Académico',r.proyectos_academicos_det],['Laboral',r.proyectos_laborales_det],
+                 ['Emprendimiento',r.proyectos_emprend_det],['Necesita',r.necesidades_det]]
+    .filter(([,v])=>v && v.trim());
+
+  return `<details class="ficha ${prio}">
+    <summary>
+      <div class="idn">
+        <b>${esc(r.nombre)}</b>
+        <div class="meta">${esc(r.ciudad||'')} · ${esc(actual.cargo||'')}${actual.empresa?' · '+esc(actual.empresa):''}</div>
+      </div>
+      <div class="marcas">
+        <span class="pill ${prio==='alta'?'rojo':prio==='media'?'gold':''}">Prioridad ${esc(r.prioridad_contacto||'—')}</span>
+        <span class="pill carbon">${esc(r.rol_potencial||'—')}</span>
+        ${ejes[0]?`<span class="pill gold">${esc(ejes[0].eje)}</span>`:''}
+        <span class="pill">${esc(fecha(r.creado_en))}</span>
+      </div>
+      ${r.lectura_momento?`<div class="lectura">${esc(r.lectura_momento)}</div>`:''}
+    </summary>
+
+    <div class="detalle">
+      <div class="bloque">
+        <h4>Contacto</h4>
+        <div class="datos">
+          <div><span>Correo</span><a href="mailto:${esc(r.correo)}">${esc(r.correo)}</a></div>
+          <div><span>WhatsApp</span><a href="https://wa.me/57${esc(wa)}" target="_blank" rel="noopener">${esc(r.celular)}</a>
+            ${r.acepta_whatsapp?' <span class="pill verde">autoriza</span>':' <span class="pill">no autoriza</span>'}</div>
+          ${dato('Ciudad', r.ciudad)}
+          ${dato('Nacimiento', r.fecha_nacimiento)}
+        </div>
+      </div>
+
+      ${(r.oportunidades||[]).length ? `<div class="bloque"><h4>Oportunidades</h4>
+        <div class="marcas">${r.oportunidades.map((o)=>`<span class="pill gold">${esc(o)}</span>`).join('')}</div></div>`:''}
+
+      ${ejes.length ? `<div class="bloque"><h4>Ejes recomendados y por qué</h4>
+        <ul class="lista-mini">${ejes.map((e)=>`<li><b>${esc(e.eje)}</b> <span class="pill">${e.puntaje}</span>
+          <em>${esc(e.motivo||'Sin señales adicionales')}</em></li>`).join('')}</ul></div>`:''}
+
+      <div class="bloque"><h4>Su prioridad a 12 meses</h4>
+        <div class="cita"><em>Lo que quiere lograr</em>${esc(r.prioridad_12m||'—')}</div>
+        ${(r.necesidades||[]).length?`<div class="marcas" style="margin-top:8px">
+          ${r.necesidades.map((n)=>`<span class="pill verde">${esc(n)}</span>`).join('')}</div>`:''}
+      </div>
+
+      ${citas.length?`<div class="bloque"><h4>En sus palabras</h4>
+        ${citas.map(([k,v])=>`<div class="cita"><em>${esc(k)}</em>«${esc(v)}»</div>`).join('')}</div>`:''}
+
+      <div class="bloque"><h4>Formación</h4>
+        <ul class="lista-mini">
+          ${r.colegio?`<li><b>${esc(r.colegio)}</b><em>Bachillerato ${esc(r.colegio_modalidad||'')} · ${esc(r.colegio_ano||'')}</em></li>`:''}
+          ${(r.pregrados||[]).map((p)=>`<li><b>${esc(p.programa)}</b><em>${esc(p.institucion)} · ${esc(p.estado)} ${esc(p.ano||'')}</em></li>`).join('')}
+          ${(r.posgrados||[]).map((p)=>`<li><b>${esc(p.nivel)} — ${esc(p.programa)}</b><em>${esc(p.institucion)}${p.pais&&p.pais!=='Colombia'?' ('+esc(p.pais)+')':''} · ${esc(p.estado)} ${esc(p.ano||'')}</em></li>`).join('')}
+        </ul>
+      </div>
+
+      <div class="bloque"><h4>Trayectoria</h4>
+        <ul class="lista-mini">
+          ${(r.experiencias||[]).map((e)=>`<li><b>${esc(e.cargo)} — ${esc(e.empresa)}</b>
+            <em>${esc(e.nivel||'')} · ${esc(e.sector||'')} · ${mesLegible(e.inicio)} → ${e.actual?'hoy':mesLegible(e.fin)||'—'}
+            · ${esc(e.personas_cargo||'')} a cargo</em>
+            ${e.logro?`<div style="font-size:12.5px; margin-top:5px; color:var(--muted)">«${esc(e.logro)}»</div>`:''}</li>`).join('')
+            || '<li><em>Sin experiencias registradas</em></li>'}
+        </ul>
+        <div class="datos" style="margin-top:10px">
+          ${dato('Experiencia total', r.anos_experiencia)}
+          ${dato('Situación', (r.situacion_laboral||[]).join(', '))}
+          ${dato('Sectores', (r.sectores||[]).join(', '))}
+        </div>
+      </div>
+
+      <div class="bloque"><h4>Hogar</h4>
+        <div class="datos">
+          ${dato('Estado civil', r.estado_civil)}
+          ${dato('Hijos', r.tiene_hijos ? `${r.numero_hijos||''} · ${(r.edades_hijos||[]).join(', ')}` : 'No tiene')}
+          ${dato('Etapa educativa', (r.hijos_etapa||[]).join(', '))}
+          ${dato('Entra a universidad', r.hijo_entra_universidad)}
+          ${dato('Pareja: nivel', r.pareja_nivel_educativo)}
+          ${dato('Pareja: área', r.pareja_area_formacion)}
+          ${dato('Pareja: situación', r.pareja_situacion)}
+          ${dato('Participaría en familia', r.participaria_familia)}
+          ${r.pareja_correo?`<div><span>Invitar a su pareja</span><a href="mailto:${esc(r.pareja_correo)}">${esc(r.pareja_correo)}</a></div>`:''}
+        </div>
+      </div>
+
+      <div class="bloque"><h4>Vínculo con la fundación</h4>
+        <div class="datos">
+          ${dato('Relación previa', r.vinculo_previo)}
+          ${dato('Quiere vincularse como', (r.tipo_vinculo||[]).join(', '))}
+          ${dato('Puede aportar', (r.aportes||[]).join(', '))}
+          ${dato('Tiempo al mes', r.tiempo_mensual)}
+          ${dato('Formatos', (r.formatos||[]).join(', '))}
+          ${dato('Capacidad de inversión', r.capacidad_inversion)}
+        </div>
+        <div class="marcas" style="margin-top:10px">
+          ${EJES.map((e)=>`<span class="pill ${r[e.col]>=2?'gold':''}">${esc(e.titulo)}: ${esc(GRADOS[r[e.col]]||'—')}</span>`).join('')}
+        </div>
+      </div>
+    </div>
+  </details>`;
+}
+
+function renderPersonas(){
+  const lista = filtrar();
+  const plural = (n)=>n === 1 ? '1 persona' : `${n} personas`;
+  $('#cuentaFichas').textContent = lista.length === MIEMBROS.length
+    ? plural(MIEMBROS.length) : `${lista.length} de ${plural(MIEMBROS.length)}`;
+  $('#sinDatos').hidden = MIEMBROS.length > 0;
+  $('#fichas').innerHTML = lista.map(renderFicha).join('');
+}
+
+/* ============================================================
+   Vista 3 · La comunidad
+   ============================================================ */
+
+function renderComunidad(lista){
+  $('#gridComunidad').innerHTML = [
+    tarjeta('Situación laboral','Respuesta múltiple: alguien puede ser empleado y emprendedor a la vez.',
+      renderBarras(contarArray(lista,'situacion_laboral'), { color:'carbon' })),
+    tarjeta('Años de experiencia','La madurez profesional de la comunidad.',
+      renderBarras(contar(lista,'anos_experiencia'))),
+    tarjeta('Sectores donde han trabajado','Respuesta múltiple.',
+      renderBarras(contarArray(lista,'sectores'), { color:'verde', limite:12 })),
+    tarjeta('Ciudades','Define qué tan presencial puede ser la programación.',
+      renderBarras(contar(lista,'ciudad'), { limite:12 })),
+    tarjeta('Proyectos académicos a 12 meses','Lo que la comunidad quiere estudiar este año.',
+      renderBarras(contarArray(lista,'proyectos_academicos'), { limite:10 })),
+    tarjeta('Proyectos laborales a 12 meses','Movimientos de carrera previstos.',
+      renderBarras(contarArray(lista,'proyectos_laborales'), { color:'carbon', limite:10 })),
+    tarjeta('Proyectos de emprendimiento','En qué etapa están los negocios de la comunidad.',
+      renderBarras(contarArray(lista,'proyectos_emprendimiento'), { color:'verde', limite:10 })),
+    tarjeta('Qué pueden aportar','El inventario de capacidades de la comunidad.',
+      renderBarras(contarArray(lista,'aportes'), { color:'verde' })),
+    tarjeta('Cómo quieren vincularse','Respuesta múltiple.',
+      renderBarras(contarArray(lista,'tipo_vinculo'), { color:'carbon' })),
+    tarjeta('Capacidad de inversión','Qué tan monetizable es cada segmento.',
+      renderBarras(contar(lista,'capacidad_inversion'))),
+    tarjeta('Tiempo disponible al mes','Qué tan exigente puede ser la programación.',
+      renderBarras(contar(lista,'tiempo_mensual'), { color:'carbon' })),
+    tarjeta('Formatos posibles','Respuesta múltiple.',
+      renderBarras(contarArray(lista,'formatos'), { color:'verde' })),
+    tarjeta('Relación previa con la fundación','Cuánta gente nueva está entrando.',
+      renderBarras(contar(lista,'vinculo_previo'), { color:'carbon' })),
+    tarjeta('Composición del hogar','Estado civil de la comunidad.',
+      renderBarras(contar(lista,'estado_civil'))),
+    tarjeta('Etapa educativa de los hijos','Respuesta múltiple. Marca oportunidades de programas familiares.',
+      renderBarras(contarArray(lista,'hijos_etapa'), { color:'verde' })),
+    tarjeta('Nivel educativo de la pareja','Sin datos identificables, por Ley 1581.',
+      renderBarras(contar(lista,'pareja_nivel_educativo'))),
+  ].join('');
+  animarBarras();
+}
+
+/* ============================================================
+   Vista 4 · Formación y empresas
+   ============================================================ */
+
+function renderFormacion(lista){
+  const nivelMax = (r)=>{
+    const p = r.posgrados||[];
+    if(p.some((x)=>x.nivel==='Doctorado'||x.nivel==='Posdoctorado')) return 'Doctorado';
+    if(p.some((x)=>x.nivel==='Maestría')) return 'Maestría';
+    if(p.length) return 'Especialización';
+    if((r.pregrados||[]).length) return 'Pregrado';
+    return 'Bachillerato';
+  };
+  const niveles = new Map();
+  lista.forEach((r)=>{ const n = nivelMax(r); niveles.set(n,(niveles.get(n)||0)+1); });
+
+  const enCurso = lista.filter((r)=>
+    (r.pregrados||[]).some((p)=>p.estado==='En curso') ||
+    (r.posgrados||[]).some((p)=>p.estado==='En curso')).length;
+
+  $('#gridFormacion').innerHTML = [
+    tarjeta('Universidades de la comunidad','Cruzando pregrados y posgrados. El dato para hablar de convenios y alianzas.',
+      renderBarras(contarEnJson(lista,['pregrados','posgrados'],'institucion'), { limite:20 })),
+    tarjeta('Nivel educativo más alto','Un conteo por persona, no por título.',
+      renderBarras([...niveles.entries()].map(([k,n])=>({k,n})).sort((a,b)=>b.n-a.n), { color:'carbon' })),
+    tarjeta('Programas de posgrado','Qué estudió la comunidad después del pregrado.',
+      renderBarras(contarEnJson(lista,['posgrados'],'programa'), { limite:15 })),
+    tarjeta('Carreras de pregrado','La base de formación de la comunidad.',
+      renderBarras(contarEnJson(lista,['pregrados'],'programa'), { limite:15, color:'carbon' })),
+    tarjeta('Empresas donde trabaja o trabajó la comunidad','Toda la trayectoria, no solo el empleo actual. Es el mapa de acceso corporativo de la red.',
+      renderBarras(contarEnJson(lista,['experiencias'],'empresa'), { limite:25, color:'verde' })),
+    tarjeta('Niveles de cargo alcanzados','Contando todas las experiencias registradas.',
+      renderBarras(contarEnJson(lista,['experiencias'],'nivel'), { color:'carbon' })),
+    tarjeta('Colegios de bachillerato','Texto libre, así que puede haber variantes del mismo nombre.',
+      renderBarras(contar(lista,'colegio'), { limite:15 })),
+    tarjeta('Modalidad de bachillerato','De dónde viene la formación de base.',
+      renderBarras(contar(lista,'colegio_modalidad'))),
+    tarjeta('Estudiando actualmente', `${enCurso} de ${lista.length} personas tienen algún programa en curso.`,
+      renderBarras([{k:'En curso',n:enCurso},{k:'Sin estudios en curso',n:lista.length-enCurso}], { color:'verde' })),
+  ].join('');
+  animarBarras();
+}
+
+/* ============================================================
+   Exportación CSV
+   ============================================================ */
+
+function celdaCSV(v){ return `"${String(v ?? '').replace(/"/g,'""')}"`; }
+
+function exportarCSV(){
+  const lista = filtrar();
+  const plano = (arr, fn)=>(arr||[]).map(fn).join(' | ');
+  const cols = [
+    ['Nombre','nombre'],['Correo','correo'],['Celular','celular'],['Ciudad','ciudad'],
+    ['Fecha de nacimiento','fecha_nacimiento'],
+    ['Colegio','colegio'],['Modalidad bachillerato','colegio_modalidad'],['Año de grado','colegio_ano'],
+    ['Pregrados', (r)=>plano(r.pregrados,(p)=>`${p.programa} (${p.institucion}, ${p.estado} ${p.ano||''})`)],
+    ['Posgrados', (r)=>plano(r.posgrados,(p)=>`${p.nivel}: ${p.programa} (${p.institucion}, ${p.estado} ${p.ano||''})`)],
+    ['Situación laboral','situacion_laboral'],
+    ['Trayectoria', (r)=>plano(r.experiencias,(e)=>`${e.cargo} en ${e.empresa} [${e.nivel}, ${e.inicio}→${e.actual?'hoy':e.fin||''}, ${e.personas_cargo} a cargo]`)],
+    ['Logros', (r)=>plano((r.experiencias||[]).filter((e)=>e.logro),(e)=>`${e.empresa}: ${e.logro}`)],
+    ['Años de experiencia','anos_experiencia'],['Sectores','sectores'],
+    ['Proyectos académicos','proyectos_academicos'],['Detalle académico','proyectos_academicos_det'],
+    ['Proyectos laborales','proyectos_laborales'],['Detalle laboral','proyectos_laborales_det'],
+    ['Proyectos emprendimiento','proyectos_emprendimiento'],['Detalle emprendimiento','proyectos_emprend_det'],
+    ['Prioridad 12 meses','prioridad_12m'],['Necesidades','necesidades'],['Detalle necesidades','necesidades_det'],
+    ['Estado civil','estado_civil'],['Tiene hijos','tiene_hijos'],['Número de hijos','numero_hijos'],
+    ['Edades de los hijos','edades_hijos'],['Etapa educativa hijos','hijos_etapa'],
+    ['Hijo entra a universidad','hijo_entra_universidad'],
+    ['Pareja: nivel','pareja_nivel_educativo'],['Pareja: área','pareja_area_formacion'],
+    ['Pareja: situación','pareja_situacion'],['Correo de la pareja','pareja_correo'],
+    ['Participaría en familia','participaria_familia'],
+    ['Eje consultoría','eje_consultoria'],['Eje deportes','eje_deportes'],['Eje turismo','eje_turismo'],
+    ['Eje eventos','eje_eventos'],['Eje emprendimiento','eje_emprendimiento'],['Eje rural','eje_rural'],
+    ['Relación previa','vinculo_previo'],['Tipo de vínculo','tipo_vinculo'],['Aportes','aportes'],
+    ['Tiempo mensual','tiempo_mensual'],['Formatos','formatos'],['Capacidad de inversión','capacidad_inversion'],
+    ['Acepta WhatsApp','acepta_whatsapp'],
+    ['Eje recomendado 1', (r)=>((r.ejes_recomendados||[])[0]||{}).eje||''],
+    ['Eje recomendado 2', (r)=>((r.ejes_recomendados||[])[1]||{}).eje||''],
+    ['Rol potencial','rol_potencial'],['Prioridad de contacto','prioridad_contacto'],
+    ['Oportunidades','oportunidades'],['Lectura del momento','lectura_momento'],
+    ['Fecha de registro','creado_en'],
+  ];
+
+  const filas = lista.map((r)=>cols.map(([,c])=>{
+    let v = typeof c === 'function' ? c(r) : r[c];
+    if(Array.isArray(v)) v = v.join(' | ');
+    else if(typeof v === 'boolean') v = v ? 'Sí' : 'No';
+    else if(c === 'creado_en' && v) v = new Date(v).toLocaleString('es-CO');
+    return celdaCSV(v);
+  }).join(';'));
+
+  const BOM = String.fromCharCode(0xFEFF);
+  const csv = BOM + [cols.map(([t])=>celdaCSV(t)).join(';'), ...filas].join('\r\n');
+  const url = URL.createObjectURL(new Blob([csv], {type:'text/csv;charset=utf-8'}));
+  const a = document.createElement('a');
+  a.href = url; a.download = `caracterizacion-managers-${new Date().toISOString().slice(0,10)}.csv`;
+  a.click(); URL.revokeObjectURL(url);
+}
+
+/* ============================================================
+   Vista 5 · Emprendedores
+   ------------------------------------------------------------
+   Lee la tabla `emprendedores` (el diagnóstico completo) y la tabla
+   `emprendedores_avance` (lo que alcanzó a contar quien no terminó).
+   Sin esta vista los diagnósticos llegaban a la base y nadie los veía:
+   había que entrar a Supabase a mirarlos a mano.
+   ============================================================ */
+
+let EMPRENDEDORES = [];
+let AVANCES = [];
+
+const ETAPAS_EMP = { E1:'Semilla', E2:'Tracción', E3:'Consolidación' };
+
+async function cargarEmprendedores(){
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/emprendedores?select=*&order=creado_en.desc`, {
+    headers:{ 'apikey':SUPABASE_KEY, 'Authorization':'Bearer ' + TOKEN },
+  });
+  if(res.status === 401) throw new Error('Tu sesión expiró. Vuelve a entrar.');
+  if(!res.ok) throw new Error('Error ' + res.status + ': ' + (await res.text()).slice(0,180));
+  return res.json();
+}
+
+async function cargarAvances(){
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/emprendedores_avance?select=*&order=creado_en.desc`, {
+    headers:{ 'apikey':SUPABASE_KEY, 'Authorization':'Bearer ' + TOKEN },
+  });
+  if(res.status === 401) throw new Error('Tu sesión expiró. Vuelve a entrar.');
+  if(!res.ok) return [];   // la tabla puede no existir todavía en un proyecto viejo
+  return res.json();
+}
+
+/** Un registro por sesión: el avance más lejano de cada persona que no terminó. */
+function leadsSinTerminar(){
+  const terminados = new Set(EMPRENDEDORES.map((e)=>String(e.correo||'').toLowerCase()));
+  const porSesion = new Map();
+  AVANCES.forEach((a)=>{
+    const previo = porSesion.get(a.sesion);
+    if(!previo || a.paso > previo.paso) porSesion.set(a.sesion, a);
+  });
+  return [...porSesion.values()]
+    .filter((a)=> a.correo && !terminados.has(String(a.correo).toLowerCase()))
+    .sort((a,b)=> new Date(b.creado_en) - new Date(a.creado_en));
+}
+
+function filtrarEmp(){
+  const q = $('#buscarEmp').value.trim().toLowerCase();
+  const et = $('#fEtapa').value, pr = $('#fPrioridadEmp').value, fr = $('#fFreno').value;
+  return EMPRENDEDORES.filter((r)=>{
+    if(et && r.etapa !== et) return false;
+    if(pr && r.prioridad_contacto !== pr) return false;
+    if(fr && !(r.frenos||[]).some((f)=>f.frente === fr)) return false;
+    if(!q) return true;
+    return [r.nombre, r.correo, r.nombre_emprendimiento, r.ciudad, r.sector]
+      .some((v)=>String(v||'').toLowerCase().includes(q));
+  });
+}
+
+function llenarFiltrosEmp(){
+  const llenar = (sel, items, etiqueta)=>{
+    const el = $(sel), actual = el.value;
+    el.innerHTML = `<option value="">${etiqueta}</option>` +
+      items.map((v)=>`<option value="${esc(v)}">${esc(v)}</option>`).join('');
+    el.value = actual;
+  };
+  llenar('#fEtapa', Object.keys(ETAPAS_EMP).filter((k)=>EMPRENDEDORES.some((e)=>e.etapa===k))
+    .map((k)=>k), 'Toda etapa');
+  // Etiqueta legible en el desplegable de etapa
+  [...$('#fEtapa').options].forEach((o)=>{ if(o.value) o.textContent = o.value + ' · ' + ETAPAS_EMP[o.value]; });
+  llenar('#fPrioridadEmp', ['Alta','Media','Baja'].filter((p)=>EMPRENDEDORES.some((e)=>e.prioridad_contacto===p)), 'Toda prioridad');
+  const frenos = [...new Set(EMPRENDEDORES.flatMap((e)=>(e.frenos||[]).map((f)=>f.frente)))].sort();
+  llenar('#fFreno', frenos, 'Todo freno');
+}
+
+function renderFichaEmp(r){
+  const prio = (r.prioridad_contacto||'').toLowerCase();
+  const wa = soloDigitos(r.celular);
+  const frenos = r.frenos || [];
+  const dato = (etiqueta, valor)=>valor ? `<div><span>${esc(etiqueta)}</span>${esc(valor)}</div>` : '';
+  const citas = [['Lo que está pasando', r.freno_det],['A 6 meses', r.meta_6m],['A 12 meses', r.meta_12m],
+                 ['Su cliente', r.cliente_quien],['Qué hace', r.que_hace]]
+    .filter(([,v])=>v && String(v).trim());
+
+  return `<details class="ficha ${prio}">
+    <summary>
+      <div class="idn">
+        <b>${esc(r.nombre)}</b>
+        <div class="meta">${esc(r.nombre_emprendimiento||'—')}${r.ciudad?' · '+esc(r.ciudad):''}${r.sector?' · '+esc(r.sector):''}</div>
+      </div>
+      <div class="marcas">
+        <span class="pill gold">${esc(r.etapa||'—')} · ${esc(r.etapa_nombre||ETAPAS_EMP[r.etapa]||'')}</span>
+        <span class="pill ${prio==='alta'?'rojo':prio==='media'?'gold':''}">Prioridad ${esc(r.prioridad_contacto||'—')}</span>
+        <span class="pill carbon">${esc(r.tamano_empresa||'—')}</span>
+        <span class="pill">${esc(fecha(r.creado_en))}</span>
+      </div>
+      ${r.lectura_momento?`<div class="lectura">${esc(r.lectura_momento)}</div>`:''}
+    </summary>
+
+    <div class="detalle">
+      <div class="bloque">
+        <h4>Contacto</h4>
+        <div class="datos">
+          <div><span>Correo</span><a href="mailto:${esc(r.correo)}">${esc(r.correo)}</a></div>
+          <div><span>WhatsApp</span><a href="https://wa.me/57${esc(wa)}" target="_blank" rel="noopener">${esc(r.celular)}</a>
+            ${r.acepta_whatsapp?' <span class="pill verde">autoriza</span>':' <span class="pill">no autoriza</span>'}</div>
+          ${dato('Ciudad', [r.ciudad, r.departamento].filter(Boolean).join(', '))}
+          ${dato('Facturación 12m', r.ingresos_anuales)}
+          ${dato('Clientes pagando', r.clientes_pagando)}
+          ${dato('Equipo', r.empleados)}
+        </div>
+      </div>
+
+      ${frenos.length ? `<div class="bloque"><h4>Sus tres frentes críticos</h4>
+        <ul class="lista-mini">${frenos.map((f)=>`<li><b>${esc(f.frente)}</b> <span class="pill">${f.nivel}</span>
+          ${f.declarado?'<span class="pill gold">lo dijo él</span>':''}
+          <em>${esc((f.accion&&f.accion.t)||'')}</em></li>`).join('')}</ul></div>`:''}
+
+      ${(r.fortalezas||[]).length ? `<div class="bloque"><h4>A favor</h4>
+        <div class="marcas">${r.fortalezas.map((f)=>`<span class="pill verde">${esc(f)}</span>`).join('')}</div></div>`:''}
+
+      ${(r.riesgos||[]).length ? `<div class="bloque"><h4>Riesgos detectados</h4>
+        <div class="marcas">${r.riesgos.map((x)=>`<span class="pill rojo">${esc(x)}</span>`).join('')}</div></div>`:''}
+
+      ${(r.apoyo||[]).length ? `<div class="bloque"><h4>Qué apoyo pidió</h4>
+        <div class="marcas">${r.apoyo.map((x)=>`<span class="pill gold">${esc(x)}</span>`).join('')}</div></div>`:''}
+
+      ${citas.length?`<div class="bloque"><h4>En sus palabras</h4>
+        ${citas.map(([k,v])=>`<div class="cita"><em>${esc(k)}</em>«${esc(v)}»</div>`).join('')}</div>`:''}
+
+      <div class="bloque"><h4>Lectura interna</h4>
+        <div class="datos">
+          ${dato('Potencial de escala', r.potencial_escala)}
+          ${dato('Rol potencial', r.rol_potencial)}
+          ${dato('Puntaje de etapa', r.etapa_score != null ? r.etapa_score + '/100' : '')}
+          ${dato('Tiempo al mes', r.tiempo_mensual)}
+          ${dato('Capacidad de inversión', r.capacidad_inversion)}
+        </div>
+      </div>
+    </div>
+  </details>`;
+}
+
+function renderEmprendedores(){
+  const lista = filtrarEmp();
+  const sinTerminar = leadsSinTerminar();
+
+  /* --- Tarjetas de lectura --- */
+  const porEtapa = Object.keys(ETAPAS_EMP)
+    .map((k)=>({ k: k + ' · ' + ETAPAS_EMP[k], n: EMPRENDEDORES.filter((e)=>e.etapa===k).length }))
+    .filter((x)=>x.n);
+  const frenos = (()=>{
+    const m = new Map();
+    EMPRENDEDORES.forEach((e)=>(e.frenos||[]).forEach((f)=>m.set(f.frente,(m.get(f.frente)||0)+1)));
+    return [...m.entries()].map(([k,n])=>({k,n})).sort((a,b)=>b.n-a.n);
+  })();
+  const embudo = (()=>{
+    const m = new Map([[1,0],[2,0],[3,0],[4,0],[5,0]]);
+    const porSesion = new Map();
+    AVANCES.forEach((a)=>{ const p = porSesion.get(a.sesion); if(!p || a.paso > p) porSesion.set(a.sesion, a.paso); });
+    porSesion.forEach((paso)=>{ for(let i=1;i<=paso;i++) m.set(i, m.get(i)+1); });
+    return [...m.entries()].map(([k,n])=>({ k:'Terminó la dimensión ' + k, n }));
+  })();
+
+  $('#gridEmprendedores').innerHTML = [
+    tarjeta('En qué etapa están', 'La etapa sale de la evidencia —ventas, clientes, formalidad, números—, no de la antigüedad.',
+      renderBarras(porEtapa, {color:'gold'})),
+    tarjeta('Qué los está frenando', 'Frentes críticos detectados, sumando los tres de cada diagnóstico.',
+      renderBarras(frenos, {limite:8})),
+    tarjeta('Sectores', 'Dónde está la comunidad de emprendedores.',
+      renderBarras(contar(EMPRENDEDORES, 'sector'), {limite:8})),
+    tarjeta('Prioridad de contacto', 'A quién llamar primero, según etapa, disposición de tiempo y capacidad de inversión.',
+      renderBarras(contar(EMPRENDEDORES, 'prioridad_contacto'))),
+    tarjeta('Hasta dónde llegan', 'Cuántas personas completaron cada dimensión. La caída entre dos barras es dónde se pierde la gente.',
+      renderBarras(embudo, {color:'gold'})),
+    tarjeta(`Empezaron y no terminaron (${sinTerminar.length})`,
+      'Dieron su autorización y sus datos de contacto, pero abandonaron el formulario. Se les puede escribir.',
+      sinTerminar.length
+        ? `<ul class="lista-mini">${sinTerminar.slice(0,20).map((a)=>`<li>
+            <b>${esc(a.nombre||'Sin nombre')}</b> <span class="pill">dimensión ${a.paso} de 5</span>
+            <em>${esc(a.correo||'')}${a.celular?' · '+esc(a.celular):''}${a.nombre_emprendimiento?' · '+esc(a.nombre_emprendimiento):''} · ${esc(fecha(a.creado_en))}</em>
+          </li>`).join('')}</ul>`
+        : `<p class="vacio-card">Nadie ha quedado a mitad de camino.</p>`),
+  ].join('');
+
+  /* --- Fichas --- */
+  $('#fichasEmp').innerHTML = lista.map(renderFichaEmp).join('');
+  $('#cuentaEmp').textContent = `${lista.length} de ${EMPRENDEDORES.length}`;
+  $('#sinEmprendedores').hidden = EMPRENDEDORES.length > 0;
+  animarBarras();
+}
+
+function exportarCSVEmprendedores(){
+  const lista = filtrarEmp();
+  if(!lista.length){ alert('No hay diagnósticos que exportar con los filtros actuales.'); return; }
+  const cols = [
+    ['Nombre','nombre'],['Correo','correo'],['Celular','celular'],
+    ['Departamento','departamento'],['Ciudad','ciudad'],
+    ['Emprendimiento','nombre_emprendimiento'],['Sector','sector'],['Qué hace','que_hace'],
+    ['Etapa','etapa'],['Etapa nombre','etapa_nombre'],['Puntaje etapa','etapa_score'],
+    ['Tamaño','tamano_empresa'],['Potencial de escala','potencial_escala'],
+    ['Rol potencial','rol_potencial'],['Prioridad','prioridad_contacto'],
+    ['Clientes pagando','clientes_pagando'],['Facturación 12m','ingresos_anuales'],
+    ['Empleados','empleados'],['Acepta WhatsApp','acepta_whatsapp'],
+    ['Lectura del momento','lectura_momento'],['Creado','creado_en'],
+  ];
+  const filas = lista.map((r)=>[
+    ...cols.map(([,c])=>celdaCSV(r[c])),
+    celdaCSV((r.frenos||[]).map((f)=>f.frente+' ('+f.nivel+')').join(' | ')),
+    celdaCSV((r.fortalezas||[]).join(' | ')),
+    celdaCSV((r.riesgos||[]).join(' | ')),
+    celdaCSV((r.apoyo||[]).join(' | ')),
+  ].join(';'));
+  const encabezado = [...cols.map(([t])=>celdaCSV(t)),
+    celdaCSV('Frenos'), celdaCSV('Fortalezas'), celdaCSV('Riesgos'), celdaCSV('Apoyo pedido')].join(';');
+
+  const BOM = String.fromCharCode(0xFEFF);
+  const csv = BOM + [encabezado, ...filas].join('\r\n');
+  const url = URL.createObjectURL(new Blob([csv], {type:'text/csv;charset=utf-8;'}));
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `emprendedores-${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+/* ============================================================
+   Orquestación
+   ============================================================ */
+
+function pintarTodo(){
+  renderKPIs(MIEMBROS);
+  renderAccion(MIEMBROS);
+  llenarFiltros(MIEMBROS);
+  renderPersonas();
+  renderComunidad(MIEMBROS);
+  renderFormacion(MIEMBROS);
+  llenarFiltrosEmp();
+  renderEmprendedores();
+}
+
+async function refrescar(){
+  const aviso = $('#avisoPanel');
+  aviso.classList.remove('visible');
+  try{
+    // En paralelo: son tres tablas independientes.
+    const [miembros, emprendedores, avances] = await Promise.all([
+      cargarMiembros(), cargarEmprendedores(), cargarAvances(),
+    ]);
+    MIEMBROS = miembros; EMPRENDEDORES = emprendedores; AVANCES = avances;
+    pintarTodo();
+  }catch(err){
+    aviso.className = 'aviso error visible';
+    aviso.textContent = err.message;
+    if(/sesión expiró/.test(err.message)) salir();
+  }
+}
+
+async function abrirPanel(){
+  $('#pantallaLogin').hidden = true;
+  $('#pantallaPanel').hidden = false;
+  await refrescar();
+}
+
+function salir(){
+  TOKEN = null;
+  try{ sessionStorage.removeItem(SESION_KEY); }catch(e){}
+  $('#pantallaPanel').hidden = true;
+  $('#pantallaLogin').hidden = false;
+}
+
+$('#formLogin').addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  const btn = $('#btnEntrar'), aviso = $('#avisoLogin');
+  aviso.classList.remove('visible');
+  btn.disabled = true; btn.textContent = 'Entrando…';
+  try{
+    TOKEN = await entrar($('#email').value.trim(), $('#password').value);
+    try{ sessionStorage.setItem(SESION_KEY, TOKEN); }catch(e){}
+    await abrirPanel();
+  }catch(err){
+    aviso.className = 'aviso error visible'; aviso.textContent = err.message;
+  }finally{ btn.disabled = false; btn.textContent = 'Entrar'; }
+});
+
+$('#tabs').addEventListener('click', (e)=>{
+  const btn = e.target.closest('[data-vista]');
+  if(!btn) return;
+  document.querySelectorAll('#tabs button').forEach((b)=>b.classList.toggle('activo', b===btn));
+  document.querySelectorAll('.vista').forEach((v)=>v.classList.toggle('activa', v.id === 'v_'+btn.dataset.vista));
+  animarBarras();
+});
+
+$('#btnRecargar').addEventListener('click', refrescar);
+$('#btnCSV').addEventListener('click', exportarCSV);
+$('#btnSalir').addEventListener('click', salir);
+['#buscar','#fPrioridad','#fRol','#fEje'].forEach((s)=>{ $(s).addEventListener('input', renderPersonas); });
+['#buscarEmp','#fEtapa','#fPrioridadEmp','#fFreno'].forEach((s)=>{ $(s).addEventListener('input', renderEmprendedores); });
+$('#btnCSVEmp').addEventListener('click', exportarCSVEmprendedores);
+
+(function(){
+  try{ const t = sessionStorage.getItem(SESION_KEY); if(t){ TOKEN = t; abrirPanel(); } }catch(e){}
+})();
+</script>
+</body>
+</html>
