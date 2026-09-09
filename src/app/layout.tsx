@@ -43,6 +43,31 @@ export const metadata: Metadata = {
   twitter: { card: 'summary_large_image' },
 };
 
+/**
+ * Reenvío de los enlaces de autenticación al panel.
+ *
+ * Cuando alguien pide recuperar su contraseña, Supabase manda un correo cuyo
+ * enlace vuelve al sitio con un token —o con un error— en el fragmento de la
+ * URL. Si la dirección del panel no está en las Redirect URLs del proyecto,
+ * Supabase ignora el destino pedido y usa la Site URL, que es la portada: la
+ * persona aterriza en el home con un `#error=…` colgando y sin manera de
+ * cambiar nada.
+ *
+ * Esto lo corrige del lado del sitio. Si llega un fragmento de autenticación a
+ * cualquier página que no sea el panel, se reenvía al panel tal cual, con
+ * `replace` para no dejar la portada en el historial. Así el flujo funciona
+ * incluso con la configuración de Supabase sin tocar.
+ *
+ * Va inline en el <head> para que corra antes de pintar: nadie alcanza a ver
+ * la página equivocada.
+ */
+const REENVIO_AUTH = `(function(){try{
+var h=location.hash||'';
+if(!/(^|[#&])(access_token|error_code|error_description)=/.test(h))return;
+if(location.pathname.indexOf('panel.html')>-1)return;
+location.replace('/panel.html'+h);
+}catch(e){}})();`;
+
 interface RootLayoutProps {
   children: React.ReactNode;
 }
@@ -60,6 +85,9 @@ export default function RootLayout({ children }: RootLayoutProps) {
         jetbrainsMono.variable,
       )}
     >
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: REENVIO_AUTH }} />
+      </head>
       <body className="min-h-dvh font-body">{children}</body>
     </html>
   );
