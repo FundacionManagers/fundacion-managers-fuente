@@ -57,6 +57,12 @@ header .der{margin-left:auto; display:flex; gap:8px; align-items:center; flex-wr
   padding:32px; box-shadow:var(--sh-md)}
 .login h2{font-size:22px; margin-bottom:6px}
 .login p.intro{font-size:14px; color:var(--muted); margin-bottom:22px}
+.login p.olvide{margin-top:14px; text-align:center}
+.login p.olvide button{background:none; border:0; padding:4px; font:inherit; font-size:13.5px;
+  color:var(--muted); text-decoration:underline; text-underline-offset:3px; cursor:pointer}
+.login p.olvide button:hover{color:var(--gold)}
+.login p.olvide button:disabled{opacity:.5; cursor:default; text-decoration:none}
+.aviso.ok{background:#EDF7F1; border:1px solid #BFE0CD; color:#1F5C3A}
 .campo{margin-bottom:14px}
 .campo label{display:block; font-size:13px; font-weight:600; margin-bottom:6px}
 input[type=text],input[type=email],input[type=password],input[type=search],select{
@@ -187,7 +193,29 @@ footer{text-align:center; padding:30px 24px; font-size:12.5px; color:var(--muted
         <input type="password" id="password" autocomplete="current-password" required></div>
       <button class="btn btn-primary btn-block" type="submit" id="btnEntrar">Entrar</button>
     </form>
+    <p class="olvide">
+      <button type="button" id="btnOlvide">¿Olvidaste tu contraseña?</button>
+    </p>
     <div class="aviso error" id="avisoLogin"></div>
+  </div>
+</div>
+
+<!-- ============ NUEVA CONTRASEÑA ============
+     A esta pantalla se llega desde el enlace del correo de recuperación, que
+     vuelve al panel con un token en el fragmento de la URL. Sin ella, el
+     enlace aterrizaba en el login de siempre y no había cómo cambiar nada. -->
+<div class="login" id="pantallaClave" hidden>
+  <div class="caja">
+    <h2>Nueva contraseña</h2>
+    <p class="intro">Escribe la contraseña con la que vas a entrar de ahora en adelante.</p>
+    <form id="formClave">
+      <div class="campo"><label for="clave1">Nueva contraseña</label>
+        <input type="password" id="clave1" autocomplete="new-password" minlength="8" required></div>
+      <div class="campo"><label for="clave2">Repítela</label>
+        <input type="password" id="clave2" autocomplete="new-password" minlength="8" required></div>
+      <button class="btn btn-primary btn-block" type="submit" id="btnGuardarClave">Guardar y entrar</button>
+    </form>
+    <div class="aviso error" id="avisoClave"></div>
   </div>
 </div>
 
@@ -1021,6 +1049,118 @@ $('#formLogin').addEventListener('submit', async (e)=>{
   }finally{ btn.disabled = false; btn.textContent = 'Entrar'; }
 });
 
+/* ============================================================
+   Recuperar la contraseña
+   ------------------------------------------------------------
+   Antes, quien la olvidaba tenía que entrar al panel de Supabase, dar con la
+   organización correcta y resetearla desde ahí. Ahora se hace desde aquí.
+
+   Son dos momentos: se pide el enlace, y más tarde se vuelve desde el correo
+   con un token en el fragmento de la URL (`#access_token=…&type=recovery`).
+   Ese fragmento nunca viaja al servidor, así que la sesión de recuperación
+   solo existe en este navegador.
+   ============================================================ */
+
+async function pedirEnlace(correo){
+  const res = await fetch(`${SUPABASE_URL}/auth/v1/recover`, {
+    method:'POST',
+    headers:{ 'apikey':SUPABASE_KEY, 'Content-Type':'application/json' },
+    body: JSON.stringify({ email:correo, redirect_to: location.origin + location.pathname }),
+  });
+  // Supabase responde 200 incluso si el correo no existe, a propósito: así
+  // nadie puede usar este formulario para averiguar quién tiene cuenta.
+  if(!res.ok){
+    const d = await res.json().catch(()=>({}));
+    throw new Error(d.error_description || d.msg || d.message || 'No pudimos enviar el enlace.');
+  }
+}
+
+$('#btnOlvide').addEventListener('click', async ()=>{
+  const btn = $('#btnOlvide'), aviso = $('#avisoLogin'), correo = $('#email').value.trim();
+  if(!correo){
+    aviso.className = 'aviso error visible';
+    aviso.textContent = 'Escribe primero tu correo arriba y vuelve a tocar aquí.';
+    $('#email').focus();
+    return;
+  }
+  aviso.classList.remove('visible');
+  btn.disabled = true; btn.textContent = 'Enviando…';
+  try{
+    await pedirEnlace(correo);
+    aviso.className = 'aviso ok visible';
+    aviso.innerHTML = `Te enviamos un enlace a <strong>${esc(correo)}</strong>. ` +
+      'Ábrelo desde este mismo dispositivo y podrás poner una contraseña nueva. ' +
+      'Si no llega en unos minutos, revisa el correo no deseado.';
+  }catch(err){
+    aviso.className = 'aviso error visible'; aviso.textContent = err.message;
+  }finally{ btn.disabled = false; btn.textContent = '¿Olvidaste tu contraseña?'; }
+});
+
+async function cambiarClave(nueva, tokenRecuperacion){
+  const res = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
+    method:'PUT',
+    headers:{ 'apikey':SUPABASE_KEY, 'Authorization':'Bearer ' + tokenRecuperacion,
+              'Content-Type':'application/json' },
+    body: JSON.stringify({ password:nueva }),
+  });
+  const d = await res.json().catch(()=>({}));
+  if(!res.ok) throw new Error(d.error_description || d.msg || d.message || 'No pudimos guardar la contraseña.');
+}
+
+/* ¿Venimos del enlace del correo? El token llega en el fragmento.
+   Se revisa al cargar y también en `hashchange`: si el enlace se abre en una
+   pestaña que ya tenía el panel, el navegador no recarga nada y sin esto la
+   pantalla de cambio de contraseña nunca aparecería. */
+let TOKEN_RECUPERACION = null;
+
+function detectarRecuperacion(){
+  const h = new URLSearchParams((location.hash || '').replace(/^#/, ''));
+
+  // Un enlace vencido o ya usado vuelve con error en vez de token.
+  if(h.get('error_description')){
+    $('#avisoLogin').className = 'aviso error visible';
+    $('#avisoLogin').textContent =
+      decodeURIComponent(h.get('error_description')).replace(/\+/g, ' ') + '. Pide un enlace nuevo.';
+    history.replaceState(null, '', location.pathname);
+    return;
+  }
+  if(h.get('type') !== 'recovery' || !h.get('access_token')) return;
+
+  TOKEN_RECUPERACION = h.get('access_token');
+  // Se borra de la barra de direcciones: no tiene por qué quedar en el
+  // historial ni copiarse por accidente.
+  history.replaceState(null, '', location.pathname);
+  $('#pantallaLogin').hidden = true;
+  $('#pantallaPanel').hidden = true;
+  $('#pantallaClave').hidden = false;
+}
+
+detectarRecuperacion();
+window.addEventListener('hashchange', detectarRecuperacion);
+
+$('#formClave').addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  const btn = $('#btnGuardarClave'), aviso = $('#avisoClave');
+  const a = $('#clave1').value, b = $('#clave2').value;
+  aviso.classList.remove('visible');
+  if(a !== b){
+    aviso.className = 'aviso error visible'; aviso.textContent = 'Las dos contraseñas no coinciden.';
+    return;
+  }
+  btn.disabled = true; btn.textContent = 'Guardando…';
+  try{
+    await cambiarClave(a, TOKEN_RECUPERACION);
+    // El token de recuperación ya sirve como sesión: se entra de una vez.
+    TOKEN = TOKEN_RECUPERACION;
+    try{ sessionStorage.setItem(SESION_KEY, TOKEN); }catch(e){}
+    $('#pantallaClave').hidden = true;
+    await abrirPanel();
+  }catch(err){
+    aviso.className = 'aviso error visible'; aviso.textContent = err.message;
+    btn.disabled = false; btn.textContent = 'Guardar y entrar';
+  }
+});
+
 $('#tabs').addEventListener('click', (e)=>{
   const btn = e.target.closest('[data-vista]');
   if(!btn) return;
@@ -1037,6 +1177,9 @@ $('#btnSalir').addEventListener('click', salir);
 $('#btnCSVEmp').addEventListener('click', exportarCSVEmprendedores);
 
 (function(){
+  // Si venimos del enlace de recuperación, manda esa pantalla: una sesión
+  // vieja que siguiera abierta no puede tapar el cambio de contraseña.
+  if(TOKEN_RECUPERACION) return;
   try{ const t = sessionStorage.getItem(SESION_KEY); if(t){ TOKEN = t; abrirPanel(); } }catch(e){}
 })();
 </script>
