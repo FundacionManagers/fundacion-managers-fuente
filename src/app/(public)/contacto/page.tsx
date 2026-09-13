@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { Instagram, Mail, MapPin, MessageCircle, Phone, Send } from 'lucide-react';
+import { Instagram, Mail, MapPin, Phone } from 'lucide-react';
+import { FormularioContacto } from '@/components/contacto/FormularioContacto';
 import { SectionBackdrop } from '@/components/shared/SectionBackdrop';
 import { TORNEO_INSTAGRAM, TORNEO_INSTAGRAM_URL } from '@/lib/torneo';
 import { EJES_VISIBLES } from '@/lib/navigation';
@@ -9,6 +10,12 @@ export const metadata: Metadata = {
   title: 'Contacto',
   description: 'Habla con la Fundación Managers.',
 };
+
+/** Unico lugar donde vive el destino del contacto. Lo usan la tarjeta de
+ *  canales y el formulario, que antes lo repetian por su cuenta. */
+const CORREO_CONTACTO = 'williammojica@fundacionmanagers.com';
+/** El mismo celular de la tarjeta, en el formato que pide wa.me. */
+const WHATSAPP_CONTACTO = '573126299744';
 
 interface Canal {
   icon: typeof Mail;
@@ -22,9 +29,9 @@ const CANALES: readonly Canal[] = [
   {
     icon: Mail,
     titulo: 'Correo',
-    valor: 'williammojica@fundacionmanagers.com',
+    valor: CORREO_CONTACTO,
     nota: 'Respondemos en menos de 48 horas hábiles.',
-    href: 'mailto:williammojica@fundacionmanagers.com',
+    href: `mailto:${CORREO_CONTACTO}`,
   },
   {
     icon: Phone,
@@ -136,152 +143,15 @@ export default function ContactoPage() {
                 </div>
               </div>
 
-              {/* Formulario UI */}
-              <form
-                className="rounded-lg border border-white/10 bg-[#0d1218]/80 p-8 shadow-sm"
-                aria-describedby="form-status"
-              >
-                <p className="font-mono text-caption uppercase tracking-widest text-gold">
-                  Escríbenos
-                </p>
-                <h2 className="mt-2 font-display text-2xl font-bold text-neutral-50">
-                  Cuéntanos tu idea
-                </h2>
-
-                <div className="mt-8 space-y-5">
-                  <div className="grid gap-5 sm:grid-cols-2">
-                    <div>
-                      <label
-                        htmlFor="nombre"
-                        className="block text-sm font-medium text-neutral-300"
-                      >
-                        Nombre
-                      </label>
-                      <input
-                        id="nombre"
-                        type="text"
-                        name="nombre"
-                        required
-                        autoComplete="name"
-                        placeholder="Tu nombre"
-                        className="mt-2 block w-full rounded-md border border-white/15 px-3 py-2.5 text-sm shadow-sm transition-colors duration-200 ease-managers placeholder:text-neutral-500 focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
-                      />
-                    </div>
-                    <div>
-                      <label
-                        htmlFor="correo"
-                        className="block text-sm font-medium text-neutral-300"
-                      >
-                        Correo
-                      </label>
-                      <input
-                        id="correo"
-                        type="email"
-                        name="correo"
-                        required
-                        autoComplete="email"
-                        placeholder="tucorreo@ejemplo.com"
-                        className="mt-2 block w-full rounded-md border border-white/15 px-3 py-2.5 text-sm shadow-sm transition-colors duration-200 ease-managers placeholder:text-neutral-500 focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label htmlFor="eje" className="block text-sm font-medium text-neutral-300">
-                      ¿Sobre qué eje?
-                    </label>
-                    <select
-                      id="eje"
-                      name="eje"
-                      defaultValue=""
-                      required
-                      className="mt-2 block w-full rounded-md border border-white/15 bg-[#0d1218]/80 px-3 py-2.5 text-sm shadow-sm transition-colors duration-200 ease-managers focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
-                    >
-                      <option value="" disabled>
-                        Selecciona un eje…
-                      </option>
-                      {EJES_SELECT.map((o) => (
-                        <option key={o.value} value={o.value}>
-                          {o.label}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div>
-                    <label htmlFor="origen" className="block text-sm font-medium text-neutral-300">
-                      ¿De dónde nos conoces?
-                    </label>
-                    <select
-                      id="origen"
-                      name="origen"
-                      defaultValue=""
-                      required
-                      className="mt-2 block w-full rounded-md border border-white/15 bg-[#0d1218]/80 px-3 py-2.5 text-sm shadow-sm transition-colors duration-200 ease-managers focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
-                    >
-                      <option value="" disabled>
-                        Selecciona…
-                      </option>
-                      <option value="fm">Fundación Managers</option>
-                      <option value="icone">ICONE ialabs</option>
-                      <option value="alianza">Managers Lab (powered by ICONE ialabs)</option>
-                      <option value="otro">Otro</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label htmlFor="mensaje" className="block text-sm font-medium text-neutral-300">
-                      Mensaje
-                    </label>
-                    <textarea
-                      id="mensaje"
-                      name="mensaje"
-                      required
-                      rows={5}
-                      placeholder="Cuéntanos en pocas líneas qué tienes en mente."
-                      className="mt-2 block w-full resize-none rounded-md border border-white/15 px-3 py-2.5 text-sm shadow-sm transition-colors duration-200 ease-managers placeholder:text-neutral-500 focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
-                    />
-                  </div>
-
-                  <label className="flex items-start gap-2 text-xs text-neutral-400">
-                    <input
-                      type="checkbox"
-                      required
-                      className="mt-0.5 h-4 w-4 rounded border-white/15 text-gold focus:ring-gold"
-                    />
-                    <span>
-                      Autorizo el tratamiento de mis datos personales según la{' '}
-                      <Link href="/privacidad/" className="font-semibold text-gold hover:underline">
-                        política de privacidad
-                      </Link>
-                      .
-                    </span>
-                  </label>
-
-                  <button
-                    type="submit"
-                    disabled
-                    title="Envío disponible cuando se conecte el backend en Fase 1"
-                    className="inline-flex w-full items-center justify-center gap-2 rounded-md bg-gold px-6 py-3 text-sm font-semibold text-carbon shadow-gold transition-all duration-200 ease-managers hover:-translate-y-0.5 hover:bg-gold-hover disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
-                  >
-                    <Send size={18} aria-hidden />
-                    Enviar mensaje
-                  </button>
-
-                  <p
-                    id="form-status"
-                    className="rounded-md border border-dashed border-white/15 p-3 text-xs text-neutral-500"
-                  >
-                    <MessageCircle
-                      size={14}
-                      className="-mt-0.5 mr-1 inline text-gold"
-                      aria-hidden
-                    />
-                    El envío real se conecta con Resend en la Fase 1 del roadmap. Mientras tanto,
-                    escribe a <strong>williammojica@fundacionmanagers.com</strong>.
-                  </p>
-                </div>
-              </form>
+              {/* El formulario vive en un componente de cliente porque tiene que
+                  reaccionar al envio. Antes era pura maqueta: el boton estaba
+                  deshabilitado y el unico aviso era un `title`, invisible en
+                  movil. */}
+              <FormularioContacto
+                correo={CORREO_CONTACTO}
+                ejes={EJES_SELECT}
+                whatsapp={WHATSAPP_CONTACTO}
+              />
             </div>
           </div>
         </section>
