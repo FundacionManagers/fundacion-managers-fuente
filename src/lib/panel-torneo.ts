@@ -127,6 +127,49 @@ export async function guardarPartido(p: PartidoPanel): Promise<void> {
   if (error) throw error;
 }
 
+export interface NuevoCruce {
+  fase: FaseFinal;
+  /** 'AAAA-MM-DD', tal como lo entrega un <input type="date">. */
+  fecha: string;
+  /** 'HH:MM', tal como lo entrega un <input type="time">. */
+  hora: string;
+  local: string;
+  visitante: string;
+}
+
+/**
+ * Crea un cruce de la fase final.
+ *
+ * La jornada va en 0 porque en eliminatoria no aplica: es lo que exige la
+ * restriccion `jornada_coherente` de la migracion 0007. El partido nace
+ * programado y sin marcador, que es lo unico que admite
+ * `marcador_coherente`.
+ */
+export async function crearCruce(c: NuevoCruce, edicion = EDICION_ACTUAL): Promise<void> {
+  const sb = exigirCliente();
+  const { error } = await sb.from('partidos').insert({
+    edicion,
+    fase: c.fase,
+    jornada: 0,
+    fecha: c.fecha,
+    hora: `${c.hora}:00`,
+    local: c.local,
+    visitante: c.visitante,
+    estado: 'programado',
+  });
+  if (error) throw error;
+}
+
+/**
+ * Borra un partido. Solo se ofrece para la fase final: los 28 de la liga son
+ * el fixture oficial y no se tocan desde el panel.
+ */
+export async function eliminarPartido(id: string): Promise<void> {
+  const sb = exigirCliente();
+  const { error } = await sb.from('partidos').delete().eq('id', id);
+  if (error) throw error;
+}
+
 export async function guardarDisciplina(
   filas: DisciplinaPanel[],
   edicion = EDICION_ACTUAL,

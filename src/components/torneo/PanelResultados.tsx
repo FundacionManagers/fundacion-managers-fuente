@@ -9,7 +9,9 @@ import { TeamCrest } from '@/components/torneo/TeamCrest';
 import { EQUIPOS, getEquipo } from '@/lib/torneo-data';
 import {
   calcularPosiciones,
+  CALENDARIO_FASE_FINAL,
   COLUMNAS_TABLA,
+  CRUCES_POR_FASE,
   ORDEN_FASES,
   TITULO_FASE,
   TOTAL_JORNADAS,
@@ -19,9 +21,11 @@ import {
 import {
   actualizarGoleador,
   cargarTodo,
+  crearCruce,
   crearGoleador,
   descuadres,
   eliminarGoleador,
+  eliminarPartido,
   guardarDisciplina,
   guardarPartido,
   type EstadoTorneo,
@@ -192,12 +196,6 @@ export function PanelResultados({ salir, correo }: { salir: () => Promise<void>;
       : estado.partidos.filter((p) => p.fase === ronda.fase);
   }, [estado, ronda]);
 
-  /** Rondas de la eliminatoria que ya tienen cruces cargados en la base. */
-  const fasesCargadas = useMemo(
-    () => (estado ? ORDEN_FASES.filter((f) => estado.partidos.some((p) => p.fase === f)) : []),
-    [estado],
-  );
-
   function tocarPartido(id: string, cambios: Partial<PartidoPanel>) {
     setEstado((prev) =>
       prev
@@ -216,6 +214,30 @@ export function PanelResultados({ salir, correo }: { salir: () => Promise<void>;
       setAviso(`${tituloRonda(ronda)} guardada.`);
     } catch {
       setError('No se pudo guardar. Verifica que tu cuenta siga autorizada.');
+    } finally {
+      setGuardando(false);
+    }
+  }
+
+  /**
+   * Borra un cruce de la fase final. Pide confirmación porque, a diferencia
+   * de un marcador, esto no se deshace desmarcando una casilla.
+   */
+  async function borrarCruce(p: PartidoPanel) {
+    const local = getEquipo(p.local)?.nombre ?? p.local;
+    const visitante = getEquipo(p.visitante)?.nombre ?? p.visitante;
+    if (!window.confirm(`¿Eliminar el cruce ${local} vs ${visitante}? No se puede deshacer.`)) {
+      return;
+    }
+    setGuardando(true);
+    setError('');
+    setAviso('');
+    try {
+      await eliminarPartido(p.id);
+      setAviso('Cruce eliminado.');
+      await recargar();
+    } catch {
+      setError('No se pudo eliminar el cruce.');
     } finally {
       setGuardando(false);
     }
@@ -387,14 +409,12 @@ export function PanelResultados({ salir, correo }: { salir: () => Promise<void>;
               );
             })}
 
-            {/* Eliminatoria. Solo aparecen las rondas que ya tienen cruces
-                cargados: una ronda sin sorteo no tiene nada que editar. */}
-            {fasesCargadas.length > 0 ? (
-              <span className="mx-1 h-8 w-px shrink-0 bg-white/15" aria-hidden />
-            ) : null}
-            {fasesCargadas.map((f) => {
+            {/* Eliminatoria. Aparecen las cuatro rondas siempre, tengan o no
+                cruces: la que está vacía es justo donde se crean. */}
+            <span className="mx-1 h-8 w-px shrink-0 bg-white/15" aria-hidden />
+            {ORDEN_FASES.map((f) => {
               const suyos = estado.partidos.filter((p) => p.fase === f);
-              const completa = suyos.every((p) => p.jugado);
+              const completa = suyos.length > 0 && suyos.every((p) => p.jugado);
               const activa = ronda.tipo === 'fase' && ronda.fase === f;
               return (
                 <button
@@ -408,7 +428,13 @@ export function PanelResultados({ salir, correo }: { salir: () => Promise<void>;
                         ? 'border border-emerald-500/40 text-emerald-400'
                         : 'border border-white/15 text-neutral-400 hover:border-amarillo/50',
                   )}
-                  title={completa ? `${TITULO_FASE[f]} completa` : `${TITULO_FASE[f]} pendiente`}
+                  title={
+                    suyos.length === 0
+                      ? `${TITULO_FASE[f]}: sin cruces cargados`
+                      : completa
+                        ? `${TITULO_FASE[f]} completa`
+                        : `${TITULO_FASE[f]} pendiente`
+                  }
                 >
                   {FASE_CORTA[f]}
                 </button>
@@ -426,9 +452,21 @@ export function PanelResultados({ salir, correo }: { salir: () => Promise<void>;
                 key={p.id}
                 className="rounded-xl border border-white/10 bg-black/70 p-4 backdrop-blur-sm"
               >
-                <p className="text-xs text-neutral-500">
-                  {p.fecha} · {p.hora}
-                </p>
+                <div className="flex items-center justify-between gap-3">
+                  <p className="text-xs text-neutral-500">
+                    {p.fecha} · {p.hora}
+                  </p>
+                  {p.fase !== 'grupos' ? (
+                    <button
+                      onClick={() => void borrarCruce(p)}
+                      disabled={guardando}
+                      title="Eliminar este cruce"
+                      className="rounded-md p-1.5 text-neutral-600 transition-colors hover:bg-red-500/10 hover:text-red-400 disabled:opacity-50"
+                    >
+                      <Trash2 size={15} />
+                    </button>
+                  ) : null}
+                </div>
                 <div className="mt-3 flex flex-wrap items-center gap-3">
                   <div className="flex min-w-0 flex-1 items-center justify-end gap-2">
                     <span className="truncate text-right text-sm font-semibold text-neutral-200">
@@ -464,6 +502,10 @@ export function PanelResultados({ salir, correo }: { salir: () => Promise<void>;
               </li>
             ))}
           </ul>
+
+          {ronda.tipo === 'fase' ? (
+            <NuevoCruceForm fase={ronda.fase} estado={estado} onCreado={() => void recargar()} />
+          ) : null}
 
           <button
             onClick={() => void guardarRonda()}
@@ -623,6 +665,215 @@ export function PanelResultados({ salir, correo }: { salir: () => Promise<void>;
       {seccion === 'acceso' ? <DefinirClave correo={correo} /> : null}
     </div>
   );
+}
+
+/**
+ * Alta de un cruce de la fase final.
+ *
+ * Existe para que la organización no dependa de nadie con acceso a la base:
+ * cuando se juegan los cuartos, aquí mismo se arman las semifinales. Cuántos
+ * cruces lleva cada ronda está en `CRUCES_POR_FASE`, así que el formulario
+ * avisa cuando ya están todos y no deja crear de más por descuido.
+ *
+ * Los equipos que propone son los ganadores de la ronda anterior que todavía
+ * no tienen rival: es casi siempre lo que toca elegir, y ahorra buscarlos en
+ * una lista de ocho.
+ */
+function NuevoCruceForm({
+  fase,
+  estado,
+  onCreado,
+}: {
+  fase: FaseFinal;
+  estado: EstadoTorneo;
+  onCreado: () => void;
+}) {
+  const anterior = ORDEN_FASES[ORDEN_FASES.indexOf(fase) - 1];
+
+  /** Quién ganó cada partido de la ronda previa. Los empates no dan ganador. */
+  const clasificados = useMemo(() => {
+    if (!anterior) return [];
+    return estado.partidos
+      .filter((p) => p.fase === anterior && p.jugado)
+      .map((p) =>
+        p.golesLocal == null || p.golesVisitante == null || p.golesLocal === p.golesVisitante
+          ? null
+          : p.golesLocal > p.golesVisitante
+            ? p.local
+            : p.visitante,
+      )
+      .filter((x): x is string => x != null);
+  }, [estado.partidos, anterior]);
+
+  /** Los clasificados que aún no tienen cruce en esta ronda. */
+  const disponibles = useMemo(() => {
+    const yaCruzados = new Set(
+      estado.partidos.filter((p) => p.fase === fase).flatMap((p) => [p.local, p.visitante]),
+    );
+    return clasificados.filter((eq) => !yaCruzados.has(eq));
+  }, [clasificados, estado.partidos, fase]);
+
+  const cargados = estado.partidos.filter((p) => p.fase === fase).length;
+  const faltan = CRUCES_POR_FASE[fase] - cargados;
+
+  const [abierto, setAbierto] = useState(false);
+  const [local, setLocal] = useState('');
+  const [visitante, setVisitante] = useState('');
+  const [fecha, setFecha] = useState('');
+  const [hora, setHora] = useState('');
+  const [trabajando, setTrabajando] = useState(false);
+  const [error, setError] = useState('');
+
+  // Al abrir se rellena con lo más probable: los dos primeros que falten por
+  // emparejar, el día de la ronda y la hora en que arranca la jornada.
+  useEffect(() => {
+    if (!abierto) return;
+    setLocal((v) => v || disponibles[0] || '');
+    setVisitante((v) => v || disponibles[1] || '');
+    setFecha((v) => v || fechaSugerida(fase, estado));
+    setHora((v) => v || '08:00');
+  }, [abierto, disponibles, fase, estado]);
+
+  async function crear() {
+    if (!local || !visitante) return setError('Faltan los dos equipos.');
+    if (local === visitante) return setError('Un equipo no puede jugar contra sí mismo.');
+    if (!fecha || !hora) return setError('Faltan el día y la hora.');
+    setTrabajando(true);
+    setError('');
+    try {
+      await crearCruce({ fase, fecha, hora, local, visitante });
+      setLocal('');
+      setVisitante('');
+      setAbierto(false);
+      onCreado();
+    } catch {
+      setError('No se pudo crear el cruce. Verifica que tu cuenta siga autorizada.');
+    } finally {
+      setTrabajando(false);
+    }
+  }
+
+  if (!abierto) {
+    return (
+      <div className="mt-4">
+        <button
+          onClick={() => setAbierto(true)}
+          className="inline-flex items-center gap-1.5 rounded-full border border-white/20 px-5 py-2.5 text-sm font-bold text-neutral-300 transition-colors hover:border-amarillo/60 hover:text-amarillo"
+        >
+          <Plus size={16} /> Añadir cruce
+        </button>
+        {faltan > 0 ? (
+          <p className="mt-2 text-xs text-neutral-500">
+            {cargados === 0
+              ? `Esta ronda todavía no tiene cruces. Lleva ${CRUCES_POR_FASE[fase]}.`
+              : `Faltan ${faltan} de ${CRUCES_POR_FASE[fase]}.`}
+          </p>
+        ) : (
+          <p className="mt-2 flex items-center gap-1.5 text-xs text-emerald-400">
+            <Check size={13} /> Los cruces de esta ronda ya están cargados.
+          </p>
+        )}
+      </div>
+    );
+  }
+
+  return (
+    <div className="mt-4 rounded-xl border border-amarillo/30 bg-black/50 p-4">
+      <p className="font-bufon text-xs font-bold uppercase tracking-[0.15em] text-amarillo">
+        Nuevo cruce · {TITULO_FASE[fase]}
+      </p>
+
+      {anterior && clasificados.length > 0 ? (
+        <p className="mt-2 text-xs text-neutral-400">
+          Ganaron {TITULO_FASE[anterior].toLowerCase()}:{' '}
+          {clasificados.map((eq) => getEquipo(eq)?.nombre ?? eq).join(', ')}.
+        </p>
+      ) : null}
+
+      <div className="mt-3 flex flex-wrap items-end gap-3">
+        <label className="flex flex-col gap-1 text-xs text-neutral-400">
+          Local
+          <SelectEquipo valor={local} onChange={setLocal} />
+        </label>
+        <label className="flex flex-col gap-1 text-xs text-neutral-400">
+          Visitante
+          <SelectEquipo valor={visitante} onChange={setVisitante} />
+        </label>
+        <label className="flex flex-col gap-1 text-xs text-neutral-400">
+          Día
+          <input
+            type="date"
+            value={fecha}
+            onChange={(e) => setFecha(e.target.value)}
+            className="rounded-md border border-white/25 bg-[#05070a] px-3 py-2 text-sm text-neutral-50 focus:border-amarillo focus:outline-none"
+          />
+        </label>
+        <label className="flex flex-col gap-1 text-xs text-neutral-400">
+          Hora
+          <input
+            type="time"
+            value={hora}
+            onChange={(e) => setHora(e.target.value)}
+            className="rounded-md border border-white/25 bg-[#05070a] px-3 py-2 text-sm text-neutral-50 focus:border-amarillo focus:outline-none"
+          />
+        </label>
+        <button
+          onClick={() => void crear()}
+          disabled={trabajando}
+          className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-amarillo to-naranja px-5 py-2.5 text-sm font-bold text-carbon disabled:opacity-50"
+        >
+          {trabajando ? <Loader2 size={16} className="animate-spin" /> : <Plus size={16} />}
+          Crear
+        </button>
+        <button
+          onClick={() => setAbierto(false)}
+          className="text-xs text-neutral-500 hover:text-neutral-300"
+        >
+          Cancelar
+        </button>
+      </div>
+
+      <p className="mt-3 text-xs text-neutral-500">
+        El cruce nace programado y sin marcador. Los goles se cargan después, aquí mismo, cuando se
+        juegue.
+      </p>
+      {error ? <p className="mt-2 text-xs text-red-400">{error}</p> : null}
+    </div>
+  );
+}
+
+/** Desplegable con los ocho clubes de la edición. */
+function SelectEquipo({ valor, onChange }: { valor: string; onChange: (v: string) => void }) {
+  return (
+    <select
+      value={valor}
+      onChange={(e) => onChange(e.target.value)}
+      className="w-44 rounded-md border border-white/25 bg-[#05070a] px-3 py-2 text-sm text-neutral-50 focus:border-amarillo focus:outline-none"
+    >
+      <option value="">Elegir…</option>
+      {EQUIPOS.map((eq) => (
+        <option key={eq.slug} value={eq.slug}>
+          {eq.nombre}
+        </option>
+      ))}
+    </select>
+  );
+}
+
+/**
+ * Día que se propone para un cruce nuevo, en el formato del input de fecha.
+ *
+ * Manda el de los cruces que ya existan en la ronda —si el primero se juega
+ * el 20, el segundo casi seguro también—. Si la ronda está vacía, el que
+ * anunció la organización en el calendario de la fase final.
+ */
+function fechaSugerida(fase: FaseFinal, estado: EstadoTorneo): string {
+  const hermano = estado.partidos.find((p) => p.fase === fase);
+  if (hermano) return hermano.fecha;
+  const anunciada = CALENDARIO_FASE_FINAL.find((r) => r.fase === fase)?.fecha;
+  if (!anunciada) return '';
+  const [d, m, a] = anunciada.split('/');
+  return `${a}-${m}-${d}`;
 }
 
 function SeccionGoleadores({ estado, onCambio }: { estado: EstadoTorneo; onCambio: () => void }) {
