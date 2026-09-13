@@ -7,7 +7,7 @@ import Link from 'next/link';
 import { Menu, X } from 'lucide-react';
 import { asset } from '@/lib/asset';
 import { ICONE_CYAN } from '@/lib/alianza';
-import { MENU, hrefDeEje, nombreDeMenu } from '@/lib/navigation';
+import { MENU, hrefDeEje } from '@/lib/navigation';
 
 /**
  * Menú móvil (hamburguesa). Visible solo < lg.
@@ -69,7 +69,7 @@ export function MobileMenu() {
             onClick={() => setOpen(false)}
             className="border-b border-white/5 py-4 font-serif text-2xl font-bold text-neutral-100 transition-colors duration-200 hover:text-gold"
           >
-            {nombreDeMenu(eje)}
+            {eje.nombre}
           </Link>
         ))}
 

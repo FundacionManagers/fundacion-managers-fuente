@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { MobileMenu } from '@/components/layout/MobileMenu';
 import { asset } from '@/lib/asset';
 import { ICONE_CYAN } from '@/lib/alianza';
-import { MENU, hrefDeEje, nombreDeMenu } from '@/lib/navigation';
+import { MENU, hrefDeEje } from '@/lib/navigation';
 
 export function Header() {
   return (
@@ -28,7 +28,7 @@ export function Header() {
                   href={hrefDeEje(eje)}
                   className="transition-colors duration-200 ease-managers hover:text-gold"
                 >
-                  {nombreDeMenu(eje)}
+                  {eje.nombre}
                 </Link>
               </li>
             ))}

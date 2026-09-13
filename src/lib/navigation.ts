@@ -37,23 +37,11 @@ export interface Eje {
    * diagnóstico, que es un archivo estático en `public/`.
    */
   href?: string;
-  /**
-   * Cómo se llama en el menú, cuando ahí conviene un nombre más corto que el
-   * institucional. El torneo es «Torneo Managers» en el home, en «nosotros» y
-   * en el desplegable de contacto —es la marca—, pero en la barra de arriba
-   * compite por ancho con los demás ejes y va simplemente como «Torneo».
-   */
-  nombreMenu?: string;
 }
 
 /** A dónde lleva una entrada del menú. */
 export function hrefDeEje(e: Eje): string {
   return e.href ?? `/${e.slug}/`;
-}
-
-/** Cómo se lee una entrada en el menú. */
-export function nombreDeMenu(e: Eje): string {
-  return e.nombreMenu ?? e.nombre;
 }
 
 // Orden oficial definido por Jorge (mayo 2026):
@@ -68,7 +56,6 @@ export const EJES: readonly Eje[] = [
     theme: 'dark',
     accent: 'text-gold',
     icon: Trophy,
-    nombreMenu: 'Torneo',
   },
   {
     slug: 'turismo',
@@ -164,6 +151,9 @@ export const ENTRADAS: readonly Eje[] = [DIAGNOSTICO, ...EJES_VISIBLES];
  * leen de aquí los dos. Tiene orden propio —Jorge, septiembre 2026—: primero
  * los dos ejes de la fundación y después el torneo, con Managers Lab aparte,
  * que va en su propio botón de color y no sale de esta lista.
+ *
+ * El torneo se nombra completo, «Torneo Managers», aquí y en todas partes:
+ * es la marca y no se acorta.
  *
  * El diagnóstico ya no está en el menú. Sigue entrando por el home, que le
  * dedica el botón del héroe y una sección entera, y por el pie.
