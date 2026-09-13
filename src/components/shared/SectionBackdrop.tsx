@@ -57,6 +57,24 @@ export function SectionBackdrop({ tint = '#D4A437', image, wide }: SectionBackdr
               : 'linear-gradient(to bottom, #000 0%, #000 60%, transparent 100%)',
           }}
         />
+        {/* Y la misma foto abajo, espejada y mucho más tenue.
+            Sin esto, todo lo que hay debajo del héroe caía a un negro plano:
+            «al bajar sigue negro», que es literalmente lo que pasaba. La
+            franja de arriba se agota a los 340 px y el resto de la página
+            —que son miles— quedaba sin nada. Encuadra otra parte de la foto,
+            para que no se lea como la misma imagen repetida sino como el
+            mismo ambiente. */}
+        <div
+          className="absolute inset-x-0 bottom-0 h-[62vh] min-h-[420px] bg-cover bg-center"
+          style={{
+            backgroundImage: `url('${asset(image)}')`,
+            backgroundPosition: 'center 92%',
+            filter: 'saturate(0.9) brightness(0.62)',
+            opacity: 0.5,
+            WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, #000 58%, #000 100%)',
+            maskImage: 'linear-gradient(to bottom, transparent 0%, #000 58%, #000 100%)',
+          }}
+        />
         {/* Scrim de marca: oscurece la izquierda (texto legible), la foto
             se ve limpia a la derecha. Tinte muy sutil para cohesión. */}
         <div

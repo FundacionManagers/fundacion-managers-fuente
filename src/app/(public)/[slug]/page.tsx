@@ -85,14 +85,16 @@ export default async function EjePage({ params }: EjePageProps) {
           </div>
         </section>
 
-        {/* VALUE PROPS */}
+        {/* VALUE PROPS
+            En crema. Era la tercera losa oscura seguida y la página se leía
+            como un bloque negro de arriba abajo. */}
         {content?.valueProps?.length ? (
-          <section className="grain relative overflow-hidden border-y border-white/10 bg-black/25 backdrop-blur-sm">
+          <section className="relative overflow-hidden border-y border-cream-deep bg-cream">
             <div className="relative mx-auto max-w-7xl px-6 py-24 lg:px-8">
-              <p className="font-mono text-caption uppercase tracking-[0.3em] text-naranja">
+              <p className="font-mono text-caption uppercase tracking-[0.3em] text-terracotta">
                 Qué hacemos
               </p>
-              <h2 className="mt-4 font-serif text-display-lg font-bold text-neutral-50">
+              <h2 className="mt-4 font-serif text-display-lg font-bold text-carbon">
                 Servicios y enfoques
               </h2>
               <ul className="stagger-in mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
@@ -101,18 +103,18 @@ export default async function EjePage({ params }: EjePageProps) {
                   return (
                     <li
                       key={vp.title}
-                      className="group flex h-full flex-col rounded-2xl border border-white/10 bg-[#0d1218]/80 p-8 transition-all duration-300 ease-managers hover:-translate-y-1.5 hover:border-gold/50 hover:shadow-[0_28px_70px_rgba(0,0,0,0.6)]"
+                      className="group flex h-full flex-col rounded-2xl border border-cream-deep bg-neutral-50 p-8 shadow-[0_10px_34px_rgba(15,20,25,0.07)] transition-all duration-300 ease-managers hover:-translate-y-1.5 hover:border-gold/60"
                     >
                       <span
                         aria-hidden
-                        className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-white/5 text-gold transition-colors duration-200 ease-managers group-hover:bg-gold group-hover:text-carbon"
+                        className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-gold text-carbon"
                       >
                         <VPIcon size={22} />
                       </span>
-                      <h3 className="mt-5 font-serif text-xl font-bold text-neutral-50">
+                      <h3 className="mt-5 font-serif text-xl font-bold text-carbon">
                         {vp.title}
                       </h3>
-                      <p className="mt-2 text-sm text-neutral-400">{vp.body}</p>
+                      <p className="mt-2 text-sm text-neutral-600">{vp.body}</p>
                     </li>
                   );
                 })}

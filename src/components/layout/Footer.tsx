@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { asset } from '@/lib/asset';
 import { GoldCoin } from '@/components/shared/GoldCoin';
 import { IconeBrand } from '@/components/shared/IconeBrand';
 import { ALIANZA } from '@/lib/alianza';
@@ -10,6 +11,28 @@ export function Footer() {
 
   return (
     <footer className="canvas-dark relative overflow-hidden border-t border-white/10 text-neutral-100">
+      {/* El pie era el último bloque negro del sitio, y con la página ya
+          oscura encima se leía como un pozo sin fondo. Lleva la foto de la
+          comunidad, muy tenue: no se mira, pero se nota que hay algo. */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 bg-cover bg-center"
+        style={{
+          backgroundImage: `url('${asset('/fotos/seccion-nosotros.jpg')}')`,
+          filter: 'saturate(0.75) brightness(0.5)',
+          opacity: 0.28,
+          WebkitMaskImage: 'linear-gradient(to bottom, #000 0%, rgba(0,0,0,0.35) 62%, transparent 100%)',
+          maskImage: 'linear-gradient(to bottom, #000 0%, rgba(0,0,0,0.35) 62%, transparent 100%)',
+        }}
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background:
+            'linear-gradient(100deg, rgba(8,11,16,0.92) 0%, rgba(8,11,16,0.80) 48%, rgba(8,11,16,0.66) 100%)',
+        }}
+      />
       <div className="relative mx-auto max-w-7xl px-6 py-20 lg:px-8">
         <div className="grid gap-12 lg:grid-cols-4">
           <div className="lg:col-span-1">
