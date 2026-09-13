@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { CalendarClock } from 'lucide-react';
 import { TeamCrest } from '@/components/torneo/TeamCrest';
+import { getEquipo } from '@/lib/torneo-data';
 import {
   diaCortoDe,
   diaRelativoDe,
@@ -84,34 +85,36 @@ export function ProximaFecha({ compromiso }: { compromiso: Compromiso }) {
           fase de grupos y se sorteen los cruces: entonces se dice eso, en
           vez de dejar el hueco vacío. */}
       {partidos.length ? (
-        <ul className="mt-5 flex flex-wrap gap-x-5 gap-y-3">
+        <ul className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {partidos.map((p) => (
-            <li key={p.id} className="flex items-center gap-1.5">
-              <TeamCrest slug={p.local} size={24} />
-              <span className="font-bufon text-[11px] uppercase tracking-widest text-neutral-500">
-                vs
-              </span>
-              <TeamCrest slug={p.visitante} size={24} />
-              <span className="ml-1 whitespace-nowrap font-mono text-[11px] text-neutral-500">
+            <li
+              key={p.id}
+              className="rounded-xl border border-white/10 bg-black/25 px-3 py-3 text-center"
+            >
+              <p className="font-mono text-sm font-semibold text-amarillo">
                 {variosDias ? `${diaCortoDe(p)} ` : ''}
                 {p.hora}
-              </span>
+              </p>
+              <div className="mt-2 space-y-1.5">
+                <Rival slug={p.local} />
+                <Rival slug={p.visitante} />
+              </div>
             </li>
           ))}
         </ul>
       ) : cruces?.length ? (
         <>
-          <ul className="mt-5 flex flex-wrap gap-x-5 gap-y-3">
+          <ul className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
             {cruces.map((c) => (
-              <li key={c.id} className="flex items-center gap-1.5">
-                <TeamCrest slug={c.local} size={24} />
-                <span className="font-bufon text-[11px] uppercase tracking-widest text-neutral-500">
-                  vs
-                </span>
-                <TeamCrest slug={c.visitante} size={24} />
-                <span className="ml-1 whitespace-nowrap font-mono text-[11px] text-neutral-600">
-                  {c.etiqueta}
-                </span>
+              <li
+                key={c.id}
+                className="rounded-xl border border-white/10 bg-black/25 px-3 py-3 text-center"
+              >
+                <p className="font-mono text-sm font-semibold text-neutral-400">{c.etiqueta}</p>
+                <div className="mt-2 space-y-1.5">
+                  <Rival slug={c.local} />
+                  <Rival slug={c.visitante} />
+                </div>
               </li>
             ))}
           </ul>
@@ -125,5 +128,29 @@ export function ProximaFecha({ compromiso }: { compromiso: Compromiso }) {
         </p>
       )}
     </div>
+  );
+}
+
+/**
+ * Un club dentro de la tarjeta: escudo y, sobre todo, su nombre escrito.
+ *
+ * Antes cada cruce eran dos escudos de 24 px con la hora en gris tenue de
+ * 11 px. En la portada —que es donde llega casi todo el mundo— no se
+ * distinguia quien jugaba contra quien sin acercar la cara a la pantalla.
+ * Un escudo pequeño no sustituye a un nombre: hay que escribirlo.
+ *
+ * El nombre va completo y puede partirse en dos lineas. No se recorta: en
+ * la llave se veian "Los Pibes del B..." y "La Banda Cru...", que es
+ * exactamente lo que se corrigio en Palmares en su momento.
+ */
+function Rival({ slug }: { slug: string | null }) {
+  const eq = slug ? getEquipo(slug) : undefined;
+  return (
+    <p className="flex items-center gap-2 text-left">
+      <TeamCrest slug={slug} size={32} />
+      <span className="text-[13px] font-semibold leading-tight text-neutral-200">
+        {eq?.nombre ?? 'Por definir'}
+      </span>
+    </p>
   );
 }

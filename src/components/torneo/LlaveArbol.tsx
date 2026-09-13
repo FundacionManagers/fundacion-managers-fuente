@@ -16,6 +16,12 @@ interface LadoLlave {
   /** Puesto en la tabla de la fase de grupos. Null si todavía no se sabe. */
   siembra: number | null;
   goles: number | null;
+  /**
+   * De dónde saldrá quien ocupe esta casilla: «Ganador partido 1», «Perdedor
+   * SF2». Solo lo llevan las casillas todavía vacías, y es lo que convierte
+   * cuatro «Por definir» en una llave que se entiende.
+   */
+  procedencia?: string;
 }
 
 interface CeldaLlave {
@@ -29,16 +35,36 @@ interface CeldaLlave {
 const LADO_VACIO: LadoLlave = { slug: null, siembra: null, goles: null };
 
 /**
+ * De dónde sale cada casilla vacía, según el cuadro oficial de la fase final:
+ * los ganadores de los partidos 1 y 2 forman la primera semifinal y los de
+ * los partidos 3 y 4 la segunda; la final la juegan los ganadores de ambas y
+ * el tercer puesto, los perdedores.
+ *
+ * Los partidos de cuartos se numeran por su hora de juego, que es el orden en
+ * que aparecen en esta misma página.
+ */
+function procedenciasDe(fase: FaseFinal, i: number): [LadoLlave, LadoLlave] {
+  const de = (procedencia: string): LadoLlave => ({ ...LADO_VACIO, procedencia });
+  if (fase === 'semifinal') return [de(`Ganador partido ${i * 2 + 1}`), de(`Ganador partido ${i * 2 + 2}`)];
+  if (fase === 'final') return [de('Ganador semifinal 1'), de('Ganador semifinal 2')];
+  if (fase === 'tercer-puesto') return [de('Perdedor semifinal 1'), de('Perdedor semifinal 2')];
+  return [LADO_VACIO, LADO_VACIO];
+}
+
+/**
  * Qué decir bajo cada ronda.
  *
- * Las semifinales no llevan líneas que las conecten con cuartos a propósito:
- * la organización todavía no ha fijado qué ganador enfrenta a cuál, y dibujar
- * un camino inventado sería peor que no dibujarlo. En cuanto se defina la
- * regla, la nota sobra y las llaves se pueden unir.
+ * Esta nota decía que el cruce de semifinales «se define al terminar los
+ * cuartos» porque la organización aún no lo había fijado. Ya lo fijó: el
+ * cuadro oficial empareja a los ganadores de los partidos 1 y 2 en una
+ * semifinal, y a los de los 3 y 4 en la otra. Sostener lo contrario mientras
+ * las casillas dicen de dónde sale cada uno sería contradecirse en la misma
+ * pantalla.
  */
 const NOTA_FASE: Partial<Record<FaseFinal, string>> = {
-  semifinal: 'El cruce se define al terminar los cuartos.',
+  semifinal: 'Ganadores de los partidos 1 y 2 en una; 3 y 4 en la otra.',
   final: 'La disputan los ganadores de las semifinales.',
+  'tercer-puesto': 'La juegan los perdedores de las semifinales.',
 };
 
 const CHIP: Record<EstadoRonda, { texto: string; clase: string }> = {
@@ -63,13 +89,18 @@ function Fila({ lado, ganador, jugado }: { lado: LadoLlave; ganador: boolean; ju
         {lado.siembra ? `${lado.siembra}º` : '·'}
       </span>
       <TeamCrest slug={lado.slug} size={28} />
+      {/* Sin `truncate`: con el recorte, «Los Pibes del Barrio» y «La Banda
+          Cruzada FC» —los dos nombres mas largos de la edicion— se leian
+          cortados justo en la pagina que explica quien juega contra quien.
+          Prefiere dos lineas antes que puntos suspensivos, que es lo mismo
+          que ya se decidio para la llave del Palmares. */}
       <span
         className={cn(
-          'min-w-0 flex-1 truncate text-sm font-semibold',
+          'min-w-0 flex-1 text-sm font-semibold leading-tight',
           ganador ? 'text-amarillo' : eq ? 'text-neutral-100' : 'text-neutral-600',
         )}
       >
-        {eq?.nombre ?? 'Por definir'}
+        {eq?.nombre ?? lado.procedencia ?? 'Por definir'}
       </span>
       {jugado ? (
         <span
@@ -143,9 +174,17 @@ export function LlaveArbol({
   function celdasDe(parada: ParadaFinal): CeldaLlave[] {
     // Manda siempre lo que haya cargado la organización.
     if (parada.partidos.length > 0) {
-      return parada.partidos.map((p) => ({
+      return parada.partidos.map((p, i) => ({
         id: p.id,
-        etiqueta: p.hora ? `${p.fecha} · ${p.hora}` : p.fecha,
+        // Los cuartos van numerados porque las semifinales se refieren a ellos
+        // por su número. Llegan ordenados por hora, que es como los numera el
+        // cuadro oficial.
+        etiqueta: [
+          parada.fase === 'cuartos' ? `Partido ${i + 1}` : null,
+          p.hora ? `${p.fecha} · ${p.hora}` : p.fecha,
+        ]
+          .filter(Boolean)
+          .join('  ·  '),
         lados: [
           { slug: p.local, siembra: siembra.get(p.local) ?? null, goles: p.golesLocal },
           { slug: p.visitante, siembra: siembra.get(p.visitante) ?? null, goles: p.golesVisitante },
@@ -167,11 +206,14 @@ export function LlaveArbol({
       }));
     }
 
-    // El resto son casillas en blanco: se sabe cuántas y cuándo, no quiénes.
+    // El resto son casillas en blanco. No se sabe quién las ocupa, pero sí de
+    // dónde va a salir, y eso es justo lo que hace legible una llave: decían
+    // «Por definir» las cuatro, y nadie podía ver que el ganador del primer
+    // cruce espera al del segundo. Sale del cuadro oficial de la organización.
     return Array.from({ length: CRUCES_POR_FASE[parada.fase] }, (_, i) => ({
       id: `${parada.fase}-${i + 1}`,
       etiqueta: null,
-      lados: [LADO_VACIO, LADO_VACIO],
+      lados: procedenciasDe(parada.fase, i),
       jugado: false,
     }));
   }
