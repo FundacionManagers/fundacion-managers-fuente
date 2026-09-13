@@ -43,6 +43,28 @@ interface CeldaLlave {
  */
 const VERDE = '#11482D';
 const VERDE_HONDO = '#0E3D25';
+/**
+ * El verde va translúcido para que la fotografía del fondo siga leyéndose:
+ * asi funcionan los paneles del resto del sitio y el cuadro no tiene por que
+ * ser la excepción.
+ *
+ * 0.86 no es un numero al azar. Aun suponiendo lo peor —que detras hubiera
+ * foto blanca pura— el texto blanco sobre esta mezcla da 7,04:1 de contraste,
+ * que es AAA. Con la foto real, un estadio de noche, el margen es mayor. Bajar
+ * de 0.75 dejaria el encabezado por debajo del minimo accesible.
+ *
+ * Las casillas —blanca, menta y dorada— son opacas, asi que su legibilidad no
+ * depende de esto. Eso es lo que permite abrir el panel sin repetir el
+ * problema de cuando todo era translucido y los cruces por definir se perdian
+ * sobre el cesped iluminado.
+ */
+const PANEL = `linear-gradient(160deg, ${conAlfa(VERDE, 0.86)} 0%, ${conAlfa(VERDE_HONDO, 0.9)} 100%)`;
+
+/** '#11482D' + 0.86 → 'rgb(17 72 45 / 0.86)'. */
+function conAlfa(hex: string, alfa: number): string {
+  const n = parseInt(hex.slice(1), 16);
+  return `rgb(${(n >> 16) & 255} ${(n >> 8) & 255} ${n & 255} / ${alfa})`;
+}
 const MENTA = '#E7F3EC';
 const MENTA_BORDE = '#CBE0D3';
 const MENTA_TEXTO = '#3F6B52';
@@ -322,8 +344,8 @@ export function LlaveArbol({
       {/* Mismo verde que el cuadro: la seccion no puede cambiar de estetica
           segun el ancho de la pantalla. */}
       <div
-        className="grid gap-8 rounded-2xl border border-white/10 p-5 sm:p-6 lg:hidden"
-        style={{ background: `linear-gradient(160deg, ${VERDE} 0%, ${VERDE_HONDO} 100%)` }}
+        className="grid gap-8 rounded-2xl border border-white/15 p-5 backdrop-blur-[2px] sm:p-6 lg:hidden"
+        style={{ background: PANEL }}
       >
         {camino.map((parada) => {
         const chip = CHIP[parada.estado];
@@ -457,8 +479,8 @@ function Cuadro({
        fondo, y sobre el cesped iluminado los cruces todavia por definir se
        perdian casi del todo. Un cuadro de eliminatoria se lee o no sirve. */
     <div
-      className="hidden rounded-2xl border border-white/10 p-8 lg:block"
-      style={{ background: `linear-gradient(160deg, ${VERDE} 0%, ${VERDE_HONDO} 100%)` }}
+      className="hidden rounded-2xl border border-white/15 p-8 backdrop-blur-[2px] lg:block"
+      style={{ background: PANEL }}
     >
       <div className={cn('grid gap-x-0', COLUMNAS)}>
         {cabeceras.map(([fase, col]) => {
