@@ -80,14 +80,39 @@ button{font:inherit; color:inherit; cursor:pointer}
 .pantalla.activa{display:block}
 @keyframes entra{from{opacity:0; transform:translateY(12px)} to{opacity:1; transform:none}}
 
-/* ---------- Portada ---------- */
+/* ---------- Portada ----------
+   Antes la portada era un bloque carbon pegado a la barra superior, tambien
+   carbon: negro sobre negro, sin una sola imagen y sin aire entre los dos.
+   Ahora la tarjeta se separa de la barra, se redondea, y abre con una
+   fotografia de alguien atendiendo su negocio. La moneda monta sobre el borde
+   de la foto y cose las dos mitades. */
 .hero{
-  background:var(--carbon); color:#FAFAF7; margin:0 -20px 32px;
-  padding:48px 24px 44px; text-align:center; position:relative; overflow:hidden;
+  background:var(--carbon); color:#FAFAF7; margin:20px 0 32px;
+  border-radius:var(--r-lg); padding:0 24px 40px; text-align:center;
+  position:relative; overflow:hidden;
+  box-shadow:0 18px 50px rgb(11 15 20 / .28);
 }
 .hero::after{content:''; position:absolute; inset:auto 0 0 0; height:3px;
   background:linear-gradient(90deg,transparent,var(--gold),transparent)}
-.hero .coin{width:76px; height:76px; margin:0 auto 20px; filter:drop-shadow(0 6px 18px rgb(212 164 55 / .35))}
+
+/* La franja de fotografia. Se funde hacia el carbon de abajo para que el
+   titular nunca caiga sobre la imagen: el texto blanco gana siempre. */
+.hero-foto{
+  position:relative; margin:0 -24px; height:clamp(150px,34vw,214px);
+  background:url('fotos/diagnostico-portada.webp') center 34% / cover no-repeat;
+}
+.hero-foto::after{
+  content:''; position:absolute; inset:0;
+  background:linear-gradient(to bottom,
+    rgb(11 15 20 / .30) 0%, rgb(11 15 20 / .10) 34%,
+    rgb(11 15 20 / .72) 78%, var(--carbon) 100%);
+}
+.hero-foto::before{
+  content:''; position:absolute; inset:auto 0 0 0; height:2px; z-index:1;
+  background:linear-gradient(90deg,transparent,rgb(212 164 55 / .55),transparent);
+}
+.hero .coin{width:76px; height:76px; margin:-42px auto 18px; position:relative; z-index:2;
+  filter:drop-shadow(0 8px 22px rgb(11 15 20 / .75)) drop-shadow(0 4px 14px rgb(212 164 55 / .35))}
 .hero .kicker{font-size:11px; font-weight:600; letter-spacing:.18em; text-transform:uppercase; color:var(--gold); margin-bottom:14px}
 .hero h1{font-size:clamp(30px,7.5vw,44px); color:#FAFAF7; margin-bottom:16px; text-wrap:balance}
 .hero p{color:#D6D3CC; font-size:16px; max-width:44ch; margin:0 auto; text-wrap:pretty}
@@ -397,6 +422,7 @@ footer a{color:var(--muted)}
   <!-- ============ PORTADA ============ -->
   <section class="pantalla activa" id="p0" aria-labelledby="tituloPortada">
     <div class="hero">
+      <div class="hero-foto" role="img" aria-label="Un emprendedor atiende a un cliente por teléfono mientras revisa los planos y las cuentas de su taller"></div>
       <span class="coin-img coin" role="img" aria-label="Moneda dorada de la Fundación Managers"></span>
       <div class="kicker">Diagnóstico de emprendedores</div>
       <h1 id="tituloPortada">Manager, cuéntanos en qué va tu emprendimiento</h1>
