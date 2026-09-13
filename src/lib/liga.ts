@@ -672,11 +672,23 @@ export interface Compromiso {
   iso: string;
   /** Los partidos, si ya se conocen. Vacío en una ronda sin sorteo. */
   partidos: readonly PartidoLiga[];
+  /**
+   * Los cruces de cuartos derivados de la tabla, cuando la ronda todavía no
+   * tiene partidos cargados pero la fase de grupos ya cerró.
+   *
+   * Existe porque el sitio se estaba contradiciendo: la Llave decía "así
+   * quedaron los cruces" con los ocho clubes puestos, mientras esta tarjeta
+   * —la que ve casi todo el mundo, en la portada— seguía diciendo "equipos
+   * por definir". Los puestos ya estaban decididos; lo único que faltaba era
+   * la hora.
+   */
+  cruces?: readonly CruceCuartos[];
 }
 
 export function proximoCompromiso(
   partidos: readonly PartidoLiga[],
   eliminatoria: readonly PartidoEliminatoria[] = [],
+  disciplina: Readonly<Record<string, Disciplina>> = DISCIPLINA,
 ): Compromiso | null {
   // 1. Fase de grupos.
   const siguiente = proximoPartidoDe(partidos);
@@ -702,12 +714,22 @@ export function proximoCompromiso(
     // Si ya hay cruces cargados, mandan su fecha y su hora sobre lo anunciado.
     const primero = suyos.find((p) => p.estado === 'programado') ?? suyos[0];
     const fecha = primero?.fecha ?? ronda.fecha;
+
+    // Cuartos sin partidos cargados, pero con la fase de grupos cerrada: los
+    // rivales ya están decididos por la tabla aunque la organización no haya
+    // fijado las horas. Se muestran, que es lo que la Llave ya hacía.
+    const cruces =
+      ronda.fase === 'cuartos' && suyos.length === 0 && faseDeGruposCompleta(partidos)
+        ? cruzarCuartos(calcularPosiciones(partidos, disciplina))
+        : undefined;
+
     return {
       tipo: 'ronda',
       titulo: ronda.titulo,
       etiqueta: fechaLargaDe(fecha),
       iso: primero ? isoDe(primero) : `${aISO(fecha)}T00:00:00-05:00`,
       partidos: suyos,
+      cruces,
     };
   }
 
@@ -940,6 +962,7 @@ export interface RondaFinal {
 export const CALENDARIO_FASE_FINAL: readonly RondaFinal[] = [
   { fase: 'cuartos', titulo: 'Cuartos de final', fecha: '13/09/2026' },
   { fase: 'semifinal', titulo: 'Semifinales', fecha: '20/09/2026' },
+  { fase: 'tercer-puesto', titulo: 'Tercer puesto', fecha: '26/09/2026' },
   { fase: 'final', titulo: 'Gran Final', fecha: '26/09/2026' },
 ];
 

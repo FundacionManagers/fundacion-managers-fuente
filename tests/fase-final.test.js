@@ -48,12 +48,16 @@ function gruposTerminados() {
   }));
 }
 
-test('la fase final tiene las tres rondas anunciadas', () => {
+test('la fase final tiene las cuatro rondas anunciadas', () => {
+  // El tercer puesto se juega el mismo día que la final, según el cuadro
+  // oficial de la organización. Estaba fuera del calendario anunciado y por
+  // eso no aparecía en la llave hasta que alguien cargara el partido.
   assert.deepEqual(
     CALENDARIO_FASE_FINAL.map((r) => [r.fase, r.fecha]),
     [
       ['cuartos', '13/09/2026'],
       ['semifinal', '20/09/2026'],
+      ['tercer-puesto', '26/09/2026'],
       ['final', '26/09/2026'],
     ],
   );
@@ -82,8 +86,34 @@ test('al terminar la fase de grupos, el relevo lo toma cuartos de final', () => 
   assert.equal(c.tipo, 'ronda');
   assert.equal(c.titulo, 'Cuartos de final');
   assert.equal(c.etiqueta, 'Domingo 13 de septiembre 2026');
-  assert.equal(c.partidos.length, 0, 'todavía no hay cruces: la tarjeta lo dice, no inventa');
+  assert.equal(c.partidos.length, 0, 'no hay partidos cargados: no se inventa ninguno');
   assert.match(c.iso, /^2026-09-13T/);
+});
+
+/**
+ * La tarjeta decía "equipos por definir" mientras la Llave, con los mismos
+ * datos, ya decía "así quedaron los cruces" y nombraba a los ocho clubes. Dos
+ * secciones del sitio contradiciéndose la víspera de cuartos, en la pantalla
+ * que más gente abre. Los rivales estaban decididos desde que cerró la fase
+ * de grupos: lo único que faltaba era la hora.
+ */
+test('cerrada la fase de grupos, la tarjeta ya trae los cruces de la tabla', () => {
+  const c = proximoCompromiso(gruposTerminados(), []);
+  assert.equal(c.partidos.length, 0, 'siguen sin cargarse partidos');
+  assert.equal(c.cruces.length, 4, 'pero los cuatro cruces ya se pueden decir');
+  assert.deepEqual(
+    c.cruces.map((x) => x.etiqueta),
+    ['1º vs 8º', '2º vs 7º', '3º vs 6º', '4º vs 5º'],
+  );
+  assert.ok(
+    c.cruces.every((x) => x.local && x.visitante),
+    'cada cruce tiene sus dos clubes: si no, no habría que mostrarlo',
+  );
+});
+
+test('con fechas de grupos por jugar, la tarjeta no adelanta ningún cruce', () => {
+  const c = proximoCompromiso(PARTIDOS_LIGA, []);
+  assert.equal(c.cruces, undefined, 'la tabla todavía puede cambiar; no se promete nada');
 });
 
 test('cuando se cargan los cruces reales, mandan su fecha y su hora', () => {
@@ -146,16 +176,17 @@ test('la ronda pendiente no depende de la fecha de compilación', () => {
  * La página mostraba solo los cuatro cruces de cuartos y, en cuanto la
  * organización cargara los partidos reales, cambiaba entera: se quedaba sin
  * encabezado, sin fechas y sin explicación, justo el día de más visitas.
- * Estas pruebas fijan que las tres rondas existan siempre y que su estado
+ * Estas pruebas fijan que las cuatro rondas existan siempre y que su estado
  * salga de los datos.
  */
-test('sin nada cargado, el camino ya tiene sus tres rondas', () => {
+test('sin nada cargado, el camino ya tiene sus cuatro rondas', () => {
   const camino = caminoFaseFinal([]);
   assert.deepEqual(
     camino.map((p) => [p.fase, p.estado, p.fecha]),
     [
       ['cuartos', 'pendiente', '13/09/2026'],
       ['semifinal', 'pendiente', '20/09/2026'],
+      ['tercer-puesto', 'pendiente', '26/09/2026'],
       ['final', 'pendiente', '26/09/2026'],
     ],
   );

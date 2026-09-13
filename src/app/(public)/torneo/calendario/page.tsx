@@ -4,7 +4,12 @@ import { FixtureLiga } from '@/components/torneo/FixtureLiga';
 import { EliminatoriaLiga } from '@/components/torneo/EliminatoriaLiga';
 import { ProximaFecha } from '@/components/torneo/ProximaFecha';
 import { TorneoShell } from '@/components/torneo/TorneoShell';
-import { CALENDARIO_FASE_FINAL, fechaLargaDe, proximoCompromiso } from '@/lib/liga';
+import {
+  CALENDARIO_FASE_FINAL,
+  faseDeGruposCompleta,
+  fechaLargaDe,
+  proximoCompromiso,
+} from '@/lib/liga';
 import { cargarLigaConAviso } from '@/lib/liga-supabase';
 import { EDICION_ANTERIOR, EDICION_EN_CURSO, ordinalFemenino, pillEdicion } from '@/lib/torneo';
 
@@ -19,7 +24,9 @@ export default async function CalendarioPage() {
   // Lo próximo que se juega. Puede ser una fecha de grupos o, cuando ya no
   // queden, una ronda de la fase final: así el Calendario no se queda sin
   // "próximo" el 6 de septiembre, al terminar la Fecha 7.
-  const proximo = proximoCompromiso(datos.partidos, datos.eliminatoria);
+  // La disciplina va porque el desempate del Artículo 14 pone el fair play
+  // antes que la diferencia de gol: sin ella los cruces saldrían en otro orden.
+  const proximo = proximoCompromiso(datos.partidos, datos.eliminatoria, datos.disciplina);
 
   return (
     <TorneoShell
@@ -65,8 +72,13 @@ export default async function CalendarioPage() {
                     {r.titulo}
                   </span>
                   <span className="text-sm text-neutral-400">{fechaLargaDe(r.fecha)}</span>
+                  {/* Cerrada la fase de grupos, los rivales de cuartos ya
+                      están decididos por la tabla: decir "equipos por definir"
+                      contradiría a La llave, que a esa altura ya los nombra. */}
                   <span className="ml-auto font-bufon text-[10px] uppercase tracking-[0.15em] text-neutral-600">
-                    Equipos y horarios por definir
+                    {r.fase === 'cuartos' && faseDeGruposCompleta(datos.partidos)
+                      ? 'Horarios por definir'
+                      : 'Equipos y horarios por definir'}
                   </span>
                 </li>
               ))}

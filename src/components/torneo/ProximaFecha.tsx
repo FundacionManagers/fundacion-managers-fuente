@@ -25,7 +25,7 @@ import {
  * en el navegador de quien mira, contra su reloj.
  */
 export function ProximaFecha({ compromiso }: { compromiso: Compromiso }) {
-  const { titulo, etiqueta, iso, partidos } = compromiso;
+  const { titulo, etiqueta, iso, partidos, cruces } = compromiso;
   // null hasta que monta en el navegador: en el servidor no hay "hoy" que
   // valga, y pintar uno provocaría un desajuste de hidratación.
   const [cuando, setCuando] = useState<DiaRelativo>(null);
@@ -99,6 +99,26 @@ export function ProximaFecha({ compromiso }: { compromiso: Compromiso }) {
             </li>
           ))}
         </ul>
+      ) : cruces?.length ? (
+        <>
+          <ul className="mt-5 flex flex-wrap gap-x-5 gap-y-3">
+            {cruces.map((c) => (
+              <li key={c.id} className="flex items-center gap-1.5">
+                <TeamCrest slug={c.local} size={24} />
+                <span className="font-bufon text-[11px] uppercase tracking-widest text-neutral-500">
+                  vs
+                </span>
+                <TeamCrest slug={c.visitante} size={24} />
+                <span className="ml-1 whitespace-nowrap font-mono text-[11px] text-neutral-600">
+                  {c.etiqueta}
+                </span>
+              </li>
+            ))}
+          </ul>
+          <p className="mt-4 text-sm text-neutral-500">
+            Horarios por confirmar. Los cruces salen de la tabla: el mejor ubicado hace de local.
+          </p>
+        </>
       ) : (
         <p className="mt-4 text-sm text-neutral-500">
           Equipos y horarios por definir. Los cruces salen de la tabla al cerrar la fase de grupos.

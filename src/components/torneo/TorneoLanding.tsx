@@ -37,7 +37,9 @@ export async function TorneoLanding() {
   const campeonVigente = EQUIPOS.find((e) => e.nombre === CAMPEON_VIGENTE.equipo);
   // Lo próximo que se juega: una fecha de grupos, o una ronda de la
   // fase final cuando ya no queden fechas por delante.
-  const proximo = proximoCompromiso(datos.partidos, datos.eliminatoria);
+  // La disciplina va porque el desempate del Artículo 14 pone el fair play
+  // antes que la diferencia de gol: sin ella los cruces saldrían en otro orden.
+  const proximo = proximoCompromiso(datos.partidos, datos.eliminatoria, datos.disciplina);
 
   return (
     <div className="tournament-section relative">
