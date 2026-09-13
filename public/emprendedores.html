@@ -236,10 +236,23 @@ select{appearance:none; background-image:url("data:image/svg+xml;utf8,<svg xmlns
 
 /* ---------- Resultado ---------- */
 .resultado-card{background:var(--carbon); color:#FAFAF7; border-radius:var(--r-lg);
-  padding:36px 26px 32px; text-align:center; margin:24px 0 20px; box-shadow:var(--sh-lg);
+  padding:0 26px 32px; text-align:center; margin:24px 0 20px; box-shadow:var(--sh-lg);
   position:relative; overflow:hidden}
-.resultado-card::before{content:''; position:absolute; inset:0 0 auto 0; height:3px;
+.resultado-card::before{content:''; position:absolute; inset:0 0 auto 0; height:3px; z-index:2;
   background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+/* La franja del informe. Misma idea que la portada: la foto arriba, el texto
+   sobre el carbon, y el degradado uniendo las dos para que el titular nunca
+   caiga sobre la imagen. */
+.resultado-foto{
+  position:relative; margin:0 -26px 0; height:clamp(118px,26vw,168px);
+  background:url('fotos/diagnostico-resultado.webp') center 30% / cover no-repeat;
+}
+.resultado-foto::after{
+  content:''; position:absolute; inset:0;
+  background:linear-gradient(to bottom, rgb(15 20 25 / .22) 0%, rgb(15 20 25 / .08) 30%,
+    rgb(15 20 25 / .74) 76%, var(--carbon) 100%);
+}
+.resultado-card .etapa-sello{margin-top:-16px; position:relative; z-index:2}
 .resultado-card .kicker{font-size:11px; letter-spacing:.18em; text-transform:uppercase;
   color:var(--n400); font-weight:600; margin-bottom:12px}
 .resultado-card h2{font-family:var(--font-sport); font-weight:400; letter-spacing:.02em;
@@ -288,7 +301,8 @@ footer a{color:var(--muted)}
 
 @media (min-width:640px){
   .wrap{padding:0 24px 96px}
-  .hero{margin:0 -24px 40px; padding:64px 32px 56px}
+  .hero{margin:24px 0 40px; padding:0 32px 52px}
+  .hero-foto{margin:0 -32px}
   .q{padding:24px}
 }
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms !important; transition-duration:.01ms !important}}
@@ -401,7 +415,8 @@ footer a{color:var(--muted)}
   .topbar, .progress, .acciones-res, .cierre, .trampa, footer .coin-img{ display:none !important; }
   body{ background:#fff; }
   .pantalla{ animation:none; }
-  .resultado-card{ box-shadow:none; border:1px solid var(--n300); }
+  .resultado-card{ box-shadow:none; border:1px solid var(--n300); padding-top:28px; }
+  .resultado-foto, .hero-foto{ display:none; }
   .seccion-res, .freno-card, .programa, .noventa li, .tarjeta{ break-inside:avoid; }
   .seccion-res > h3{ break-after:avoid; }
   a[href^="mailto"]::after{ content:''; }
@@ -2194,6 +2209,7 @@ function renderResultado(d, a){
 
   $('#p6').innerHTML = `
     <div class="resultado-card">
+      <div class="resultado-foto" role="img" aria-label="Una emprendedora en su negocio, tableta en mano"></div>
       <div class="etapa-sello"><i></i>${esc(et.titulo)}</div>
       <div class="kicker">${esc(nombre)}, este es tu diagnóstico</div>
       <h2>${esc(d.nombre_emprendimiento||'Tu emprendimiento')}</h2>
