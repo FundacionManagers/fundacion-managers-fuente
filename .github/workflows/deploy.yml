@@ -74,7 +74,7 @@ jobs:
       - name: Ver si este estado ya se publico
         id: yapublicado
         if: github.event_name == 'schedule'
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v6
         with:
           path: .marca
           key: torneo-publicado-${{ steps.leer.outputs.marca }}
@@ -99,8 +99,8 @@ jobs:
     if: needs.revisar.outputs.publicar == 'si'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           # La 22 es la que exige "engines" en package.json, y ademas es desde
           # donde el runner de pruebas de Node expande patrones como
@@ -122,8 +122,8 @@ jobs:
           GITHUB_PAGES: 'true'
           PAGES_BASE_PATH: ''
         run: npm run build
-      - uses: actions/configure-pages@v5
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/configure-pages@v6
+      - uses: actions/upload-pages-artifact@v5
         with:
           path: out
 
@@ -135,7 +135,7 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
 
       # La marca se guarda DESPUES de desplegar, no antes: si el despliegue
       # falla, el estado sigue contando como no publicado y el siguiente cron
@@ -145,7 +145,7 @@ jobs:
         run: mkdir -p .marca && echo "${{ needs.revisar.outputs.marca }}" > .marca/publicado.txt
       - name: Guardar la marca
         if: success() && github.event_name == 'schedule'
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v6
         with:
           path: .marca
           key: torneo-publicado-${{ needs.revisar.outputs.marca }}
