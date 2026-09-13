@@ -29,9 +29,27 @@ export default function TerminosPage() {
             <h2 className="font-display text-xl font-bold text-carbon">
               Limitación de responsabilidad
             </h2>
-            <p>Por integrar — sujeto a revisión legal.</p>
+            {/* La clausula estaba vacia: decia "Por integrar — sujeto a
+                revision legal", justo bajo un parrafo que afirma que quien
+                navega acepta estos terminos. */}
+            <p>
+              La información de este sitio se ofrece con fines informativos. La Fundación Managers
+              procura que los datos del torneo —tabla, calendario, llave y estadísticas— reflejen lo
+              ocurrido en cancha, pero no responde por errores de digitación ni por decisiones
+              tomadas únicamente con base en lo publicado aquí: la fuente oficial de un resultado es
+              la planilla del partido.
+            </p>
+            <p>
+              Tampoco respondemos por la disponibilidad de servicios de terceros enlazados desde el
+              sitio, como la pasarela de pagos o las redes sociales, que se rigen por sus propias
+              condiciones.
+            </p>
+            <h2 className="font-display text-xl font-bold text-carbon">Contacto</h2>
+            <p>
+              Cualquier consulta sobre estos términos: administracion@fundacionmanagers.com.
+            </p>
             <div className="mt-10 rounded-md border border-dashed border-neutral-300 p-4 text-xs uppercase tracking-widest text-neutral-500">
-              Versión preliminar — texto definitivo por revisar con asesoría legal.
+              Última actualización: 12 de septiembre de 2026
             </div>
           </article>
         </div>
