@@ -37,11 +37,23 @@ export interface Eje {
    * diagnóstico, que es un archivo estático en `public/`.
    */
   href?: string;
+  /**
+   * Cómo se llama en el menú, cuando ahí conviene un nombre más corto que el
+   * institucional. El torneo es «Torneo Managers» en el home, en «nosotros» y
+   * en el desplegable de contacto —es la marca—, pero en la barra de arriba
+   * compite por ancho con los demás ejes y va simplemente como «Torneo».
+   */
+  nombreMenu?: string;
 }
 
 /** A dónde lleva una entrada del menú. */
 export function hrefDeEje(e: Eje): string {
   return e.href ?? `/${e.slug}/`;
+}
+
+/** Cómo se lee una entrada en el menú. */
+export function nombreDeMenu(e: Eje): string {
+  return e.nombreMenu ?? e.nombre;
 }
 
 // Orden oficial definido por Jorge (mayo 2026):
@@ -56,6 +68,7 @@ export const EJES: readonly Eje[] = [
     theme: 'dark',
     accent: 'text-gold',
     icon: Trophy,
+    nombreMenu: 'Torneo',
   },
   {
     slug: 'turismo',
@@ -119,10 +132,11 @@ export const EJES_VISIBLES: readonly Eje[] = EJES.filter((e) => e.visible !== fa
 
 /**
  * El diagnóstico de emprendedores. No es un eje de la fundación —es una
- * herramienta—, pero sí es una puerta de entrada, así que va en el menú, en el
- * pie y en la grilla del home junto a los ejes. No aparece en «nosotros», que
- * habla de los frentes de trabajo, ni en el desplegable de contacto, que
- * pregunta por servicios.
+ * herramienta—, pero sí es una puerta de entrada: tiene el botón del héroe y
+ * una sección propia en el home, y va en el pie junto a los ejes. Desde
+ * septiembre de 2026 ya no está en el menú de arriba. No aparece en
+ * «nosotros», que habla de los frentes de trabajo, ni en el desplegable de
+ * contacto, que pregunta por servicios.
  *
  * Vive en `public/emprendedores.html`: es un archivo estático autocontenido,
  * no una página de este sitio, y por eso lleva `href` propio.
@@ -141,10 +155,27 @@ export const DIAGNOSTICO: Eje = {
 
 /**
  * Por dónde se entra a la fundación: el diagnóstico primero, y después los
- * ejes visibles. Es lo que consumen el menú, el menú móvil, el pie y la grilla
- * del home.
+ * ejes visibles. Es lo que consume el pie.
  */
 export const ENTRADAS: readonly Eje[] = [DIAGNOSTICO, ...EJES_VISIBLES];
+
+/**
+ * El menú de arriba y el móvil, que son el mismo menú en dos tamaños y por eso
+ * leen de aquí los dos. Tiene orden propio —Jorge, septiembre 2026—: primero
+ * los dos ejes de la fundación y después el torneo, con Managers Lab aparte,
+ * que va en su propio botón de color y no sale de esta lista.
+ *
+ * El diagnóstico ya no está en el menú. Sigue entrando por el home, que le
+ * dedica el botón del héroe y una sección entera, y por el pie.
+ *
+ * Se arma cruzando este orden con EJES_VISIBLES, así que ocultar un eje lo
+ * saca también del menú sin tocar nada más.
+ */
+const ORDEN_MENU = ['emprendimiento', 'eventos', 'torneo'] as const;
+
+export const MENU: readonly Eje[] = ORDEN_MENU.map((slug) =>
+  EJES_VISIBLES.find((e) => e.slug === slug),
+).filter((e): e is Eje => e !== undefined);
 
 /**
  * Cuántas cosas se listan, en letras, para los títulos del sitio. Antes decían

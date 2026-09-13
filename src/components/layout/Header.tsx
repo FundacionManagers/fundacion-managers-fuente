@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { MobileMenu } from '@/components/layout/MobileMenu';
 import { asset } from '@/lib/asset';
 import { ICONE_CYAN } from '@/lib/alianza';
-import { ENTRADAS, hrefDeEje } from '@/lib/navigation';
+import { MENU, hrefDeEje, nombreDeMenu } from '@/lib/navigation';
 
 export function Header() {
   return (
@@ -22,13 +22,13 @@ export function Header() {
 
         <nav aria-label="Navegación principal" className="hidden lg:block">
           <ul className="flex items-center gap-7 text-sm font-medium text-neutral-300">
-            {ENTRADAS.map((eje) => (
+            {MENU.map((eje) => (
               <li key={eje.slug}>
                 <Link
                   href={hrefDeEje(eje)}
                   className="transition-colors duration-200 ease-managers hover:text-gold"
                 >
-                  {eje.nombre}
+                  {nombreDeMenu(eje)}
                 </Link>
               </li>
             ))}
