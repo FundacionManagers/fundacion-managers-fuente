@@ -41,7 +41,13 @@ export default function HomePage() {
                   href={hrefDeEje(DIAGNOSTICO)}
                   className="group inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-amarillo to-naranja px-7 py-3.5 text-sm font-bold text-carbon shadow-[0_12px_40px_rgba(232,114,44,0.4)] transition-all duration-200 ease-managers hover:-translate-y-0.5"
                 >
-                  Haz el diagnóstico
+                  {/* En celular el botón no cabe en una línea. El «nowrap»
+                      obliga a que parta después de la pregunta, y no en medio
+                      de la acción, que quedaba como «Haz el / diagnóstico». */}
+                  <span className="text-left">
+                    ¿Tienes un emprendimiento?{' '}
+                    <span className="whitespace-nowrap">Haz el diagnóstico</span>
+                  </span>
                   <ArrowRight
                     size={18}
                     aria-hidden
