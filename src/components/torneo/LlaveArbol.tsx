@@ -3,6 +3,7 @@ import { TeamCrest } from '@/components/torneo/TeamCrest';
 import {
   CRUCES_POR_FASE,
   fechaLargaDe,
+  jornadaEnVariosDias,
   type CruceCuartos,
   type EstadoRonda,
   type FaseFinal,
@@ -65,7 +66,7 @@ const VERDE_HONDO = '#0E3D25';
  */
 const PANEL = `linear-gradient(160deg, ${conAlfa(VERDE, 0.68)} 0%, ${conAlfa(VERDE_HONDO, 0.74)} 100%)`;
 
-/** '#11482D' + 0.86 → 'rgb(17 72 45 / 0.86)'. */
+/** '#11482D' + 0.68 → 'rgb(17 72 45 / 0.68)'. */
 function conAlfa(hex: string, alfa: number): string {
   const n = parseInt(hex.slice(1), 16);
   return `rgb(${(n >> 16) & 255} ${(n >> 8) & 255} ${n & 255} / ${alfa})`;
@@ -297,9 +298,14 @@ export function LlaveArbol({
         // Los cuartos van numerados porque las semifinales se refieren a ellos
         // por su número. Llegan ordenados por hora, que es como los numera el
         // cuadro oficial.
+        //
+        // La fecha se omite cuando toda la ronda se juega el mismo día: ya la
+        // dice la cabecera de la columna, y repetirla en cada cruce alargaba
+        // el rótulo hasta empujar fuera la hora, que es el dato que se busca.
         etiqueta: [
           parada.fase === 'cuartos' ? `Partido ${i + 1}` : null,
-          p.hora ? `${p.fecha} · ${p.hora}` : p.fecha,
+          jornadaEnVariosDias(parada.partidos) ? p.fecha : null,
+          p.hora || null,
         ]
           .filter(Boolean)
           .join('  ·  '),
