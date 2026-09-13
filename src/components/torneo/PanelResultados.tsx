@@ -7,7 +7,15 @@ import { DefinirClave } from '@/components/shared/DefinirClave';
 import { EstadoPublicacion } from '@/components/torneo/EstadoPublicacion';
 import { TeamCrest } from '@/components/torneo/TeamCrest';
 import { EQUIPOS, getEquipo } from '@/lib/torneo-data';
-import { calcularPosiciones, COLUMNAS_TABLA, TOTAL_JORNADAS, type PartidoLiga } from '@/lib/liga';
+import {
+  calcularPosiciones,
+  COLUMNAS_TABLA,
+  ORDEN_FASES,
+  TITULO_FASE,
+  TOTAL_JORNADAS,
+  type FaseFinal,
+  type PartidoLiga,
+} from '@/lib/liga';
 import {
   actualizarGoleador,
   cargarTodo,
@@ -31,6 +39,28 @@ const SECCIONES: { key: Seccion; label: string }[] = [
   { key: 'goleadores', label: 'Goleadores' },
   { key: 'acceso', label: 'Mi acceso' },
 ];
+
+/**
+ * Qué ronda se está editando en Marcadores.
+ *
+ * La fase de grupos se identifica por su número de fecha; la eliminatoria,
+ * por su nombre de ronda. Un solo estado para las dos porque el formulario
+ * es el mismo: lo único que cambia es qué partidos se listan y qué dice el
+ * botón de guardar.
+ */
+type Ronda = { tipo: 'jornada'; jornada: number } | { tipo: 'fase'; fase: FaseFinal };
+
+/** Nombre corto para el botón del selector. */
+const FASE_CORTA: Record<FaseFinal, string> = {
+  cuartos: 'Cuartos',
+  semifinal: 'Semis',
+  'tercer-puesto': '3.º puesto',
+  final: 'Final',
+};
+
+function tituloRonda(r: Ronda): string {
+  return r.tipo === 'jornada' ? `Fecha ${r.jornada}` : TITULO_FASE[r.fase];
+}
 
 /** Campo numérico que admite quedar vacío mientras se escribe. */
 function NumeroInput({
@@ -70,7 +100,7 @@ export function PanelResultados({ salir, correo }: { salir: () => Promise<void>;
   const [aviso, setAviso] = useState('');
   const [guardando, setGuardando] = useState(false);
   const [seccion, setSeccion] = useState<Seccion>('marcadores');
-  const [jornada, setJornada] = useState(1);
+  const [ronda, setRonda] = useState<Ronda>({ tipo: 'jornada', jornada: 1 });
 
   const recargar = useCallback(async () => {
     setCargando(true);
@@ -78,9 +108,27 @@ export function PanelResultados({ salir, correo }: { salir: () => Promise<void>;
     try {
       const datos = await cargarTodo();
       setEstado(datos);
-      // Abrir en la primera fecha sin cargar del todo: es lo que toca hacer.
-      const pendiente = datos.partidos.find((p) => !p.jugado)?.jornada;
-      setJornada(pendiente ?? TOTAL_JORNADAS);
+      // Abrir en lo primero que falte por cargar: es lo que toca hacer.
+      // Primero las fechas de grupos y, cuando ya no queda ninguna, la
+      // ronda eliminatoria pendiente. Antes se quedaba clavado en la Fecha
+      // 7 y no habia manera de llegar a los cuartos.
+      const grupos = datos.partidos.filter((p) => p.fase === 'grupos');
+      const fechaPendiente = grupos.find((p) => !p.jugado)?.jornada;
+      if (fechaPendiente != null) {
+        setRonda({ tipo: 'jornada', jornada: fechaPendiente });
+      } else {
+        const fasePendiente = ORDEN_FASES.find((f) => {
+          const suyos = datos.partidos.filter((p) => p.fase === f);
+          return suyos.length > 0 && suyos.some((p) => !p.jugado);
+        });
+        const ultimaFase = ORDEN_FASES.filter((f) => datos.partidos.some((p) => p.fase === f)).at(
+          -1,
+        );
+        const destino = fasePendiente ?? ultimaFase;
+        setRonda(
+          destino ? { tipo: 'fase', fase: destino } : { tipo: 'jornada', jornada: TOTAL_JORNADAS },
+        );
+      }
     } catch {
       setError('No se pudieron cargar los datos. Revisa tu conexión y vuelve a intentar.');
     } finally {
@@ -97,8 +145,9 @@ export function PanelResultados({ salir, correo }: { salir: () => Promise<void>;
   const resumen = useMemo(() => {
     if (!estado) return null;
     const jugados = estado.partidos.filter((p) => p.jugado);
-    const fechas = [...new Set(estado.partidos.map((p) => p.jornada))].filter((j) =>
-      estado.partidos.filter((p) => p.jornada === j).every((p) => p.jugado),
+    const grupos = estado.partidos.filter((p) => p.fase === 'grupos');
+    const fechas = [...new Set(grupos.map((p) => p.jornada))].filter((j) =>
+      grupos.filter((p) => p.jornada === j).every((p) => p.jugado),
     );
     const goles = jugados.reduce((s, p) => s + (p.golesLocal ?? 0) + (p.golesVisitante ?? 0), 0);
     return {
@@ -115,26 +164,38 @@ export function PanelResultados({ salir, correo }: { salir: () => Promise<void>;
   // guardado. Deja ver el efecto de un marcador antes de tocar nada real.
   const previa = useMemo(() => {
     if (!estado) return [];
-    const comoLiga: PartidoLiga[] = estado.partidos.map((p) => ({
-      id: p.id,
-      jornada: p.jornada,
-      fecha: p.fecha,
-      hora: p.hora,
-      local: p.local,
-      visitante: p.visitante,
-      golesLocal: p.jugado ? p.golesLocal : null,
-      golesVisitante: p.jugado ? p.golesVisitante : null,
-      estado:
-        p.jugado && p.golesLocal != null && p.golesVisitante != null ? 'jugado' : 'programado',
-    }));
+    // La tabla de posiciones es de la fase regular: los cruces eliminatorios
+    // no suman puntos.
+    const comoLiga: PartidoLiga[] = estado.partidos
+      .filter((p) => p.fase === 'grupos')
+      .map((p) => ({
+        id: p.id,
+        jornada: p.jornada,
+        fecha: p.fecha,
+        hora: p.hora,
+        local: p.local,
+        visitante: p.visitante,
+        golesLocal: p.jugado ? p.golesLocal : null,
+        golesVisitante: p.jugado ? p.golesVisitante : null,
+        estado:
+          p.jugado && p.golesLocal != null && p.golesVisitante != null ? 'jugado' : 'programado',
+      }));
     const disciplina = Object.fromEntries(
       estado.disciplina.map((d) => [d.equipo, { amarillas: d.amarillas, rojas: d.rojas }]),
     );
     return calcularPosiciones(comoLiga, disciplina);
   }, [estado]);
-  const partidosJornada = useMemo(
-    () => (estado ? estado.partidos.filter((p) => p.jornada === jornada) : []),
-    [estado, jornada],
+  const partidosRonda = useMemo(() => {
+    if (!estado) return [];
+    return ronda.tipo === 'jornada'
+      ? estado.partidos.filter((p) => p.fase === 'grupos' && p.jornada === ronda.jornada)
+      : estado.partidos.filter((p) => p.fase === ronda.fase);
+  }, [estado, ronda]);
+
+  /** Rondas de la eliminatoria que ya tienen cruces cargados en la base. */
+  const fasesCargadas = useMemo(
+    () => (estado ? ORDEN_FASES.filter((f) => estado.partidos.some((p) => p.fase === f)) : []),
+    [estado],
   );
 
   function tocarPartido(id: string, cambios: Partial<PartidoPanel>) {
@@ -145,14 +206,14 @@ export function PanelResultados({ salir, correo }: { salir: () => Promise<void>;
     );
   }
 
-  async function guardarJornada() {
+  async function guardarRonda() {
     if (!estado) return;
     setGuardando(true);
     setError('');
     setAviso('');
     try {
-      await Promise.all(partidosJornada.map((p) => guardarPartido(p)));
-      setAviso(`Fecha ${jornada} guardada.`);
+      await Promise.all(partidosRonda.map((p) => guardarPartido(p)));
+      setAviso(`${tituloRonda(ronda)} guardada.`);
     } catch {
       setError('No se pudo guardar. Verifica que tu cuenta siga autorizada.');
     } finally {
@@ -302,17 +363,18 @@ export function PanelResultados({ salir, correo }: { salir: () => Promise<void>;
       {/* ── MARCADORES ─────────────────────────────────────────────── */}
       {seccion === 'marcadores' ? (
         <div className="mt-8">
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             {Array.from({ length: TOTAL_JORNADAS }, (_, i) => i + 1).map((j) => {
-              const dePaso = estado.partidos.filter((p) => p.jornada === j);
+              const dePaso = estado.partidos.filter((p) => p.fase === 'grupos' && p.jornada === j);
               const completa = dePaso.length > 0 && dePaso.every((p) => p.jugado);
+              const activa = ronda.tipo === 'jornada' && ronda.jornada === j;
               return (
                 <button
                   key={j}
-                  onClick={() => setJornada(j)}
+                  onClick={() => setRonda({ tipo: 'jornada', jornada: j })}
                   className={cn(
                     'h-10 w-10 rounded-lg font-sport text-lg transition-colors',
-                    jornada === j
+                    activa
                       ? 'bg-amarillo text-carbon'
                       : completa
                         ? 'border border-emerald-500/40 text-emerald-400'
@@ -324,10 +386,42 @@ export function PanelResultados({ salir, correo }: { salir: () => Promise<void>;
                 </button>
               );
             })}
+
+            {/* Eliminatoria. Solo aparecen las rondas que ya tienen cruces
+                cargados: una ronda sin sorteo no tiene nada que editar. */}
+            {fasesCargadas.length > 0 ? (
+              <span className="mx-1 h-8 w-px shrink-0 bg-white/15" aria-hidden />
+            ) : null}
+            {fasesCargadas.map((f) => {
+              const suyos = estado.partidos.filter((p) => p.fase === f);
+              const completa = suyos.every((p) => p.jugado);
+              const activa = ronda.tipo === 'fase' && ronda.fase === f;
+              return (
+                <button
+                  key={f}
+                  onClick={() => setRonda({ tipo: 'fase', fase: f })}
+                  className={cn(
+                    'h-10 rounded-lg px-3 font-bufon text-xs font-bold uppercase tracking-[0.1em] transition-colors',
+                    activa
+                      ? 'bg-amarillo text-carbon'
+                      : completa
+                        ? 'border border-emerald-500/40 text-emerald-400'
+                        : 'border border-white/15 text-neutral-400 hover:border-amarillo/50',
+                  )}
+                  title={completa ? `${TITULO_FASE[f]} completa` : `${TITULO_FASE[f]} pendiente`}
+                >
+                  {FASE_CORTA[f]}
+                </button>
+              );
+            })}
           </div>
 
-          <ul className="mt-6 space-y-3">
-            {partidosJornada.map((p) => (
+          <p className="mt-4 font-bufon text-xs font-bold uppercase tracking-[0.15em] text-amarillo">
+            {tituloRonda(ronda)}
+          </p>
+
+          <ul className="mt-4 space-y-3">
+            {partidosRonda.map((p) => (
               <li
                 key={p.id}
                 className="rounded-xl border border-white/10 bg-black/70 p-4 backdrop-blur-sm"
@@ -372,12 +466,12 @@ export function PanelResultados({ salir, correo }: { salir: () => Promise<void>;
           </ul>
 
           <button
-            onClick={() => void guardarJornada()}
-            disabled={guardando}
+            onClick={() => void guardarRonda()}
+            disabled={guardando || partidosRonda.length === 0}
             className="mt-6 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-amarillo to-naranja px-7 py-3 text-sm font-bold text-carbon disabled:opacity-50"
           >
             {guardando ? <Loader2 size={16} className="animate-spin" /> : <Check size={16} />}
-            Guardar fecha {jornada}
+            Guardar {tituloRonda(ronda).toLowerCase()}
           </button>
         </div>
       ) : null}

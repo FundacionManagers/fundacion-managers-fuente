@@ -1076,7 +1076,8 @@ export const CRUCES_POR_FASE: Record<FaseFinal, number> = {
   final: 1,
 };
 
-const TITULO_FASE: Record<FaseFinal, string> = {
+/** Nombre largo de cada ronda. Lo usa la Llave y tambien el panel. */
+export const TITULO_FASE: Record<FaseFinal, string> = {
   cuartos: 'Cuartos de final',
   semifinal: 'Semifinales',
   'tercer-puesto': 'Tercer puesto',

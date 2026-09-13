@@ -104,6 +104,13 @@ const PASOS: Paso[] = [
           La tabla de posiciones no se edita en ninguna parte. Se calcula sola con estos marcadores,
           y por eso nunca puede contradecir al calendario.
         </Nota>
+        <Nota tono="bien">
+          <strong>La fase final se carga igual.</strong> Cuando la organización fija un cruce, al
+          lado de los números de fecha aparece un botón con el nombre de la ronda — <em>Cuartos</em>
+          , <em>Semis</em>, <em>3.º puesto</em>, <em>Final</em>—. Se pulsa y se cargan los
+          marcadores exactamente igual. Esos partidos no suman puntos en la tabla: la fase regular
+          ya terminó.
+        </Nota>
       </>
     ),
   },

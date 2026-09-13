@@ -8,10 +8,15 @@
  */
 
 import { supabase } from './supabase';
-import { EDICION_ACTUAL } from './liga';
+import { EDICION_ACTUAL, type FaseFinal } from './liga';
+
+/** Ronda a la que pertenece un partido: la liga o una ronda eliminatoria. */
+export type FasePartido = 'grupos' | FaseFinal;
 
 export interface PartidoPanel {
   id: string;
+  fase: FasePartido;
+  /** 1..7 en la fase de grupos; 0 en la eliminatoria. */
   jornada: number;
   fecha: string;
   hora: string;
@@ -53,11 +58,13 @@ export async function cargarTodo(edicion = EDICION_ACTUAL): Promise<EstadoTorneo
   const [p, d, g] = await Promise.all([
     sb
       .from('partidos')
-      .select('id, jornada, fecha, hora, local, visitante, goles_local, goles_visitante, estado')
+      .select(
+        'id, fase, jornada, fecha, hora, local, visitante, goles_local, goles_visitante, estado',
+      )
       .eq('edicion', edicion)
-      // Solo fase de grupos: los cruces eliminatorios llevan jornada 0 y
-      // apareceria una "Fecha 0" sin sentido en el selector.
-      .eq('fase', 'grupos')
+      // Vienen todas las rondas, tambien la eliminatoria. El selector del
+      // panel separa las fechas de grupos de los cruces finales: filtrar
+      // aqui por 'grupos' era lo que dejaba los cuartos sin formulario.
       .order('jornada')
       .order('fecha')
       .order('hora'),
@@ -76,6 +83,7 @@ export async function cargarTodo(edicion = EDICION_ACTUAL): Promise<EstadoTorneo
   return {
     partidos: (p.data ?? []).map((r) => ({
       id: r.id as string,
+      fase: r.fase as FasePartido,
       jornada: r.jornada as number,
       fecha: r.fecha as string,
       hora: (r.hora as string).slice(0, 5),
