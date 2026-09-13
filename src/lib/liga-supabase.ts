@@ -74,6 +74,8 @@ interface FilaPartido {
   visitante: string;
   goles_local: number | null;
   goles_visitante: number | null;
+  penales_local: number | null;
+  penales_visitante: number | null;
   estado: string;
 }
 
@@ -118,7 +120,7 @@ export async function cargarLiga(edicion = 4): Promise<DatosLiga> {
       supabase
         .from('partidos')
         .select(
-          'id, fase, jornada, fecha, hora, local, visitante, goles_local, goles_visitante, estado',
+          'id, fase, jornada, fecha, hora, local, visitante, goles_local, goles_visitante, penales_local, penales_visitante, estado',
         )
         .eq('edicion', edicion)
         // Por fecha antes que por hora: hay jornadas repartidas en dos dias
@@ -158,7 +160,12 @@ export async function cargarLiga(edicion = 4): Promise<DatosLiga> {
     const partidos = filasPartidos.filter((p) => p.fase === 'grupos').map(aPartido);
     const eliminatoria: PartidoEliminatoria[] = filasPartidos
       .filter((p) => p.fase !== 'grupos')
-      .map((p) => ({ ...aPartido(p), fase: p.fase as FaseFinal }));
+      .map((p) => ({
+        ...aPartido(p),
+        fase: p.fase as FaseFinal,
+        penalesLocal: p.penales_local,
+        penalesVisitante: p.penales_visitante,
+      }));
 
     const disciplina: Record<string, Disciplina> = {};
     for (const d of (disciplinaRes.data ?? []) as FilaDisciplina[]) {

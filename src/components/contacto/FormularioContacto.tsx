@@ -189,8 +189,8 @@ export function FormularioContacto({ correo, ejes, whatsapp }: Props) {
           <MessageCircle size={14} className="-mt-0.5 mr-1 inline text-gold" aria-hidden />
           {enviado ? (
             <>
-              Abrimos tu correo con el mensaje ya redactado: revísalo y pulsa enviar. Si no se abrió,
-              escríbenos a <strong>{correo}</strong> o por{' '}
+              Abrimos tu correo con el mensaje ya redactado: revísalo y pulsa enviar. Si no se
+              abrió, escríbenos a <strong>{correo}</strong> o por{' '}
               <a
                 href={`https://wa.me/${whatsapp}`}
                 target="_blank"

@@ -148,8 +148,8 @@ export function RankingGoleadores({
           {autogoles.length > 0 ? (
             <>
               {' '}
-              y {autogoles.length === 1 ? '1 fue' : `${autogoles.length} fueron`} en propia puerta, a
-              favor de{' '}
+              y {autogoles.length === 1 ? '1 fue' : `${autogoles.length} fueron`} en propia puerta,
+              a favor de{' '}
               {beneficiados.map(([slug, n], i) => (
                 <span key={slug}>
                   {i > 0 ? (i === beneficiados.length - 1 ? ' y ' : ', ') : ''}
@@ -311,112 +311,110 @@ function TablaGoleadores({
       <table className="w-full min-w-[520px] border-collapse text-sm">
         <caption className="sr-only">{rotulo}</caption>
         <thead>
-            <tr className="border-b border-amarillo/30 bg-amarillo/10">
-              <th
-                scope="col"
-                className="px-3 py-3 text-center font-bufon text-xs font-bold uppercase tracking-wider text-amarillo"
+          <tr className="border-b border-amarillo/30 bg-amarillo/10">
+            <th
+              scope="col"
+              className="px-3 py-3 text-center font-bufon text-xs font-bold uppercase tracking-wider text-amarillo"
+            >
+              #
+            </th>
+            <th
+              scope="col"
+              className="px-3 py-3 text-left font-bufon text-xs font-bold uppercase tracking-wider text-amarillo"
+            >
+              Jugador
+            </th>
+            <th
+              scope="col"
+              className="px-3 py-3 text-left font-bufon text-xs font-bold uppercase tracking-wider text-amarillo"
+            >
+              Equipo
+            </th>
+            <th
+              scope="col"
+              className="hidden px-3 py-3 text-center font-bufon text-xs font-bold uppercase tracking-wider text-amarillo sm:table-cell"
+            >
+              Dorsal
+            </th>
+            <th
+              scope="col"
+              className="px-3 py-3 text-center font-bufon text-xs font-bold uppercase tracking-wider text-amarillo"
+            >
+              Goles
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {filas.map((g) => {
+            const eq = getEquipo(g.equipo);
+            return (
+              <tr
+                key={`${g.jugador}-${g.equipo}-${g.numero}`}
+                className="border-b border-white/5 transition-colors last:border-0 hover:bg-white/[0.04]"
               >
-                #
-              </th>
-              <th
-                scope="col"
-                className="px-3 py-3 text-left font-bufon text-xs font-bold uppercase tracking-wider text-amarillo"
-              >
-                Jugador
-              </th>
-              <th
-                scope="col"
-                className="px-3 py-3 text-left font-bufon text-xs font-bold uppercase tracking-wider text-amarillo"
-              >
-                Equipo
-              </th>
-              <th
-                scope="col"
-                className="hidden px-3 py-3 text-center font-bufon text-xs font-bold uppercase tracking-wider text-amarillo sm:table-cell"
-              >
-                Dorsal
-              </th>
-              <th
-                scope="col"
-                className="px-3 py-3 text-center font-bufon text-xs font-bold uppercase tracking-wider text-amarillo"
-              >
-                Goles
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {filas.map((g) => {
-              const eq = getEquipo(g.equipo);
-              return (
-                <tr
-                  key={`${g.jugador}-${g.equipo}-${g.numero}`}
-                  className="border-b border-white/5 transition-colors last:border-0 hover:bg-white/[0.04]"
-                >
-                  <td className="px-3 py-2.5 text-center tabular-nums text-neutral-500">
-                    {g.posicion}
-                  </td>
-                  <td className="whitespace-nowrap px-3 py-2.5 font-semibold text-neutral-100">
-                    {g.jugador}
-                  </td>
-                  <td className="px-3 py-2.5">
-                    <div className="flex items-center gap-2">
-                      <TeamCrest slug={g.equipo} size={22} />
-                      <span className="whitespace-nowrap text-neutral-400">
-                        {eq?.nombre ?? g.equipo}
-                      </span>
-                    </div>
-                  </td>
-                  <td className="hidden px-3 py-2.5 text-center tabular-nums text-neutral-500 sm:table-cell">
-                    {g.numero}
-                  </td>
-                  <td className="px-3 py-2.5 text-center font-sport text-lg text-amarillo">
-                    {g.goles}
-                  </td>
-                </tr>
-              );
-            })}
+                <td className="px-3 py-2.5 text-center tabular-nums text-neutral-500">
+                  {g.posicion}
+                </td>
+                <td className="whitespace-nowrap px-3 py-2.5 font-semibold text-neutral-100">
+                  {g.jugador}
+                </td>
+                <td className="px-3 py-2.5">
+                  <div className="flex items-center gap-2">
+                    <TeamCrest slug={g.equipo} size={22} />
+                    <span className="whitespace-nowrap text-neutral-400">
+                      {eq?.nombre ?? g.equipo}
+                    </span>
+                  </div>
+                </td>
+                <td className="hidden px-3 py-2.5 text-center tabular-nums text-neutral-500 sm:table-cell">
+                  {g.numero}
+                </td>
+                <td className="px-3 py-2.5 text-center font-sport text-lg text-amarillo">
+                  {g.goles}
+                </td>
+              </tr>
+            );
+          })}
 
-            {/* Los autogoles cierran la tabla. Van sin número de posición
+          {/* Los autogoles cierran la tabla. Van sin número de posición
                 —no compiten por la bota de oro— pero sí con el club que se
                 los llevó, para que la suma cuadre con los goles del
                 marcador y nadie tenga que preguntar por el gol que falta. */}
-            {autogoles.map((a, i) => {
-              const autor = getEquipo(a.autor);
-              const favorecido = a.beneficiado ? getEquipo(a.beneficiado) : undefined;
-              return (
-                <tr
-                  key={`autogol-${a.autor}-${a.jornada}-${i}`}
-                  className="border-t border-amarillo/20 bg-white/[0.02]"
-                >
-                  <td className="px-3 py-2.5 text-center text-neutral-600">—</td>
-                  <td className="px-3 py-2.5">
-                    <p className="whitespace-nowrap font-semibold italic text-neutral-400">
-                      Gol en propia puerta
-                    </p>
-                    <p className="mt-0.5 whitespace-nowrap text-[11px] uppercase tracking-widest text-neutral-600">
-                      Fecha {a.jornada} · lo marcó {autor?.nombre ?? a.autor}
-                    </p>
-                  </td>
-                  <td className="px-3 py-2.5">
-                    <div className="flex items-center gap-2">
-                      <TeamCrest slug={a.beneficiado ?? ''} size={22} />
-                      <span className="whitespace-nowrap text-neutral-400">
-                        {favorecido?.nombre ?? a.beneficiado ?? '—'}{' '}
-                        <span className="text-[11px] uppercase tracking-widest text-neutral-600">
-                          a favor
-                        </span>
+          {autogoles.map((a, i) => {
+            const autor = getEquipo(a.autor);
+            const favorecido = a.beneficiado ? getEquipo(a.beneficiado) : undefined;
+            return (
+              <tr
+                key={`autogol-${a.autor}-${a.jornada}-${i}`}
+                className="border-t border-amarillo/20 bg-white/[0.02]"
+              >
+                <td className="px-3 py-2.5 text-center text-neutral-600">—</td>
+                <td className="px-3 py-2.5">
+                  <p className="whitespace-nowrap font-semibold italic text-neutral-400">
+                    Gol en propia puerta
+                  </p>
+                  <p className="mt-0.5 whitespace-nowrap text-[11px] uppercase tracking-widest text-neutral-600">
+                    Fecha {a.jornada} · lo marcó {autor?.nombre ?? a.autor}
+                  </p>
+                </td>
+                <td className="px-3 py-2.5">
+                  <div className="flex items-center gap-2">
+                    <TeamCrest slug={a.beneficiado ?? ''} size={22} />
+                    <span className="whitespace-nowrap text-neutral-400">
+                      {favorecido?.nombre ?? a.beneficiado ?? '—'}{' '}
+                      <span className="text-[11px] uppercase tracking-widest text-neutral-600">
+                        a favor
                       </span>
-                    </div>
-                  </td>
-                  <td className="hidden px-3 py-2.5 text-center text-neutral-600 sm:table-cell">
-                    —
-                  </td>
-                  <td className="px-3 py-2.5 text-center font-sport text-lg text-neutral-400">1</td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+                    </span>
+                  </div>
+                </td>
+                <td className="hidden px-3 py-2.5 text-center text-neutral-600 sm:table-cell">—</td>
+                <td className="px-3 py-2.5 text-center font-sport text-lg text-neutral-400">1</td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
     </div>
   );
 }

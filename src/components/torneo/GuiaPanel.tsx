@@ -110,6 +110,13 @@ const PASOS: Paso[] = [
           pulsa una y se cargan los marcadores exactamente igual. Esos partidos no suman puntos en
           la tabla: la fase regular ya terminó.
         </Nota>
+        <Nota tono="aviso">
+          <strong>¿Empataron en eliminatoria?</strong> Al marcar el partido como jugado con el mismo
+          número de goles en los dos lados, aparece solo un recuadro naranja para escribir la tanda
+          de penales. Es obligatorio: sin ella la llave no sabe quién pasa, y la tanda no puede
+          quedar empatada. Si luego corriges el marcador y deja de haber empate, los penales se
+          borran solos.
+        </Nota>
         <Nota>
           <strong className="text-neutral-100">¿La ronda todavía no tiene cruces?</strong> Dentro de
           ella aparece <em>Añadir cruce</em>: eliges los dos equipos, el día y la hora, y se crea.

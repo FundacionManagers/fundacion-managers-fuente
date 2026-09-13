@@ -258,3 +258,38 @@ test('con todo jugado y cargado, ya no hay próximo compromiso', () => {
   }));
   assert.equal(proximoCompromiso(gruposTerminados(), todas), null);
 });
+
+/**
+ * Definición por penales.
+ *
+ * En la liga un empate es un resultado y reparte un punto. En eliminatoria
+ * alguien tiene que pasar: hasta que existió la tanda, un 1-1 en cuartos
+ * dejaba la llave sin ganador resaltado y al sitio sin poder decir quién
+ * seguía. `ladoGanador` es el único sitio donde se decide, para que la
+ * Llave y el Calendario no puedan contradecirse.
+ */
+const { ladoGanador } = require('../.test-build/lib/liga.js');
+
+test('en los 90 gana quien hizo más goles, y la tanda no pinta nada', () => {
+  assert.equal(ladoGanador(2, 1), 'local');
+  assert.equal(ladoGanador(0, 3), 'visitante');
+  // Aunque llegara una tanda por error, el resultado manda.
+  assert.equal(ladoGanador(2, 1, 3, 4), 'local');
+});
+
+test('un empate lo resuelve la tanda de penales', () => {
+  assert.equal(ladoGanador(1, 1, 4, 2), 'local');
+  assert.equal(ladoGanador(1, 1, 2, 4), 'visitante');
+  assert.equal(ladoGanador(0, 0, 5, 3), 'local');
+});
+
+test('sin tanda, un empate no tiene ganador: la llave no debe inventarlo', () => {
+  assert.equal(ladoGanador(1, 1), null);
+  assert.equal(ladoGanador(1, 1, 3, null), null);
+  assert.equal(ladoGanador(1, 1, 3, 3), null);
+});
+
+test('un partido sin jugar no tiene ganador', () => {
+  assert.equal(ladoGanador(null, null), null);
+  assert.equal(ladoGanador(2, null), null);
+});

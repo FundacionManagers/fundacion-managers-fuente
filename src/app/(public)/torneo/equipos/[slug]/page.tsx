@@ -297,12 +297,7 @@ export default async function EquipoPage({ params }: Props) {
             {partidosLiga.length ? (
               <ul className="stagger-in mt-8 space-y-2.5">
                 {partidosLiga.map((p) => (
-                  <FilaLiga
-                    key={p.id}
-                    p={p}
-                    slug={eq.slug}
-                    proximo={p.id === proximoPropio?.id}
-                  />
+                  <FilaLiga key={p.id} p={p} slug={eq.slug} proximo={p.id === proximoPropio?.id} />
                 ))}
               </ul>
             ) : (

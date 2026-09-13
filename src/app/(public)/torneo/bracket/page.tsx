@@ -90,12 +90,7 @@ export default async function BracketPage() {
           a su estado: el Calendario responde "cuándo se juega" y esta página
           responde "quién juega y hasta dónde llegó". */}
       <div className="mt-10">
-        <LlaveArbol
-          cruces={cruces}
-          camino={camino}
-          provisional={!definitiva}
-          siembra={siembra}
-        />
+        <LlaveArbol cruces={cruces} camino={camino} provisional={!definitiva} siembra={siembra} />
       </div>
 
       <p className="mt-8 border-t border-white/5 pt-5 text-xs leading-relaxed text-neutral-600">

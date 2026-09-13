@@ -105,7 +105,10 @@ export default async function CalendarioPage() {
       <p className="mt-12 border-t border-white/5 pt-5 text-[11px] uppercase tracking-[0.2em] text-neutral-600">
         ¿Quieres ver qué pasó en la {ordinalFemenino(EDICION_ANTERIOR.numero)} edición? La llave
         completa está en{' '}
-        <Link href="/torneo/palmares/#llave-anterior" className="text-neutral-400 hover:text-amarillo">
+        <Link
+          href="/torneo/palmares/#llave-anterior"
+          className="text-neutral-400 hover:text-amarillo"
+        >
           Palmarés
         </Link>
         .

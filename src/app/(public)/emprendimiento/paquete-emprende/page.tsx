@@ -42,7 +42,7 @@ export default function PaqueteEmprendePage() {
               Emprendimiento
             </Link>
 
-            <div className="mt-8 max-w-3xl animate-fade-up">
+            <div className="animate-fade-up mt-8 max-w-3xl">
               <p className="font-mono text-caption uppercase tracking-[0.3em] text-terracotta">
                 {PAQUETE.kicker}
               </p>
@@ -115,7 +115,7 @@ export default function PaqueteEmprendePage() {
         {/* CIERRE + WHATSAPP */}
         <section className="grain relative overflow-hidden text-neutral-200">
           <div className="relative mx-auto max-w-7xl px-6 py-24 lg:px-8">
-            <div className="overflow-hidden rounded-3xl border border-gold/35 bg-[#141a22]/92 p-12 backdrop-blur-sm lg:p-16">
+            <div className="bg-[#141a22]/92 overflow-hidden rounded-3xl border border-gold/35 p-12 backdrop-blur-sm lg:p-16">
               <div className="grid gap-10 lg:grid-cols-[1.3fr_1fr] lg:items-center">
                 <div>
                   <p className="font-serif text-[32px] font-bold leading-tight text-gold md:text-[42px]">

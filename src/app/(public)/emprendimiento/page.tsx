@@ -32,7 +32,10 @@ function exigir<T>(valor: T | undefined, que: string): T {
 }
 
 const EJE = exigir(getEje('emprendimiento'), 'el eje «emprendimiento» en navigation.ts');
-const CONTENT = exigir(EJE_CONTENT.emprendimiento, 'el contenido de emprendimiento en eje-content.ts');
+const CONTENT = exigir(
+  EJE_CONTENT.emprendimiento,
+  'el contenido de emprendimiento en eje-content.ts',
+);
 
 export const metadata: Metadata = {
   title: EJE.nombre,
@@ -221,7 +224,7 @@ export default function EmprendimientoPage() {
         {/* CTA + ALIANZA */}
         <section className="grain relative overflow-hidden border-t border-white/10">
           <div className="relative mx-auto max-w-7xl px-6 py-24 lg:px-8">
-            <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-[#141a22]/92 p-12 backdrop-blur-sm lg:p-16">
+            <div className="bg-[#141a22]/92 relative overflow-hidden rounded-3xl border border-white/10 p-12 backdrop-blur-sm lg:p-16">
               <div className="relative grid gap-8 lg:grid-cols-[1.4fr_1fr] lg:items-center">
                 <div>
                   <p className="font-mono text-caption uppercase tracking-[0.3em] text-gold">
@@ -247,7 +250,7 @@ export default function EmprendimientoPage() {
 
             <Link
               href="/alianza/"
-              className="group mt-10 flex flex-col gap-4 rounded-3xl border bg-[#141a22]/92 p-8 backdrop-blur-sm transition-all duration-200 ease-managers hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(0,212,255,0.22)] sm:flex-row sm:items-center sm:justify-between"
+              className="bg-[#141a22]/92 group mt-10 flex flex-col gap-4 rounded-3xl border p-8 backdrop-blur-sm transition-all duration-200 ease-managers hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(0,212,255,0.22)] sm:flex-row sm:items-center sm:justify-between"
               style={{ borderColor: 'rgba(0,212,255,0.35)' }}
             >
               <div>

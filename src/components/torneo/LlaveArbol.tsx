@@ -4,6 +4,7 @@ import {
   CRUCES_POR_FASE,
   fechaLargaDe,
   jornadaEnVariosDias,
+  ladoGanador,
   type CruceCuartos,
   type EstadoRonda,
   type FaseFinal,
@@ -18,6 +19,8 @@ interface LadoLlave {
   /** Puesto en la tabla de la fase de grupos. Null si todavía no se sabe. */
   siembra: number | null;
   goles: number | null;
+  /** Penales de la tanda, si el cruce se definió así. Null en la inmensa mayoría. */
+  penales?: number | null;
   /**
    * De dónde saldrá quien ocupe esta casilla: «Ganador partido 1», «Perdedor
    * SF2». Solo lo llevan las casillas todavía vacías, y es lo que convierte
@@ -91,7 +94,8 @@ const LADO_VACIO: LadoLlave = { slug: null, siembra: null, goles: null };
  */
 function procedenciasDe(fase: FaseFinal, i: number): [LadoLlave, LadoLlave] {
   const de = (procedencia: string): LadoLlave => ({ ...LADO_VACIO, procedencia });
-  if (fase === 'semifinal') return [de(`Ganador partido ${i * 2 + 1}`), de(`Ganador partido ${i * 2 + 2}`)];
+  if (fase === 'semifinal')
+    return [de(`Ganador partido ${i * 2 + 1}`), de(`Ganador partido ${i * 2 + 2}`)];
   if (fase === 'final') return [de('Ganador semifinal 1'), de('Ganador semifinal 2')];
   if (fase === 'tercer-puesto') return [de('Perdedor semifinal 1'), de('Perdedor semifinal 2')];
   return [LADO_VACIO, LADO_VACIO];
@@ -168,20 +172,23 @@ function Fila({
           Prefiere dos lineas antes que puntos suspensivos, que es lo mismo
           que ya se decidio para la llave del Palmares. */}
       <span
-        className={cn(
-          'min-w-0 flex-1 text-sm font-semibold leading-tight',
-          pendiente && 'italic',
-        )}
+        className={cn('min-w-0 flex-1 text-sm font-semibold leading-tight', pendiente && 'italic')}
         style={{ color: pendiente && tono === 'menta' ? MENTA_TEXTO : '#0F1419' }}
       >
         {eq?.nombre ?? lado.procedencia ?? 'Por definir'}
       </span>
       {jugado ? (
         <span
-          className={cn('shrink-0 font-sport text-xl leading-none')}
+          className={cn('flex shrink-0 items-baseline gap-1 font-sport text-xl leading-none')}
           style={{ color: ganador ? VERDE : `${VERDE}99` }}
         >
           {lado.goles}
+          {/* La tanda va en pequeño al lado del gol, entre paréntesis, como
+              en cualquier cuadro impreso: el resultado de los 90 sigue siendo
+              el número grande. */}
+          {lado.penales != null ? (
+            <span className="font-mono text-[11px] font-bold">({lado.penales})</span>
+          ) : null}
         </span>
       ) : null}
     </div>
@@ -210,15 +217,16 @@ function Celda({
   destacada?: boolean;
 }) {
   const [a, b] = celda.lados;
-  const ganaA = celda.jugado && a.goles != null && b.goles != null && a.goles > b.goles;
-  const ganaB = celda.jugado && a.goles != null && b.goles != null && b.goles > a.goles;
+  // Un cruce empatado lo resuelve la tanda de penales: comparar solo los
+  // goles dejaba sin ganador justo los partidos más recordados.
+  const gana = celda.jugado ? ladoGanador(a.goles, b.goles, a.penales, b.penales) : null;
+  const ganaA = gana === 'local';
+  const ganaB = gana === 'visitante';
   const vacia = !a.slug && !b.slug;
   const tono: Tono = destacada ? 'dorado' : vacia ? 'menta' : 'blanco';
 
-  const fondo =
-    tono === 'dorado' ? '#D4A437' : tono === 'menta' ? MENTA : '#FFFFFF';
-  const borde =
-    tono === 'dorado' ? '#B88A26' : tono === 'menta' ? MENTA_BORDE : '#D8E6DD';
+  const fondo = tono === 'dorado' ? '#D4A437' : tono === 'menta' ? MENTA : '#FFFFFF';
+  const borde = tono === 'dorado' ? '#B88A26' : tono === 'menta' ? MENTA_BORDE : '#D8E6DD';
 
   return (
     <div
@@ -260,7 +268,9 @@ function Celda({
         style={{ borderTop: tono === 'blanco' ? 'none' : undefined }}
       >
         <Fila lado={a} ganador={ganaA} jugado={celda.jugado} altoFijo={altoFijo} tono={tono} />
-        <div style={{ borderTop: `1px solid ${tono === 'dorado' ? '#00000022' : `${MENTA_BORDE}` }` }} />
+        <div
+          style={{ borderTop: `1px solid ${tono === 'dorado' ? '#00000022' : `${MENTA_BORDE}`}` }}
+        />
         <Fila lado={b} ganador={ganaB} jugado={celda.jugado} altoFijo={altoFijo} tono={tono} />
       </div>
     </div>
@@ -310,8 +320,18 @@ export function LlaveArbol({
           .filter(Boolean)
           .join('  ·  '),
         lados: [
-          { slug: p.local, siembra: siembra.get(p.local) ?? null, goles: p.golesLocal },
-          { slug: p.visitante, siembra: siembra.get(p.visitante) ?? null, goles: p.golesVisitante },
+          {
+            slug: p.local,
+            siembra: siembra.get(p.local) ?? null,
+            goles: p.golesLocal,
+            penales: p.penalesLocal,
+          },
+          {
+            slug: p.visitante,
+            siembra: siembra.get(p.visitante) ?? null,
+            goles: p.golesVisitante,
+            penales: p.penalesVisitante,
+          },
         ],
         jugado: p.estado === 'jugado' && p.golesLocal != null && p.golesVisitante != null,
       }));
@@ -359,41 +379,41 @@ export function LlaveArbol({
         style={{ background: PANEL }}
       >
         {camino.map((parada) => {
-        const chip = CHIP[parada.estado];
-        return (
-          <section key={parada.fase}>
-            <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 border-b border-white/20 pb-3">
-              <h3 className="font-sport text-2xl uppercase leading-none text-white">
-                {parada.titulo}
-              </h3>
-              <span
-                className={cn(
-                  'rounded-full border px-2.5 py-0.5 font-bufon text-[10px] uppercase tracking-[0.15em]',
-                  chip.clase,
-                )}
-              >
-                {chip.texto}
-              </span>
-            </div>
-            <p className="mt-2.5 text-xs text-white/65">
-              {parada.fecha ? fechaLargaDe(parada.fecha) : 'Fecha por confirmar'}
-            </p>
-
-            <ul className="mt-4 space-y-3">
-              {celdasDe(parada).map((c) => (
-                <li key={c.id}>
-                  <Celda celda={c} provisional={provisional} />
-                </li>
-              ))}
-            </ul>
-
-            {NOTA_FASE[parada.fase] ? (
-              <p className="mt-3 text-[11px] leading-relaxed text-white/55">
-                {NOTA_FASE[parada.fase]}
+          const chip = CHIP[parada.estado];
+          return (
+            <section key={parada.fase}>
+              <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 border-b border-white/20 pb-3">
+                <h3 className="font-sport text-2xl uppercase leading-none text-white">
+                  {parada.titulo}
+                </h3>
+                <span
+                  className={cn(
+                    'rounded-full border px-2.5 py-0.5 font-bufon text-[10px] uppercase tracking-[0.15em]',
+                    chip.clase,
+                  )}
+                >
+                  {chip.texto}
+                </span>
+              </div>
+              <p className="mt-2.5 text-xs text-white/65">
+                {parada.fecha ? fechaLargaDe(parada.fecha) : 'Fecha por confirmar'}
               </p>
-            ) : null}
-          </section>
-        );
+
+              <ul className="mt-4 space-y-3">
+                {celdasDe(parada).map((c) => (
+                  <li key={c.id}>
+                    <Celda celda={c} provisional={provisional} />
+                  </li>
+                ))}
+              </ul>
+
+              {NOTA_FASE[parada.fase] ? (
+                <p className="mt-3 text-[11px] leading-relaxed text-white/55">
+                  {NOTA_FASE[parada.fase]}
+                </p>
+              ) : null}
+            </section>
+          );
         })}
       </div>
     </>
@@ -521,7 +541,10 @@ function Cuadro({
         {semis.map((c, i) => (
           <div
             key={c.id}
-            className={cn('col-start-3 row-span-2 flex items-center', i === 0 ? 'row-start-1' : 'row-start-3')}
+            className={cn(
+              'col-start-3 row-span-2 flex items-center',
+              i === 0 ? 'row-start-1' : 'row-start-3',
+            )}
           >
             <Celda celda={c} altoFijo provisional={provisional} />
           </div>

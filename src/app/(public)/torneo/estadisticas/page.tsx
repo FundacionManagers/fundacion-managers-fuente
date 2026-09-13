@@ -190,7 +190,9 @@ export default async function EstadisticasPage() {
                   href={`/torneo/equipos/${f.equipo}/`}
                   className={cn(
                     'flex items-center gap-3 rounded-xl border px-4 py-3 transition-colors hover:border-amarillo/50',
-                    i === 0 ? 'border-amarillo/40 bg-amarillo/[0.06]' : 'border-white/10 bg-black/30',
+                    i === 0
+                      ? 'border-amarillo/40 bg-amarillo/[0.06]'
+                      : 'border-white/10 bg-black/30',
                   )}
                 >
                   <span

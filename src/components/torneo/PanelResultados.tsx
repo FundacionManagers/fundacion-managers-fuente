@@ -12,6 +12,7 @@ import {
   CALENDARIO_FASE_FINAL,
   COLUMNAS_TABLA,
   CRUCES_POR_FASE,
+  ladoGanador,
   ORDEN_FASES,
   TITULO_FASE,
   TOTAL_JORNADAS,
@@ -499,6 +500,59 @@ export function PanelResultados({ salir, correo }: { salir: () => Promise<void>;
                   />
                   Partido jugado (si lo desmarcas, el marcador se borra y vuelve a programado)
                 </label>
+
+                {/* Penales. Aparecen solos cuando hacen falta: fase final,
+                    partido jugado y empatado. En la liga un empate es un
+                    resultado valido y no se pregunta nada. */}
+                {p.fase !== 'grupos' &&
+                p.jugado &&
+                p.golesLocal != null &&
+                p.golesLocal === p.golesVisitante ? (
+                  <div className="mt-3 rounded-lg border border-naranja/40 bg-naranja/10 p-3">
+                    <p className="font-bufon text-[11px] font-bold uppercase tracking-[0.15em] text-naranja">
+                      Empate · definición por penales
+                    </p>
+                    <div className="mt-2 flex flex-wrap items-center gap-3">
+                      <span className="text-xs text-neutral-300">
+                        {getEquipo(p.local)?.nombre ?? p.local}
+                      </span>
+                      <NumeroInput
+                        ancho="w-16"
+                        valor={p.penalesLocal}
+                        onChange={(v) => tocarPartido(p.id, { penalesLocal: v })}
+                      />
+                      <span className="text-neutral-600">–</span>
+                      <NumeroInput
+                        ancho="w-16"
+                        valor={p.penalesVisitante}
+                        onChange={(v) => tocarPartido(p.id, { penalesVisitante: v })}
+                      />
+                      <span className="text-xs text-neutral-300">
+                        {getEquipo(p.visitante)?.nombre ?? p.visitante}
+                      </span>
+                    </div>
+                    {(() => {
+                      const gana = ladoGanador(
+                        p.golesLocal,
+                        p.golesVisitante,
+                        p.penalesLocal,
+                        p.penalesVisitante,
+                      );
+                      const equipo =
+                        gana === 'local' ? p.local : gana === 'visitante' ? p.visitante : null;
+                      return equipo ? (
+                        <p className="mt-2 text-xs text-emerald-400">
+                          Pasa {getEquipo(equipo)?.nombre ?? equipo}.
+                        </p>
+                      ) : (
+                        <p className="mt-2 text-xs text-amber-300">
+                          Escribe la tanda: sin ella la llave no sabe quién pasa. No puede quedar
+                          empatada.
+                        </p>
+                      );
+                    })()}
+                  </div>
+                ) : null}
               </li>
             ))}
           </ul>
@@ -695,13 +749,15 @@ function NuevoCruceForm({
     if (!anterior) return [];
     return estado.partidos
       .filter((p) => p.fase === anterior && p.jugado)
-      .map((p) =>
-        p.golesLocal == null || p.golesVisitante == null || p.golesLocal === p.golesVisitante
-          ? null
-          : p.golesLocal > p.golesVisitante
-            ? p.local
-            : p.visitante,
-      )
+      .map((p) => {
+        const gana = ladoGanador(
+          p.golesLocal,
+          p.golesVisitante,
+          p.penalesLocal,
+          p.penalesVisitante,
+        );
+        return gana === 'local' ? p.local : gana === 'visitante' ? p.visitante : null;
+      })
       .filter((x): x is string => x != null);
   }, [estado.partidos, anterior]);
 

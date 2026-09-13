@@ -21,7 +21,8 @@ export function Footer() {
           backgroundImage: `url('${asset('/fotos/seccion-nosotros.jpg')}')`,
           filter: 'saturate(0.75) brightness(0.5)',
           opacity: 0.28,
-          WebkitMaskImage: 'linear-gradient(to bottom, #000 0%, rgba(0,0,0,0.35) 62%, transparent 100%)',
+          WebkitMaskImage:
+            'linear-gradient(to bottom, #000 0%, rgba(0,0,0,0.35) 62%, transparent 100%)',
           maskImage: 'linear-gradient(to bottom, #000 0%, rgba(0,0,0,0.35) 62%, transparent 100%)',
         }}
       />

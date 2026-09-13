@@ -24,6 +24,9 @@ export interface PartidoPanel {
   visitante: string;
   golesLocal: number | null;
   golesVisitante: number | null;
+  /** Penales de la tanda. Solo en fase final y solo si los goles empataron. */
+  penalesLocal: number | null;
+  penalesVisitante: number | null;
   jugado: boolean;
 }
 
@@ -59,7 +62,7 @@ export async function cargarTodo(edicion = EDICION_ACTUAL): Promise<EstadoTorneo
     sb
       .from('partidos')
       .select(
-        'id, fase, jornada, fecha, hora, local, visitante, goles_local, goles_visitante, estado',
+        'id, fase, jornada, fecha, hora, local, visitante, goles_local, goles_visitante, penales_local, penales_visitante, estado',
       )
       .eq('edicion', edicion)
       // Vienen todas las rondas, tambien la eliminatoria. El selector del
@@ -91,6 +94,8 @@ export async function cargarTodo(edicion = EDICION_ACTUAL): Promise<EstadoTorneo
       visitante: r.visitante as string,
       golesLocal: r.goles_local as number | null,
       golesVisitante: r.goles_visitante as number | null,
+      penalesLocal: r.penales_local as number | null,
+      penalesVisitante: r.penales_visitante as number | null,
       jugado: r.estado === 'jugado',
     })),
     disciplina: (d.data ?? []) as DisciplinaPanel[],
@@ -115,11 +120,28 @@ export async function guardarPartido(p: PartidoPanel): Promise<void> {
   const sb = exigirCliente();
   const jugado = p.jugado && p.golesLocal != null && p.golesVisitante != null;
 
+  /**
+   * La tanda solo se guarda si la base la va a aceptar: fase final, partido
+   * jugado, goles empatados y un ganador claro en los penales. Si el marcador
+   * deja de estar empatado —porque se corrigió—, la tanda se borra sola en la
+   * misma operación; si no, la restricción `penales_coherentes` rechazaría el
+   * guardado entero y el usuario vería un error sin saber por qué.
+   */
+  const hayTanda =
+    jugado &&
+    p.fase !== 'grupos' &&
+    p.golesLocal === p.golesVisitante &&
+    p.penalesLocal != null &&
+    p.penalesVisitante != null &&
+    p.penalesLocal !== p.penalesVisitante;
+
   const { error } = await sb
     .from('partidos')
     .update({
       goles_local: jugado ? p.golesLocal : null,
       goles_visitante: jugado ? p.golesVisitante : null,
+      penales_local: hayTanda ? p.penalesLocal : null,
+      penales_visitante: hayTanda ? p.penalesVisitante : null,
       estado: jugado ? 'jugado' : 'programado',
     })
     .eq('id', p.id);

@@ -1,5 +1,6 @@
 import { TeamCrest } from '@/components/torneo/TeamCrest';
 import { getEquipo } from '@/lib/torneo-data';
+import { ladoGanador } from '@/lib/liga';
 import type { FaseFinal, PartidoEliminatoria } from '@/lib/liga-supabase';
 import { cn } from '@/lib/utils';
 
@@ -15,8 +16,13 @@ function Cruce({ p }: { p: PartidoEliminatoria }) {
   const local = getEquipo(p.local);
   const visitante = getEquipo(p.visitante);
   const jugado = p.estado === 'jugado' && p.golesLocal != null && p.golesVisitante != null;
-  const ganaLocal = jugado && p.golesLocal! > p.golesVisitante!;
-  const ganaVisita = jugado && p.golesVisitante! > p.golesLocal!;
+  // Un empate en eliminatoria lo desempata la tanda, no se queda en tablas.
+  const gana = jugado
+    ? ladoGanador(p.golesLocal, p.golesVisitante, p.penalesLocal, p.penalesVisitante)
+    : null;
+  const ganaLocal = gana === 'local';
+  const ganaVisita = gana === 'visitante';
+  const huboPenales = p.penalesLocal != null && p.penalesVisitante != null;
 
   return (
     <li
@@ -77,6 +83,14 @@ function Cruce({ p }: { p: PartidoEliminatoria }) {
           </span>
         </div>
       </div>
+
+      {/* La tanda va debajo, no incrustada en el marcador: el 1-1 de los 90
+          es el resultado del partido y la tanda es cómo se resolvió. */}
+      {huboPenales ? (
+        <p className="mt-3 text-center font-mono text-[11px] uppercase tracking-[0.15em] text-naranja">
+          Penales {p.penalesLocal}–{p.penalesVisitante}
+        </p>
+      ) : null}
     </li>
   );
 }

@@ -937,6 +937,36 @@ export type FaseFinal = 'cuartos' | 'semifinal' | 'tercer-puesto' | 'final';
 /** Un partido de la eliminatoria: como los de liga, más su ronda. */
 export interface PartidoEliminatoria extends PartidoLiga {
   fase: FaseFinal;
+  /**
+   * Penales convertidos en la tanda, si el partido acabó empatado.
+   *
+   * En la liga un empate reparte un punto y ahí se acaba; en eliminatoria
+   * alguien tiene que pasar. Son null en todo partido que se resolvió en los
+   * 90, que son la mayoría.
+   */
+  penalesLocal: number | null;
+  penalesVisitante: number | null;
+}
+
+/**
+ * Quién gana un cruce: por goles, y si hubo empate, por la tanda de penales.
+ *
+ * Devuelve null cuando todavía no se puede saber —partido sin jugar, o
+ * empatado y sin tanda cargada—. Vive aquí, y no en cada componente, porque
+ * la Llave y el Calendario deben coincidir siempre: si uno resuelve el
+ * empate y el otro no, el sitio se contradice a sí mismo.
+ */
+export function ladoGanador(
+  golesLocal: number | null,
+  golesVisitante: number | null,
+  penalesLocal: number | null = null,
+  penalesVisitante: number | null = null,
+): 'local' | 'visitante' | null {
+  if (golesLocal == null || golesVisitante == null) return null;
+  if (golesLocal !== golesVisitante) return golesLocal > golesVisitante ? 'local' : 'visitante';
+  if (penalesLocal == null || penalesVisitante == null) return null;
+  if (penalesLocal === penalesVisitante) return null;
+  return penalesLocal > penalesVisitante ? 'local' : 'visitante';
 }
 
 export interface RondaFinal {

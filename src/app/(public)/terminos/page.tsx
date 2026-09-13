@@ -46,9 +46,7 @@ export default function TerminosPage() {
               condiciones.
             </p>
             <h2 className="font-display text-xl font-bold text-carbon">Contacto</h2>
-            <p>
-              Cualquier consulta sobre estos términos: administracion@fundacionmanagers.com.
-            </p>
+            <p>Cualquier consulta sobre estos términos: administracion@fundacionmanagers.com.</p>
             <div className="mt-10 rounded-md border border-dashed border-neutral-300 p-4 text-xs uppercase tracking-widest text-neutral-500">
               Última actualización: 12 de septiembre de 2026
             </div>

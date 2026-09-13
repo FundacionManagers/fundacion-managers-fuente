@@ -111,9 +111,7 @@ export default async function EjePage({ params }: EjePageProps) {
                       >
                         <VPIcon size={22} />
                       </span>
-                      <h3 className="mt-5 font-serif text-xl font-bold text-carbon">
-                        {vp.title}
-                      </h3>
+                      <h3 className="mt-5 font-serif text-xl font-bold text-carbon">{vp.title}</h3>
                       <p className="mt-2 text-sm text-neutral-600">{vp.body}</p>
                     </li>
                   );
