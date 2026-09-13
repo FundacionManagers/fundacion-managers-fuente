@@ -15,7 +15,11 @@ interface EjePageProps {
 }
 
 export function generateStaticParams() {
-  return EJES.filter((e) => e.slug !== 'torneo').map((e) => ({ slug: e.slug }));
+  // El torneo y emprendimiento tienen página propia, escrita a mano. Esta
+  // plantilla genérica sirve a los ejes que todavía no la necesitan.
+  return EJES.filter((e) => !['torneo', 'emprendimiento'].includes(e.slug)).map((e) => ({
+    slug: e.slug,
+  }));
 }
 
 export async function generateMetadata({ params }: EjePageProps): Promise<Metadata> {
