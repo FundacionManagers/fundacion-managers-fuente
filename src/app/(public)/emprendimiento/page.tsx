@@ -15,8 +15,7 @@ import { pilarDeEje } from '@/lib/strategy';
 /**
  * Emprendimiento tiene página propia, como el torneo, y por eso `[slug]` la
  * excluye de sus rutas. Dejó de caber en la plantilla genérica de los ejes el
- * día que tuvo dos rutas desplegables, un paquete de ocho entregables y el
- * diagnóstico como cierre.
+ * día que tuvo diagnóstico propio, dos rutas y un paquete de ocho entregables.
  *
  * Se quitaron «Servicios y enfoques» y «El proceso», que decían en genérico
  * —mentoría, red, ruta de validación; postular, construir, lanzar— lo que las
@@ -79,8 +78,68 @@ export default function EmprendimientoPage() {
           </div>
         </section>
 
+        {/* EL DIAGNÓSTICO
+            Va primero, antes de las dos rutas: Jorge lo pidió así y tiene
+            razón —no se elige camino sin saber de dónde se parte—. Queda en
+            oscuro a propósito, porque la captura del informe es una imagen
+            clara y sobre crema se perdería; el panel es #141a22, no el casi
+            negro de antes, para que no se caiga a un pozo. */}
+        <section className="grain relative overflow-hidden bg-[#141a22]/80">
+          <div className="relative mx-auto max-w-7xl px-6 py-24 lg:px-8">
+            <div className="grid gap-12 lg:grid-cols-[1fr_0.85fr] lg:items-center">
+              <div>
+                <p className="font-mono text-caption uppercase tracking-[0.3em] text-gold">
+                  {DIAGNOSTICO_BLOQUE.kicker}
+                </p>
+                <h2 className="mt-4 font-serif text-display-lg font-bold leading-[1.05] text-neutral-50">
+                  {DIAGNOSTICO_BLOQUE.pregunta}
+                </h2>
+                <p className="mt-6 max-w-xl text-lg text-neutral-300">
+                  {DIAGNOSTICO_BLOQUE.cuerpo}
+                </p>
+                <p className="mt-5 max-w-xl border-l-2 border-gold/50 pl-5 text-neutral-300">
+                  {DIAGNOSTICO_BLOQUE.entrega}
+                </p>
+                <Link
+                  href={hrefDeEje(DIAGNOSTICO)}
+                  className="group mt-9 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-amarillo to-naranja px-7 py-3.5 text-sm font-bold text-carbon shadow-[0_12px_40px_rgba(232,114,44,0.4)] transition-all duration-200 ease-managers hover:-translate-y-0.5"
+                >
+                  <span className="text-left">
+                    ¿Tienes un emprendimiento?{' '}
+                    <span className="whitespace-nowrap">Haz el diagnóstico</span>
+                  </span>
+                  <ArrowRight
+                    size={18}
+                    aria-hidden
+                    className="transition-transform duration-200 ease-managers group-hover:translate-x-1"
+                  />
+                </Link>
+              </div>
+
+              {/* Así se ve lo que recibe. Es una captura del diagnóstico real,
+                  con un emprendimiento de ejemplo: prometer con una ilustración
+                  genérica lo que llega como informe sería vender otra cosa. */}
+              <figure className="m-0">
+                <div className="overflow-hidden rounded-2xl border border-gold/25 bg-cream p-3 shadow-[0_28px_70px_rgba(0,0,0,0.45)]">
+                  <Image
+                    src={asset('/fotos/diagnostico-ejemplo.webp')}
+                    alt="Ejemplo del diagnóstico que se entrega: la etapa del emprendimiento, lo que ya tiene a favor, el mapa de madurez por frentes y los retos priorizados."
+                    width={1000}
+                    height={1304}
+                    sizes="(max-width: 1024px) 100vw, 440px"
+                    className="h-auto w-full rounded-xl"
+                  />
+                </div>
+                <figcaption className="mt-4 text-center text-sm text-neutral-500">
+                  Un ejemplo real del informe. El tuyo sale con tus respuestas, al terminar.
+                </figcaption>
+              </figure>
+            </div>
+          </div>
+        </section>
+
         {/* COMPROMISO + LAS DOS RUTAS
-            En crema, no en negro. El sitio es oscuro de punta a punta y esta
+            Después del diagnóstico, no antes. En crema, no en negro. El sitio es oscuro de punta a punta y esta
             sección —que es la que vende— quedaba «como un funeral», en palabras
             de Jorge. El crema ya estaba en el sistema de diseño y en la
             plantilla de presentaciones de la fundación, sin usarse aquí. */}
@@ -155,64 +214,6 @@ export default function EmprendimientoPage() {
                   </article>
                 );
               })}
-            </div>
-          </div>
-        </section>
-
-        {/* EL DIAGNÓSTICO
-            Vuelve al oscuro a propósito: la captura del informe es una imagen
-            clara y sobre crema se perdería. El panel es #141a22, no el casi
-            negro de antes, para que la sección no se caiga a un pozo. */}
-        <section className="grain relative overflow-hidden bg-[#141a22]/80">
-          <div className="relative mx-auto max-w-7xl px-6 py-24 lg:px-8">
-            <div className="grid gap-12 lg:grid-cols-[1fr_0.85fr] lg:items-center">
-              <div>
-                <p className="font-mono text-caption uppercase tracking-[0.3em] text-gold">
-                  {DIAGNOSTICO_BLOQUE.kicker}
-                </p>
-                <h2 className="mt-4 font-serif text-display-lg font-bold leading-[1.05] text-neutral-50">
-                  {DIAGNOSTICO_BLOQUE.pregunta}
-                </h2>
-                <p className="mt-6 max-w-xl text-lg text-neutral-300">
-                  {DIAGNOSTICO_BLOQUE.cuerpo}
-                </p>
-                <p className="mt-5 max-w-xl border-l-2 border-gold/50 pl-5 text-neutral-300">
-                  {DIAGNOSTICO_BLOQUE.entrega}
-                </p>
-                <Link
-                  href={hrefDeEje(DIAGNOSTICO)}
-                  className="group mt-9 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-amarillo to-naranja px-7 py-3.5 text-sm font-bold text-carbon shadow-[0_12px_40px_rgba(232,114,44,0.4)] transition-all duration-200 ease-managers hover:-translate-y-0.5"
-                >
-                  <span className="text-left">
-                    ¿Tienes un emprendimiento?{' '}
-                    <span className="whitespace-nowrap">Haz el diagnóstico</span>
-                  </span>
-                  <ArrowRight
-                    size={18}
-                    aria-hidden
-                    className="transition-transform duration-200 ease-managers group-hover:translate-x-1"
-                  />
-                </Link>
-              </div>
-
-              {/* Así se ve lo que recibe. Es una captura del diagnóstico real,
-                  con un emprendimiento de ejemplo: prometer con una ilustración
-                  genérica lo que llega como informe sería vender otra cosa. */}
-              <figure className="m-0">
-                <div className="overflow-hidden rounded-2xl border border-gold/25 bg-cream p-3 shadow-[0_28px_70px_rgba(0,0,0,0.45)]">
-                  <Image
-                    src={asset('/fotos/diagnostico-ejemplo.webp')}
-                    alt="Ejemplo del diagnóstico que se entrega: la etapa del emprendimiento, lo que ya tiene a favor, el mapa de madurez por frentes y los retos priorizados."
-                    width={1000}
-                    height={1304}
-                    sizes="(max-width: 1024px) 100vw, 440px"
-                    className="h-auto w-full rounded-xl"
-                  />
-                </div>
-                <figcaption className="mt-4 text-center text-sm text-neutral-500">
-                  Un ejemplo real del informe. El tuyo sale con tus respuestas, al terminar.
-                </figcaption>
-              </figure>
             </div>
           </div>
         </section>

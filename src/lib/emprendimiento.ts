@@ -2,8 +2,8 @@ import { BadgeCheck, Rocket, type LucideIcon } from 'lucide-react';
 
 /**
  * Contenido de Emprendimiento. Vive aparte de `eje-content.ts` porque la
- * sección dejó de caber en la plantilla genérica de los ejes: tiene dos rutas,
- * un paquete de tres meses con página propia y el diagnóstico como cierre.
+ * sección dejó de caber en la plantilla genérica de los ejes: abre con el
+ * diagnóstico, sigue con dos rutas y una de ellas tiene página propia.
  * Lo dictó Jorge el 13 de septiembre de 2026.
  */
 
@@ -32,7 +32,7 @@ export const COMPROMISO = {
   kicker: 'Nuestro compromiso',
   titulo: 'La fundación no da un taller y se va.',
   cuerpo:
-    'Acompañamos a quien tiene un emprendimiento en dos frentes: lo hacemos visible ante la comunidad y lo llevamos, paso a paso, hasta que factura por primera vez. Estas son las dos rutas por las que se entra.',
+    'Ya sabes en qué punto estás. Desde ahí acompañamos en dos frentes: hacemos visible tu emprendimiento ante la comunidad, y lo llevamos paso a paso hasta que factura por primera vez. Estos son los dos caminos.',
 };
 
 export const RUTAS: readonly Ruta[] = [
@@ -125,10 +125,10 @@ export const ENTREGABLES: readonly Entregable[] = [
 ];
 
 export const DIAGNOSTICO_BLOQUE = {
-  kicker: 'Antes de empezar',
+  kicker: 'Por aquí se empieza',
   pregunta: '¿Por qué hacer el diagnóstico?',
   cuerpo:
-    'Porque ninguna de las dos rutas sirve si no sabemos de dónde partes. En veinticinco minutos reconocemos en qué estado real está tu emprendimiento y te entregamos ahí mismo —sin esperar y sin reunión— un diagnóstico escrito para ti.',
+    'Porque lo que viene después —los dos caminos por los que se entra a la fundación— no sirve de nada si no sabemos de dónde partes. En veinticinco minutos reconocemos en qué estado real está tu emprendimiento y te entregamos ahí mismo, sin esperar y sin reunión, un diagnóstico escrito para ti.',
   entrega:
     'En qué etapa estás, qué tienes ya a favor, cuáles son tus tres retos y qué hacer en los próximos 8 días.',
 };
