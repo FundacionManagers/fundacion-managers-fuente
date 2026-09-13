@@ -47,6 +47,9 @@ export const RUTAS_PUBLICAS: readonly RutaPublica[] = [
     ruta: `/${e.slug}/`,
     prioridad: 0.6,
   })),
+  // El paquete Emprende. Se llega por el botón de la ruta 02, no por el menú,
+  // pero es una página pública y la buscan por su nombre.
+  { ruta: '/emprendimiento/paquete-emprende/', prioridad: 0.7 },
   // El diagnóstico de emprendedores, que es un archivo estático de public/
   // y no una página del sitio, pero sí una puerta de entrada pública.
   { ruta: hrefDeEje(DIAGNOSTICO), prioridad: 0.8 },

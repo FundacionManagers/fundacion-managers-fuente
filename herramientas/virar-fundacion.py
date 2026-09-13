@@ -57,6 +57,17 @@ def calido(im, gamma=0.72, contraste=1.10, saturacion=0.92):
     return Image.merge('RGB', (r, g, b))
 
 
+def claro(im, brillo=1.10, contraste=1.04, saturacion=1.06):
+    """Para fotografia que NO lleva texto encima: la deja viva. Es el modo
+       que pidio Jorge cuando dijo que la pagina parecia un funeral."""
+    im = ImageEnhance.Brightness(im).enhance(brillo)
+    im = ImageEnhance.Contrast(im).enhance(contraste)
+    im = ImageEnhance.Color(im).enhance(saturacion)
+    r, g, b = im.split()
+    r = r.point(lambda v: min(255, round(v * 1.02)))
+    return Image.merge('RGB', (r, g, b))
+
+
 def recortar(im, prop, foco=0.5, focox=0.5):
     w, h = im.size
     if w / h > prop:
@@ -69,7 +80,7 @@ def recortar(im, prop, foco=0.5, focox=0.5):
 def main():
     p = argparse.ArgumentParser()
     p.add_argument('entrada'); p.add_argument('salida')
-    p.add_argument('--modo', default='calido', choices=['duo', 'calido'])
+    p.add_argument('--modo', default='calido', choices=['duo', 'calido', 'claro'])
     p.add_argument('--ancho', type=int, default=1600)
     p.add_argument('--alto', type=int, default=1000)
     p.add_argument('--foco', type=float, default=0.5)
@@ -83,6 +94,8 @@ def main():
     im = im.resize((a.ancho, a.alto), Image.LANCZOS)
     if a.modo == 'duo':
         im = duotono(im, **({'gamma': a.gamma} if a.gamma else {}))
+    elif a.modo == 'claro':
+        im = claro(im)
     else:
         im = calido(im, **({'gamma': a.gamma} if a.gamma else {}))
     sal = pathlib.Path(a.salida); sal.parent.mkdir(parents=True, exist_ok=True)

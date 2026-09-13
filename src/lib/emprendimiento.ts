@@ -1,30 +1,31 @@
 import { BadgeCheck, Rocket, type LucideIcon } from 'lucide-react';
 
 /**
- * Contenido de la página de Emprendimiento. Vive aparte de `eje-content.ts`
- * porque esta sección dejó de caber en la plantilla genérica de los ejes:
- * tiene dos rutas que se despliegan, un paquete con ocho entregables y el
- * diagnóstico como cierre. Lo dictó Jorge el 13 de septiembre de 2026.
+ * Contenido de Emprendimiento. Vive aparte de `eje-content.ts` porque la
+ * sección dejó de caber en la plantilla genérica de los ejes: tiene dos rutas,
+ * un paquete de tres meses con página propia y el diagnóstico como cierre.
+ * Lo dictó Jorge el 13 de septiembre de 2026.
  */
 
-export interface EntregableRuta {
+export interface Entregable {
   titulo: string;
+  /** La línea corta, para la tarjeta. */
+  resumen: string;
+  /** Qué se hace y con qué se queda la persona. Solo en la página del paquete. */
   detalle: string;
 }
 
 export interface Ruta {
-  /** Etiqueta corta del momento del emprendimiento. */
+  /** El momento del emprendimiento al que responde. */
   etapa: string;
   numero: string;
   titulo: string;
-  /** La línea que se ve con la tarjeta cerrada. */
   resumen: string;
-  /** Qué es esta etapa, en palabras de la fundación. */
   cuerpo: string;
   icon: LucideIcon;
-  entregables?: EntregableRuta[];
-  /** Frase con la que cierra la ruta, si la tiene. */
-  cierre?: string;
+  /** A dónde lleva el botón, si la ruta tiene página propia. */
+  href?: string;
+  cta: string;
 }
 
 export const COMPROMISO = {
@@ -43,51 +44,83 @@ export const RUTAS: readonly Ruta[] = [
     cuerpo:
       'Pre-incubación es el momento en que el emprendimiento todavía se está probando y lo que más le falta no es plata: es que lo vean. Tu emprendimiento entra al directorio de la Fundación Managers con una ficha propia —qué hace, a quién le sirve y cómo contactarte— y queda a la vista de toda la comunidad. La primera venta de muchos negocios sale de alguien que ya estaba cerca y no sabía que existías.',
     icon: BadgeCheck,
+    cta: 'Quiero estar en el directorio',
   },
   {
     etapa: 'Incubación',
     numero: '02',
-    titulo: 'Toma el paquete Emprende, de tres meses',
-    resumen: 'Tres meses de acompañamiento y todo con lo que un emprendimiento sale a vender.',
+    titulo: 'Toma el paquete Emprende',
+    resumen: 'Tres meses, doce sesiones y ocho cosas que al final quedan hechas y son tuyas.',
     cuerpo:
-      'Incubación es cuando el emprendimiento deja de ser una idea que se explica y pasa a ser un negocio que se muestra, se cobra y se sostiene. Son tres meses, una sesión por semana, y ocho cosas que al final quedan hechas y son tuyas.',
+      'Incubación es cuando el emprendimiento deja de ser una idea que se explica y pasa a ser un negocio que se muestra, se cobra y se sostiene. Una sesión por semana durante tres meses, y al final tienes con qué salir al mercado.',
     icon: Rocket,
-    entregables: [
-      {
-        titulo: 'Doce sesiones de mentoría',
-        detalle: 'Una hora por semana durante tres meses, uno a uno.',
-      },
-      {
-        titulo: 'La primera versión de tu landing',
-        detalle: 'Tu emprendimiento con página propia en internet, no un perfil prestado.',
-      },
-      {
-        titulo: 'Tu primera red, construida a propósito',
-        detalle: 'A quién necesitas conocer y en qué orden. No se deja al azar.',
-      },
-      {
-        titulo: 'Tu primer kit de marca',
-        detalle: 'Nombre, logo, colores y tipografías: con qué cara sales al mercado.',
-      },
-      {
-        titulo: 'Taller «Descubre tu talento en 5 pasos»',
-        detalle: 'Qué sabes hacer mejor que los demás, y cómo eso se cobra.',
-      },
-      {
-        titulo: 'Tu propuesta única de valor',
-        detalle: 'Por qué te compran a ti y no al de al lado, dicho en una sola frase.',
-      },
-      {
-        titulo: 'Tu primer catálogo emprendedor',
-        detalle: 'Lo que vendes, ordenado y listo para mostrar.',
-      },
-      {
-        titulo: 'Tus primeros procesos clave',
-        detalle:
-          'Recomendaciones administrativas, financieras y legales para no improvisar lo que después cuesta caro.',
-      },
-    ],
-    cierre: 'Te llevamos hasta tu primera facturación.',
+    href: '/emprendimiento/paquete-emprende/',
+    cta: 'Ver el programa completo',
+  },
+];
+
+export const PAQUETE = {
+  nombre: 'Paquete Emprende',
+  kicker: 'Ruta 02 · Incubación',
+  titular: 'Tres meses para dejar de explicar tu idea y empezar a cobrarla.',
+  entrada:
+    'Una sesión por semana, doce en total, y ocho entregables que al terminar son tuyos y se quedan contigo. No es un curso: es que tu emprendimiento salga de aquí con página, con marca, con catálogo y con a quién llamar.',
+  cierre: 'Te llevamos hasta tu primera facturación.',
+  duracion: [
+    { valor: '3', etiqueta: 'Meses' },
+    { valor: '12', etiqueta: 'Sesiones de una hora' },
+    { valor: '8', etiqueta: 'Entregables tuyos' },
+  ],
+};
+
+export const ENTREGABLES: readonly Entregable[] = [
+  {
+    titulo: 'Doce sesiones de mentoría',
+    resumen: 'Una hora por semana durante tres meses, uno a uno.',
+    detalle:
+      'Una sesión semanal de una hora con quien ya recorrió el camino. No son charlas sueltas: cada sesión avanza sobre lo de la anterior y deja una tarea concreta para la semana.',
+  },
+  {
+    titulo: 'La primera versión de tu landing',
+    resumen: 'Tu emprendimiento con página propia, no un perfil prestado.',
+    detalle:
+      'Una página en internet que es tuya y que puedes mandar por WhatsApp cuando alguien pregunte a qué te dedicas. Qué vendes, a quién, por qué tú, y cómo te contactan.',
+  },
+  {
+    titulo: 'Tu primera red, construida a propósito',
+    resumen: 'A quién necesitas conocer y en qué orden. No se deja al azar.',
+    detalle:
+      'Armamos juntos el mapa de las personas que le sirven a tu negocio —clientes, proveedores, aliados, quien ya vende a quien tú quieres venderle— y el orden en que conviene buscarlas. La comunidad de la fundación es el primer lugar donde se busca.',
+  },
+  {
+    titulo: 'Tu primer kit de marca',
+    resumen: 'Nombre, logo, colores y tipografías: con qué cara sales al mercado.',
+    detalle:
+      'El mínimo con el que un negocio se ve serio: el logo en los formatos que vas a necesitar, la paleta, las tipografías y cómo se usan. Entregado en archivos, para que no dependas de nadie cada vez que hay que hacer una pieza.',
+  },
+  {
+    titulo: 'Taller «Descubre tu talento en 5 pasos»',
+    resumen: 'Qué sabes hacer mejor que los demás, y cómo eso se cobra.',
+    detalle:
+      'Un taller para poner en claro qué es lo que tú haces bien de verdad. Suena a introspección y es lo contrario: de ahí sale qué parte del negocio la haces tú y qué parte toca delegar o aprender.',
+  },
+  {
+    titulo: 'Tu propuesta única de valor',
+    resumen: 'Por qué te compran a ti y no al de al lado, dicho en una frase.',
+    detalle:
+      'La PUV es la frase que dices cuando te preguntan qué vendes y hace que el otro quiera saber más. Se construye con lo que ya sabes de tus clientes y se prueba con ellos antes de darla por buena.',
+  },
+  {
+    titulo: 'Tu primer catálogo emprendedor',
+    resumen: 'Lo que vendes, ordenado y listo para mostrar.',
+    detalle:
+      'Tus productos o servicios con su descripción, su foto y su precio, en un documento que se manda y se entiende sin que tengas que explicarlo por encima.',
+  },
+  {
+    titulo: 'Tus primeros procesos clave',
+    resumen: 'Lo administrativo, lo financiero y lo legal, recomendado a tiempo.',
+    detalle:
+      'Qué tienes que tener en orden ahora y qué puede esperar: facturación, cuentas separadas, registro, contratos, obligaciones. Recomendaciones para no improvisar justo lo que después cuesta caro arreglar.',
   },
 ];
 
@@ -99,3 +132,10 @@ export const DIAGNOSTICO_BLOQUE = {
   entrega:
     'En qué etapa estás, qué tienes ya a favor, cuáles son tus tres retos y qué hacer en los próximos 8 días.',
 };
+
+/** El WhatsApp de la fundación, el mismo de contacto y de pagos. */
+export const WHATSAPP = '573126299744';
+
+export function enlaceWhatsApp(mensaje: string): string {
+  return `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(mensaje)}`;
+}

@@ -79,99 +79,91 @@ export default function EmprendimientoPage() {
           </div>
         </section>
 
-        {/* COMPROMISO + LAS DOS RUTAS */}
-        <section className="grain relative overflow-hidden border-y border-white/10 bg-black/25 backdrop-blur-sm">
+        {/* COMPROMISO + LAS DOS RUTAS
+            En crema, no en negro. El sitio es oscuro de punta a punta y esta
+            sección —que es la que vende— quedaba «como un funeral», en palabras
+            de Jorge. El crema ya estaba en el sistema de diseño y en la
+            plantilla de presentaciones de la fundación, sin usarse aquí. */}
+        <section className="relative overflow-hidden border-y border-cream-deep bg-cream">
           <div className="relative mx-auto max-w-7xl px-6 py-24 lg:px-8">
             <div className="max-w-3xl">
-              <p className="font-mono text-caption uppercase tracking-[0.3em] text-naranja">
+              <p className="font-mono text-caption uppercase tracking-[0.3em] text-terracotta">
                 {COMPROMISO.kicker}
               </p>
-              <h2 className="mt-4 font-serif text-display-lg font-bold leading-[1.05] text-neutral-50">
+              <h2 className="mt-4 font-serif text-display-lg font-bold leading-[1.05] text-carbon">
                 {COMPROMISO.titulo}
               </h2>
-              <p className="mt-6 text-lg text-neutral-300">{COMPROMISO.cuerpo}</p>
+              <p className="mt-6 text-lg text-neutral-600">{COMPROMISO.cuerpo}</p>
             </div>
 
-            {/* Las dos rutas. Son <details>: se abren sin una línea de
-                JavaScript, funcionan con teclado y con lector de pantalla, y
-                su contenido está en el HTML aunque estén cerradas —así lo lee
-                el buscador y así sale impreso—. */}
-            <div className="mt-14 grid gap-5 lg:grid-cols-2 lg:items-start">
+            {/* Las dos rutas, cada una en su tarjeta y con todo el texto a la
+                vista. Antes se desplegaban al tocarlas; el desplegable pedía un
+                clic para entender de qué se trataba, y el enlace que lo abría
+                se leía como un botón roto. El texto es corto: cabe entero.
+                Solo el paquete tiene página propia, y ahí sí va un botón. */}
+            <div className="mt-14 grid gap-6 lg:grid-cols-2">
               {RUTAS.map((ruta) => {
                 const RutaIcon = ruta.icon;
                 return (
-                  <details
+                  <article
                     key={ruta.numero}
-                    className="group overflow-hidden rounded-2xl border border-white/10 bg-[#0d1218]/85 transition-colors duration-300 ease-managers hover:border-gold/40 open:border-gold/45"
+                    className="flex h-full flex-col rounded-2xl border border-cream-deep bg-neutral-50 p-8 shadow-[0_10px_34px_rgba(15,20,25,0.08)] transition-all duration-300 ease-managers hover:-translate-y-1 hover:border-gold/60 hover:shadow-[0_20px_50px_rgba(15,20,25,0.14)]"
                   >
-                    <summary className="flex cursor-pointer list-none items-start gap-5 p-8 [&::-webkit-details-marker]:hidden">
+                    <div className="flex items-center gap-4">
                       <span
                         aria-hidden
-                        className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-white/5 text-gold transition-colors duration-200 ease-managers group-open:bg-gold group-open:text-carbon"
+                        className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gold text-carbon"
                       >
                         <RutaIcon size={22} />
                       </span>
-                      <span className="min-w-0 flex-1">
-                        <span className="font-mono text-caption uppercase tracking-widest text-neutral-500">
-                          Ruta {ruta.numero} · {ruta.etapa}
-                        </span>
-                        <span className="mt-1 block font-serif text-2xl font-bold text-neutral-50">
-                          {ruta.titulo}
-                        </span>
-                        <span className="mt-2 block text-sm text-neutral-400">{ruta.resumen}</span>
-                        <span className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-gold">
-                          <span className="group-open:hidden">Ver de qué se trata</span>
-                          <span className="hidden group-open:inline">Cerrar</span>
-                          <ArrowRight
-                            size={16}
-                            aria-hidden
-                            className="transition-transform duration-200 ease-managers group-open:rotate-90"
-                          />
-                        </span>
-                      </span>
-                    </summary>
-
-                    <div className="border-t border-white/10 px-8 pb-8 pt-6">
-                      <p className="text-neutral-300">{ruta.cuerpo}</p>
-
-                      {ruta.entregables ? (
-                        <ol className="mt-7 grid gap-px overflow-hidden rounded-xl border border-white/10">
-                          {ruta.entregables.map((e, i) => (
-                            <li key={e.titulo} className="flex gap-4 bg-[#0b0f14]/80 p-5">
-                              <span
-                                aria-hidden
-                                className="font-mono text-caption font-bold tracking-widest text-gold"
-                              >
-                                {String(i + 1).padStart(2, '0')}
-                              </span>
-                              <span>
-                                <strong className="block text-sm font-semibold text-neutral-50">
-                                  {e.titulo}
-                                </strong>
-                                <span className="mt-1 block text-sm text-neutral-400">
-                                  {e.detalle}
-                                </span>
-                              </span>
-                            </li>
-                          ))}
-                        </ol>
-                      ) : null}
-
-                      {ruta.cierre ? (
-                        <p className="mt-7 border-l-2 border-gold pl-5 font-serif text-xl font-bold italic text-gold">
-                          {ruta.cierre}
-                        </p>
-                      ) : null}
+                      <p className="font-mono text-caption uppercase tracking-widest text-neutral-500">
+                        Ruta {ruta.numero} · {ruta.etapa}
+                      </p>
                     </div>
-                  </details>
+
+                    <h3 className="mt-6 font-serif text-[28px] font-bold leading-tight text-carbon">
+                      {ruta.titulo}
+                    </h3>
+                    <p className="mt-2 font-serif text-lg italic text-terracotta">{ruta.resumen}</p>
+                    <p className="mt-5 flex-1 text-neutral-600">{ruta.cuerpo}</p>
+
+                    {ruta.href ? (
+                      <Link
+                        href={ruta.href}
+                        className="group mt-8 inline-flex w-fit items-center gap-2 rounded-full bg-carbon px-6 py-3.5 text-sm font-bold text-neutral-50 transition-all duration-200 ease-managers hover:-translate-y-0.5 hover:bg-gold hover:text-carbon"
+                      >
+                        {ruta.cta}
+                        <ArrowRight
+                          size={18}
+                          aria-hidden
+                          className="transition-transform duration-200 ease-managers group-hover:translate-x-1"
+                        />
+                      </Link>
+                    ) : (
+                      <Link
+                        href="/contacto/"
+                        className="group mt-8 inline-flex w-fit items-center gap-2 rounded-full border-2 border-carbon px-6 py-3 text-sm font-bold text-carbon transition-all duration-200 ease-managers hover:-translate-y-0.5 hover:bg-carbon hover:text-neutral-50"
+                      >
+                        {ruta.cta}
+                        <ArrowRight
+                          size={18}
+                          aria-hidden
+                          className="transition-transform duration-200 ease-managers group-hover:translate-x-1"
+                        />
+                      </Link>
+                    )}
+                  </article>
                 );
               })}
             </div>
           </div>
         </section>
 
-        {/* EL DIAGNÓSTICO */}
-        <section className="grain relative overflow-hidden">
+        {/* EL DIAGNÓSTICO
+            Vuelve al oscuro a propósito: la captura del informe es una imagen
+            clara y sobre crema se perdería. El panel es #141a22, no el casi
+            negro de antes, para que la sección no se caiga a un pozo. */}
+        <section className="grain relative overflow-hidden bg-[#141a22]/80">
           <div className="relative mx-auto max-w-7xl px-6 py-24 lg:px-8">
             <div className="grid gap-12 lg:grid-cols-[1fr_0.85fr] lg:items-center">
               <div>
@@ -207,7 +199,7 @@ export default function EmprendimientoPage() {
                   con un emprendimiento de ejemplo: prometer con una ilustración
                   genérica lo que llega como informe sería vender otra cosa. */}
               <figure className="m-0">
-                <div className="overflow-hidden rounded-2xl border border-white/10 bg-[#0d1218]/85 p-3 shadow-[0_28px_70px_rgba(0,0,0,0.55)]">
+                <div className="overflow-hidden rounded-2xl border border-gold/25 bg-cream p-3 shadow-[0_28px_70px_rgba(0,0,0,0.45)]">
                   <Image
                     src={asset('/fotos/diagnostico-ejemplo.webp')}
                     alt="Ejemplo del diagnóstico que se entrega: la etapa del emprendimiento, lo que ya tiene a favor, el mapa de madurez por frentes y los retos priorizados."
@@ -228,7 +220,7 @@ export default function EmprendimientoPage() {
         {/* CTA + ALIANZA */}
         <section className="grain relative overflow-hidden border-t border-white/10">
           <div className="relative mx-auto max-w-7xl px-6 py-24 lg:px-8">
-            <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-[#0d1218]/85 p-12 backdrop-blur-sm lg:p-16">
+            <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-[#141a22]/92 p-12 backdrop-blur-sm lg:p-16">
               <div className="relative grid gap-8 lg:grid-cols-[1.4fr_1fr] lg:items-center">
                 <div>
                   <p className="font-mono text-caption uppercase tracking-[0.3em] text-gold">
@@ -254,7 +246,7 @@ export default function EmprendimientoPage() {
 
             <Link
               href="/alianza/"
-              className="group mt-10 flex flex-col gap-4 rounded-3xl border bg-[#0d1218]/85 p-8 backdrop-blur-sm transition-all duration-200 ease-managers hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(0,212,255,0.22)] sm:flex-row sm:items-center sm:justify-between"
+              className="group mt-10 flex flex-col gap-4 rounded-3xl border bg-[#141a22]/92 p-8 backdrop-blur-sm transition-all duration-200 ease-managers hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(0,212,255,0.22)] sm:flex-row sm:items-center sm:justify-between"
               style={{ borderColor: 'rgba(0,212,255,0.35)' }}
             >
               <div>
