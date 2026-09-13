@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 export default function AlianzaPage() {
   return (
     <div className="relative">
-      <SectionBackdrop query="technology,network,abstract" seed={4} tint="#00D4FF" />
+      <SectionBackdrop tint="#00D4FF" image="/fotos/seccion-alianza.jpg" />
       <div className="relative z-10 text-neutral-200">
         {/* HERO */}
         <section className="grain relative overflow-hidden">

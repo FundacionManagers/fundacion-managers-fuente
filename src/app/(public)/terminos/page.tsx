@@ -13,6 +13,7 @@ export default function TerminosPage() {
         eyebrow="Legal"
         title="Términos de uso"
         description="Reglas y condiciones de uso del sitio web fundacionmanagers.org."
+        image="/fotos/seccion-legal.jpg"
       />
       <section className="canvas-cream grain relative overflow-hidden">
         <div className="relative mx-auto max-w-3xl px-6 py-24 text-neutral-700 lg:px-8">

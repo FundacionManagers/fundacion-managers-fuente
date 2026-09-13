@@ -21,7 +21,7 @@ const BASE = process.env.NEXT_PUBLIC_BASE_PATH ?? '';
 export default function ListoPage() {
   return (
     <div className="tournament-section relative">
-      <TorneoBackdrop seed={91} query="stadium,trophy,celebration" />
+      <TorneoBackdrop />
 
       <div className="relative z-10">
         {/* El guardián envuelve también el titular. Bloquear solo el cuerpo

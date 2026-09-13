@@ -13,6 +13,7 @@ export default function PrivacidadPage() {
         eyebrow="Legal"
         title="Política de privacidad"
         description="Tratamiento de datos personales conforme a la Ley 1581 de 2012 (Habeas Data, Colombia)."
+        image="/fotos/seccion-legal.jpg"
       />
       <section className="canvas-cream grain relative overflow-hidden">
         <div className="relative mx-auto max-w-3xl px-6 py-24 text-neutral-700 lg:px-8">

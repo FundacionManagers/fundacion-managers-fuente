@@ -16,10 +16,6 @@ interface SectionBackdropProps {
    * a `88vh`), el que se ve nítido y genial en Home/Consultoría/Nosotros.
    */
   wide?: boolean;
-  /** Compat: ya no se usan (antes eran para foto stock). */
-  query?: string;
-  seed?: number;
-  darken?: number;
 }
 
 /**

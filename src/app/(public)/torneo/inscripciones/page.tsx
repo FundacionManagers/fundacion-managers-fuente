@@ -54,7 +54,7 @@ const PASOS: readonly Paso[] = [
 export default function InscripcionesPage() {
   return (
     <div className="tournament-section relative">
-      <TorneoBackdrop seed={61} query="stadium,floodlights,night" />
+      <TorneoBackdrop />
 
       <div className="relative z-10">
         {/* HERO */}

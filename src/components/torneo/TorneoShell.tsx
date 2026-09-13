@@ -27,7 +27,7 @@ export async function TorneoShell({ eyebrow, title, active, children }: TorneoSh
 
   return (
     <div className="tournament-section relative">
-      <TorneoBackdrop seed={47} query="stadium,floodlights,night" />
+      <TorneoBackdrop />
 
       <div className="relative z-10">
         {/* HERO */}

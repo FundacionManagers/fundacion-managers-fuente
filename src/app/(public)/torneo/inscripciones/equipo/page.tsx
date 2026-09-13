@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 export default function EquipoPage() {
   return (
     <div className="tournament-section relative">
-      <TorneoBackdrop seed={73} query="stadium,locker,team" />
+      <TorneoBackdrop />
 
       <div className="relative z-10">
         <section className="grain relative overflow-hidden">

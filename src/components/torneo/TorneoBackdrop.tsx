@@ -9,9 +9,6 @@ interface TorneoBackdropProps {
    * club tenga un fondo distinto. SIEMPRE archivo local, nunca CDN externo.
    */
   image?: string;
-  /** Compat (ya no se usan). */
-  query?: string;
-  seed?: number;
 }
 
 /**

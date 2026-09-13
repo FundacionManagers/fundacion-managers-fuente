@@ -43,7 +43,7 @@ export async function TorneoLanding() {
 
   return (
     <div className="tournament-section relative">
-      <TorneoBackdrop seed={24} query="stadium,floodlights,crowd" />
+      <TorneoBackdrop />
       {/* ===== HERO ===== */}
       <section className="grain relative z-10 overflow-hidden">
         <span
