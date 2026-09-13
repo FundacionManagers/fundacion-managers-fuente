@@ -18,9 +18,21 @@ export default function BlogPage() {
         <div className="relative mx-auto max-w-3xl px-6 py-24 lg:px-8">
           <div className="rounded-3xl border border-carbon/10 bg-white p-12 text-center">
             <p className="font-serif text-3xl font-bold text-carbon">Próximamente</p>
+            {/* Decia "se activa en la Fase 2 del roadmap": numeracion interna
+                que a quien visita no le dice nada y deja el sitio con aire de
+                obra sin terminar. Lo que si le sirve es qué va a encontrar. */}
             <p className="mt-4 text-neutral-600">
-              El blog se activa en la Fase 2 del roadmap. Volverá con artículos firmados, categorías
-              por pilar y suscripción por correo.
+              Estamos preparando los primeros artículos: análisis firmados, organizados por pilar y
+              con suscripción por correo. Mientras tanto, lo que pasa en la fundación se sigue en{' '}
+              <a
+                href="https://instagram.com/torneo_managers"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-semibold text-carbon underline underline-offset-4"
+              >
+                @torneo_managers
+              </a>
+              .
             </p>
           </div>
         </div>

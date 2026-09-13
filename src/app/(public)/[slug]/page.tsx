@@ -200,10 +200,11 @@ export default async function EjePage({ params }: EjePageProps) {
               </Link>
             ) : null}
 
-            <p className="mt-8 text-center text-xs uppercase tracking-[0.2em] text-neutral-500">
-              Contenido editorial preliminar — versión definitiva desde
-              Managers_Especificaciones_v2.docx
-            </p>
+            {/* Aqui habia una nota de produccion —"version definitiva desde
+                Managers_Especificaciones_v2.docx"— visible para cualquiera que
+                entrara. Nombraba un archivo interno y anunciaba que la pagina
+                no estaba terminada. El estado del contenido se sigue en el
+                repositorio, no en la propia pagina. */}
           </div>
         </section>
       </div>

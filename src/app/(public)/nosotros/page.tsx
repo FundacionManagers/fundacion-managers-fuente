@@ -14,6 +14,13 @@ export const metadata: Metadata = {
   description: 'La Fundación Managers: ocio serio para que los líderes tomen mejores decisiones.',
 };
 
+/** 'Torneo Managers, Emprendimiento y Eventos', con la «y» donde toca. */
+const listaDeEjes = EJES_VISIBLES.map((e) => e.nombre).reduce(
+  (texto, nombre, i, todos) =>
+    i === 0 ? nombre : `${texto}${i === todos.length - 1 ? ' y ' : ', '}${nombre}`,
+  '',
+);
+
 const VALORES = [
   {
     icon: Award,
@@ -186,9 +193,12 @@ export default function NosotrosPage() {
                 <Link href="/torneo/" className="font-bold text-gold hover:underline">
                   Torneo Managers
                 </Link>{' '}
+                {/* Cerraba anunciando que la historia y el equipo "se integran
+                    desde el documento maestro en la Fase 1": una nota de
+                    produccion, con nombre de fase interna, en la pagina que
+                    cuenta quienes somos. */}
                 va por su {ordinalFemenino(EDICION_EN_CURSO.numero)} edición, con{' '}
-                {CAMPEON_VIGENTE.equipo} como campeón vigente. La historia, misión y equipo
-                completos se integran desde el documento maestro en la Fase 1.
+                {CAMPEON_VIGENTE.equipo} como campeón vigente.
               </p>
               <Link
                 href="/contacto/"
@@ -219,10 +229,16 @@ export default function NosotrosPage() {
                 <h2 className="mt-3 font-serif text-3xl font-bold text-neutral-50 md:text-4xl">
                   La IA es transversal a toda la fundación
                 </h2>
+                {/* La lista iba escrita a mano y nombraba seis ejes —incluidos
+                    turismo, consultoria y campo—, tres de los cuales ya no se
+                    muestran en el sitio. La misma pagina decia "tres ejes"
+                    arriba y seis aqui. Ahora sale de EJES_VISIBLES, que es lo
+                    que alimenta el menu y el pie: no puede volver a
+                    desincronizarse. */}
                 <p className="mt-3 max-w-2xl text-neutral-300">
-                  Cada eje —consultoría, torneo, turismo, eventos, emprendimiento y campo— se
-                  potencia con la inteligencia artificial de la alianza ICONE ialabs. No es un
-                  servicio más: es la capa que sostiene mejores decisiones en todo lo que hacemos.
+                  Cada eje —{listaDeEjes}— se potencia con la inteligencia artificial de la alianza
+                  ICONE ialabs. No es un servicio más: es la capa que sostiene mejores decisiones en
+                  todo lo que hacemos.
                 </p>
               </div>
               <span

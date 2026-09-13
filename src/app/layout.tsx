@@ -19,8 +19,12 @@ export const metadata: Metadata = {
     default: 'Fundación Managers',
     template: '%s · Fundación Managers',
   },
+  // Es el texto que Google muestra bajo el título. Anunciaba seis frentes
+  // —turismo, consultoría y desarrollo rural entre ellos— que ya no se
+  // muestran en el sitio: quien llegara buscándolos no encontraría nada. Se
+  // deja lo que la fundación sí ofrece hoy, en el orden del menú.
   description:
-    'Fundación Managers: consultoría, deportes, turismo, eventos, emprendimiento y desarrollo rural bajo una sola marca.',
+    'Ocio serio para que los líderes tomen mejores decisiones. Torneo Managers F7, emprendimiento y eventos, con la inteligencia artificial de Managers Lab.',
   // Cada página canónica a sí misma. Con `trailingSlash` activo, /torneo y
   // /torneo/ podrían contarse como dos direcciones distintas.
   alternates: { canonical: './' },
