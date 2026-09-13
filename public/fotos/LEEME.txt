@@ -1,10 +1,38 @@
-Coloca aqui las fotos ORIGINALES (no screenshots). Nombres exactos:
+Fotos de fondo de las secciones y de los clubes del torneo.
 
-equipo-campeon.jpg   -> grupo Pomada Alfa celebrando (hero comunidad)
-premiacion.jpg        -> entrega de premio en cancha
-mvp.jpg               -> jugador con balon amarillo y trofeo
-balon-cancha.jpg      -> balon sobre el cesped (hero atmosferico)
-accion-juego.jpg      -> jugadores en accion / disputa
+REGLA QUE YA ESTABA Y SE INCUMPLIO
+----------------------------------
+Fotografias ORIGINALES. Nada de capturas de pantalla ni de imagenes generadas
+con IA. El 13 de septiembre de 2026 se reviso el lote y cinco de las siete
+imagenes de seccion incumplian:
 
-Formato: JPG o WebP. Horizontal o cuadrada. Sin texto ni logos de IG.
-Peso ideal: < 400 KB c/u. Minimo 1600px de ancho.
+  seccion-emprendimiento.jpg  era una captura del propio sitio, con el titular
+                              y dos erratas horneados en los pixeles
+  seccion-home.jpg            generada con IA, texto ilegible dentro
+  seccion-nosotros.jpg        generada con IA, y con el concepto de otra seccion
+  seccion-eventos.jpg         captura, con un «correcta.» suelto arriba
+  seccion-consultoria.jpg     generada con IA, con marca de agua del generador
+
+Se reemplazaron las cuatro que estaban a la vista. Faltan por reemplazar, si
+alguna vez se muestran esos ejes:
+
+  seccion-consultoria.jpg   seccion-turismo.jpg   seccion-rural.jpg
+
+COMO SE HACE UNA NUEVA
+----------------------
+1. Buscar en Adobe Stock con `filters:{pricing:"free"}`, consulta en ingles de
+   dos a cinco palabras. Las largas y descriptivas devuelven cero.
+2. Licenciar, y anotar el id en el acto en el catalogo del banco de escenas
+   (Documentos/Banco-escenas-ICONEialabs/CATALOGO.md). Sin el id no hay forma
+   de recuperar el original despues, ni pagando.
+3. Tratar con `herramientas/virar-fundacion.py`:
+       python herramientas/virar-fundacion.py entrada.jpg public/fotos/salida.jpg               --modo claro --ancho 1920 --alto 620 --foco 0.4
+   Modo `claro` cuando la foto no lleva texto encima. Modo `calido` cuando si.
+
+MEDIDAS
+-------
+Fondo ancho (eventos, emprendimiento, turismo, rural):  1920 x 620
+Fondo alto  (home, nosotros, consultoria):              1920 x 1080
+Ficha de club:                                          horizontal, 1600 px de ancho
+
+Peso: menos de 250 KB. Sin texto, sin logos, sin marcas de agua.
