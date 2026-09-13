@@ -1,3 +1,4 @@
+import { Trophy } from 'lucide-react';
 import { TeamCrest } from '@/components/torneo/TeamCrest';
 import {
   CRUCES_POR_FASE,
@@ -31,6 +32,23 @@ interface CeldaLlave {
   lados: [LadoLlave, LadoLlave];
   jugado: boolean;
 }
+
+/**
+ * La paleta del cuadro oficial que reparte la organización, muestreada del
+ * propio archivo: verde de fondo, franja dorada sobre cada cruce programado,
+ * fila blanca para los clubes y menta para lo que aún está por definir.
+ *
+ * El dorado del mapa (#D4A017) y el de la marca (#D4A437) son el mismo a
+ * efectos prácticos, así que se usa el token de la marca y no una copia.
+ */
+const VERDE = '#11482D';
+const VERDE_HONDO = '#0E3D25';
+const MENTA = '#E7F3EC';
+const MENTA_BORDE = '#CBE0D3';
+const MENTA_TEXTO = '#3F6B52';
+
+/** Cómo se pinta una casilla según lo que contiene. */
+type Tono = 'blanco' | 'menta' | 'dorado';
 
 const LADO_VACIO: LadoLlave = { slug: null, siembra: null, goles: null };
 
@@ -67,10 +85,11 @@ const NOTA_FASE: Partial<Record<FaseFinal, string>> = {
   'tercer-puesto': 'La juegan los perdedores de las semifinales.',
 };
 
+// Sobre el verde del cuadro, no sobre el fondo oscuro del resto del sitio.
 const CHIP: Record<EstadoRonda, { texto: string; clase: string }> = {
-  jugada: { texto: 'Jugada', clase: 'border-amarillo/40 text-amarillo' },
-  'en-juego': { texto: 'En juego', clase: 'border-naranja/50 text-naranja' },
-  pendiente: { texto: 'Por jugar', clase: 'border-white/15 text-neutral-500' },
+  jugada: { texto: 'Jugada', clase: 'border-gold/70 bg-gold/15 text-gold' },
+  'en-juego': { texto: 'En juego', clase: 'border-gold bg-gold text-carbon' },
+  pendiente: { texto: 'Por jugar', clase: 'border-white/30 text-white/70' },
 };
 
 /**
@@ -85,6 +104,7 @@ function Fila({
   ganador,
   jugado,
   altoFijo = false,
+  tono,
 }: {
   lado: LadoLlave;
   ganador: boolean;
@@ -96,15 +116,24 @@ function Fila({
    * apuntan las líneas que los unen.
    */
   altoFijo?: boolean;
+  tono: Tono;
 }) {
   const eq = lado.slug ? getEquipo(lado.slug) : undefined;
+  const pendiente = !eq;
 
   return (
     <div className={cn('flex items-center gap-2.5', altoFijo && 'h-11')}>
-      <span className="w-5 shrink-0 font-mono text-[10px] uppercase tracking-widest text-neutral-600">
+      <span
+        className="w-5 shrink-0 font-mono text-[10px] uppercase tracking-widest"
+        style={{ color: tono === 'dorado' ? 'rgb(15 20 25 / 0.5)' : `${VERDE}70` }}
+      >
         {lado.siembra ? `${lado.siembra}º` : '·'}
       </span>
-      <TeamCrest slug={lado.slug} size={28} />
+      {/* El marcador de escudo vacío es una placa clara con un «?». Sobre el
+          dorado de la final y sobre la menta de lo que falta por jugar queda
+          deslavado y no aporta nada: ahí lo que se lee es de dónde sale quien
+          ocupará la casilla. Cuando ya haya equipo, su escudo sí se pinta. */}
+      {pendiente ? null : <TeamCrest slug={lado.slug} size={28} />}
       {/* Sin `truncate`: con el recorte, «Los Pibes del Barrio» y «La Banda
           Cruzada FC» —los dos nombres mas largos de la edicion— se leian
           cortados justo en la pagina que explica quien juega contra quien.
@@ -113,17 +142,16 @@ function Fila({
       <span
         className={cn(
           'min-w-0 flex-1 text-sm font-semibold leading-tight',
-          ganador ? 'text-amarillo' : eq ? 'text-neutral-100' : 'text-neutral-600',
+          pendiente && 'italic',
         )}
+        style={{ color: pendiente && tono === 'menta' ? MENTA_TEXTO : '#0F1419' }}
       >
         {eq?.nombre ?? lado.procedencia ?? 'Por definir'}
       </span>
       {jugado ? (
         <span
-          className={cn(
-            'shrink-0 font-sport text-xl leading-none',
-            ganador ? 'text-amarillo' : 'text-neutral-500',
-          )}
+          className={cn('shrink-0 font-sport text-xl leading-none')}
+          style={{ color: ganador ? VERDE : `${VERDE}99` }}
         >
           {lado.goles}
         </span>
@@ -134,46 +162,78 @@ function Fila({
 
 function Celda({
   celda,
-  provisional,
   altoFijo = false,
+  destacada = false,
+  provisional = false,
 }: {
   celda: CeldaLlave;
-  provisional: boolean;
   altoFijo?: boolean;
+  /**
+   * La fase de grupos aún no ha cerrado: estos cruces salen de una tabla que
+   * todavía puede moverse. Se dibujan con borde discontinuo para que no se
+   * lean como definitivos.
+   */
+  provisional?: boolean;
+  /**
+   * La casilla del título. En el cuadro, la final se veía igual que cualquier
+   * otra ronda por jugar: mismo borde, mismo gris. Es el sitio al que lleva
+   * todo el dibujo y no se distinguía en nada del resto.
+   */
+  destacada?: boolean;
 }) {
   const [a, b] = celda.lados;
   const ganaA = celda.jugado && a.goles != null && b.goles != null && a.goles > b.goles;
   const ganaB = celda.jugado && a.goles != null && b.goles != null && b.goles > a.goles;
   const vacia = !a.slug && !b.slug;
+  const tono: Tono = destacada ? 'dorado' : vacia ? 'menta' : 'blanco';
+
+  const fondo =
+    tono === 'dorado' ? '#D4A437' : tono === 'menta' ? MENTA : '#FFFFFF';
+  const borde =
+    tono === 'dorado' ? '#B88A26' : tono === 'menta' ? MENTA_BORDE : '#D8E6DD';
 
   return (
     <div
       className={cn(
-        'w-full rounded-xl border px-4 py-3.5',
-        celda.jugado
-          ? 'border-amarillo/25 bg-black/50'
-          : vacia
-            ? 'border-dashed border-white/10 bg-black/20'
-            : provisional
-              ? 'border-dashed border-white/15 bg-black/25'
-              : 'border-white/15 bg-black/40',
+        'w-full overflow-hidden rounded-lg border',
+        provisional && !destacada && 'border-dashed',
+        tono === 'dorado' && 'shadow-gold',
       )}
+      style={{ background: fondo, borderColor: borde }}
     >
-      {celda.etiqueta ? (
+      {/* La franja superior: dorada sobre los cruces ya programados, como en el
+          cuadro oficial. En la final el rótulo va dentro de la propia casilla,
+          que ya es dorada entera. */}
+      {destacada ? (
+        <p className="flex items-center gap-1.5 px-3 pb-1 pt-2.5 font-bufon text-[10px] font-bold uppercase tracking-[0.2em] text-carbon">
+          <Trophy size={13} aria-hidden />
+          Gran Final
+        </p>
+      ) : celda.etiqueta ? (
         <p
           className={cn(
-            'font-mono text-[10px] uppercase tracking-[0.25em] text-naranja',
-            altoFijo ? 'mb-2 h-4 truncate' : 'mb-2.5',
+            'px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.18em]',
+            altoFijo && 'truncate',
           )}
+          style={
+            tono === 'menta'
+              ? { color: `${MENTA_TEXTO}B0` }
+              : { background: '#D4A437', color: '#FFFFFF' }
+          }
         >
           {celda.etiqueta}
         </p>
       ) : altoFijo ? (
-        <p className="mb-2 h-4" aria-hidden />
+        <p className="h-[26px]" aria-hidden />
       ) : null}
-      <div className={altoFijo ? undefined : 'space-y-2'}>
-        <Fila lado={a} ganador={ganaA} jugado={celda.jugado} altoFijo={altoFijo} />
-        <Fila lado={b} ganador={ganaB} jugado={celda.jugado} altoFijo={altoFijo} />
+
+      <div
+        className={cn('px-3 pb-2.5 pt-1.5', !altoFijo && 'space-y-1.5')}
+        style={{ borderTop: tono === 'blanco' ? 'none' : undefined }}
+      >
+        <Fila lado={a} ganador={ganaA} jugado={celda.jugado} altoFijo={altoFijo} tono={tono} />
+        <div style={{ borderTop: `1px solid ${tono === 'dorado' ? '#00000022' : `${MENTA_BORDE}` }` }} />
+        <Fila lado={b} ganador={ganaB} jugado={celda.jugado} altoFijo={altoFijo} tono={tono} />
       </div>
     </div>
   );
@@ -259,13 +319,18 @@ export function LlaveArbol({
           dicen lo mismo mejor. */}
       <Cuadro camino={camino} porFase={porFase} provisional={provisional} />
 
-      <div className="grid gap-8 lg:hidden">
+      {/* Mismo verde que el cuadro: la seccion no puede cambiar de estetica
+          segun el ancho de la pantalla. */}
+      <div
+        className="grid gap-8 rounded-2xl border border-white/10 p-5 sm:p-6 lg:hidden"
+        style={{ background: `linear-gradient(160deg, ${VERDE} 0%, ${VERDE_HONDO} 100%)` }}
+      >
         {camino.map((parada) => {
         const chip = CHIP[parada.estado];
         return (
           <section key={parada.fase}>
-            <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 border-b border-white/10 pb-3">
-              <h3 className="font-sport text-2xl uppercase leading-none text-neutral-100">
+            <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 border-b border-white/20 pb-3">
+              <h3 className="font-sport text-2xl uppercase leading-none text-white">
                 {parada.titulo}
               </h3>
               <span
@@ -277,7 +342,7 @@ export function LlaveArbol({
                 {chip.texto}
               </span>
             </div>
-            <p className="mt-2.5 text-xs text-neutral-500">
+            <p className="mt-2.5 text-xs text-white/65">
               {parada.fecha ? fechaLargaDe(parada.fecha) : 'Fecha por confirmar'}
             </p>
 
@@ -290,7 +355,7 @@ export function LlaveArbol({
             </ul>
 
             {NOTA_FASE[parada.fase] ? (
-              <p className="mt-3 text-[11px] leading-relaxed text-neutral-600">
+              <p className="mt-3 text-[11px] leading-relaxed text-white/55">
                 {NOTA_FASE[parada.fase]}
               </p>
             ) : null}
@@ -317,10 +382,10 @@ const COLUMNAS = 'grid-cols-[minmax(0,1fr)_3.5rem_minmax(0,1fr)_3.5rem_minmax(0,
 function Conector() {
   return (
     <div className="relative h-full w-full" aria-hidden>
-      <span className="absolute left-0 top-1/4 block w-1/2 border-t border-white/25" />
-      <span className="absolute left-0 top-3/4 block w-1/2 border-t border-white/25" />
-      <span className="absolute left-1/2 top-1/4 block h-1/2 border-l border-white/25" />
-      <span className="absolute left-1/2 top-1/2 block w-1/2 border-t border-white/25" />
+      <span className="absolute left-0 top-1/4 block w-1/2 border-t border-white/60" />
+      <span className="absolute left-0 top-3/4 block w-1/2 border-t border-white/60" />
+      <span className="absolute left-1/2 top-1/4 block h-1/2 border-l border-white/60" />
+      <span className="absolute left-1/2 top-1/2 block w-1/2 border-t border-white/60" />
     </div>
   );
 }
@@ -328,11 +393,9 @@ function Conector() {
 function Cabecera({ parada }: { parada: ParadaFinal }) {
   const chip = CHIP[parada.estado];
   return (
-    <div className="border-b border-white/10 pb-3">
+    <div className="border-b border-white/20 pb-3">
       <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-        <h3 className="font-sport text-2xl uppercase leading-none text-neutral-100">
-          {parada.titulo}
-        </h3>
+        <h3 className="font-sport text-2xl uppercase leading-none text-white">{parada.titulo}</h3>
         <span
           className={cn(
             'rounded-full border px-2.5 py-0.5 font-bufon text-[10px] uppercase tracking-[0.15em]',
@@ -342,7 +405,7 @@ function Cabecera({ parada }: { parada: ParadaFinal }) {
           {chip.texto}
         </span>
       </div>
-      <p className="mt-2 text-xs text-neutral-500">
+      <p className="mt-2 text-xs text-white/65">
         {parada.fecha ? fechaLargaDe(parada.fecha) : 'Fecha por confirmar'}
       </p>
     </div>
@@ -393,7 +456,10 @@ function Cuadro({
     /* Panel opaco. Las casillas iban translucidas sobre la foto de estadio del
        fondo, y sobre el cesped iluminado los cruces todavia por definir se
        perdian casi del todo. Un cuadro de eliminatoria se lee o no sirve. */
-    <div className="hidden rounded-2xl border border-white/10 bg-[#0b0f14]/95 p-8 lg:block">
+    <div
+      className="hidden rounded-2xl border border-white/10 p-8 lg:block"
+      style={{ background: `linear-gradient(160deg, ${VERDE} 0%, ${VERDE_HONDO} 100%)` }}
+    >
       <div className={cn('grid gap-x-0', COLUMNAS)}>
         {cabeceras.map(([fase, col]) => {
           const p = paradaDe(fase);
@@ -408,7 +474,7 @@ function Cuadro({
       <div className={cn('mt-5 grid h-[44rem] grid-rows-4', COLUMNAS)}>
         {cuartos.map((c, i) => (
           <div key={c.id} className="col-start-1 flex items-center" style={{ gridRow: i + 1 }}>
-            <Celda celda={c} provisional={provisional} altoFijo />
+            <Celda celda={c} altoFijo provisional={provisional} />
           </div>
         ))}
 
@@ -424,7 +490,7 @@ function Cuadro({
             key={c.id}
             className={cn('col-start-3 row-span-2 flex items-center', i === 0 ? 'row-start-1' : 'row-start-3')}
           >
-            <Celda celda={c} provisional={provisional} altoFijo />
+            <Celda celda={c} altoFijo provisional={provisional} />
           </div>
         ))}
 
@@ -433,7 +499,7 @@ function Cuadro({
         </div>
 
         <div className="col-start-5 row-span-4 row-start-1 flex items-center">
-          <Celda celda={final} provisional={provisional} altoFijo />
+          <Celda celda={final} altoFijo destacada />
         </div>
       </div>
 
@@ -442,7 +508,7 @@ function Cuadro({
           <div className="col-start-5">
             <Cabecera parada={paradaDe('tercer-puesto')!} />
             <div className="mt-4">
-              <Celda celda={tercero} provisional={provisional} altoFijo />
+              <Celda celda={tercero} altoFijo />
             </div>
           </div>
         </div>
