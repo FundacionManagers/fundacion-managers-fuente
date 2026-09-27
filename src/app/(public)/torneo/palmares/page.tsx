@@ -3,7 +3,9 @@ import { CampeonReveal } from '@/components/torneo/CampeonReveal';
 import { DetalleAncla } from '@/components/torneo/DetalleAncla';
 import { MatchCard } from '@/components/torneo/MatchCard';
 import { PalmaresTorneo } from '@/components/torneo/PalmaresTorneo';
+import { PanelPremios } from '@/components/torneo/PanelPremios';
 import { TorneoShell } from '@/components/torneo/TorneoShell';
+import { cargarLigaConAviso } from '@/lib/liga-supabase';
 import {
   CAMPEON_VIGENTE,
   EDICIONES_DISPUTADAS,
@@ -40,7 +42,8 @@ const LLAVE_ANTERIOR = [
   { titulo: 'Gran Final', sub: 'El título', partidos: [FINAL] },
 ] as const;
 
-export default function PalmaresPage() {
+export default async function PalmaresPage() {
+  const datos = await cargarLigaConAviso();
   const campeon = getEquipo(ganadorDe(FINAL) ?? '');
   const loc = FINAL.local ? getEquipo(FINAL.local) : undefined;
   const vis = FINAL.visitante ? getEquipo(FINAL.visitante) : undefined;
@@ -66,6 +69,13 @@ export default function PalmaresPage() {
           edicion={pillEdicion(EDICION_ANTERIOR)}
           href="#llave-anterior"
         />
+      </div>
+
+      {/* Los premios de la edición EN CURSO van antes del palmarés
+          histórico: son lo que se está decidiendo, y el palmarés es la
+          memoria. Se rellenan solos a medida que se cargan los marcadores. */}
+      <div className="mb-16">
+        <PanelPremios datos={datos} />
       </div>
 
       <PalmaresTorneo />

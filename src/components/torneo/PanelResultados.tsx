@@ -12,8 +12,13 @@ import {
   CALENDARIO_FASE_FINAL,
   COLUMNAS_TABLA,
   CRUCES_POR_FASE,
+  equipoMasGoleador,
   ladoGanador,
   ORDEN_FASES,
+  podioDeEdicion,
+  tablaJuegoLimpio,
+  totalesDeEdicion,
+  vallaMenosVencida,
   TITULO_FASE,
   TOTAL_JORNADAS,
   type FaseFinal,
@@ -22,26 +27,30 @@ import {
 import {
   actualizarGoleador,
   cargarTodo,
+  borrarMvp,
   crearCruce,
   crearGoleador,
   descuadres,
   eliminarGoleador,
   eliminarPartido,
   guardarDisciplina,
+  guardarMvp,
   guardarPartido,
   type EstadoTorneo,
   type GoleadorPanel,
+  type MvpPanel,
   type PartidoPanel,
 } from '@/lib/panel-torneo';
 import { cn } from '@/lib/utils';
 
-type Seccion = 'marcadores' | 'tarjetas' | 'previa' | 'goleadores' | 'acceso';
+type Seccion = 'marcadores' | 'tarjetas' | 'previa' | 'goleadores' | 'premios' | 'acceso';
 
 const SECCIONES: { key: Seccion; label: string }[] = [
   { key: 'marcadores', label: 'Marcadores' },
   { key: 'tarjetas', label: 'Tarjetas' },
   { key: 'previa', label: 'Tabla (previa)' },
   { key: 'goleadores', label: 'Goleadores' },
+  { key: 'premios', label: 'Premios' },
   { key: 'acceso', label: 'Mi acceso' },
 ];
 
@@ -716,6 +725,10 @@ export function PanelResultados({ salir, correo }: { salir: () => Promise<void>;
         </div>
       ) : null}
 
+      {seccion === 'premios' ? (
+        <SeccionPremios estado={estado} onCambio={() => void recargar()} />
+      ) : null}
+
       {seccion === 'acceso' ? <DefinirClave correo={correo} /> : null}
     </div>
   );
@@ -930,6 +943,234 @@ function fechaSugerida(fase: FaseFinal, estado: EstadoTorneo): string {
   if (!anunciada) return '';
   const [d, m, a] = anunciada.split('/');
   return `${a}-${m}-${d}`;
+}
+
+/**
+ * La pestaña de Premios del panel.
+ *
+ * Solo tiene un formulario, el del MVP, y es a propósito: **los otros siete
+ * premios no se escriben, se calculan**. El campeón sale de la Gran Final,
+ * el goleador del ranking, la valla de los goles recibidos. Si hubiera un
+ * campo para escribirlos, tarde o temprano alguien escribiría uno que
+ * contradijera al marcador.
+ *
+ * Lo que sí hace es mostrarlos, para que quien cierra el torneo vea de un
+ * vistazo qué falta por cargar antes de la clausura.
+ */
+function SeccionPremios({ estado, onCambio }: { estado: EstadoTorneo; onCambio: () => void }) {
+  const [mvp, setMvp] = useState<MvpPanel>(
+    estado.mvp ?? { jugador: '', equipo: EQUIPOS[0]?.slug ?? '' },
+  );
+  const [trabajando, setTrabajando] = useState(false);
+  const [aviso, setAviso] = useState('');
+  const [error, setError] = useState('');
+
+  // Los premios que se deducen, con los datos que hay AHORA en la base.
+  const calculados = useMemo(() => {
+    const comoLiga: PartidoLiga[] = estado.partidos.map((p) => ({
+      id: p.id,
+      jornada: p.jornada,
+      fecha: p.fecha,
+      hora: p.hora,
+      local: p.local,
+      visitante: p.visitante,
+      golesLocal: p.jugado ? p.golesLocal : null,
+      golesVisitante: p.jugado ? p.golesVisitante : null,
+      estado:
+        p.jugado && p.golesLocal != null && p.golesVisitante != null ? 'jugado' : 'programado',
+    }));
+
+    const eliminatoria = estado.partidos
+      .filter((p) => p.fase !== 'grupos')
+      .map((p) => ({
+        ...comoLiga.find((c) => c.id === p.id)!,
+        fase: p.fase as FaseFinal,
+        penalesLocal: p.penalesLocal,
+        penalesVisitante: p.penalesVisitante,
+      }));
+
+    const totales = totalesDeEdicion(comoLiga);
+    const disciplina = Object.fromEntries(
+      estado.disciplina.map((d) => [d.equipo, { amarillas: d.amarillas, rojas: d.rojas }]),
+    );
+    const soloGrupos = comoLiga.filter((_, i) => estado.partidos[i]?.fase === 'grupos');
+
+    return {
+      podio: podioDeEdicion(eliminatoria),
+      artillero: equipoMasGoleador(totales),
+      valla: vallaMenosVencida(totales),
+      limpio: tablaJuegoLimpio(calcularPosiciones(soloGrupos, disciplina))[0] ?? null,
+      goleador: estado.goleadores[0] ?? null,
+    };
+  }, [estado]);
+
+  const nombre = (slug?: string | null) =>
+    slug ? (getEquipo(slug)?.nombre ?? slug) : 'Por definir';
+
+  async function guardar() {
+    if (!mvp.jugador.trim() || !mvp.equipo) {
+      setError('Falta el nombre o el club.');
+      return;
+    }
+    setTrabajando(true);
+    setError('');
+    setAviso('');
+    try {
+      await guardarMvp(mvp);
+      setAviso('MVP guardado.');
+      onCambio();
+    } catch {
+      setError('No se pudo guardar. Verifica que tu cuenta siga autorizada.');
+    } finally {
+      setTrabajando(false);
+    }
+  }
+
+  async function borrar() {
+    setTrabajando(true);
+    setError('');
+    setAviso('');
+    try {
+      await borrarMvp();
+      setMvp({ jugador: '', equipo: EQUIPOS[0]?.slug ?? '' });
+      setAviso('MVP borrado.');
+      onCambio();
+    } catch {
+      setError('No se pudo borrar.');
+    } finally {
+      setTrabajando(false);
+    }
+  }
+
+  const filas: { rotulo: string; quien: string; detalle: string }[] = [
+    {
+      rotulo: 'Campeón',
+      quien: nombre(calculados.podio.campeon),
+      detalle: calculados.podio.campeon ? 'Ganador de la Gran Final' : 'Falta cargar la Gran Final',
+    },
+    {
+      rotulo: 'Subcampeón',
+      quien: nombre(calculados.podio.subcampeon),
+      detalle: calculados.podio.subcampeon ? 'Finalista' : 'Falta cargar la Gran Final',
+    },
+    {
+      rotulo: 'Tercer puesto',
+      quien: nombre(calculados.podio.tercero),
+      detalle: calculados.podio.tercero
+        ? 'Ganador del tercer puesto'
+        : 'Falta cargar el tercer puesto',
+    },
+    {
+      rotulo: 'Equipo más goleador',
+      quien: nombre(calculados.artillero?.equipo),
+      detalle: calculados.artillero ? `${calculados.artillero.valor} goles en la edición` : '—',
+    },
+    {
+      rotulo: 'Goleador',
+      quien: calculados.goleador?.jugador ?? 'Por definir',
+      detalle: calculados.goleador
+        ? `${calculados.goleador.goles} goles · ${nombre(calculados.goleador.equipo)}`
+        : '—',
+    },
+    {
+      rotulo: 'Valla menos vencida',
+      quien: nombre(calculados.valla?.equipo),
+      detalle: calculados.valla ? `${calculados.valla.valor} goles en contra` : '—',
+    },
+    {
+      rotulo: 'Fair Play',
+      quien: nombre(calculados.limpio?.equipo),
+      detalle: calculados.limpio
+        ? `${calculados.limpio.ta} amarillas, ${calculados.limpio.tr} rojas`
+        : '—',
+    },
+  ];
+
+  return (
+    <div className="mt-8">
+      <div className="rounded-xl border border-amarillo/30 bg-black/50 p-4">
+        <p className="font-bufon text-xs font-bold uppercase tracking-[0.15em] text-amarillo">
+          MVP del torneo
+        </p>
+        <p className="mt-2 text-xs text-neutral-400">
+          Es el único premio que se escribe a mano: no hay asistencias ni minutos en el sistema, así
+          que no se puede deducir. Lo decide el jurado.
+        </p>
+        <div className="mt-3 flex flex-wrap items-end gap-3">
+          <label className="flex flex-col gap-1 text-xs text-neutral-400">
+            Jugador
+            <input
+              value={mvp.jugador}
+              onChange={(e) => setMvp({ ...mvp, jugador: e.target.value })}
+              placeholder="Nombre y apellido"
+              className="w-52 rounded-md border border-white/25 bg-[#05070a] px-3 py-2 text-sm text-neutral-50 placeholder:text-neutral-500 focus:border-amarillo focus:outline-none"
+            />
+          </label>
+          <label className="flex flex-col gap-1 text-xs text-neutral-400">
+            Club
+            <SelectEquipo valor={mvp.equipo} onChange={(v) => setMvp({ ...mvp, equipo: v })} />
+          </label>
+          <button
+            onClick={() => void guardar()}
+            disabled={trabajando}
+            className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-amarillo to-naranja px-5 py-2.5 text-sm font-bold text-carbon disabled:opacity-50"
+          >
+            {trabajando ? <Loader2 size={16} className="animate-spin" /> : <Check size={16} />}
+            Guardar MVP
+          </button>
+          {estado.mvp ? (
+            <button
+              onClick={() => void borrar()}
+              disabled={trabajando}
+              className="text-xs text-neutral-500 hover:text-red-400"
+            >
+              Borrar
+            </button>
+          ) : null}
+        </div>
+        {error ? <p className="mt-2 text-xs text-red-400">{error}</p> : null}
+        {aviso ? <p className="mt-2 text-xs text-emerald-400">{aviso}</p> : null}
+      </div>
+
+      <p className="mt-8 font-bufon text-xs font-bold uppercase tracking-[0.15em] text-neutral-400">
+        Los otros siete se calculan solos
+      </p>
+      <p className="mt-2 text-xs text-neutral-500">
+        Salen de los marcadores, y se cuentan sobre la edición completa —las siete fechas más la
+        fase final—. Si alguno dice «Por definir», es que falta cargar un partido.
+      </p>
+
+      <ul className="mt-4 space-y-2">
+        {filas.map((f) => {
+          const pendiente = f.quien === 'Por definir';
+          return (
+            <li
+              key={f.rotulo}
+              className={cn(
+                'flex flex-wrap items-center gap-x-4 gap-y-1 rounded-xl border p-3',
+                pendiente
+                  ? 'border-dashed border-white/15 bg-black/20'
+                  : 'border-white/10 bg-black/40',
+              )}
+            >
+              <span className="w-48 shrink-0 font-mono text-[11px] uppercase tracking-[0.12em] text-neutral-500">
+                {f.rotulo}
+              </span>
+              <span
+                className={cn(
+                  'min-w-0 flex-1 font-semibold',
+                  pendiente ? 'text-neutral-600' : 'text-neutral-100',
+                )}
+              >
+                {f.quien}
+              </span>
+              <span className="text-xs text-neutral-500">{f.detalle}</span>
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+  );
 }
 
 function SeccionGoleadores({ estado, onCambio }: { estado: EstadoTorneo; onCambio: () => void }) {

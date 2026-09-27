@@ -1292,5 +1292,120 @@ export function cruzarCuartos(
   }));
 }
 
+/* ─────────────────────── Premios de la edición ─────────────────────── */
+
+/**
+ * Acumulados de un club a lo largo de TODA la edición.
+ *
+ * Ojo con la diferencia respecto a `FilaPosicion`: esa es la tabla de
+ * posiciones y solo cuenta la fase de grupos, porque es la fase que reparte
+ * puntos. Esto cuenta los nueve o diez partidos que jugó el club, cuartos y
+ * final incluidos, que es como se entregan los premios de la clausura.
+ *
+ * Mezclarlas fue el error original: la web premiaba «la valla menos vencida»
+ * con la cifra de la fase de grupos mientras la organización la calculaba
+ * sobre el torneo entero, y salían clubes distintos.
+ */
+export interface TotalesEquipo {
+  equipo: string;
+  /** Partidos jugados en la edición, de todas las fases. */
+  pj: number;
+  gf: number;
+  gc: number;
+}
+
+/**
+ * Suma los goles de cada club sobre los partidos que se le pasen.
+ *
+ * Se le pasan grupos Y eliminatoria juntos: quien llama decide el alcance,
+ * y así la misma función sirve para comprobar una fase suelta.
+ */
+export function totalesDeEdicion(partidos: readonly PartidoLiga[]): TotalesEquipo[] {
+  const acc = new Map<string, TotalesEquipo>();
+  const de = (equipo: string) => {
+    let fila = acc.get(equipo);
+    if (!fila) {
+      fila = { equipo, pj: 0, gf: 0, gc: 0 };
+      acc.set(equipo, fila);
+    }
+    return fila;
+  };
+
+  for (const p of partidos) {
+    if (p.estado !== 'jugado' || p.golesLocal == null || p.golesVisitante == null) continue;
+    const local = de(p.local);
+    const visitante = de(p.visitante);
+    local.pj += 1;
+    visitante.pj += 1;
+    local.gf += p.golesLocal;
+    local.gc += p.golesVisitante;
+    visitante.gf += p.golesVisitante;
+    visitante.gc += p.golesLocal;
+  }
+
+  return [...acc.values()].sort((a, b) => a.equipo.localeCompare(b.equipo));
+}
+
+/** Un premio que se gana con una cifra: quién y cuánto. */
+export interface PremioCifra {
+  equipo: string;
+  valor: number;
+}
+
+/** El club que más goles marcó en la edición. Null si todavía no se jugó nada. */
+export function equipoMasGoleador(totales: readonly TotalesEquipo[]): PremioCifra | null {
+  const mejor = [...totales].sort((a, b) => b.gf - a.gf || a.equipo.localeCompare(b.equipo))[0];
+  return mejor ? { equipo: mejor.equipo, valor: mejor.gf } : null;
+}
+
+/**
+ * La valla menos vencida de la edición: el club que menos goles recibió.
+ *
+ * En empate manda el que jugó más partidos: recibir los mismos goles en más
+ * partidos es mejor defensa, y además evita premiar al que se fue antes.
+ */
+export function vallaMenosVencida(totales: readonly TotalesEquipo[]): PremioCifra | null {
+  const mejor = [...totales].sort(
+    (a, b) => a.gc - b.gc || b.pj - a.pj || a.equipo.localeCompare(b.equipo),
+  )[0];
+  return mejor ? { equipo: mejor.equipo, valor: mejor.gc } : null;
+}
+
+/** El podio de la edición. Cada puesto es null mientras no se pueda demostrar. */
+export interface Podio {
+  campeon: string | null;
+  subcampeon: string | null;
+  tercero: string | null;
+}
+
+/**
+ * El podio, deducido de la Gran Final y del tercer puesto.
+ *
+ * No se escribe a mano en ninguna parte: sale de los mismos marcadores que
+ * cargó la organización, igual que la tabla sale de los partidos. Mientras
+ * la final no esté jugada devuelve nulls, y quien lo muestre dice «por
+ * definir» en vez de inventar un campeón.
+ */
+export function podioDeEdicion(eliminatoria: readonly PartidoEliminatoria[]): Podio {
+  const resolver = (fase: FaseFinal) => {
+    const p = eliminatoria.find((x) => x.fase === fase && x.estado === 'jugado');
+    if (!p) return { ganador: null, perdedor: null };
+    const lado = ladoGanador(p.golesLocal, p.golesVisitante, p.penalesLocal, p.penalesVisitante);
+    if (!lado) return { ganador: null, perdedor: null };
+    return lado === 'local'
+      ? { ganador: p.local, perdedor: p.visitante }
+      : { ganador: p.visitante, perdedor: p.local };
+  };
+
+  const final = resolver('final');
+  const tercero = resolver('tercer-puesto');
+
+  return {
+    campeon: final.ganador,
+    subcampeon: final.perdedor,
+    tercero: tercero.ganador,
+  };
+}
+
 /** Llave proyectada con la tabla de respaldo. */
 export const CUARTOS_LIGA = cruzarCuartos();

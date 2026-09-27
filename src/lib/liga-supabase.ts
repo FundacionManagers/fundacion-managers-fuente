@@ -35,6 +35,14 @@ import {
 // desde aquí.
 export type { FaseFinal, PartidoEliminatoria };
 
+/** Premio que decide un jurado, no los marcadores. Hoy solo el MVP. */
+export interface PremioJurado {
+  clave: string;
+  jugador: string | null;
+  equipo: string | null;
+  nota: string | null;
+}
+
 export interface DatosLiga {
   /** Solo fase de grupos: es lo que alimenta la tabla de posiciones. */
   partidos: readonly PartidoLiga[];
@@ -42,6 +50,8 @@ export interface DatosLiga {
   eliminatoria: readonly PartidoEliminatoria[];
   disciplina: Readonly<Record<string, Disciplina>>;
   goleadores: readonly Goleador[];
+  /** Premios de jurado ya decididos. Vacío mientras no se cargue ninguno. */
+  premios: readonly PremioJurado[];
   /** De dónde salieron los datos. Se registra en el log del build. */
   origen: 'supabase' | 'respaldo';
 }
@@ -51,6 +61,7 @@ const RESPALDO: DatosLiga = {
   eliminatoria: [],
   disciplina: DISCIPLINA,
   goleadores: GOLEADORES_LIGA,
+  premios: [],
   origen: 'respaldo',
 };
 
@@ -117,7 +128,7 @@ export async function cargarLiga(edicion = EDICION_DATOS): Promise<DatosLiga> {
   });
 
   try {
-    const [partidosRes, disciplinaRes, goleadoresRes] = await Promise.all([
+    const [partidosRes, disciplinaRes, goleadoresRes, premiosRes] = await Promise.all([
       supabase
         .from('partidos')
         .select(
@@ -135,6 +146,7 @@ export async function cargarLiga(edicion = EDICION_DATOS): Promise<DatosLiga> {
         .select('jugador, equipo, numero, goles')
         .eq('edicion', edicion)
         .order('goles', { ascending: false }),
+      supabase.from('premios').select('clave, jugador, equipo, nota').eq('edicion', edicion),
     ]);
 
     const filasPartidos = (partidosRes.data ?? []) as FilaPartido[];
@@ -186,7 +198,11 @@ export async function cargarLiga(edicion = EDICION_DATOS): Promise<DatosLiga> {
         goles: g.goles,
       }));
 
-    return { partidos, eliminatoria, disciplina, goleadores, origen: 'supabase' };
+    // Un fallo leyendo los premios no puede tumbar el sitio: sin ellos el
+    // panel muestra «por definir», que es la verdad.
+    const premios = (premiosRes.error ? [] : (premiosRes.data ?? [])) as PremioJurado[];
+
+    return { partidos, eliminatoria, disciplina, goleadores, premios, origen: 'supabase' };
   } catch {
     return RESPALDO;
   }

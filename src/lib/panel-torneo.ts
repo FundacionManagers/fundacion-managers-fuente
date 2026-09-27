@@ -45,10 +45,17 @@ export interface GoleadorPanel {
   goles: number;
 }
 
+/** El MVP: el único premio que no sale de los marcadores. */
+export interface MvpPanel {
+  jugador: string;
+  equipo: string;
+}
+
 export interface EstadoTorneo {
   partidos: PartidoPanel[];
   disciplina: DisciplinaPanel[];
   goleadores: GoleadorPanel[];
+  mvp: MvpPanel | null;
 }
 
 function exigirCliente() {
@@ -59,7 +66,7 @@ function exigirCliente() {
 export async function cargarTodo(edicion = EDICION_DATOS): Promise<EstadoTorneo> {
   const sb = exigirCliente();
 
-  const [p, d, g] = await Promise.all([
+  const [p, d, g, m] = await Promise.all([
     sb
       .from('partidos')
       .select(
@@ -78,11 +85,19 @@ export async function cargarTodo(edicion = EDICION_DATOS): Promise<EstadoTorneo>
       .select('id, jugador, equipo, numero, goles')
       .eq('edicion', edicion)
       .order('goles', { ascending: false }),
+    sb
+      .from('premios')
+      .select('jugador, equipo')
+      .eq('edicion', edicion)
+      .eq('clave', 'mvp')
+      .maybeSingle(),
   ]);
 
   if (p.error) throw p.error;
   if (d.error) throw d.error;
   if (g.error) throw g.error;
+  // El MVP puede no existir todavía: eso no es un error, es lo normal hasta
+  // la clausura.
 
   return {
     partidos: (p.data ?? []).map((r) => ({
@@ -107,7 +122,27 @@ export async function cargarTodo(edicion = EDICION_DATOS): Promise<EstadoTorneo>
       numero: r.numero as number | null,
       goles: r.goles as number,
     })),
+    mvp: m.data ? { jugador: String(m.data.jugador ?? ''), equipo: String(m.data.equipo ?? '') } : null,
   };
+}
+
+/** Guarda o reemplaza el MVP de la edición. */
+export async function guardarMvp(mvp: MvpPanel, edicion = EDICION_DATOS): Promise<void> {
+  const sb = exigirCliente();
+  const { error } = await sb
+    .from('premios')
+    .upsert(
+      { edicion, clave: 'mvp', jugador: mvp.jugador.trim(), equipo: mvp.equipo },
+      { onConflict: 'edicion,clave' },
+    );
+  if (error) throw error;
+}
+
+/** Borra el MVP, por si se cargó por error o cambia la decisión del jurado. */
+export async function borrarMvp(edicion = EDICION_DATOS): Promise<void> {
+  const sb = exigirCliente();
+  const { error } = await sb.from('premios').delete().eq('edicion', edicion).eq('clave', 'mvp');
+  if (error) throw error;
 }
 
 /**
