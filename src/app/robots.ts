@@ -21,7 +21,13 @@ export default function robots(): MetadataRoute.Robots {
       // aparezcan en los resultados pero no evita el rastreo: se gasta
       // presupuesto en ellos y quedan en los registros de cualquier
       // rastreador. El Disallow los saca del camino.
-      disallow: ['/resultados/', '/inscripciones/', '/panel.html', '/caracterizacion.html'],
+      disallow: [
+        '/resultados/',
+        '/inscripciones/',
+        '/panel.html',
+        '/panel-emprendedores.html',
+        '/caracterizacion.html',
+      ],
     },
     sitemap: `${SITIO}/sitemap.xml`,
   };
