@@ -97,6 +97,14 @@ export function Footer() {
                   Contacto
                 </Link>
               </li>
+              <li>
+                <Link
+                  href="/documentos/"
+                  className="transition-colors duration-200 ease-managers hover:text-gold"
+                >
+                  Documentos institucionales
+                </Link>
+              </li>
             </ul>
           </div>
 
