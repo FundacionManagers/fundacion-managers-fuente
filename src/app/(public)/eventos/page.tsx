@@ -4,18 +4,16 @@ import Link from 'next/link';
 import { ArrowRight, Calendar, MapPin, MessageCircle } from 'lucide-react';
 import { SectionBackdrop } from '@/components/shared/SectionBackdrop';
 import { asset } from '@/lib/asset';
-import { EJE_CONTENT } from '@/lib/eje-content';
 import { getEje } from '@/lib/navigation';
 import { pilarDeEje } from '@/lib/strategy';
 import { visualDeEje } from '@/lib/eje-visual';
 import { EVENTOS } from '@/lib/eventos';
 
 const EJE = getEje('eventos')!;
-const CONTENT = EJE_CONTENT.eventos!;
 
 export const metadata: Metadata = {
   title: EJE.nombre,
-  description: CONTENT.intro,
+  description: EJE.descripcion,
 };
 
 export default function EventosPage() {
@@ -47,12 +45,13 @@ export default function EventosPage() {
                 <h1 className="mt-4 font-serif text-[42px] font-bold leading-[1.03] text-neutral-50 md:text-[64px]">
                   {EJE.nombre}
                 </h1>
-                <p className="mt-6 max-w-2xl text-lg text-neutral-300">{CONTENT.intro}</p>
-                {CONTENT.cierre && (
-                  <p className="mt-6 max-w-xl border-l-2 border-gold/50 pl-5 font-serif text-lg italic text-neutral-300">
-                    {CONTENT.cierre}
-                  </p>
-                )}
+                <p className="mt-6 max-w-2xl text-lg text-neutral-300">
+                  Producimos encuentros que conectan personas y proyectos: torneos, amistosos,
+                  jornadas corporativas y convocatorias abiertas a la comunidad.
+                </p>
+                <p className="mt-6 max-w-xl border-l-2 border-gold/50 pl-5 font-serif text-lg italic text-neutral-300">
+                  Las mejores decisiones casi siempre nacen de la conversación correcta.
+                </p>
               </div>
 
               <div className="flex items-center justify-center">
@@ -135,38 +134,6 @@ export default function EventosPage() {
           </div>
         </section>
 
-        {/* ===== SERVICIOS ===== */}
-        <section className="relative overflow-hidden border-y border-cream-deep bg-cream">
-          <div className="relative mx-auto max-w-7xl px-6 py-24 lg:px-8">
-            <p className="font-mono text-caption uppercase tracking-[0.3em] text-terracotta">
-              Qué hacemos
-            </p>
-            <h2 className="mt-4 font-serif text-display-lg font-bold text-carbon">
-              Producción de eventos
-            </h2>
-            <ul className="stagger-in mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              {CONTENT.valueProps?.map((vp) => {
-                const VPIcon = vp.icon;
-                return (
-                  <li
-                    key={vp.title}
-                    className="group flex h-full flex-col rounded-2xl border border-cream-deep bg-neutral-50 p-8 shadow-[0_10px_34px_rgba(15,20,25,0.07)] transition-all duration-300 ease-managers hover:-translate-y-1.5 hover:border-gold/60"
-                  >
-                    <span
-                      aria-hidden
-                      className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-gold text-carbon"
-                    >
-                      <VPIcon size={22} />
-                    </span>
-                    <h3 className="mt-5 font-serif text-xl font-bold text-carbon">{vp.title}</h3>
-                    <p className="mt-2 text-sm text-neutral-600">{vp.body}</p>
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
-        </section>
-
         {/* ===== CTA ===== */}
         <section className="grain relative overflow-hidden">
           <div className="relative mx-auto max-w-7xl px-6 py-24 lg:px-8">
@@ -177,10 +144,10 @@ export default function EventosPage() {
                     Conversemos
                   </p>
                   <h2 className="mt-4 font-serif text-3xl font-bold text-neutral-50 md:text-4xl">
-                    {CONTENT.ctaTitle ?? '¿Tienes un evento en mente?'}
+                    ¿Tienes un evento en mente?
                   </h2>
                   <p className="mt-4 max-w-xl text-neutral-300">
-                    {CONTENT.ctaBody ?? 'Cuéntanos la idea y te respondemos con una propuesta inicial.'}
+                    Cuéntanos la idea y te respondemos con una propuesta inicial.
                   </p>
                 </div>
                 <div className="flex lg:justify-end">
