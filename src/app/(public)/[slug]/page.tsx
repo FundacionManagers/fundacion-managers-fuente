@@ -17,7 +17,7 @@ interface EjePageProps {
 export function generateStaticParams() {
   // El torneo y emprendimiento tienen página propia, escrita a mano. Esta
   // plantilla genérica sirve a los ejes que todavía no la necesitan.
-  return EJES.filter((e) => !['torneo', 'emprendimiento'].includes(e.slug)).map((e) => ({
+  return EJES.filter((e) => !['torneo', 'emprendimiento', 'eventos'].includes(e.slug)).map((e) => ({
     slug: e.slug,
   }));
 }
