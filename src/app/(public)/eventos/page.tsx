@@ -28,7 +28,7 @@ export default function EventosPage() {
       <div className="relative z-10 text-neutral-200">
         {/* ===== HERO ===== */}
         <section className="grain relative overflow-hidden">
-          <div className="relative mx-auto max-w-7xl px-6 py-24 lg:px-8 lg:py-32">
+          <div className="relative mx-auto max-w-7xl px-6 pb-10 pt-16 lg:px-8 lg:pb-12 lg:pt-24">
             <div className="flex flex-wrap items-center gap-4">
               {pilar && (
                 <span className="inline-flex items-center gap-2 rounded-full border border-gold/40 bg-gold/10 px-4 py-1.5 font-mono text-caption uppercase tracking-widest text-gold">
