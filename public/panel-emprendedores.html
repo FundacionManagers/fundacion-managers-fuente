@@ -288,8 +288,8 @@ header .enlace:hover{color:var(--gold)}
       <!-- Absoluto: esta misma página se sirve también desde managers.iconeialabs.com/diagnostico/ -->
       <a class="enlace" href="https://fundacionmanagers.com/panel.html">Panel de caracterización</a>
       <button class="btn btn-oscuro" id="btnRecargar" type="button">Recargar</button>
-      <button class="btn btn-oscuro" id="btnListado" type="button" title="Quién respondió: terminados y a medias, con su contacto">Descargar listado</button>
-      <button class="btn btn-primary" id="btnCSV" type="button" title="Todas las evaluaciones con el resultado completo">Descargar todo (CSV)</button>
+      <button class="btn btn-oscuro" id="btnListado" type="button" title="Excel con quién respondió: terminados y a medias, con su contacto">Descargar listado (Excel)</button>
+      <button class="btn btn-primary" id="btnCSV" type="button" title="Excel con dos hojas: quién respondió y las evaluaciones completas">Descargar todo (Excel)</button>
       <button class="btn btn-oscuro" id="btnSalir" type="button">Salir</button>
     </div>
   </header>
@@ -344,7 +344,7 @@ header .enlace:hover{color:var(--gold)}
 
   <footer>
     <strong>Fundación Managers</strong> · Panel interno<br>
-    Datos personales sujetos a la Ley 1581 de 2012. No compartas esta información ni el CSV fuera del equipo.<br>
+    Datos personales sujetos a la Ley 1581 de 2012. No compartas esta información ni las descargas fuera del equipo.<br>
     Ante una solicitud de supresión (Art. 8), elimina la fila desde Supabase.
   </footer>
 </div>
@@ -404,6 +404,7 @@ const ORDEN_PRIORIDAD = { Alta:0, Media:1, Baja:2 };
 const $ = (s)=>document.querySelector(s);
 let TOKEN = null;
 let EMPRENDEDORES = [];
+let EXCLUIDOS = [];
 let AVANCES = [];
 
 function esc(s){
@@ -452,7 +453,12 @@ async function refrescar(){
   aviso.classList.remove('visible');
   try{
     const [emp, av] = await Promise.all([ leer('emprendedores'), leer('emprendedores_avance', true) ]);
-    EMPRENDEDORES = emp; AVANCES = av;
+    // Las respuestas de prueba del equipo quedan fuera de todo (migración
+    // 0011). Se guardan aparte solo para que sus avances no reaparezcan en
+    // «A medias».
+    EMPRENDEDORES = emp.filter((e)=> !e.excluido_de_resultados);
+    EXCLUIDOS = emp.filter((e)=> e.excluido_de_resultados);
+    AVANCES = av;
     pintarTodo();
   }catch(err){
     aviso.className = 'aviso error visible';
@@ -495,7 +501,7 @@ function animarBarras(){
 
 function pendientes(){
   // Un registro por sesión —el más lejano— y fuera quien ya terminó.
-  const terminados = new Set(EMPRENDEDORES.map((e)=> String(e.correo||'').toLowerCase()).filter(Boolean));
+  const terminados = new Set(EMPRENDEDORES.concat(EXCLUIDOS).map((e)=> String(e.correo||'').toLowerCase()).filter(Boolean));
   const porSesion = new Map();
   AVANCES.forEach((a)=>{
     const previo = porSesion.get(a.sesion);
@@ -838,58 +844,113 @@ function volverALista(){
 }
 
 /* ============================================================
-   CSV — una fila por diagnóstico, con el resultado completo
+   Descargas en Excel
+   ------------------------------------------------------------
+   Eran CSV con comas, y el Excel en español de Colombia separa por punto
+   y coma: abría todo amontonado en la columna A. Ahora es un .xlsx de
+   verdad, con columnas separadas, anchos ajustados, filtros y los números
+   como números. SheetJS se carga solo al pulsar el botón; si el CDN no
+   responde, sale un CSV con punto y coma, que este Excel sí separa.
    ============================================================ */
 
-function exportarCSV(){
-  if(!EMPRENDEDORES.length){ alert('Todavía no hay diagnósticos para descargar.'); return; }
-  const cols = [
-    ['Fecha', (e)=> e.creado_en ? new Date(e.creado_en).toISOString().slice(0,10) : ''],
-    ['Nombre', (e)=> e.nombre], ['Correo', (e)=> e.correo], ['Celular', (e)=> e.celular],
-    ['Ciudad', (e)=> e.ciudad], ['Departamento', (e)=> e.departamento],
-    ['Emprendimiento', (e)=> e.nombre_emprendimiento], ['Sector', (e)=> e.sector],
-    ['Etapa', (e)=> e.etapa_nombre || ETAPAS[e.etapa]], ['Puntaje etapa', (e)=> e.etapa_score],
-    ['Prioridad contacto', (e)=> e.prioridad_contacto], ['Potencial escala', (e)=> e.potencial_escala],
-    ['Rol potencial', (e)=> e.rol_potencial], ['Tamaño', (e)=> e.tamano_empresa],
-    ...FRENTES.map((f)=> ['Madurez ' + f.titulo, (e)=> (e.madurez||{})[f.id]]),
-    ['Frenos', (e)=> lista(e.frenos).map((f)=> f.frente).join(' | ')],
-    ['Fortalezas', (e)=> lista(e.fortalezas).join(' | ')],
-    ['Riesgos', (e)=> lista(e.riesgos).join(' | ')],
-    ['Rutas', (e)=> lista(e.rutas).map((r)=> r.nombre).join(' | ')],
-    ...EJES.map((x)=> ['Eje ' + x.titulo, (e)=> e['eje_'+x.id] == null ? '' : (GRADOS[Number(e['eje_'+x.id])] ?? e['eje_'+x.id])]),
-    ['Lectura del momento', (e)=> e.lectura_momento],
+const COLS_EVALUACION = [
+  ['Fecha', (e)=> fechaCorta(e.creado_en)],
+  ['Nombre', (e)=> e.nombre], ['Correo', (e)=> e.correo], ['Celular', (e)=> e.celular],
+  ['Ciudad', (e)=> e.ciudad], ['Departamento', (e)=> e.departamento],
+  ['Emprendimiento', (e)=> e.nombre_emprendimiento], ['Sector', (e)=> e.sector],
+  ['Etapa', (e)=> e.etapa_nombre || ETAPAS[e.etapa]], ['Puntaje etapa', (e)=> numero(e.etapa_score)],
+  ['Prioridad contacto', (e)=> e.prioridad_contacto], ['Potencial escala', (e)=> e.potencial_escala],
+  ['Rol potencial', (e)=> e.rol_potencial], ['Tamaño', (e)=> e.tamano_empresa],
+  ...FRENTES.map((f)=> ['Madurez ' + f.titulo, (e)=> numero((e.madurez||{})[f.id])]),
+  ['Frenos', (e)=> lista(e.frenos).map((f)=> f.frente).join(' | ')],
+  ['Fortalezas', (e)=> lista(e.fortalezas).join(' | ')],
+  ['Riesgos', (e)=> lista(e.riesgos).join(' | ')],
+  ['Rutas', (e)=> lista(e.rutas).map((r)=> r.nombre).join(' | ')],
+  ...EJES.map((x)=> ['Eje ' + x.titulo, (e)=> e['eje_'+x.id] == null ? '' : (GRADOS[Number(e['eje_'+x.id])] ?? e['eje_'+x.id])]),
+  ['Lectura del momento', (e)=> e.lectura_momento],
+];
+
+const COLS_LISTADO = [
+  ['Fecha', (r)=> fechaCorta(r.creado_en)],
+  ['Estado', (r)=> r.estado], ['Llegó hasta', (r)=> r.llego],
+  ['Nombre', (r)=> r.nombre], ['Emprendimiento', (r)=> r.nombre_emprendimiento],
+  ['Correo', (r)=> r.correo], ['Celular', (r)=> r.celular],
+  ['Ciudad', (r)=> r.ciudad], ['Departamento', (r)=> r.departamento],
+  ['Etapa', (r)=> r.etapa_txt], ['Puntaje etapa', (r)=> numero(r.etapa_score)],
+  ['Prioridad contacto', (r)=> r.prioridad_contacto],
+];
+
+function fechaCorta(iso){ return iso ? new Date(iso).toISOString().slice(0,10) : ''; }
+function numero(v){ const n = Number(v); return v === null || v === undefined || v === '' || isNaN(n) ? '' : n; }
+
+/** Quién respondió: una fila por persona, terminados y a medias. */
+function filasListado(){
+  return [
+    ...EMPRENDEDORES.map((e)=> ({ ...e, estado:'Terminado', llego:'5 de 5', etapa_txt:e.etapa_nombre || ETAPAS[e.etapa] })),
+    ...pendientes().map((a)=> ({ ...a, estado:'A medias', llego:`${a.paso || 0} de 5`, etapa_txt:'' })),
   ];
-  descargarCSV('diagnostico-emprendedores', cols, EMPRENDEDORES);
 }
 
-/** Quién respondió: una fila por persona, terminados y a medias, con su contacto. */
 function exportarListado(){
-  const medias = pendientes();
-  if(!EMPRENDEDORES.length && !medias.length){ alert('Todavía nadie ha respondido el diagnóstico.'); return; }
-  const filas = [
-    ...EMPRENDEDORES.map((e)=> ({ estado:'Terminado', llego:'5 de 5', etapa:e.etapa_nombre || ETAPAS[e.etapa],
-      puntaje:e.etapa_score, prioridad:e.prioridad_contacto, ...e })),
-    ...medias.map((a)=> ({ estado:'A medias', llego:`${a.paso || 0} de 5`, ...a })),
-  ];
-  descargarCSV('quien-respondio-diagnostico', [
-    ['Fecha', (r)=> r.creado_en ? new Date(r.creado_en).toISOString().slice(0,10) : ''],
-    ['Estado', (r)=> r.estado], ['Llegó hasta', (r)=> r.llego],
-    ['Nombre', (r)=> r.nombre], ['Emprendimiento', (r)=> r.nombre_emprendimiento],
-    ['Correo', (r)=> r.correo], ['Celular', (r)=> r.celular],
-    ['Ciudad', (r)=> r.ciudad], ['Departamento', (r)=> r.departamento],
-    ['Etapa', (r)=> r.etapa], ['Puntaje etapa', (r)=> r.puntaje], ['Prioridad contacto', (r)=> r.prioridad],
-  ], filas);
+  const filas = filasListado();
+  if(!filas.length){ alert('Todavía nadie ha respondido el diagnóstico.'); return; }
+  descargarExcel('quien-respondio-diagnostico', [{ nombre:'Quién respondió', cols:COLS_LISTADO, filas }]);
 }
 
-function descargarCSV(nombre, cols, filas){
+function exportarTodo(){
+  if(!EMPRENDEDORES.length){ alert('Todavía no hay diagnósticos para descargar.'); return; }
+  descargarExcel('diagnostico-emprendedores', [
+    { nombre:'Quién respondió', cols:COLS_LISTADO, filas:filasListado() },
+    { nombre:'Evaluaciones', cols:COLS_EVALUACION, filas:EMPRENDEDORES },
+  ]);
+}
+
+let CARGA_SHEETJS = null;
+function cargarSheetJS(){
+  if(window.XLSX) return Promise.resolve(window.XLSX);
+  CARGA_SHEETJS = CARGA_SHEETJS || new Promise((ok, mal)=>{
+    const s = document.createElement('script');
+    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+    s.integrity = 'sha512-r22gChDnGvBylk90+2e/ycr3RVrDi8DIOkIGNhJlKfuyQM4tIRAI062MaV8sfjQKYVGjOBaZBOA87z+IhZE9DA==';
+    s.crossOrigin = 'anonymous';
+    s.onload = ()=> ok(window.XLSX);
+    s.onerror = ()=> { CARGA_SHEETJS = null; mal(new Error('sin SheetJS')); };
+    document.head.appendChild(s);
+  });
+  return CARGA_SHEETJS;
+}
+
+async function descargarExcel(nombre, hojas){
+  let XLSX;
+  try{ XLSX = await cargarSheetJS(); }
+  catch(err){ descargarCSV(nombre, hojas[hojas.length - 1]); return; }
+  const libro = XLSX.utils.book_new();
+  hojas.forEach((h)=>{
+    const datos = [h.cols.map((c)=> c[0])].concat(h.filas.map((f)=> h.cols.map((c)=>{
+      const v = c[1](f);
+      return v === null || v === undefined ? '' : v;
+    })));
+    const hoja = XLSX.utils.aoa_to_sheet(datos);
+    // Ancho de cada columna según su contenido, sin pasar de 60 caracteres.
+    hoja['!cols'] = h.cols.map((c, i)=> ({
+      wch: Math.min(60, Math.max(10, ...datos.map((fila)=> String(fila[i] ?? '').length + 2))),
+    }));
+    hoja['!autofilter'] = { ref: XLSX.utils.encode_range({ s:{ r:0, c:0 }, e:{ r:datos.length - 1, c:h.cols.length - 1 } }) };
+    XLSX.utils.book_append_sheet(libro, hoja, h.nombre.slice(0,31));
+  });
+  XLSX.writeFile(libro, `${nombre}-${new Date().toISOString().slice(0,10)}.xlsx`);
+}
+
+/** Respaldo si el CDN no carga: CSV con punto y coma, que el Excel en español separa bien. */
+function descargarCSV(nombre, hoja){
   const celda = (v)=> {
     const s = v === null || v === undefined ? '' : String(v);
-    return /[",\n;]/.test(s) ? '"' + s.replace(/"/g,'""') + '"' : s;
+    return /[";\n]/.test(s) ? '"' + s.replace(/"/g,'""') + '"' : s;
   };
-  const lineas = [cols.map((c)=> c[0]).join(',')]
-    .concat(filas.map((e)=> cols.map((c)=> celda(c[1](e))).join(',')));
+  const lineas = [hoja.cols.map((c)=> c[0]).join(';')]
+    .concat(hoja.filas.map((e)=> hoja.cols.map((c)=> celda(c[1](e))).join(';')));
   // BOM para que Excel abra bien las tildes.
-  const blob = new Blob(['﻿' + lineas.join('\n')], { type:'text/csv;charset=utf-8' });
+  const blob = new Blob(['﻿' + lineas.join('\r\n')], { type:'text/csv;charset=utf-8' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
   a.download = `${nombre}-${new Date().toISOString().slice(0,10)}.csv`;
@@ -1049,7 +1110,7 @@ $('#btnCopiar').addEventListener('click', async ()=>{
 });
 
 $('#btnRecargar').addEventListener('click', refrescar);
-$('#btnCSV').addEventListener('click', exportarCSV);
+$('#btnCSV').addEventListener('click', exportarTodo);
 $('#btnSalir').addEventListener('click', salir);
 ['#buscar','#fEtapa','#fPrioridad','#fFreno'].forEach((s)=> $(s).addEventListener('input', pintarPersonas));
 
