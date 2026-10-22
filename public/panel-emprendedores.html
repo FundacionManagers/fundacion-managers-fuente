@@ -208,7 +208,8 @@ header .enlace:hover{color:var(--gold)}
    leía como una tarjeta cerrada. Ahora cada una lleva su botón, y la
    evaluación se abre en una vista propia con dirección propia (#ev=…), que
    se puede copiar y enviar a otra persona del equipo. */
-.ficha .ver{margin-left:auto; align-self:center; padding:8px 14px; font-size:13px; white-space:nowrap; text-decoration:none}
+.ficha .acciones{margin-left:auto; align-self:center; display:flex; gap:6px; flex-wrap:wrap}
+.ficha .acciones .btn{padding:8px 14px; font-size:13px; white-space:nowrap; text-decoration:none}
 .ficha .idn{cursor:pointer}
 .barra-ev{display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-bottom:18px}
 .barra-ev .volver{background:none; border:1px solid var(--n300); color:var(--text)}
@@ -284,9 +285,11 @@ header .enlace:hover{color:var(--gold)}
     <span class="coin" aria-hidden="true"></span>
     <div><h1>Resultados del diagnóstico emprendedor</h1><div class="sub">Fundación Managers</div></div>
     <div class="der">
-      <a class="enlace" href="panel.html">Panel de caracterización</a>
+      <!-- Absoluto: esta misma página se sirve también desde managers.iconeialabs.com/diagnostico/ -->
+      <a class="enlace" href="https://fundacionmanagers.com/panel.html">Panel de caracterización</a>
       <button class="btn btn-oscuro" id="btnRecargar" type="button">Recargar</button>
-      <button class="btn btn-primary" id="btnCSV" type="button">Descargar CSV</button>
+      <button class="btn btn-oscuro" id="btnListado" type="button" title="Quién respondió: terminados y a medias, con su contacto">Descargar listado</button>
+      <button class="btn btn-primary" id="btnCSV" type="button" title="Todas las evaluaciones con el resultado completo">Descargar todo (CSV)</button>
       <button class="btn btn-oscuro" id="btnSalir" type="button">Salir</button>
     </div>
   </header>
@@ -631,7 +634,10 @@ function ficha(e){
         <div class="meta">${esc(meta(e))}</div>
       </div>
       <div class="marcas">${marcas(e)}</div>
-      <a class="btn btn-primary ver" href="#ev=${esc(e.id)}">Ver evaluación →</a>
+      <span class="acciones">
+        <button class="btn btn-oscuro" type="button" data-pdf="${esc(e.id)}" title="Abre la evaluación lista para guardar en PDF">Descargar PDF</button>
+        <a class="btn btn-primary ver" href="#ev=${esc(e.id)}">Ver evaluación →</a>
+      </span>
       ${e.lectura_momento ? `<div class="lectura">${esc(e.lectura_momento)}</div>` : ''}
     </div>
   </article>`;
@@ -813,8 +819,15 @@ function ruta(){
   $('#copiado').hidden = true;
   mostrarVista('evaluacion');
   window.scrollTo(0, 0);
-  animarBarras();
+  // Las barras se imprimen con su ancho final, no a mitad de la animación.
+  document.querySelectorAll('#evaluacion .pista i[data-w]').forEach((i)=>{ i.style.transition = 'none'; i.style.width = i.dataset.w + '%'; });
+  if(IMPRIMIR_AL_ABRIR && e){
+    IMPRIMIR_AL_ABRIR = false;
+    setTimeout(()=> window.print(), 250);
+  }
 }
+
+let IMPRIMIR_AL_ABRIR = false;
 
 function abrirEvaluacion(id){ if(id) location.hash = 'ev=' + id; }
 
@@ -846,17 +859,40 @@ function exportarCSV(){
     ...EJES.map((x)=> ['Eje ' + x.titulo, (e)=> e['eje_'+x.id] == null ? '' : (GRADOS[Number(e['eje_'+x.id])] ?? e['eje_'+x.id])]),
     ['Lectura del momento', (e)=> e.lectura_momento],
   ];
+  descargarCSV('diagnostico-emprendedores', cols, EMPRENDEDORES);
+}
+
+/** Quién respondió: una fila por persona, terminados y a medias, con su contacto. */
+function exportarListado(){
+  const medias = pendientes();
+  if(!EMPRENDEDORES.length && !medias.length){ alert('Todavía nadie ha respondido el diagnóstico.'); return; }
+  const filas = [
+    ...EMPRENDEDORES.map((e)=> ({ estado:'Terminado', llego:'5 de 5', etapa:e.etapa_nombre || ETAPAS[e.etapa],
+      puntaje:e.etapa_score, prioridad:e.prioridad_contacto, ...e })),
+    ...medias.map((a)=> ({ estado:'A medias', llego:`${a.paso || 0} de 5`, ...a })),
+  ];
+  descargarCSV('quien-respondio-diagnostico', [
+    ['Fecha', (r)=> r.creado_en ? new Date(r.creado_en).toISOString().slice(0,10) : ''],
+    ['Estado', (r)=> r.estado], ['Llegó hasta', (r)=> r.llego],
+    ['Nombre', (r)=> r.nombre], ['Emprendimiento', (r)=> r.nombre_emprendimiento],
+    ['Correo', (r)=> r.correo], ['Celular', (r)=> r.celular],
+    ['Ciudad', (r)=> r.ciudad], ['Departamento', (r)=> r.departamento],
+    ['Etapa', (r)=> r.etapa], ['Puntaje etapa', (r)=> r.puntaje], ['Prioridad contacto', (r)=> r.prioridad],
+  ], filas);
+}
+
+function descargarCSV(nombre, cols, filas){
   const celda = (v)=> {
     const s = v === null || v === undefined ? '' : String(v);
     return /[",\n;]/.test(s) ? '"' + s.replace(/"/g,'""') + '"' : s;
   };
-  const filas = [cols.map((c)=> c[0]).join(',')]
-    .concat(EMPRENDEDORES.map((e)=> cols.map((c)=> celda(c[1](e))).join(',')));
+  const lineas = [cols.map((c)=> c[0]).join(',')]
+    .concat(filas.map((e)=> cols.map((c)=> celda(c[1](e))).join(',')));
   // BOM para que Excel abra bien las tildes.
-  const blob = new Blob(['﻿' + filas.join('\n')], { type:'text/csv;charset=utf-8' });
+  const blob = new Blob(['﻿' + lineas.join('\n')], { type:'text/csv;charset=utf-8' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = `diagnostico-emprendedores-${new Date().toISOString().slice(0,10)}.csv`;
+  a.download = `${nombre}-${new Date().toISOString().slice(0,10)}.csv`;
   document.body.appendChild(a); a.click(); a.remove();
 }
 
@@ -990,9 +1026,17 @@ $('#tabs').addEventListener('click', (e)=>{
 
 window.addEventListener('hashchange', ruta);
 $('#fichas').addEventListener('click', (e)=>{
+  const pdf = e.target.closest('[data-pdf]');
+  if(pdf){
+    IMPRIMIR_AL_ABRIR = true;
+    // Si ya estaba abierta esa misma, el hash no cambia y no hay hashchange.
+    if(idEnDireccion() === pdf.dataset.pdf) ruta(); else abrirEvaluacion(pdf.dataset.pdf);
+    return;
+  }
   const idn = e.target.closest('.idn[data-ev]');
   if(idn) abrirEvaluacion(idn.dataset.ev);
 });
+$('#btnListado').addEventListener('click', exportarListado);
 $('#btnVolver').addEventListener('click', volverALista);
 $('#btnAnterior').addEventListener('click', (e)=> abrirEvaluacion(e.currentTarget.dataset.ev));
 $('#btnSiguiente').addEventListener('click', (e)=> abrirEvaluacion(e.currentTarget.dataset.ev));
