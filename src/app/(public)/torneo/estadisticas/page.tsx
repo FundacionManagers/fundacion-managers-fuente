@@ -145,10 +145,17 @@ export default async function EstadisticasPage() {
               <p className="mt-2 font-mono text-[11px] uppercase tracking-widest text-neutral-500">
                 Goles en contra · la valla menos vencida
               </p>
-              <p className="mt-2 flex items-center gap-2 text-sm font-semibold text-neutral-200">
-                <TeamCrest slug={defensa.equipo} size={22} />
-                {getEquipo(defensa.equipo)?.nombre ?? defensa.equipo}
-              </p>
+              {/* Todos los que la comparten: con un empate, nombrar a uno solo
+                  le daba el premio por orden alfabético. */}
+              {[defensa.equipo, ...defensa.empatados].map((slug) => (
+                <p
+                  key={slug}
+                  className="mt-2 flex items-center gap-2 text-sm font-semibold text-neutral-200"
+                >
+                  <TeamCrest slug={slug} size={22} />
+                  {getEquipo(slug)?.nombre ?? slug}
+                </p>
+              ))}
             </Link>
           ) : null}
 

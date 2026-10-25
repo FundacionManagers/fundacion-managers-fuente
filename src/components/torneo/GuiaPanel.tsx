@@ -13,7 +13,16 @@ import {
   Table2,
   Users,
 } from 'lucide-react';
+import { ES_ENSAYOS } from '@/lib/entorno';
 import { cn } from '@/lib/utils';
+
+/**
+ * La dirección del panel de ESTE sitio. La guía del sitio de ensayos mandaba
+ * a escribir en fundacionmanagers.com/resultados, que es el panel real.
+ */
+const DIRECCION_PANEL = ES_ENSAYOS
+  ? 'jorgeicone.github.io/fundacion-managers-ensayos/resultados'
+  : 'fundacionmanagers.com/resultados';
 
 interface Paso {
   id: string;
@@ -50,8 +59,8 @@ const PASOS: Paso[] = [
     cuerpo: (
       <>
         <p>
-          Abre <strong className="text-amarillo">fundacionmanagers.com/resultados</strong> y escribe
-          tu correo. Puedes entrar de dos formas:
+          Abre <strong className="text-amarillo">{DIRECCION_PANEL}</strong> y escribe tu correo.
+          Puedes entrar de dos formas:
         </p>
         <ul className="mt-3 space-y-2">
           <li>
@@ -161,7 +170,7 @@ const PASOS: Paso[] = [
   },
   {
     id: 'eventos',
-    numero: '3b',
+    numero: '4',
     titulo: 'Eventos de la fecha',
     resumen: 'Lo que no es un partido',
     icono: ListOrdered,
@@ -179,7 +188,7 @@ const PASOS: Paso[] = [
   },
   {
     id: 'goleadores',
-    numero: '4',
+    numero: '5',
     titulo: 'Añadir los goleadores',
     resumen: 'Quién anotó cada gol',
     icono: ListOrdered,
@@ -206,7 +215,7 @@ const PASOS: Paso[] = [
   },
   {
     id: 'revisar',
-    numero: '5',
+    numero: '6',
     titulo: 'Revisar antes de publicar',
     resumen: 'El paso que evita errores públicos',
     icono: Table2,
@@ -241,7 +250,7 @@ const PASOS: Paso[] = [
   },
   {
     id: 'publicar',
-    numero: '6',
+    numero: '7',
     titulo: 'Publicar en la web',
     resumen: 'Guardar no es publicar',
     icono: Rocket,
@@ -258,8 +267,9 @@ const PASOS: Paso[] = [
             unos dos minutos.
           </li>
           <li>
-            <strong className="text-neutral-100">O esperar.</strong> El sitio se republica solo,
-            aunque puede tardar hasta una hora.
+            <strong className="text-neutral-100">O esperar.</strong> El sitio revisa la base cada 15
+            minutos y se republica solo si cambió algo. GitHub no garantiza la hora exacta de esa
+            revisión, así que puede tardar algo más.
           </li>
         </ul>
         <p className="mt-3">El aviso de arriba te dice siempre en qué estado estás:</p>

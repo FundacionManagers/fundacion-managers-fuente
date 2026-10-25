@@ -45,7 +45,7 @@ código y este archivo.
 | Pagos | **Bold** (`src/lib/pago.ts`, `PagoBold.tsx`) | El contrato decía Wompi + Stripe; se implementó Bold |
 | WhatsApp | **Enlaces `wa.me`** | La Cloud API del contrato no está |
 | Hosting | **GitHub Pages** + workflow propio | No es Vercel |
-| Tests | **`node:test`** (`npm test`, 116 pruebas) | No hay Vitest ni Playwright |
+| Tests | **`node:test`** (`npm test`, 117 pruebas) | No hay Vitest ni Playwright |
 
 **Lo que el contrato pedía y NO existe** (dilo si alguien lo da por hecho):
 tRPC, Prisma, Inngest, Sentry, Cloudinary, `next-intl`, Stripe, Wompi,
@@ -187,7 +187,7 @@ npm run dev          # desarrollo local
 npm run build        # build de producción (+ postbuild: build-info y huella de fotos)
 npm run typecheck    # tsc --noEmit
 npm run lint         # ESLint
-npm test             # node:test sobre la lógica pura (116 pruebas)
+npm test             # node:test sobre la lógica pura (117 pruebas)
 npm run format       # prettier
 ```
 

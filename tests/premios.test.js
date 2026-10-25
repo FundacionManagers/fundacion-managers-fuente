@@ -57,12 +57,12 @@ test('un partido sin jugar no suma nada', () => {
 
 test('el equipo más goleador sale de los goles a favor', () => {
   const totales = totalesDeEdicion([jugado('a', 'b', 5, 1), jugado('c', 'b', 4, 0)]);
-  assert.deepEqual(equipoMasGoleador(totales), { equipo: 'a', valor: 5 });
+  assert.deepEqual(equipoMasGoleador(totales), { equipo: 'a', valor: 5, empatados: [] });
 });
 
 test('la valla menos vencida premia al que menos recibió', () => {
   const totales = totalesDeEdicion([jugado('a', 'b', 1, 0), jugado('c', 'b', 3, 2)]);
-  assert.deepEqual(vallaMenosVencida(totales), { equipo: 'a', valor: 0 });
+  assert.deepEqual(vallaMenosVencida(totales), { equipo: 'a', valor: 0, empatados: [] });
 });
 
 test('a igualdad de goles recibidos gana quien jugó más partidos', () => {
@@ -74,6 +74,13 @@ test('a igualdad de goles recibidos gana quien jugó más partidos', () => {
     jugado('z', 'c', 2, 5),
   ]);
   assert.equal(vallaMenosVencida(totales).equipo, 'b');
+});
+
+test('si dos clubes empatan la valla, el premio los nombra a los dos', () => {
+  // Como La Banda Cruzada y Tranquilo Papi tras la Fecha 1: un gol recibido
+  // en un partido cada uno. Dárselo al primero por orden alfabético era falso.
+  const totales = totalesDeEdicion([jugado('lbc', 'pib', 6, 1), jugado('ori', 'tpa', 1, 3)]);
+  assert.deepEqual(vallaMenosVencida(totales), { equipo: 'lbc', valor: 1, empatados: ['tpa'] });
 });
 
 test('el podio sale de la final y del tercer puesto, no se escribe a mano', () => {

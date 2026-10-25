@@ -37,7 +37,7 @@ export default function GuiaPage() {
                 <span className="text-energy">una fecha</span>
               </h1>
               <p className="mt-5 max-w-lg text-sm text-neutral-300">
-                Seis pasos, de principio a fin. Toca cada uno para desplegarlo. No hace falta
+                Siete pasos, de principio a fin. Toca cada uno para desplegarlo. No hace falta
                 leerlos todos: la mayoría de las veces solo usarás el 2 y el 6.
               </p>
             </div>

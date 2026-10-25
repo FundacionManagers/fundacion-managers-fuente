@@ -4,6 +4,7 @@ import { NavAdmin } from '@/components/shared/NavAdmin';
 import { TorneoBackdrop } from '@/components/torneo/TorneoBackdrop';
 import { PanelTorneoCliente } from '@/components/torneo/PanelTorneoCliente';
 import { EDICION_ACTUAL, PERIODO_ACTUAL } from '@/lib/liga';
+import { EDICION_DATOS, ES_ENSAYOS } from '@/lib/entorno';
 
 export const metadata: Metadata = {
   title: 'Panel del torneo · Fundación Managers',
@@ -27,6 +28,9 @@ export default function ResultadosPage() {
               <span className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-amarillo to-naranja px-4 py-1.5 font-bufon text-xs font-bold uppercase tracking-[0.15em] text-carbon">
                 <span className="pulse-live h-2 w-2 rounded-full bg-carbon" />
                 Edición {EDICION_ACTUAL} · {PERIODO_ACTUAL}
+                {/* En ensayos se escribe en la copia, no en la edición real: el
+                    encabezado lo tiene que decir igual que la franja naranja. */}
+                {ES_ENSAYOS ? ` · copia de ensayo (datos ${EDICION_DATOS})` : ''}
               </span>
               <h1 className="mt-4 font-sport text-6xl uppercase leading-none text-neutral-50 md:text-7xl">
                 Sala de

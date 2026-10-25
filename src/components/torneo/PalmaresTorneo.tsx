@@ -31,6 +31,9 @@ export function PalmaresTorneo() {
 
   // Cuántas de esas ediciones tienen ya un campeón: la en curso no cuenta.
   const conCampeon = ediciones.filter((e) => campeonDe(e) !== undefined).length;
+  // «4 campeones» se leía como cuatro clubes, y son dos: Pomada Alfa con tres
+  // títulos y The Originals con uno. Se dicen las dos cifras.
+  const clubesCampeones = new Set(ediciones.map((e) => campeonDe(e)).filter(Boolean)).size;
 
   return (
     <div>
@@ -47,7 +50,8 @@ export function PalmaresTorneo() {
             no tiene campeón. Un palmarés cuenta títulos, así que se dicen las
             dos cifras y ninguna infla a la otra. */}
         <span className="hidden shrink-0 rounded-full border border-amarillo/40 bg-amarillo/10 px-4 py-1.5 font-bufon text-xs font-bold uppercase tracking-[0.15em] text-amarillo sm:block">
-          {conCampeon} {conCampeon === 1 ? 'campeón' : 'campeones'} en {ediciones.length} ediciones
+          {conCampeon} {conCampeon === 1 ? 'título' : 'títulos'} · {clubesCampeones}{' '}
+          {clubesCampeones === 1 ? 'campeón distinto' : 'campeones distintos'}
         </span>
       </div>
       <div className="energy-bar mt-5 h-1 w-full rounded-full opacity-70" />

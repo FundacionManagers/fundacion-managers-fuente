@@ -1266,12 +1266,22 @@ export function totalesDeEdicion(partidos: readonly PartidoLiga[]): TotalesEquip
 export interface PremioCifra {
   equipo: string;
   valor: number;
+  /**
+   * Los demás clubes que lo comparten: misma cifra y mismo desempate. Vacío
+   * casi siempre. Tras la Fecha 1 de la 5ª, La Banda Cruzada y Tranquilo
+   * Papi recibieron un gol cada uno en un partido, y publicar solo al primero
+   * por orden alfabético era dar el premio a uno que no lo había ganado solo.
+   */
+  empatados: string[];
 }
 
 /** El club que más goles marcó en la edición. Null si todavía no se jugó nada. */
 export function equipoMasGoleador(totales: readonly TotalesEquipo[]): PremioCifra | null {
-  const mejor = [...totales].sort((a, b) => b.gf - a.gf || a.equipo.localeCompare(b.equipo))[0];
-  return mejor ? { equipo: mejor.equipo, valor: mejor.gf } : null;
+  const orden = [...totales].sort((a, b) => b.gf - a.gf || a.equipo.localeCompare(b.equipo));
+  const mejor = orden[0];
+  if (!mejor) return null;
+  const empatados = orden.slice(1).filter((t) => t.gf === mejor.gf);
+  return { equipo: mejor.equipo, valor: mejor.gf, empatados: empatados.map((t) => t.equipo) };
 }
 
 /**
@@ -1281,10 +1291,13 @@ export function equipoMasGoleador(totales: readonly TotalesEquipo[]): PremioCifr
  * partidos es mejor defensa, y además evita premiar al que se fue antes.
  */
 export function vallaMenosVencida(totales: readonly TotalesEquipo[]): PremioCifra | null {
-  const mejor = [...totales].sort(
+  const orden = [...totales].sort(
     (a, b) => a.gc - b.gc || b.pj - a.pj || a.equipo.localeCompare(b.equipo),
-  )[0];
-  return mejor ? { equipo: mejor.equipo, valor: mejor.gc } : null;
+  );
+  const mejor = orden[0];
+  if (!mejor) return null;
+  const empatados = orden.slice(1).filter((t) => t.gc === mejor.gc && t.pj === mejor.pj);
+  return { equipo: mejor.equipo, valor: mejor.gc, empatados: empatados.map((t) => t.equipo) };
 }
 
 /** El podio de la edición. Cada puesto es null mientras no se pueda demostrar. */

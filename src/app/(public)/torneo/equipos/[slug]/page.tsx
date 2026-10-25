@@ -233,90 +233,112 @@ export default async function EquipoPage({ params }: Props) {
       {/* CONTENIDO */}
       <section className="grain relative z-10 overflow-hidden">
         <div className="relative mx-auto max-w-7xl px-6 py-16 lg:px-8 lg:py-24">
-          {/* Datos rapidos de la edicion en curso */}
-          <div className="stagger-in grid grid-cols-2 gap-4 sm:grid-cols-4">
-            {tiles.map((s) => (
-              <div
-                key={s.l}
-                className="rounded-2xl border border-white/10 bg-[#0d1218]/70 p-6 text-center"
-              >
-                <div className="text-energy font-sport text-5xl leading-none">{s.v}</div>
-                <div className="mt-2 font-mono text-[11px] uppercase tracking-widest text-neutral-500">
-                  {s.l}
-                </div>
-              </div>
-            ))}
-          </div>
-          <p className="mt-4 font-mono text-[11px] uppercase tracking-widest text-neutral-600">
-            {EDICION_ACTUAL}ª edición · {PERIODO_ACTUAL}
-          </p>
-
-          {/* PLANTEL */}
-          <div className="mt-20">
-            <p className="font-bufon text-sm font-bold uppercase tracking-[0.25em] text-naranja">
-              Plantel
-            </p>
-            <h2 className="mt-1 font-sport text-5xl uppercase leading-none text-neutral-50 md:text-7xl">
-              La nómina
-            </h2>
-            <div className="energy-bar mt-4 h-1 w-full rounded-full opacity-70" />
-
-            {nomina.length ? (
-              <>
-                <ul className="stagger-in mt-10 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
-                  {nomina.map((j) => (
-                    <li
-                      key={`${j.jugador}-${j.numero}`}
-                      className="group flex flex-col items-center gap-3 rounded-2xl border border-white/10 bg-[#0d1218]/70 p-5 transition-all duration-300 ease-managers hover:-translate-y-1.5 hover:border-amarillo/40"
-                    >
-                      <PlayerAvatar color={eq.color} numero={j.numero} size={88} />
-                      <div className="text-center">
-                        <p className="text-sm font-bold text-neutral-100">#{j.numero}</p>
-                        <p className="mt-1 text-[13px] font-semibold leading-tight text-neutral-200">
-                          {j.jugador}
-                        </p>
-                        <p className="mt-1 text-[11px] uppercase tracking-widest text-amarillo">
-                          {j.goles} {j.goles === 1 ? 'gol' : 'goles'}
-                        </p>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-                <p className="mt-8 max-w-3xl text-xs leading-relaxed text-neutral-600">
-                  Jugadores con gol registrado en la {EDICION_ACTUAL}ª edición: nombre y dorsal
-                  salen de la misma planilla que la bota de oro. La nómina completa se publica
-                  cuando la organización cargue la inscripción del club.
-                </p>
-              </>
-            ) : (
-              <p className="mt-10 rounded-2xl border border-dashed border-white/15 p-8 text-sm text-neutral-500">
-                Todavía no hay jugadores de {eq.nombre} con gol registrado en la {EDICION_ACTUAL}ª
-                edición. La nómina se publica cuando la organización cargue la inscripción del club.
-              </p>
-            )}
-          </div>
-
-          {/* PARTIDOS DE LA EDICION EN CURSO */}
-          <div className="mt-20">
-            <p className="font-bufon text-sm font-bold uppercase tracking-[0.25em] text-naranja">
-              Camino en la {EDICION_ACTUAL}ª edición
-            </p>
-            <h2 className="mt-1 font-sport text-5xl uppercase leading-none text-neutral-50 md:text-7xl">
-              Partidos
-            </h2>
-            <div className="energy-bar mt-4 h-1 w-full rounded-full opacity-70" />
-            {partidosLiga.length ? (
-              <ul className="stagger-in mt-8 space-y-2.5">
-                {partidosLiga.map((p) => (
-                  <FilaLiga key={p.id} p={p} slug={eq.slug} proximo={p.id === proximoPropio?.id} />
+          {/* Un club que no juega la edición en curso no tiene puesto, puntos
+              ni nómina que mostrar. Su ficha decía «5ª edición» y «aún sin
+              partidos cargados», que daba a entender que participaba. Va un
+              aviso y, debajo, su historial abierto. */}
+          {grupo ? (
+            <>
+              {/* Datos rapidos de la edicion en curso */}
+              <div className="stagger-in grid grid-cols-2 gap-4 sm:grid-cols-4">
+                {tiles.map((s) => (
+                  <div
+                    key={s.l}
+                    className="rounded-2xl border border-white/10 bg-[#0d1218]/70 p-6 text-center"
+                  >
+                    <div className="text-energy font-sport text-5xl leading-none">{s.v}</div>
+                    <div className="mt-2 font-mono text-[11px] uppercase tracking-widest text-neutral-500">
+                      {s.l}
+                    </div>
+                  </div>
                 ))}
-              </ul>
-            ) : (
-              <p className="mt-8 rounded-2xl border border-dashed border-white/15 p-8 text-sm text-neutral-500">
-                Aún sin partidos cargados para este club en la edición en curso.
+              </div>
+              <p className="mt-4 font-mono text-[11px] uppercase tracking-widest text-neutral-600">
+                {EDICION_ACTUAL}ª edición · {PERIODO_ACTUAL}
               </p>
-            )}
-          </div>
+
+              {/* PLANTEL */}
+              <div className="mt-20">
+                <p className="font-bufon text-sm font-bold uppercase tracking-[0.25em] text-naranja">
+                  Plantel
+                </p>
+                <h2 className="mt-1 font-sport text-5xl uppercase leading-none text-neutral-50 md:text-7xl">
+                  La nómina
+                </h2>
+                <div className="energy-bar mt-4 h-1 w-full rounded-full opacity-70" />
+
+                {nomina.length ? (
+                  <>
+                    <ul className="stagger-in mt-10 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
+                      {nomina.map((j) => (
+                        <li
+                          key={`${j.jugador}-${j.numero}`}
+                          className="group flex flex-col items-center gap-3 rounded-2xl border border-white/10 bg-[#0d1218]/70 p-5 transition-all duration-300 ease-managers hover:-translate-y-1.5 hover:border-amarillo/40"
+                        >
+                          <PlayerAvatar color={eq.color} numero={j.numero} size={88} />
+                          <div className="text-center">
+                            <p className="text-sm font-bold text-neutral-100">#{j.numero}</p>
+                            <p className="mt-1 text-[13px] font-semibold leading-tight text-neutral-200">
+                              {j.jugador}
+                            </p>
+                            <p className="mt-1 text-[11px] uppercase tracking-widest text-amarillo">
+                              {j.goles} {j.goles === 1 ? 'gol' : 'goles'}
+                            </p>
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                    <p className="mt-8 max-w-3xl text-xs leading-relaxed text-neutral-600">
+                      Jugadores con gol registrado en la {EDICION_ACTUAL}ª edición: nombre y dorsal
+                      salen de la misma planilla que la bota de oro. La nómina completa se publica
+                      cuando la organización cargue la inscripción del club.
+                    </p>
+                  </>
+                ) : (
+                  <p className="mt-10 rounded-2xl border border-dashed border-white/15 p-8 text-sm text-neutral-500">
+                    Todavía no hay jugadores de {eq.nombre} con gol registrado en la{' '}
+                    {EDICION_ACTUAL}ª edición. La nómina se publica cuando la organización cargue la
+                    inscripción del club.
+                  </p>
+                )}
+              </div>
+
+              {/* PARTIDOS DE LA EDICION EN CURSO */}
+              <div className="mt-20">
+                <p className="font-bufon text-sm font-bold uppercase tracking-[0.25em] text-naranja">
+                  Camino en la {EDICION_ACTUAL}ª edición
+                </p>
+                <h2 className="mt-1 font-sport text-5xl uppercase leading-none text-neutral-50 md:text-7xl">
+                  Partidos
+                </h2>
+                <div className="energy-bar mt-4 h-1 w-full rounded-full opacity-70" />
+                {partidosLiga.length ? (
+                  <ul className="stagger-in mt-8 space-y-2.5">
+                    {partidosLiga.map((p) => (
+                      <FilaLiga
+                        key={p.id}
+                        p={p}
+                        slug={eq.slug}
+                        proximo={p.id === proximoPropio?.id}
+                      />
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="mt-8 rounded-2xl border border-dashed border-white/15 p-8 text-sm text-neutral-500">
+                    Aún sin partidos cargados para este club en la edición en curso.
+                  </p>
+                )}
+              </div>
+            </>
+          ) : (
+            <p className="rounded-2xl border border-white/10 bg-black/40 p-6 text-sm leading-relaxed text-neutral-300">
+              <strong className="text-neutral-100">{eq.nombre}</strong> no juega la{' '}
+              {ordinalFemenino(EDICION_ACTUAL)} edición.
+              {historial.length
+                ? ` Abajo está su recorrido en la fase final de la ${ordinalFemenino(EDICION_ANTERIOR.numero)}.`
+                : ''}
+            </p>
+          )}
 
           {/* ===== HISTORIAL: LLAVE DE LA EDICIÓN ANTERIOR, PLEGADO =====
 
@@ -329,7 +351,7 @@ export default async function EquipoPage({ params }: Props) {
               sale de EDICION_ANTERIOR, así que al abrir la 5ª edición no habrá
               nada que corregir aquí. */}
           {historial.length ? (
-            <details className="group mt-20 border-t border-white/10 pt-8">
+            <details open={!grupo} className="group mt-20 border-t border-white/10 pt-8">
               <summary className="flex cursor-pointer list-none items-center gap-2 text-[11px] uppercase tracking-[0.2em] text-neutral-600 transition-colors hover:text-neutral-400">
                 <ChevronRight
                   size={12}

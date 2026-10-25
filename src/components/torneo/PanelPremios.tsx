@@ -45,6 +45,13 @@ interface Casilla {
   tono?: 'oro' | 'plata' | 'bronce' | 'normal';
 }
 
+/** ' · empatado con Tranquilo Papi', o nada si el premio es de uno solo. */
+function conEmpate(empatados: readonly string[]): string {
+  if (empatados.length === 0) return '';
+  const nombres = empatados.map((s) => getEquipo(s)?.nombre ?? s);
+  return ` · empatado con ${nombres.join(' y ')}`;
+}
+
 function Casilla({ c }: { c: Casilla }) {
   const eq = c.equipo ? getEquipo(c.equipo) : undefined;
   const definido = Boolean(c.equipo || c.persona);
@@ -143,7 +150,7 @@ export function PanelPremios({ datos }: { datos: DatosLiga }) {
       icono: Target,
       equipo: artillero?.equipo,
       detalle: artillero
-        ? `${artillero.valor} ${artillero.valor === 1 ? 'gol' : 'goles'} en la edición`
+        ? `${artillero.valor} ${artillero.valor === 1 ? 'gol' : 'goles'} en la edición${conEmpate(artillero.empatados)}`
         : null,
     },
     {
@@ -160,7 +167,7 @@ export function PanelPremios({ datos }: { datos: DatosLiga }) {
       icono: ShieldCheck,
       equipo: valla?.equipo,
       detalle: valla
-        ? `${valla.valor} ${valla.valor === 1 ? 'gol' : 'goles'} en contra en la edición`
+        ? `${valla.valor} ${valla.valor === 1 ? 'gol' : 'goles'} en contra en la edición${conEmpate(valla.empatados)}`
         : null,
     },
     {
