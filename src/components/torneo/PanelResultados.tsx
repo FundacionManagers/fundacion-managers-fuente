@@ -11,16 +11,21 @@ import {
   calcularPosiciones,
   CALENDARIO_FASE_FINAL,
   COLUMNAS_TABLA,
+  COPAS,
+  copaDe,
   CRUCES_POR_FASE,
+  cruzarFaseFinal,
   equipoMasGoleador,
   ladoGanador,
-  ORDEN_FASES,
   podioDeEdicion,
+  posicionesPorGrupo,
   tablaJuegoLimpio,
   totalesDeEdicion,
   vallaMenosVencida,
+  TITULO_COPA,
   TITULO_FASE,
   TOTAL_JORNADAS,
+  type Copa,
   type FaseFinal,
   type PartidoLiga,
 } from '@/lib/liga';
@@ -62,7 +67,19 @@ const SECCIONES: { key: Seccion; label: string }[] = [
  * es el mismo: lo único que cambia es qué partidos se listan y qué dice el
  * botón de guardar.
  */
-type Ronda = { tipo: 'jornada'; jornada: number } | { tipo: 'fase'; fase: FaseFinal };
+type Ronda = { tipo: 'jornada'; jornada: number } | { tipo: 'fase'; fase: FaseFinal; copa: Copa };
+
+/**
+ * Las rondas de la fase final de la edición en curso, en su orden. Salen del
+ * calendario anunciado: en la 5ª no hay cuartos, y un botón «Cuartos» en el
+ * panel invitaba a crear un cruce que no existe.
+ */
+const FASES_FINAL: readonly FaseFinal[] = CALENDARIO_FASE_FINAL.map((r) => r.fase);
+
+/** Los cruces de una ronda y copa concretas. */
+function deLaRonda(partidos: readonly PartidoPanel[], fase: FaseFinal, copa: Copa) {
+  return partidos.filter((p) => p.fase === fase && copaDe(p) === copa);
+}
 
 /** Nombre corto para el botón del selector. */
 const FASE_CORTA: Record<FaseFinal, string> = {
@@ -73,7 +90,9 @@ const FASE_CORTA: Record<FaseFinal, string> = {
 };
 
 function tituloRonda(r: Ronda): string {
-  return r.tipo === 'jornada' ? `Fecha ${r.jornada}` : TITULO_FASE[r.fase];
+  return r.tipo === 'jornada'
+    ? `Fecha ${r.jornada}`
+    : `${TITULO_COPA[r.copa]} · ${TITULO_FASE[r.fase]}`;
 }
 
 /** Campo numérico que admite quedar vacío mientras se escribe. */
@@ -131,17 +150,20 @@ export function PanelResultados({ salir, correo }: { salir: () => Promise<void>;
       if (fechaPendiente != null) {
         setRonda({ tipo: 'jornada', jornada: fechaPendiente });
       } else {
-        const fasePendiente = ORDEN_FASES.find((f) => {
-          const suyos = datos.partidos.filter((p) => p.fase === f);
+        // Ronda por ronda, la Oro antes que la Plata: lo primero con cruces a
+        // medio jugar; si no hay, la última ronda que tenga algo cargado; y si
+        // la fase final está vacía, las semifinales de la Oro, que es donde
+        // toca crear los primeros cruces.
+        const pares = FASES_FINAL.flatMap((fase) => COPAS.map(({ copa }) => ({ fase, copa })));
+        const pendiente = pares.find(({ fase, copa }) => {
+          const suyos = deLaRonda(datos.partidos, fase, copa);
           return suyos.length > 0 && suyos.some((p) => !p.jugado);
         });
-        const ultimaFase = ORDEN_FASES.filter((f) => datos.partidos.some((p) => p.fase === f)).at(
-          -1,
-        );
-        const destino = fasePendiente ?? ultimaFase;
-        setRonda(
-          destino ? { tipo: 'fase', fase: destino } : { tipo: 'jornada', jornada: TOTAL_JORNADAS },
-        );
+        const ultima = pares
+          .filter(({ fase, copa }) => deLaRonda(datos.partidos, fase, copa).length > 0)
+          .at(-1);
+        const destino = pendiente ?? ultima ?? { fase: FASES_FINAL[0]!, copa: 'oro' as const };
+        setRonda({ tipo: 'fase', ...destino });
       }
     } catch {
       setError('No se pudieron cargar los datos. Revisa tu conexión y vuelve a intentar.');
@@ -174,8 +196,9 @@ export function PanelResultados({ salir, correo }: { salir: () => Promise<void>;
 
   const problemas = useMemo(() => (estado ? descuadres(estado) : []), [estado]);
 
-  // Tabla calculada con lo que hay AHORA en pantalla, aunque no se haya
+  // Tablas calculadas con lo que hay AHORA en pantalla, aunque no se haya
   // guardado. Deja ver el efecto de un marcador antes de tocar nada real.
+  // Una por grupo: los puestos que cuentan para las copas son los del grupo.
   const previa = useMemo(() => {
     if (!estado) return [];
     // La tabla de posiciones es de la fase regular: los cruces eliminatorios
@@ -197,13 +220,13 @@ export function PanelResultados({ salir, correo }: { salir: () => Promise<void>;
     const disciplina = Object.fromEntries(
       estado.disciplina.map((d) => [d.equipo, { amarillas: d.amarillas, rojas: d.rojas }]),
     );
-    return calcularPosiciones(comoLiga, disciplina);
+    return posicionesPorGrupo(comoLiga, disciplina);
   }, [estado]);
   const partidosRonda = useMemo(() => {
     if (!estado) return [];
     return ronda.tipo === 'jornada'
       ? estado.partidos.filter((p) => p.fase === 'grupos' && p.jornada === ronda.jornada)
-      : estado.partidos.filter((p) => p.fase === ronda.fase);
+      : deLaRonda(estado.partidos, ronda.fase, ronda.copa);
   }, [estado, ronda]);
 
   function tocarPartido(id: string, cambios: Partial<PartidoPanel>) {
@@ -418,39 +441,46 @@ export function PanelResultados({ salir, correo }: { salir: () => Promise<void>;
                 </button>
               );
             })}
-
-            {/* Eliminatoria. Aparecen las cuatro rondas siempre, tengan o no
-                cruces: la que está vacía es justo donde se crean. */}
-            <span className="mx-1 h-8 w-px shrink-0 bg-white/15" aria-hidden />
-            {ORDEN_FASES.map((f) => {
-              const suyos = estado.partidos.filter((p) => p.fase === f);
-              const completa = suyos.length > 0 && suyos.every((p) => p.jugado);
-              const activa = ronda.tipo === 'fase' && ronda.fase === f;
-              return (
-                <button
-                  key={f}
-                  onClick={() => setRonda({ tipo: 'fase', fase: f })}
-                  className={cn(
-                    'h-10 rounded-lg px-3 font-bufon text-xs font-bold uppercase tracking-[0.1em] transition-colors',
-                    activa
-                      ? 'bg-amarillo text-carbon'
-                      : completa
-                        ? 'border border-emerald-500/40 text-emerald-400'
-                        : 'border border-white/15 text-neutral-400 hover:border-amarillo/50',
-                  )}
-                  title={
-                    suyos.length === 0
-                      ? `${TITULO_FASE[f]}: sin cruces cargados`
-                      : completa
-                        ? `${TITULO_FASE[f]} completa`
-                        : `${TITULO_FASE[f]} pendiente`
-                  }
-                >
-                  {FASE_CORTA[f]}
-                </button>
-              );
-            })}
           </div>
+
+          {/* Eliminatoria, una fila por copa. Aparecen todas sus rondas
+              siempre, tengan o no cruces: la que está vacía es justo donde se
+              crean. */}
+          {COPAS.map(({ copa, titulo }) => (
+            <div key={copa} className="mt-3 flex flex-wrap items-center gap-2">
+              <span className="w-24 shrink-0 font-bufon text-[11px] font-bold uppercase tracking-[0.12em] text-neutral-500">
+                {titulo}
+              </span>
+              {FASES_FINAL.map((f) => {
+                const suyos = deLaRonda(estado.partidos, f, copa);
+                const completa = suyos.length > 0 && suyos.every((p) => p.jugado);
+                const activa = ronda.tipo === 'fase' && ronda.fase === f && ronda.copa === copa;
+                return (
+                  <button
+                    key={f}
+                    onClick={() => setRonda({ tipo: 'fase', fase: f, copa })}
+                    className={cn(
+                      'h-10 rounded-lg px-3 font-bufon text-xs font-bold uppercase tracking-[0.1em] transition-colors',
+                      activa
+                        ? 'bg-amarillo text-carbon'
+                        : completa
+                          ? 'border border-emerald-500/40 text-emerald-400'
+                          : 'border border-white/15 text-neutral-400 hover:border-amarillo/50',
+                    )}
+                    title={
+                      suyos.length === 0
+                        ? `${titulo} · ${TITULO_FASE[f]}: sin cruces cargados`
+                        : completa
+                          ? `${titulo} · ${TITULO_FASE[f]} completa`
+                          : `${titulo} · ${TITULO_FASE[f]} pendiente`
+                    }
+                  >
+                    {FASE_CORTA[f]}
+                  </button>
+                );
+              })}
+            </div>
+          ))}
 
           <p className="mt-4 font-bufon text-xs font-bold uppercase tracking-[0.15em] text-amarillo">
             {tituloRonda(ronda)}
@@ -567,7 +597,13 @@ export function PanelResultados({ salir, correo }: { salir: () => Promise<void>;
           </ul>
 
           {ronda.tipo === 'fase' ? (
-            <NuevoCruceForm fase={ronda.fase} estado={estado} onCreado={() => void recargar()} />
+            <NuevoCruceForm
+              key={`${ronda.copa}-${ronda.fase}`}
+              fase={ronda.fase}
+              copa={ronda.copa}
+              estado={estado}
+              onCreado={() => void recargar()}
+            />
           ) : null}
 
           <button
@@ -667,61 +703,71 @@ export function PanelResultados({ salir, correo }: { salir: () => Promise<void>;
             Así quedaría la tabla con lo que tienes en pantalla ahora mismo, esté guardado o no.
             Cambia un marcador y vuelve aquí: se recalcula sin tocar el sitio.
           </p>
-          <div className="mt-5 overflow-x-auto rounded-2xl border border-white/10 bg-black/40">
-            <table className="w-full min-w-[560px] border-collapse text-sm">
-              <thead>
-                <tr className="border-b border-amarillo/30 bg-amarillo/10">
-                  <th className="px-3 py-2.5 text-center font-bufon text-xs uppercase text-amarillo">
-                    Pos
-                  </th>
-                  <th className="px-3 py-2.5 text-left font-bufon text-xs uppercase text-amarillo">
-                    Equipo
-                  </th>
-                  {COLUMNAS_TABLA.map((c) => (
-                    <th
-                      key={c.key}
-                      title={c.largo}
-                      className="px-2 py-2.5 text-center font-bufon text-xs uppercase text-amarillo"
-                    >
-                      {c.corto}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {previa.map((f) => (
-                  <tr key={f.equipo} className="border-b border-white/5 last:border-0">
-                    <td className="px-3 py-2.5 text-center tabular-nums text-neutral-400">
-                      {f.posicion}
-                    </td>
-                    <td className="whitespace-nowrap px-3 py-2.5">
-                      <span className="flex items-center gap-2">
-                        <TeamCrest slug={f.equipo} size={24} />
-                        <span className="font-semibold text-neutral-100">
-                          {getEquipo(f.equipo)?.nombre ?? f.equipo}
-                        </span>
-                      </span>
-                    </td>
-                    {COLUMNAS_TABLA.map((c) => (
-                      <td
-                        key={c.key}
-                        className={cn(
-                          'px-2 py-2.5 text-center tabular-nums',
-                          c.key === 'pts'
-                            ? 'font-sport text-base text-amarillo'
-                            : 'text-neutral-300',
-                          c.key === 'dg' && f.dg > 0 && 'text-emerald-400',
-                          c.key === 'dg' && f.dg < 0 && 'text-red-400',
-                        )}
-                      >
-                        {c.key === 'dg' && f.dg > 0 ? `+${f.dg}` : f[c.key]}
-                      </td>
+          {previa.map((t) => (
+            <div key={t.grupo} className="mt-6">
+              <p className="font-sport text-2xl uppercase leading-none text-neutral-100">
+                Grupo {t.grupo}
+              </p>
+              <div className="mt-3 overflow-x-auto rounded-2xl border border-white/10 bg-black/40">
+                <table className="w-full min-w-[560px] border-collapse text-sm">
+                  <thead>
+                    <tr className="border-b border-amarillo/30 bg-amarillo/10">
+                      <th className="px-3 py-2.5 text-center font-bufon text-xs uppercase text-amarillo">
+                        Pos
+                      </th>
+                      <th className="px-3 py-2.5 text-left font-bufon text-xs uppercase text-amarillo">
+                        Equipo
+                      </th>
+                      {COLUMNAS_TABLA.map((c) => (
+                        <th
+                          key={c.key}
+                          title={c.largo}
+                          className="px-2 py-2.5 text-center font-bufon text-xs uppercase text-amarillo"
+                        >
+                          {c.corto}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {t.filas.map((f) => (
+                      <tr key={f.equipo} className="border-b border-white/5 last:border-0">
+                        <td className="px-3 py-2.5 text-center tabular-nums text-neutral-400">
+                          {f.posicion}
+                        </td>
+                        <td className="whitespace-nowrap px-3 py-2.5">
+                          <span className="flex items-center gap-2">
+                            <TeamCrest slug={f.equipo} size={24} />
+                            <span className="font-semibold text-neutral-100">
+                              {getEquipo(f.equipo)?.nombre ?? f.equipo}
+                            </span>
+                            <span className="font-mono text-[10px] uppercase tracking-widest text-neutral-500">
+                              {f.posicion <= 2 ? 'Oro' : 'Plata'}
+                            </span>
+                          </span>
+                        </td>
+                        {COLUMNAS_TABLA.map((c) => (
+                          <td
+                            key={c.key}
+                            className={cn(
+                              'px-2 py-2.5 text-center tabular-nums',
+                              c.key === 'pts'
+                                ? 'font-sport text-base text-amarillo'
+                                : 'text-neutral-300',
+                              c.key === 'dg' && f.dg > 0 && 'text-emerald-400',
+                              c.key === 'dg' && f.dg < 0 && 'text-red-400',
+                            )}
+                          >
+                            {c.key === 'dg' && f.dg > 0 ? `+${f.dg}` : f[c.key]}
+                          </td>
+                        ))}
+                      </tr>
                     ))}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          ))}
         </div>
       ) : null}
 
@@ -738,51 +784,42 @@ export function PanelResultados({ salir, correo }: { salir: () => Promise<void>;
  * Alta de un cruce de la fase final.
  *
  * Existe para que la organización no dependa de nadie con acceso a la base:
- * cuando se juegan los cuartos, aquí mismo se arman las semifinales. Cuántos
+ * cuando se cierran los grupos, aquí mismo se arman las semifinales. Cuántos
  * cruces lleva cada ronda está en `CRUCES_POR_FASE`, así que el formulario
  * avisa cuando ya están todos y no deja crear de más por descuido.
  *
- * Los equipos que propone son los ganadores de la ronda anterior que todavía
- * no tienen rival: es casi siempre lo que toca elegir, y ahorra buscarlos en
- * una lista de ocho.
+ * Cada cruce nace con su copa: en la 5ª hay dos semifinales 1 y dos finales,
+ * y sin la copa la Llave no sabría en qué cuadro pintarlo.
+ *
+ * Lo que propone depende de la ronda, y sale de los mismos cálculos que usa
+ * el sitio: las semifinales, de las tablas de grupo (1º A vs 2º B…); la
+ * final, de los ganadores de las semifinales de esa copa; el tercer puesto,
+ * de sus perdedores. Antes proponía «los ganadores de la ronda anterior» para
+ * todo, y en el tercer puesto ofrecía justo a los dos finalistas.
  */
 function NuevoCruceForm({
   fase,
+  copa,
   estado,
   onCreado,
 }: {
   fase: FaseFinal;
+  copa: Copa;
   estado: EstadoTorneo;
   onCreado: () => void;
 }) {
-  const anterior = ORDEN_FASES[ORDEN_FASES.indexOf(fase) - 1];
+  /** Las parejas que tocan en esta ronda, en orden. Vacío si aún no se sabe. */
+  const sugeridas = useMemo(() => parejasSugeridas(fase, copa, estado), [fase, copa, estado]);
 
-  /** Quién ganó cada partido de la ronda previa. Los empates no dan ganador. */
-  const clasificados = useMemo(() => {
-    if (!anterior) return [];
-    return estado.partidos
-      .filter((p) => p.fase === anterior && p.jugado)
-      .map((p) => {
-        const gana = ladoGanador(
-          p.golesLocal,
-          p.golesVisitante,
-          p.penalesLocal,
-          p.penalesVisitante,
-        );
-        return gana === 'local' ? p.local : gana === 'visitante' ? p.visitante : null;
-      })
-      .filter((x): x is string => x != null);
-  }, [estado.partidos, anterior]);
-
-  /** Los clasificados que aún no tienen cruce en esta ronda. */
+  /** Las parejas sugeridas que todavía no tienen cruce creado. */
   const disponibles = useMemo(() => {
     const yaCruzados = new Set(
-      estado.partidos.filter((p) => p.fase === fase).flatMap((p) => [p.local, p.visitante]),
+      deLaRonda(estado.partidos, fase, copa).flatMap((p) => [p.local, p.visitante]),
     );
-    return clasificados.filter((eq) => !yaCruzados.has(eq));
-  }, [clasificados, estado.partidos, fase]);
+    return sugeridas.filter(([a, b]) => !yaCruzados.has(a) && !yaCruzados.has(b));
+  }, [sugeridas, estado.partidos, fase, copa]);
 
-  const cargados = estado.partidos.filter((p) => p.fase === fase).length;
+  const cargados = deLaRonda(estado.partidos, fase, copa).length;
   const faltan = CRUCES_POR_FASE[fase] - cargados;
 
   const [abierto, setAbierto] = useState(false);
@@ -797,8 +834,8 @@ function NuevoCruceForm({
   // emparejar, el día de la ronda y la hora en que arranca la jornada.
   useEffect(() => {
     if (!abierto) return;
-    setLocal((v) => v || disponibles[0] || '');
-    setVisitante((v) => v || disponibles[1] || '');
+    setLocal((v) => v || disponibles[0]?.[0] || '');
+    setVisitante((v) => v || disponibles[0]?.[1] || '');
     setFecha((v) => v || fechaSugerida(fase, estado));
     setHora((v) => v || '08:00');
   }, [abierto, disponibles, fase, estado]);
@@ -810,7 +847,7 @@ function NuevoCruceForm({
     setTrabajando(true);
     setError('');
     try {
-      await crearCruce({ fase, fecha, hora, local, visitante });
+      await crearCruce({ fase, copa, fecha, hora, local, visitante });
       setLocal('');
       setVisitante('');
       setAbierto(false);
@@ -849,13 +886,16 @@ function NuevoCruceForm({
   return (
     <div className="mt-4 rounded-xl border border-amarillo/30 bg-black/50 p-4">
       <p className="font-bufon text-xs font-bold uppercase tracking-[0.15em] text-amarillo">
-        Nuevo cruce · {TITULO_FASE[fase]}
+        Nuevo cruce · {TITULO_COPA[copa]} · {TITULO_FASE[fase]}
       </p>
 
-      {anterior && clasificados.length > 0 ? (
+      {sugeridas.length > 0 ? (
         <p className="mt-2 text-xs text-neutral-400">
-          Ganaron {TITULO_FASE[anterior].toLowerCase()}:{' '}
-          {clasificados.map((eq) => getEquipo(eq)?.nombre ?? eq).join(', ')}.
+          Tocan:{' '}
+          {sugeridas
+            .map(([a, b]) => `${getEquipo(a)?.nombre ?? a} vs ${getEquipo(b)?.nombre ?? b}`)
+            .join(' · ')}
+          .
         </p>
       ) : null}
 
@@ -911,7 +951,60 @@ function NuevoCruceForm({
   );
 }
 
-/** Desplegable con los ocho clubes de la edición. */
+/**
+ * Quién debería jugar cada cruce de una ronda, según lo que ya está cargado.
+ *
+ * - Semifinales: de las tablas de grupo, con `cruzarFaseFinal`, la misma
+ *   función que dibuja la Llave. Solo cuando la fase de grupos está completa:
+ *   antes es una proyección y no se debe crear un cruce sobre ella.
+ * - Final: los ganadores de las dos semifinales de esa copa.
+ * - Tercer puesto: los perdedores.
+ *
+ * Una semifinal empatada sin tanda no da ganador, y esa pareja no se propone.
+ */
+function parejasSugeridas(fase: FaseFinal, copa: Copa, estado: EstadoTorneo): [string, string][] {
+  const grupos = estado.partidos.filter((p) => p.fase === 'grupos');
+
+  if (fase === 'semifinal') {
+    if (grupos.length === 0 || grupos.some((p) => !p.jugado)) return [];
+    const comoLiga: PartidoLiga[] = grupos.map((p) => ({
+      id: p.id,
+      jornada: p.jornada,
+      fecha: p.fecha,
+      hora: p.hora,
+      local: p.local,
+      visitante: p.visitante,
+      golesLocal: p.golesLocal,
+      golesVisitante: p.golesVisitante,
+      estado: 'jugado',
+    }));
+    const disciplina = Object.fromEntries(
+      estado.disciplina.map((d) => [d.equipo, { amarillas: d.amarillas, rojas: d.rojas }]),
+    );
+    return cruzarFaseFinal(posicionesPorGrupo(comoLiga, disciplina))
+      .filter((c) => c.copa === copa && c.local && c.visitante)
+      .map((c) => [c.local!, c.visitante!]);
+  }
+
+  // Final y tercer puesto salen de las semifinales de la misma copa.
+  const lados = deLaRonda(estado.partidos, 'semifinal', copa)
+    .filter((p) => p.jugado)
+    .map((p) => {
+      const gana = ladoGanador(p.golesLocal, p.golesVisitante, p.penalesLocal, p.penalesVisitante);
+      if (!gana) return null;
+      return gana === 'local'
+        ? { ganador: p.local, perdedor: p.visitante }
+        : { ganador: p.visitante, perdedor: p.local };
+    })
+    .filter((x): x is { ganador: string; perdedor: string } => x != null);
+  if (lados.length !== 2) return [];
+  const [a, b] = lados as [(typeof lados)[0], (typeof lados)[0]];
+  if (fase === 'final') return [[a.ganador, b.ganador]];
+  if (fase === 'tercer-puesto') return [[a.perdedor, b.perdedor]];
+  return [];
+}
+
+/** Desplegable con los clubes de la edición. */
 function SelectEquipo({ valor, onChange }: { valor: string; onChange: (v: string) => void }) {
   return (
     <select
@@ -937,6 +1030,7 @@ function SelectEquipo({ valor, onChange }: { valor: string; onChange: (v: string
  * anunció la organización en el calendario de la fase final.
  */
 function fechaSugerida(fase: FaseFinal, estado: EstadoTorneo): string {
+  // Sirve el de cualquier copa: las dos juegan cada ronda el mismo día.
   const hermano = estado.partidos.find((p) => p.fase === fase);
   if (hermano) return hermano.fecha;
   const anunciada = CALENDARIO_FASE_FINAL.find((r) => r.fase === fase)?.fecha;
@@ -985,6 +1079,7 @@ function SeccionPremios({ estado, onCambio }: { estado: EstadoTorneo; onCambio: 
       .map((p) => ({
         ...comoLiga.find((c) => c.id === p.id)!,
         fase: p.fase as FaseFinal,
+        copa: p.copa,
         penalesLocal: p.penalesLocal,
         penalesVisitante: p.penalesVisitante,
       }));

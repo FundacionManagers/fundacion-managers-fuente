@@ -9,7 +9,8 @@
  *
  * Si Supabase no responde —o alguien compila sin red— se devuelven las
  * constantes de `liga.ts` y el sitio se publica igual, con los datos de la
- * Fecha 4. Nunca se rompe el despliegue por un problema de base de datos.
+ * última copia del respaldo. Nunca se rompe el despliegue por un problema de
+ * base de datos.
  *
  * Qué NO se lee de aquí: los equipos. Cambian una vez por edición y su escudo
  * es un archivo del repositorio, así que renombrar un club exige un commit de
@@ -24,6 +25,7 @@ import {
   GOLEADORES_LIGA,
   PARTIDOS_LIGA,
   type Disciplina,
+  type Copa,
   type FaseFinal,
   type Goleador,
   type PartidoEliminatoria,
@@ -33,7 +35,7 @@ import {
 // Los dos tipos viven ahora en `liga.ts`, junto al calendario de la fase
 // final que los usa. Se reexportan para no romper a quien los importaba
 // desde aquí.
-export type { FaseFinal, PartidoEliminatoria };
+export type { Copa, FaseFinal, PartidoEliminatoria };
 
 /** Premio que decide un jurado, no los marcadores. Hoy solo el MVP. */
 export interface PremioJurado {
@@ -88,6 +90,7 @@ interface FilaPartido {
   goles_visitante: number | null;
   penales_local: number | null;
   penales_visitante: number | null;
+  copa: string | null;
   estado: string;
 }
 
@@ -132,7 +135,7 @@ export async function cargarLiga(edicion = EDICION_DATOS): Promise<DatosLiga> {
       supabase
         .from('partidos')
         .select(
-          'id, fase, jornada, fecha, hora, local, visitante, goles_local, goles_visitante, penales_local, penales_visitante, estado',
+          'id, fase, copa, jornada, fecha, hora, local, visitante, goles_local, goles_visitante, penales_local, penales_visitante, estado',
         )
         .eq('edicion', edicion)
         // Por fecha antes que por hora: hay jornadas repartidas en dos dias
@@ -176,6 +179,7 @@ export async function cargarLiga(edicion = EDICION_DATOS): Promise<DatosLiga> {
       .map((p) => ({
         ...aPartido(p),
         fase: p.fase as FaseFinal,
+        copa: p.copa === 'oro' || p.copa === 'plata' ? p.copa : null,
         penalesLocal: p.penales_local,
         penalesVisitante: p.penales_visitante,
       }));

@@ -27,6 +27,7 @@
  */
 
 import { BRACKET_2026, ganadorDe, type Partido } from './edicion-3';
+import { FASE_FINAL_4 } from './edicion-4';
 
 export const TORNEO_INSTAGRAM = '@torneo_managers';
 export const TORNEO_INSTAGRAM_URL = 'https://www.instagram.com/torneo_managers/';
@@ -44,6 +45,8 @@ const NOMBRE_POR_SLUG: Readonly<Record<string, string>> = {
   'tp-fc': 'Tranquilo Papi',
   'managers-fc': 'Managers FC',
   'useche-fc': 'Useches',
+  'isotopos-portal-1': 'Isótopos Portal 1',
+  'cucuta-10-fc': 'Cúcuta 10 F.C.',
 };
 
 /**
@@ -94,11 +97,22 @@ export const EDICIONES: readonly Edicion[] = [
   {
     numero: 4,
     periodo: '2026-2',
-    estado: 'en-curso',
-    notas: 'Fase de grupos, 8 equipos a 7 fechas. La final se juega en septiembre.',
+    estado: 'jugada',
+    partidos: FASE_FINAL_4,
+    notas:
+      'Liga de 8 clubes a 7 fechas y llave desde cuartos. Final: Pomada Alfa 3–3 The Originals, 6–5 en penales.',
   },
   {
+    // Se juega en el mismo semestre que la 4ª, de octubre a noviembre: por
+    // eso repite periodo. Pendiente de confirmar con la organización.
     numero: 5,
+    periodo: '2026-2',
+    estado: 'en-curso',
+    notas:
+      'Dos grupos de cuatro a 3 fechas. Copa Oro para los dos primeros de cada grupo y Copa Plata para el tercero y el cuarto.',
+  },
+  {
+    numero: 6,
     periodo: '2027-1',
     estado: 'proxima',
     notas: 'Inscripciones abiertas. Es la edición a la que se apunta un equipo nuevo hoy.',
@@ -145,9 +159,9 @@ export const TITULOS_POR_CLUB: Readonly<Record<string, number>> = EDICIONES_CON_
  * Campeón vigente: el de la última edición cerrada con final publicada.
  *
  * Campeón vigente y máximo ganador son cosas distintas —quien ganó la última
- * frente a quien más acumula—. Hoy coinciden en The Originals porque es el
- * único club con un título demostrable; en cuanto se publiquen más ediciones
- * pueden volver a separarse, y la web lo refleja sola.
+ * frente a quien más acumula—. Tras la 4ª coinciden en Pomada Alfa, que ganó
+ * esa final y suma tres títulos; con la 3ª no coincidían. La web lo refleja
+ * sola en cuanto cambia cualquiera de los dos.
  */
 export const CAMPEON_VIGENTE = {
   equipo: campeonDe(ULTIMA_CON_CAMPEON!)!,

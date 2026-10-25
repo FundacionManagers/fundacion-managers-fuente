@@ -5,8 +5,10 @@ import { CalendarClock } from 'lucide-react';
 import { TeamCrest } from '@/components/torneo/TeamCrest';
 import { getEquipo } from '@/lib/torneo-data';
 import {
+  TITULO_COPA,
   diaCortoDe,
   diaRelativoDe,
+  grupoDePartido,
   jornadaEnVariosDias,
   type Compromiso,
   type DiaRelativo,
@@ -97,6 +99,16 @@ export function ProximaFecha({ compromiso }: { compromiso: Compromiso }) {
                 {variosDias ? `${diaCortoDe(p)} ` : ''}
                 {p.hora}
               </p>
+              {/* De qué es el partido: el grupo en la fase de grupos, la copa
+                  en la final. Las dos copas juegan la misma ronda las mismas
+                  noches, y sin esto no se distingue una semifinal de otra. */}
+              <p className="mt-0.5 font-bufon text-[10px] uppercase tracking-[0.2em] text-neutral-500">
+                {p.copa
+                  ? TITULO_COPA[p.copa]
+                  : grupoDePartido(p)
+                    ? `Grupo ${grupoDePartido(p)}`
+                    : ''}
+              </p>
               <div className="mt-2 space-y-1.5">
                 <Rival slug={p.local} />
                 <Rival slug={p.visitante} />
@@ -113,6 +125,9 @@ export function ProximaFecha({ compromiso }: { compromiso: Compromiso }) {
                 className="rounded-xl border border-white/10 bg-black/25 px-3 py-3 text-center"
               >
                 <p className="font-mono text-sm font-semibold text-neutral-400">{c.etiqueta}</p>
+                <p className="mt-0.5 font-bufon text-[10px] uppercase tracking-[0.2em] text-neutral-500">
+                  {TITULO_COPA[c.copa]}
+                </p>
                 <div className="mt-2 space-y-1.5">
                   <Rival slug={c.local} />
                   <Rival slug={c.visitante} />
@@ -121,12 +136,14 @@ export function ProximaFecha({ compromiso }: { compromiso: Compromiso }) {
             ))}
           </ul>
           <p className="mt-4 text-sm text-neutral-500">
-            Horarios por confirmar. Los cruces salen de la tabla: el mejor ubicado hace de local.
+            Horarios por confirmar. Los cruces salen de las tablas de grupo: el mejor ubicado hace
+            de local.
           </p>
         </>
       ) : (
         <p className="mt-4 text-sm text-neutral-500">
-          Equipos y horarios por definir. Los cruces salen de la tabla al cerrar la fase de grupos.
+          Equipos y horarios por definir. Los cruces salen de las tablas al cerrar la fase de
+          grupos.
         </p>
       )}
     </div>

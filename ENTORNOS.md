@@ -8,7 +8,7 @@ repositorios. Sirven para probar cambios sin arriesgar el sitio real.
 | Web | https://fundacionmanagers.com | https://jorgeicone.github.io/fundacion-managers-ensayos/ |
 | Panel | `/resultados/` de esa web | `/resultados/` de esa web |
 | Repositorio | `FundacionManagers/fundacion-managers-fuente` | `jorgeicone/fundacion-managers-ensayos` |
-| Edición en la base | 4 (la real) | 99 (copia sandbox) |
+| Edición en la base | 5 (la real; sale de `EDICION_ACTUAL`) | 99 (copia sandbox) |
 | Aviso en pantalla | ninguno | franja naranja fija en todas las páginas |
 
 ---
@@ -71,7 +71,7 @@ conflictos— y lee de ahí:
 | Variable | Producción | Ensayos |
 |---|---|---|
 | `ENTORNO` | *(sin definir)* | `ensayos` |
-| `EDICION` | *(sin definir)* | `99` |
+| `EDICION` | *(sin definir: usa `EDICION_ACTUAL` de `src/lib/liga.ts`)* | `99` |
 | `PAGES_BASE_PATH` | *(sin definir)* | `/fundacion-managers-ensayos` |
 
 Sin definir, los valores por defecto son los de producción: el caso seguro.
@@ -87,27 +87,36 @@ real.
 
 Cuando la edición 99 quede hecha un desastre de tanto probar, se vuelve a
 copiar de la real. Es seguro ejecutarlo tantas veces como haga falta: borra la
-99 antes de copiar, y no toca la 4.
+99 antes de copiar, y no toca la edición real.
+
+**Al abrir una edición nueva hay que correrlo**, cambiando el `5` por la
+nueva: el sitio de ensayos sigue el código, y el código de la 5ª sobre los
+datos de la 4ª pinta clubes y fechas que no existen.
 
 ```sql
+delete from public.premios    where edicion = 99;
 delete from public.goleadores where edicion = 99;
 delete from public.disciplina where edicion = 99;
 delete from public.partidos   where edicion = 99;
 
 insert into public.partidos
-  (edicion, fase, jornada, fecha, hora, local, visitante,
+  (edicion, fase, copa, jornada, fecha, hora, local, visitante,
    goles_local, goles_visitante, penales_local, penales_visitante, estado)
-select 99, fase, jornada, fecha, hora, local, visitante,
+select 99, fase, copa, jornada, fecha, hora, local, visitante,
        goles_local, goles_visitante, penales_local, penales_visitante, estado
-from public.partidos where edicion = 4;
+from public.partidos where edicion = 5;
 
 insert into public.disciplina (edicion, equipo, amarillas, rojas)
 select 99, equipo, amarillas, rojas
-from public.disciplina where edicion = 4;
+from public.disciplina where edicion = 5;
 
 insert into public.goleadores (edicion, jugador, equipo, numero, goles)
 select 99, jugador, equipo, numero, goles
-from public.goleadores where edicion = 4;
+from public.goleadores where edicion = 5;
+
+insert into public.premios (edicion, clave, jugador, equipo, nota)
+select 99, clave, jugador, equipo, nota
+from public.premios where edicion = 5;
 ```
 
 Se ejecuta en Supabase → SQL Editor, proyecto `fundacion-managers`.

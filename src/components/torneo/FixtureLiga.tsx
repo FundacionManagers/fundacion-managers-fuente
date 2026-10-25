@@ -6,6 +6,7 @@ import {
   FORMATO_LIGA,
   JORNADAS_INFO,
   diaCortoDe,
+  grupoDePartido,
   jornadaActualDe,
   jornadaEnVariosDias,
   partidosDeJornada,
@@ -72,8 +73,10 @@ function Marcador({ p, mostrarDia }: { p: PartidoLiga; mostrarDia: boolean }) {
 
       {/* Cuándo se juega. El día solo cuando la fecha del torneo se reparte
           en varios días: si todos son el mismo, ya lo dice el encabezado y
-          repetirlo cuatro veces es ruido. */}
+          repetirlo cuatro veces es ruido. El grupo va siempre: en una misma
+          fecha se alternan partidos del A y del B. */}
       <span className="whitespace-nowrap font-bufon text-[10px] uppercase tracking-widest text-neutral-600">
+        {grupoDePartido(p) ? `Grupo ${grupoDePartido(p)} · ` : ''}
         {mostrarDia ? `${diaCortoDe(p)} · ` : ''}
         {p.hora}
       </span>
@@ -124,7 +127,7 @@ function etiquetaDe(jornada: number, partidos: PartidoLiga[]): string {
 /**
  * Fixture de la fase de grupos, ordenado por lo que importa hoy.
  *
- * Antes eran siete bloques idénticos del 1 al 7, y para llegar a lo actual
+ * En la 4ª eran siete bloques idénticos del 1 al 7, y para llegar a lo actual
  * había que pasar por cinco jornadas viejas. Ahora la página se ordena sola:
  *
  *   1. La próxima fecha, que va en su tarjeta aparte, sobre este componente.
@@ -144,8 +147,8 @@ export function FixtureLiga({ datos }: { datos: DatosLiga }) {
   const partidosUltima = ultima ? partidosDeJornada(ultima, datos.partidos) : [];
 
   // El resto: todo lo que no es ni la próxima ni la última. Incluye las
-  // fechas futuras que no son la siguiente —hoy, la 7— para que ninguna
-  // desaparezca de la página.
+  // fechas futuras que no son la siguiente para que ninguna desaparezca de
+  // la página.
   const plegadas = jornadas.filter((j) => j !== ultima && j !== proxima);
 
   return (

@@ -142,7 +142,9 @@ export function PanelPremios({ datos }: { datos: DatosLiga }) {
       rotulo: 'Equipo más goleador',
       icono: Target,
       equipo: artillero?.equipo,
-      detalle: artillero ? `${artillero.valor} goles en la edición` : null,
+      detalle: artillero
+        ? `${artillero.valor} ${artillero.valor === 1 ? 'gol' : 'goles'} en la edición`
+        : null,
     },
     {
       rotulo: 'Goleador · bota de oro',
@@ -157,7 +159,9 @@ export function PanelPremios({ datos }: { datos: DatosLiga }) {
       rotulo: 'Valla menos vencida',
       icono: ShieldCheck,
       equipo: valla?.equipo,
-      detalle: valla ? `${valla.valor} goles en contra en la edición` : null,
+      detalle: valla
+        ? `${valla.valor} ${valla.valor === 1 ? 'gol' : 'goles'} en contra en la edición`
+        : null,
     },
     {
       rotulo: 'Fair Play',
@@ -188,8 +192,9 @@ export function PanelPremios({ datos }: { datos: DatosLiga }) {
 
       <p className="mt-5 max-w-2xl text-sm text-neutral-400">
         Todo se cuenta sobre la <strong className="text-neutral-200">edición completa</strong> —las
-        siete fechas más la fase final—, no solo sobre la fase de grupos. Sale de los mismos
-        marcadores que se cargan cada semana: ninguna de estas cifras se escribe a mano.
+        fechas de grupos más la fase final—, no solo sobre la fase de grupos. El campeón es el de la
+        Copa Oro. Sale de los mismos marcadores que se cargan cada semana: ninguna de estas cifras
+        se escribe a mano.
       </p>
 
       <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">

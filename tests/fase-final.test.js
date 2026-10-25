@@ -3,9 +3,12 @@
  *
  * Todo lo que anunciaba lo que viene —la tarjeta del Calendario, la del
  * Resumen y el punto de aviso de la pestaña— miraba solo la fase de grupos.
- * El 6 de septiembre, al jugarse la Fecha 7, esa búsqueda devolvería vacío y
- * las tres cosas desaparecerían de golpe, justo en la semana previa a
- * cuartos. Estas pruebas simulan ese día para que no vuelva a pasar.
+ * En la 4ª, al jugarse la última fecha, esa búsqueda habría devuelto vacío y
+ * las tres cosas habrían desaparecido de golpe, justo en la semana previa a
+ * la fase final. Estas pruebas simulan ese día para que no vuelva a pasar.
+ *
+ * Desde la 5ª hay dos copas, y cada ronda se juega en las dos. Las pruebas de
+ * aquí fijan también que una copa no se cuele en el camino de la otra.
  */
 
 const test = require('node:test');
@@ -13,11 +16,13 @@ const assert = require('node:assert/strict');
 
 const {
   CALENDARIO_FASE_FINAL,
+  COPAS,
   CRUCES_POR_FASE,
   FECHA_FASE_FINAL,
   PARTIDOS_LIGA,
   caminoFaseFinal,
   fechaLargaDe,
+  podioDeEdicion,
   proximoCompromiso,
 } = require('../.test-build/lib/liga.js');
 
@@ -26,13 +31,16 @@ function cruce(fase, id, extra = {}) {
   return {
     id,
     fase,
-    jornada: 8,
-    fecha: '13/09/2026',
-    hora: '08:00',
-    local: 'pomada-alfa',
+    copa: 'oro',
+    jornada: 0,
+    fecha: '11/11/2026',
+    hora: '20:00',
+    local: 'tp-fc',
     visitante: 'la-banda-cruzada',
     golesLocal: null,
     golesVisitante: null,
+    penalesLocal: null,
+    penalesVisitante: null,
     estado: 'programado',
     ...extra,
   };
@@ -48,62 +56,70 @@ function gruposTerminados() {
   }));
 }
 
-test('la fase final tiene las cuatro rondas anunciadas', () => {
-  // El tercer puesto se juega el mismo día que la final, según el cuadro
-  // oficial de la organización. Estaba fuera del calendario anunciado y por
-  // eso no aparecía en la llave hasta que alguien cargara el partido.
+test('la fase final tiene las tres rondas anunciadas, sin cuartos', () => {
   assert.deepEqual(
     CALENDARIO_FASE_FINAL.map((r) => [r.fase, r.fecha]),
     [
-      ['cuartos', '13/09/2026'],
-      ['semifinal', '20/09/2026'],
-      ['tercer-puesto', '26/09/2026'],
-      ['final', '26/09/2026'],
+      ['semifinal', '11/11/2026'],
+      ['tercer-puesto', '22/11/2026'],
+      ['final', '22/11/2026'],
     ],
   );
 });
 
+test('las semifinales van en dos noches, y el rótulo lo dice', () => {
+  const semis = CALENDARIO_FASE_FINAL.find((r) => r.fase === 'semifinal');
+  assert.match(semis.etiqueta, /Miércoles 11 y jueves 12 de noviembre/);
+});
+
 test('las fechas caen en los días que anunció la organización', () => {
-  assert.match(fechaLargaDe('13/09/2026'), /^Domingo 13 de septiembre 2026$/);
-  assert.match(fechaLargaDe('20/09/2026'), /^Domingo 20 de septiembre 2026$/);
-  assert.match(fechaLargaDe('26/09/2026'), /^Sábado 26 de septiembre 2026$/);
+  assert.match(fechaLargaDe('11/11/2026'), /^Miércoles 11 de noviembre 2026$/);
+  assert.match(fechaLargaDe('22/11/2026'), /^Domingo 22 de noviembre 2026$/);
 });
 
 test('la fecha de arranque no se escribe a mano: sale de la primera ronda', () => {
   assert.equal(FECHA_FASE_FINAL, CALENDARIO_FASE_FINAL[0].fecha);
 });
 
+test('hay dos copas, y la Oro es la de los dos primeros', () => {
+  assert.deepEqual(
+    COPAS.map((c) => [c.copa, [...c.puestos]]),
+    [
+      ['oro', [1, 2]],
+      ['plata', [3, 4]],
+    ],
+  );
+});
+
 test('mientras queden fechas de grupos, lo próximo es una fecha de grupos', () => {
   const c = proximoCompromiso(PARTIDOS_LIGA, []);
   assert.equal(c.tipo, 'jornada');
-  assert.equal(c.titulo, 'Fecha 6');
-  assert.equal(c.partidos.length, 4, 'la tarjeta muestra los cuatro cruces de esa fecha');
+  assert.equal(c.titulo, 'Fecha 2');
+  assert.equal(c.etiqueta, 'Domingo 25 de octubre 2026');
+  assert.equal(c.partidos.length, 4, 'la tarjeta muestra los cuatro partidos de esa fecha');
 });
 
-test('al terminar la fase de grupos, el relevo lo toma cuartos de final', () => {
+test('al terminar la fase de grupos, el relevo lo toman las semifinales', () => {
   const c = proximoCompromiso(gruposTerminados(), []);
-  assert.ok(c, 'sin esto, la tarjeta y el punto de aviso desaparecerían el 6 de septiembre');
+  assert.ok(c, 'sin esto, la tarjeta y el punto de aviso desaparecerían el 8 de noviembre');
   assert.equal(c.tipo, 'ronda');
-  assert.equal(c.titulo, 'Cuartos de final');
-  assert.equal(c.etiqueta, 'Domingo 13 de septiembre 2026');
+  assert.equal(c.titulo, 'Semifinales');
+  assert.match(c.etiqueta, /Miércoles 11 y jueves 12/, 'son dos noches: no basta con la primera');
   assert.equal(c.partidos.length, 0, 'no hay partidos cargados: no se inventa ninguno');
-  assert.match(c.iso, /^2026-09-13T/);
+  assert.match(c.iso, /^2026-11-11T/);
 });
 
-/**
- * La tarjeta decía "equipos por definir" mientras la Llave, con los mismos
- * datos, ya decía "así quedaron los cruces" y nombraba a los ocho clubes. Dos
- * secciones del sitio contradiciéndose la víspera de cuartos, en la pantalla
- * que más gente abre. Los rivales estaban decididos desde que cerró la fase
- * de grupos: lo único que faltaba era la hora.
- */
-test('cerrada la fase de grupos, la tarjeta ya trae los cruces de la tabla', () => {
+test('cerrada la fase de grupos, la tarjeta ya trae los cruces de las dos copas', () => {
   const c = proximoCompromiso(gruposTerminados(), []);
-  assert.equal(c.partidos.length, 0, 'siguen sin cargarse partidos');
-  assert.equal(c.cruces.length, 4, 'pero los cuatro cruces ya se pueden decir');
+  assert.equal(c.cruces.length, 4, 'dos semifinales por copa');
   assert.deepEqual(
-    c.cruces.map((x) => x.etiqueta),
-    ['1º vs 8º', '2º vs 7º', '3º vs 6º', '4º vs 5º'],
+    c.cruces.map((x) => [x.copa, x.etiqueta]),
+    [
+      ['oro', '1º A vs 2º B'],
+      ['oro', '1º B vs 2º A'],
+      ['plata', '3º A vs 4º B'],
+      ['plata', '3º B vs 4º A'],
+    ],
   );
   assert.ok(
     c.cruces.every((x) => x.local && x.visitante),
@@ -117,45 +133,36 @@ test('con fechas de grupos por jugar, la tarjeta no adelanta ningún cruce', () 
 });
 
 test('cuando se cargan los cruces reales, mandan su fecha y su hora', () => {
-  const cuartos = [
-    {
-      id: 'cf1',
-      fase: 'cuartos',
-      jornada: 8,
-      fecha: '13/09/2026',
-      hora: '08:00',
-      local: 'pomada-alfa',
-      visitante: 'la-banda-cruzada',
-      golesLocal: null,
-      golesVisitante: null,
-      estado: 'programado',
-    },
-  ];
-  const c = proximoCompromiso(gruposTerminados(), cuartos);
+  const c = proximoCompromiso(gruposTerminados(), [cruce('semifinal', 'sf1')]);
   assert.equal(c.tipo, 'ronda');
-  assert.equal(c.titulo, 'Cuartos de final');
+  assert.equal(c.titulo, 'Semifinales');
   assert.equal(c.partidos.length, 1);
-  assert.equal(c.iso, '2026-09-13T08:00:00-05:00', 'la hora sale del partido, no del calendario');
+  assert.equal(c.partidos[0].copa, 'oro', 'el partido llega con su copa para poder rotularlo');
+  assert.equal(c.iso, '2026-11-11T20:00:00-05:00', 'la hora sale del partido, no del calendario');
 });
 
-test('jugada una ronda, el relevo pasa a la siguiente', () => {
-  const cuartosJugados = [
-    {
-      id: 'cf1',
-      fase: 'cuartos',
-      jornada: 8,
-      fecha: '13/09/2026',
-      hora: '08:00',
-      local: 'pomada-alfa',
-      visitante: 'la-banda-cruzada',
-      golesLocal: 2,
-      golesVisitante: 0,
-      estado: 'jugado',
-    },
+test('jugada una ronda en las dos copas, el relevo pasa a la siguiente', () => {
+  const jugado = { estado: 'jugado', golesLocal: 2, golesVisitante: 0 };
+  const semis = [
+    cruce('semifinal', 'o1', jugado),
+    cruce('semifinal', 'o2', jugado),
+    cruce('semifinal', 'p1', { ...jugado, copa: 'plata' }),
+    cruce('semifinal', 'p2', { ...jugado, copa: 'plata' }),
   ];
-  const c = proximoCompromiso(gruposTerminados(), cuartosJugados);
-  assert.equal(c.titulo, 'Semifinales');
-  assert.equal(c.etiqueta, 'Domingo 20 de septiembre 2026');
+  const c = proximoCompromiso(gruposTerminados(), semis);
+  // El tercer puesto y la final caen el mismo domingo: se anuncia la final.
+  assert.equal(c.titulo, 'Gran Final');
+  assert.equal(c.etiqueta, 'Domingo 22 de noviembre 2026');
+});
+
+test('si a la Plata le falta una semifinal, la ronda sigue pendiente', () => {
+  const jugado = { estado: 'jugado', golesLocal: 2, golesVisitante: 0 };
+  const semis = [
+    cruce('semifinal', 'o1', jugado),
+    cruce('semifinal', 'o2', jugado),
+    cruce('semifinal', 'p1', { copa: 'plata' }),
+  ];
+  assert.equal(proximoCompromiso(gruposTerminados(), semis).titulo, 'Semifinales');
 });
 
 /**
@@ -167,96 +174,111 @@ test('la ronda pendiente no depende de la fecha de compilación', () => {
   const a = proximoCompromiso(gruposTerminados(), []);
   const b = proximoCompromiso(gruposTerminados(), []);
   assert.deepEqual(a, b);
-  assert.equal(a.titulo, 'Cuartos de final');
+  assert.equal(a.titulo, 'Semifinales');
 });
 
 /**
- * El camino a la final, que es lo que dibuja la página de La llave.
- *
- * La página mostraba solo los cuatro cruces de cuartos y, en cuanto la
- * organización cargara los partidos reales, cambiaba entera: se quedaba sin
- * encabezado, sin fechas y sin explicación, justo el día de más visitas.
- * Estas pruebas fijan que las cuatro rondas existan siempre y que su estado
- * salga de los datos.
+ * El camino a la final, que es lo que dibuja la página de La llave. Una vez
+ * por copa.
  */
-test('sin nada cargado, el camino ya tiene sus cuatro rondas', () => {
-  const camino = caminoFaseFinal([]);
+test('sin nada cargado, el camino de cada copa ya tiene sus tres rondas', () => {
+  for (const { copa } of COPAS) {
+    const camino = caminoFaseFinal([], copa);
+    assert.deepEqual(
+      camino.map((p) => [p.fase, p.estado, p.fecha]),
+      [
+        ['semifinal', 'pendiente', '11/11/2026'],
+        ['tercer-puesto', 'pendiente', '22/11/2026'],
+        ['final', 'pendiente', '22/11/2026'],
+      ],
+    );
+    assert.ok(camino.every((p) => p.partidos.length === 0));
+  }
+});
+
+test('el camino de una copa no recoge los cruces de la otra', () => {
+  const todos = [cruce('semifinal', 'o1'), cruce('semifinal', 'p1', { copa: 'plata' })];
   assert.deepEqual(
-    camino.map((p) => [p.fase, p.estado, p.fecha]),
-    [
-      ['cuartos', 'pendiente', '13/09/2026'],
-      ['semifinal', 'pendiente', '20/09/2026'],
-      ['tercer-puesto', 'pendiente', '26/09/2026'],
-      ['final', 'pendiente', '26/09/2026'],
-    ],
+    caminoFaseFinal(todos, 'oro')[0].partidos.map((p) => p.id),
+    ['o1'],
   );
-  assert.ok(
-    camino.every((p) => p.partidos.length === 0),
-    'sin partidos cargados no se inventa ninguno',
+  assert.deepEqual(
+    caminoFaseFinal(todos, 'plata')[0].partidos.map((p) => p.id),
+    ['p1'],
+  );
+});
+
+test('un cruce sin copa es de la llave única, que cuenta como la Oro', () => {
+  const viejo = cruce('final', 'f4', { copa: null });
+  assert.equal(caminoFaseFinal([viejo], 'oro').find((p) => p.fase === 'final').partidos.length, 1);
+  assert.equal(
+    caminoFaseFinal([viejo], 'plata').find((p) => p.fase === 'final').partidos.length,
+    0,
   );
 });
 
 test('las casillas en blanco de cada ronda son las que corresponden', () => {
-  assert.equal(CRUCES_POR_FASE.cuartos, 4);
   assert.equal(CRUCES_POR_FASE.semifinal, 2);
+  assert.equal(CRUCES_POR_FASE['tercer-puesto'], 1);
   assert.equal(CRUCES_POR_FASE.final, 1);
 });
 
 test('una ronda a medio jugar queda en juego, no jugada', () => {
   const camino = caminoFaseFinal([
-    cruce('cuartos', 'cf1', { estado: 'jugado', golesLocal: 2, golesVisitante: 0 }),
-    cruce('cuartos', 'cf2'),
+    cruce('semifinal', 'sf1', { estado: 'jugado', golesLocal: 2, golesVisitante: 0 }),
+    cruce('semifinal', 'sf2'),
   ]);
   assert.equal(camino[0].estado, 'en-juego');
-  assert.equal(camino[1].estado, 'pendiente', 'las semifinales siguen sin jugarse');
-  assert.equal(camino[2].estado, 'pendiente');
+  assert.equal(camino[1].estado, 'pendiente');
 });
 
 test('con todos sus partidos jugados, la ronda queda jugada', () => {
   const jugado = { estado: 'jugado', golesLocal: 2, golesVisitante: 0 };
   const camino = caminoFaseFinal([
-    cruce('cuartos', 'cf1', jugado),
-    cruce('cuartos', 'cf2', jugado),
+    cruce('semifinal', 'sf1', jugado),
+    cruce('semifinal', 'sf2', jugado),
   ]);
   assert.equal(camino[0].estado, 'jugada');
 });
 
 test('la fecha del partido cargado manda sobre la anunciada', () => {
-  const camino = caminoFaseFinal([cruce('cuartos', 'cf1', { fecha: '14/09/2026' })]);
-  assert.equal(camino[0].fecha, '14/09/2026');
-  assert.equal(camino[1].fecha, '20/09/2026', 'las rondas sin cargar conservan lo anunciado');
+  const camino = caminoFaseFinal([
+    cruce('semifinal', 'sf1', { fecha: '12/11/2026' }),
+    cruce('semifinal', 'sf2', { fecha: '12/11/2026' }),
+  ]);
+  assert.equal(camino[0].fecha, '12/11/2026');
+  assert.equal(camino[0].etiqueta, undefined, 'las dos el jueves: el rótulo de dos noches sobra');
+  assert.equal(camino[2].fecha, '22/11/2026', 'las rondas sin cargar conservan lo anunciado');
 });
 
-/**
- * Si la organización decide jugar un tercer puesto —hoy no está anunciado—,
- * el partido no puede quedar huérfano: entra en el camino, en su orden y con
- * la fecha que traiga el propio partido, sin que haya que tocar el código.
- */
-test('una ronda no anunciada entra igual, y en su orden', () => {
-  const camino = caminoFaseFinal([cruce('tercer-puesto', 'tp1', { fecha: '26/09/2026' })]);
-  assert.deepEqual(
-    camino.map((p) => p.fase),
-    ['cuartos', 'semifinal', 'tercer-puesto', 'final'],
+test('con todo jugado y cargado en las dos copas, ya no hay próximo compromiso', () => {
+  const todas = COPAS.flatMap(({ copa }) =>
+    CALENDARIO_FASE_FINAL.map((r, i) =>
+      cruce(r.fase, `${copa}${i}`, {
+        copa,
+        fecha: r.fecha,
+        golesLocal: 1,
+        golesVisitante: 0,
+        estado: 'jugado',
+      }),
+    ),
   );
-  const tercero = camino.find((p) => p.fase === 'tercer-puesto');
-  assert.equal(tercero.fecha, '26/09/2026');
-  assert.equal(tercero.titulo, 'Tercer puesto');
+  assert.equal(proximoCompromiso(gruposTerminados(), todas), null);
 });
 
-test('con todo jugado y cargado, ya no hay próximo compromiso', () => {
-  const todas = CALENDARIO_FASE_FINAL.map((r, i) => ({
-    id: `ff${i}`,
-    fase: r.fase,
-    jornada: 8 + i,
-    fecha: r.fecha,
-    hora: '10:00',
-    local: 'pomada-alfa',
-    visitante: 'the-originals',
-    golesLocal: 1,
-    golesVisitante: 0,
-    estado: 'jugado',
-  }));
-  assert.equal(proximoCompromiso(gruposTerminados(), todas), null);
+test('el campeón del torneo es el de la Copa Oro, no el de la Plata', () => {
+  const jugado = { estado: 'jugado', golesLocal: 1, golesVisitante: 0 };
+  const finales = [
+    cruce('final', 'fp', {
+      ...jugado,
+      copa: 'plata',
+      local: 'los-pibes',
+      visitante: 'yonotomo-fc',
+    }),
+    cruce('final', 'fo', { ...jugado, local: 'tp-fc', visitante: 'pomada-alfa' }),
+  ];
+  assert.equal(podioDeEdicion(finales).campeon, 'tp-fc');
+  assert.equal(podioDeEdicion(finales, 'plata').campeon, 'los-pibes');
 });
 
 /**

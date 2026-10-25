@@ -16,9 +16,11 @@ Plataforma web institucional de la Fundación Managers, con un módulo deportivo
 interactivo —el **Torneo Managers**, F7 para líderes mayores de 28 años— que es
 la parte viva del sitio: se carga desde un panel cada semana y se republica sola.
 
-El torneo va por su **cuarta edición (2026-2)**: siete fechas de liga con ocho
-clubes, más una fase final de cuartos, semifinales, tercer puesto y Gran Final.
-Campeón vigente: **The Originals** (3.ª edición).
+El torneo va por su **quinta edición (2026-2, octubre–noviembre)**: dos grupos
+de cuatro a tres fechas; el 1.º y el 2.º de cada grupo juegan la **Copa Oro**
+(el título) y el 3.º y el 4.º la **Copa Plata**, cada una con semifinales
+cruzadas, tercer puesto y final. Campeón vigente: **Pomada Alfa** (4.ª edición,
+en penales). La 3.ª y la 4.ª están archivadas en `edicion-3.ts` y `edicion-4.ts`.
 
 **Documento de especificaciones:** `Managers_Especificaciones_v2.docx`, en la
 raíz. Es el encargo original de mayo de 2026 y **ya no describe la
@@ -43,7 +45,7 @@ código y este archivo.
 | Pagos | **Bold** (`src/lib/pago.ts`, `PagoBold.tsx`) | El contrato decía Wompi + Stripe; se implementó Bold |
 | WhatsApp | **Enlaces `wa.me`** | La Cloud API del contrato no está |
 | Hosting | **GitHub Pages** + workflow propio | No es Vercel |
-| Tests | **`node:test`** (`npm test`, 88 pruebas) | No hay Vitest ni Playwright |
+| Tests | **`node:test`** (`npm test`, 109 pruebas) | No hay Vitest ni Playwright |
 
 **Lo que el contrato pedía y NO existe** (dilo si alguien lo da por hecho):
 tRPC, Prisma, Inngest, Sentry, Cloudinary, `next-intl`, Stripe, Wompi,
@@ -91,8 +93,8 @@ la base cambió) y el botón «Publicar ahora» del panel.
   `supabase/migrations/`, con la fecha en que se aplicó y **por qué** existe.
 - Nunca borrar datos de producción sin confirmación explícita.
 - Tablas y campos en `snake_case`; en TypeScript se mapean a `camelCase` a mano.
-- **Todo lo del torneo está separado por `edicion`.** Producción usa la 4; el
-  sitio de ensayos, la 99.
+- **Todo lo del torneo está separado por `edicion`.** Producción usa la de
+  `EDICION_ACTUAL` (hoy la 5); el sitio de ensayos, la 99.
 
 ### Git
 - `main` siempre desplegable: un push a `main` **publica el sitio real**.
@@ -131,12 +133,25 @@ hablarlo.**
 
 ## 5. Los tres archivos que hay que entender antes de tocar el torneo
 
-1. **`src/lib/liga.ts`** — toda la lógica: tabla, desempates del Artículo 14,
-   llave, próximo compromiso, penales. Pura y con tests.
+1. **`src/lib/liga.ts`** — toda la lógica: tablas por grupo, desempates del
+   Artículo 14, cruces de las dos copas, próximo compromiso, penales. Pura y
+   con tests. Los grupos y los clubes viven en `torneo-data.ts`.
 2. **`src/lib/liga-supabase.ts`** — lee la edición en tiempo de compilación.
    Si Supabase falla, devuelve datos de respaldo y el sitio se publica igual.
 3. **`src/lib/panel-torneo.ts`** — lo que el panel escribe, con la sesión del
    administrador. Aquí mandan las políticas RLS.
+
+### Abrir una edición nueva
+
+1. `EDICION_ACTUAL`, el respaldo (`PARTIDOS_LIGA`, `DISCIPLINA`…) y el
+   calendario de la fase final en `liga.ts`; grupos y clubes en `torneo-data.ts`.
+2. Cerrar la anterior en `torneo.ts` (`EDICIONES`) con su fase final archivada
+   en un `edicion-N.ts`, para que el palmarés salga de su Gran Final.
+3. Cargar el fixture en Supabase con su seed numerado en `supabase/migrations/`.
+4. Resetear la edición 99 de ensayos copiando la nueva (SQL en `ENTORNOS.md`).
+
+`deploy.yml` y `herramientas/build-info.mjs` leen `EDICION_ACTUAL` del código:
+no hay que tocarlos.
 
 ---
 
@@ -170,7 +185,7 @@ npm run dev          # desarrollo local
 npm run build        # build de producción (+ postbuild: build-info y huella de fotos)
 npm run typecheck    # tsc --noEmit
 npm run lint         # ESLint
-npm test             # node:test sobre la lógica pura (88 pruebas)
+npm test             # node:test sobre la lógica pura (109 pruebas)
 npm run format       # prettier
 ```
 
@@ -192,4 +207,4 @@ MCP.
 
 ---
 
-**Última actualización:** 23 de septiembre de 2026 · tras el kit de las 5 auditorías.
+**Última actualización:** 25 de octubre de 2026 · apertura de la 5.ª edición.

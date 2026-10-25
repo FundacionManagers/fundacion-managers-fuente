@@ -13,7 +13,7 @@ import {
   ordinalFemenino,
   pillEdicion,
 } from '@/lib/torneo';
-import { CUARTOS, FINAL, SEMIS, TERCER_PUESTO, ganadorDe, getEquipo } from '@/lib/torneo-data';
+import { ganadorDe, getEquipo, type Partido } from '@/lib/torneo-data';
 
 export const metadata: Metadata = {
   title: 'Palmarés · Torneo Managers',
@@ -35,18 +35,40 @@ const RANGO = ANIOS[0] === ANIOS[ANIOS.length - 1] ? ANIOS[0] : `${ANIOS[0]}-${A
  * acordeón cerrado de otra página. Su sitio es el palmarés: aquí es donde
  * alguien viene a buscar historia.
  */
+const PARTIDOS_ANTERIOR: readonly Partido[] = EDICION_ANTERIOR.partidos ?? [];
+const de = (fase: Partido['fase']) => PARTIDOS_ANTERIOR.filter((p) => p.fase === fase);
+
+// Sale de la edición anterior, no de la 3ª escrita a mano: al cerrar la 4ª,
+// esta sección siguió enseñando la llave de mayo durante un mes.
 const LLAVE_ANTERIOR = [
-  { titulo: 'Cuartos de final', sub: 'Ronda 1', partidos: CUARTOS },
-  { titulo: 'Semifinales', sub: 'Ronda 2', partidos: SEMIS },
-  { titulo: 'Tercer puesto', sub: 'El bronce', partidos: [TERCER_PUESTO] },
-  { titulo: 'Gran Final', sub: 'El título', partidos: [FINAL] },
-] as const;
+  { titulo: 'Cuartos de final', sub: 'Ronda 1', partidos: de('cuartos') },
+  { titulo: 'Semifinales', sub: 'Ronda 2', partidos: de('semifinal') },
+  { titulo: 'Tercer puesto', sub: 'El bronce', partidos: de('tercer-puesto') },
+  { titulo: 'Gran Final', sub: 'El título', partidos: de('final') },
+].filter((b) => b.partidos.length > 0);
+
+const FINAL = de('final')[0];
+
+/** 'PAL 3–3 ORI · 6–5 pen.', con el campeón siempre a la izquierda. */
+function marcadorFinal(): string {
+  if (!FINAL || FINAL.golesLocal == null || FINAL.golesVisitante == null) return '';
+  const ganaLocal = ganadorDe(FINAL) === FINAL.local;
+  const corto = (slug: string | null) => (slug ? (getEquipo(slug)?.corto ?? slug) : '—');
+  const [a, b] = ganaLocal ? [FINAL.local, FINAL.visitante] : [FINAL.visitante, FINAL.local];
+  const [ga, gb] = ganaLocal
+    ? [FINAL.golesLocal, FINAL.golesVisitante]
+    : [FINAL.golesVisitante, FINAL.golesLocal];
+  const pen = FINAL.penales
+    ? ganaLocal
+      ? ` · ${FINAL.penales.local}–${FINAL.penales.visitante} pen.`
+      : ` · ${FINAL.penales.visitante}–${FINAL.penales.local} pen.`
+    : '';
+  return `${corto(a)} ${ga}–${gb} ${corto(b)}${pen}`;
+}
 
 export default async function PalmaresPage() {
   const datos = await cargarLigaConAviso();
-  const campeon = getEquipo(ganadorDe(FINAL) ?? '');
-  const loc = FINAL.local ? getEquipo(FINAL.local) : undefined;
-  const vis = FINAL.visitante ? getEquipo(FINAL.visitante) : undefined;
+  const campeon = FINAL ? getEquipo(ganadorDe(FINAL) ?? '') : undefined;
 
   return (
     <TorneoShell
@@ -60,9 +82,9 @@ export default async function PalmaresPage() {
           en juego. */}
       <div className="mb-16">
         <CampeonReveal
-          slug={campeon?.slug ?? FINAL.visitante ?? 'the-originals'}
+          slug={campeon?.slug ?? ''}
           nombre={campeon?.nombre ?? CAMPEON_VIGENTE.equipo}
-          scoreText={`${vis?.corto ?? 'ORI'} ${FINAL.golesVisitante}–${FINAL.golesLocal} ${loc?.corto ?? 'PIB'}`}
+          scoreText={marcadorFinal()}
           // El ordinal se escribía con símbolo de grado —"Edición 3°"— y la
           // lista de abajo, en la misma página, usaba "3ª". Uno solo, y en
           // femenino, que es lo que pide "edición".
@@ -94,8 +116,8 @@ export default async function PalmaresPage() {
             {pillEdicion(EDICION_ANTERIOR)}
           </p>
           <p className="mt-2 max-w-2xl text-xs leading-relaxed text-neutral-500">
-            Se jugó por eliminación directa, desde cuartos hasta la final. Es la última edición
-            cerrada del torneo y el recorrido que dio el título a {CAMPEON_VIGENTE.equipo}.
+            Es la última edición cerrada del torneo y el recorrido que dio el título a{' '}
+            {CAMPEON_VIGENTE.equipo}. {EDICION_ANTERIOR.notas}
           </p>
 
           <div className="mt-10 space-y-12">

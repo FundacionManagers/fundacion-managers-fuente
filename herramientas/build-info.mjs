@@ -11,8 +11,20 @@
  *
  * No usa dependencias: solo `fetch`, que Node trae desde la 18.
  */
+import { readFileSync } from 'node:fs';
 import { writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
+
+/**
+ * EDICION_ACTUAL, leída de `src/lib/liga.ts`. Estuvo escrita aquí como 4 y,
+ * al abrir la 5ª, el panel habría comparado la marca de la edición vieja.
+ */
+function edicionDelCodigo() {
+  const fuente = readFileSync(join('src', 'lib', 'liga.ts'), 'utf8');
+  const n = Number(/^export const EDICION_ACTUAL = (\d+);/m.exec(fuente)?.[1]);
+  if (!n) throw new Error('[build-info] No se pudo leer EDICION_ACTUAL de src/lib/liga.ts');
+  return n;
+}
 
 const URL_SUPABASE =
   process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://rlgakgpcfbwhigjdumiv.supabase.co';
@@ -23,7 +35,7 @@ const CLAVE =
 // La edicion que se esta compilando. Produccion y el sitio de ensayos
 // comparten base y cada uno tiene que mirar solo la suya: con la marca
 // global, un marcador de prueba obligaba a republicar la web real.
-const EDICION = Number(process.env.NEXT_PUBLIC_EDICION) || 4;
+const EDICION = Number(process.env.NEXT_PUBLIC_EDICION) || edicionDelCodigo();
 const ENTORNO = process.env.NEXT_PUBLIC_ENTORNO === 'ensayos' ? 'ensayos' : 'produccion';
 
 async function leerMarca() {

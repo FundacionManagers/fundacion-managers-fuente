@@ -89,15 +89,28 @@ export function TeamCrest({ slug, size = 56, showStars = false }: TeamCrestProps
           }}
         />
 
-        {/* Logo encima de la valla */}
-        <Image
-          src={asset(`/escudos/${eq.slug}.png`)}
-          alt={`Escudo ${eq.nombre}`}
-          width={size}
-          height={size}
-          className="relative block h-full w-full object-contain"
-          style={{ padding: Math.round(size * 0.08) }}
-        />
+        {/* Logo encima de la valla. Un club nuevo llega sin archivo de
+            escudo: en vez de una imagen rota, su sigla en su color, sobre la
+            misma valla que los demás, para que la tabla no lo trate distinto. */}
+        {eq.escudo ? (
+          <Image
+            src={asset(`/escudos/${eq.slug}.png`)}
+            alt={`Escudo ${eq.nombre}`}
+            width={size}
+            height={size}
+            className="relative block h-full w-full object-contain"
+            style={{ padding: Math.round(size * 0.08) }}
+          />
+        ) : (
+          <span
+            role="img"
+            aria-label={`Escudo ${eq.nombre}`}
+            className="relative font-sport leading-none"
+            style={{ color: eq.color, fontSize: Math.round(size * 0.38) }}
+          >
+            {eq.corto}
+          </span>
+        )}
       </div>
 
       {showStars && champion ? (

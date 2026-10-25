@@ -8,6 +8,8 @@ import {
   EDICION_ACTUAL,
   calcularPosiciones,
   cifrasDeEdicion,
+  posicionesPorGrupo,
+  siembraPorGrupo,
   jornadaActualDe,
   totalesDeEdicion,
   vallaMenosVencida,
@@ -42,6 +44,9 @@ export default async function EstadisticasPage() {
 
   const posiciones = calcularPosiciones(datos.partidos, datos.disciplina);
   const juegoLimpio = tablaJuegoLimpio(posiciones);
+  // El puesto que se cita junto a cada club es el de su grupo: en la 5ª no
+  // hay tabla general, y «3º en la tabla» mezclaría los dos grupos.
+  const puestoEnGrupo = siembraPorGrupo(posicionesPorGrupo(datos.partidos, datos.disciplina));
   // La edicion son las siete fechas MAS la fase final. Pasar solo
   // `datos.partidos` dejaba fuera los ocho cruces eliminatorios: la pagina
   // titulaba «como va la cuarta» con las cifras de la fase de grupos y, una
@@ -217,8 +222,9 @@ export default async function EstadisticasPage() {
                       {eq?.nombre ?? f.equipo}
                     </span>
                     <span className="block font-mono text-[10px] uppercase leading-relaxed tracking-widest text-neutral-500">
-                      {f.posicion}º en la tabla · {f.ta} {f.ta === 1 ? 'amarilla' : 'amarillas'} ·{' '}
-                      {f.tr} {f.tr === 1 ? 'roja' : 'rojas'}
+                      {rotuloPuesto(puestoEnGrupo.get(f.equipo))} · {f.ta}{' '}
+                      {f.ta === 1 ? 'amarilla' : 'amarillas'} · {f.tr}{' '}
+                      {f.tr === 1 ? 'roja' : 'rojas'}
                     </span>
                   </span>
                   <span
@@ -250,4 +256,10 @@ export default async function EstadisticasPage() {
       </p>
     </TorneoShell>
   );
+}
+
+/** '1A' → '1º del Grupo A'. */
+function rotuloPuesto(siembra: string | undefined): string {
+  if (!siembra) return 'Sin grupo';
+  return `${siembra.slice(0, -1)}º del Grupo ${siembra.slice(-1)}`;
 }

@@ -5,7 +5,7 @@ name: Desplegar web (GitHub Pages)
 # (Settings -> Secrets and variables -> Actions -> Variables):
 #
 #   ENTORNO          produccion | ensayos       (por defecto: produccion)
-#   EDICION          4 | 99                     (por defecto: 4)
+#   EDICION          (sin definir) | 99         (por defecto: EDICION_ACTUAL de src/lib/liga.ts)
 #   PAGES_BASE_PATH  '' | /fundacion-managers-ensayos
 #
 # Asi los dos repositorios pueden tener el fichero identico y sincronizarse
@@ -59,7 +59,33 @@ jobs:
     outputs:
       publicar: ${{ steps.decidir.outputs.publicar }}
       marca: ${{ steps.leer.outputs.marca }}
+      edicion: ${{ steps.edicion.outputs.edicion }}
     steps:
+      # Que edicion se publica. En ensayos la fija la variable EDICION (99).
+      # En produccion sale del codigo, de EDICION_ACTUAL: estuvo escrita aqui
+      # como '4' por defecto, y al abrir la 5a edicion la web real habria
+      # seguido leyendo los datos de la 4a con el codigo de la 5a. Asi cambiar
+      # de edicion es tocar un solo numero, en un solo archivo.
+      - uses: actions/checkout@v7
+        with:
+          sparse-checkout: src/lib/liga.ts
+          sparse-checkout-cone-mode: false
+      - name: Qué edición
+        id: edicion
+        run: |
+          EDICION="${VAR_EDICION}"
+          if [ -z "$EDICION" ]; then
+            EDICION=$(sed -n 's/^export const EDICION_ACTUAL = \([0-9]*\);.*/\1/p' src/lib/liga.ts)
+          fi
+          if [ -z "$EDICION" ]; then
+            echo "No se pudo leer EDICION_ACTUAL de src/lib/liga.ts" >&2
+            exit 1
+          fi
+          echo "Edición: $EDICION"
+          echo "edicion=$EDICION" >> "$GITHUB_OUTPUT"
+        env:
+          VAR_EDICION: ${{ vars.EDICION }}
+
       # En un push siempre se publica: cambio el codigo, no solo los datos.
       - name: Leer la marca del torneo
         id: leer
@@ -80,7 +106,7 @@ jobs:
           # vista solo devuelve una fecha y un conteo.
           SUPABASE_URL: https://rlgakgpcfbwhigjdumiv.supabase.co
           SUPABASE_KEY: sb_publishable_VJ4JIosQfATwORGErcb0Dw_VxcrSngy
-          EDICION: ${{ vars.EDICION || '4' }}
+          EDICION: ${{ steps.edicion.outputs.edicion }}
 
       # La cache hace de registro de "esto ya se publico". Si la clave existe,
       # este mismo estado ya salio al aire y no hay nada que hacer.
@@ -90,7 +116,7 @@ jobs:
         uses: actions/cache/restore@v6
         with:
           path: .marca
-          key: torneo-publicado-${{ vars.EDICION || '4' }}-${{ steps.leer.outputs.marca }}
+          key: torneo-publicado-${{ steps.edicion.outputs.edicion }}-${{ steps.leer.outputs.marca }}
           lookup-only: true
 
       - name: Decidir
@@ -135,7 +161,7 @@ jobs:
           GITHUB_PAGES: 'true'
           PAGES_BASE_PATH: ${{ vars.PAGES_BASE_PATH || '' }}
           NEXT_PUBLIC_ENTORNO: ${{ vars.ENTORNO || 'produccion' }}
-          NEXT_PUBLIC_EDICION: ${{ vars.EDICION || '4' }}
+          NEXT_PUBLIC_EDICION: ${{ needs.revisar.outputs.edicion }}
         run: npm run build
 
       # El CNAME de public/ reclama fundacionmanagers.com. En el sitio de
@@ -171,4 +197,4 @@ jobs:
         uses: actions/cache/save@v6
         with:
           path: .marca
-          key: torneo-publicado-${{ vars.EDICION || '4' }}-${{ needs.revisar.outputs.marca }}
+          key: torneo-publicado-${{ needs.revisar.outputs.edicion }}-${{ needs.revisar.outputs.marca }}

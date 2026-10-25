@@ -23,7 +23,7 @@ export default async function CalendarioPage() {
 
   // Lo próximo que se juega. Puede ser una fecha de grupos o, cuando ya no
   // queden, una ronda de la fase final: así el Calendario no se queda sin
-  // "próximo" el 6 de septiembre, al terminar la Fecha 7.
+  // "próximo" al terminar la última fecha de grupos.
   // La disciplina va porque el desempate del Artículo 14 pone el fair play
   // antes que la diferencia de gol: sin ella los cruces saldrían en otro orden.
   const proximo = proximoCompromiso(datos.partidos, datos.eliminatoria, datos.disciplina);
@@ -71,12 +71,16 @@ export default async function CalendarioPage() {
                   <span className="font-sport text-2xl uppercase leading-none text-neutral-200">
                     {r.titulo}
                   </span>
-                  <span className="text-sm text-neutral-400">{fechaLargaDe(r.fecha)}</span>
-                  {/* Cerrada la fase de grupos, los rivales de cuartos ya
-                      están decididos por la tabla: decir "equipos por definir"
-                      contradiría a La llave, que a esa altura ya los nombra. */}
+                  <span className="text-sm text-neutral-400">
+                    {r.etiqueta ?? fechaLargaDe(r.fecha)}
+                  </span>
+                  {/* Cerrada la fase de grupos, los rivales de la primera ronda
+                      ya están decididos por las tablas: decir "equipos por
+                      definir" contradiría a La llave, que a esa altura ya los
+                      nombra. */}
                   <span className="ml-auto font-bufon text-[10px] uppercase tracking-[0.15em] text-neutral-600">
-                    {r.fase === 'cuartos' && faseDeGruposCompleta(datos.partidos)
+                    {r.fase === CALENDARIO_FASE_FINAL[0]!.fase &&
+                    faseDeGruposCompleta(datos.partidos)
                       ? 'Horarios por definir'
                       : 'Equipos y horarios por definir'}
                   </span>
@@ -84,8 +88,9 @@ export default async function CalendarioPage() {
               ))}
             </ul>
             <p className="mt-4 max-w-2xl text-xs leading-relaxed text-neutral-500">
-              Los cruces salen de la tabla al cerrar la fase de grupos —1º-8º, 2º-7º, 3º-6º y 4º-5º—
-              y se pueden ver proyectados en{' '}
+              Cada ronda se juega en las dos copas: la Oro, con el 1º y el 2º de cada grupo, y la
+              Plata, con el 3º y el 4º. Las semifinales se cruzan —1º A con 2º B, 1º B con 2º A— y
+              se pueden ver proyectadas en{' '}
               <Link href="/torneo/bracket/" className="text-amarillo hover:text-naranja">
                 La llave
               </Link>

@@ -7,22 +7,29 @@
  * los que el club marcó de verdad. Y tres, que cada gol del marcador tenga
  * explicación: o lo marcó un jugador, o es un autogol registrado. Ningún
  * gol puede quedar suelto sin que la web dé cuenta de él.
+ *
+ * Corren sobre la planilla de la 4ª edición, archivada en `edicion-4.ts`: es
+ * la única con goleadores escritos en el código. La de la 5ª vive solo en la
+ * base, y allí la vigila el aviso de descuadre del panel.
  */
 
 const test = require('node:test');
 const assert = require('node:assert/strict');
 
+const liga = require('../.test-build/lib/liga.js');
 const {
-  AUTOGOLES,
-  GOLEADORES_LIGA,
-  PARTIDOS_LIGA,
-  POSICIONES_LIGA,
-  autogolesDe,
-  beneficiadoDe,
-  posicionesCompartidas,
-  tramosDeGoles,
-} = require('../.test-build/lib/liga.js');
-const { EQUIPOS } = require('../.test-build/lib/torneo-data.js');
+  AUTOGOLES_4: AUTOGOLES,
+  CLUBES_4,
+  DISCIPLINA_4,
+  GOLEADORES_4: GOLEADORES_LIGA,
+  PARTIDOS_LIGA_4: PARTIDOS_LIGA,
+} = require('../.test-build/lib/edicion-4.js');
+const { posicionesCompartidas, tramosDeGoles } = liga;
+
+const POSICIONES_LIGA = liga.calcularPosiciones(PARTIDOS_LIGA, DISCIPLINA_4, CLUBES_4);
+const EQUIPOS = CLUBES_4.map((slug) => ({ slug }));
+const beneficiadoDe = (a) => liga.beneficiadoDe(a, PARTIDOS_LIGA);
+const autogolesDe = (equipo) => liga.autogolesDe(equipo, PARTIDOS_LIGA, AUTOGOLES);
 
 test('ningún jugador aparece dos veces', () => {
   const vistos = new Map();

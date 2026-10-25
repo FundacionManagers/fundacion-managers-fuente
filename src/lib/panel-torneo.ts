@@ -9,7 +9,7 @@
 
 import { supabase } from './supabase';
 import { EDICION_DATOS } from './entorno';
-import { type FaseFinal } from './liga';
+import { type Copa, type FaseFinal } from './liga';
 
 /** Ronda a la que pertenece un partido: la liga o una ronda eliminatoria. */
 export type FasePartido = 'grupos' | FaseFinal;
@@ -17,7 +17,9 @@ export type FasePartido = 'grupos' | FaseFinal;
 export interface PartidoPanel {
   id: string;
   fase: FasePartido;
-  /** 1..7 en la fase de grupos; 0 en la eliminatoria. */
+  /** 'oro' o 'plata' en la fase final de la 5ª; null en grupos y en la llave única. */
+  copa: Copa | null;
+  /** 1..3 en la fase de grupos; 0 en la eliminatoria. */
   jornada: number;
   fecha: string;
   hora: string;
@@ -70,7 +72,7 @@ export async function cargarTodo(edicion = EDICION_DATOS): Promise<EstadoTorneo>
     sb
       .from('partidos')
       .select(
-        'id, fase, jornada, fecha, hora, local, visitante, goles_local, goles_visitante, penales_local, penales_visitante, estado',
+        'id, fase, copa, jornada, fecha, hora, local, visitante, goles_local, goles_visitante, penales_local, penales_visitante, estado',
       )
       .eq('edicion', edicion)
       // Vienen todas las rondas, tambien la eliminatoria. El selector del
@@ -103,6 +105,7 @@ export async function cargarTodo(edicion = EDICION_DATOS): Promise<EstadoTorneo>
     partidos: (p.data ?? []).map((r) => ({
       id: r.id as string,
       fase: r.fase as FasePartido,
+      copa: r.copa === 'oro' || r.copa === 'plata' ? (r.copa as Copa) : null,
       jornada: r.jornada as number,
       fecha: r.fecha as string,
       hora: (r.hora as string).slice(0, 5),
@@ -122,7 +125,9 @@ export async function cargarTodo(edicion = EDICION_DATOS): Promise<EstadoTorneo>
       numero: r.numero as number | null,
       goles: r.goles as number,
     })),
-    mvp: m.data ? { jugador: String(m.data.jugador ?? ''), equipo: String(m.data.equipo ?? '') } : null,
+    mvp: m.data
+      ? { jugador: String(m.data.jugador ?? ''), equipo: String(m.data.equipo ?? '') }
+      : null,
   };
 }
 
@@ -187,6 +192,8 @@ export async function guardarPartido(p: PartidoPanel): Promise<void> {
 
 export interface NuevoCruce {
   fase: FaseFinal;
+  /** Obligatoria en una edición con dos copas: hay dos semifinales 1 y dos finales. */
+  copa: Copa;
   /** 'AAAA-MM-DD', tal como lo entrega un <input type="date">. */
   fecha: string;
   /** 'HH:MM', tal como lo entrega un <input type="time">. */
@@ -208,6 +215,7 @@ export async function crearCruce(c: NuevoCruce, edicion = EDICION_DATOS): Promis
   const { error } = await sb.from('partidos').insert({
     edicion,
     fase: c.fase,
+    copa: c.copa,
     jornada: 0,
     fecha: c.fecha,
     hora: `${c.hora}:00`,
@@ -219,8 +227,8 @@ export async function crearCruce(c: NuevoCruce, edicion = EDICION_DATOS): Promis
 }
 
 /**
- * Borra un partido. Solo se ofrece para la fase final: los 28 de la liga son
- * el fixture oficial y no se tocan desde el panel.
+ * Borra un partido. Solo se ofrece para la fase final: los de grupos son el
+ * fixture oficial y no se tocan desde el panel.
  */
 export async function eliminarPartido(id: string): Promise<void> {
   const sb = exigirCliente();

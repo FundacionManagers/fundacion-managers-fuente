@@ -12,22 +12,28 @@ import { TorneoNav } from '@/components/torneo/TorneoNav';
 import {
   EDICION_ACTUAL,
   PERIODO_ACTUAL,
-  calcularPosiciones,
   isoDe,
+  posicionesPorGrupo,
   proximoCompromiso,
   type PartidoLiga,
 } from '@/lib/liga';
 import { cargarLigaConAviso } from '@/lib/liga-supabase';
 import { EDICION_ANTERIOR, etiquetaTitulos, ordinalFemenino, pillEdicion } from '@/lib/torneo';
-import { BRACKET_2026, EQUIPOS, getEquipo } from '@/lib/torneo-data';
+import { CLUBES_HISTORICOS, getEquipo, grupoDe } from '@/lib/torneo-data';
 import { cn } from '@/lib/utils';
 
 interface Props {
   params: Promise<{ slug: string }>;
 }
 
+/**
+ * Una ficha por cada club con historia, no solo por los de la edición en
+ * curso: Useches y Managers FC no juegan la 5ª, pero su ficha seguía enlazada
+ * desde la llave de la 4ª en el Palmarés, y borrarla dejaba esos enlaces en
+ * un 404.
+ */
 export function generateStaticParams() {
-  return EQUIPOS.map((e) => ({ slug: e.slug }));
+  return CLUBES_HISTORICOS.map((e) => ({ slug: e.slug }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -123,14 +129,19 @@ export default async function EquipoPage({ params }: Props) {
   if (!eq) notFound();
 
   const datos = await cargarLigaConAviso();
-  const posiciones = calcularPosiciones(datos.partidos, datos.disciplina);
-  const fila = posiciones.find((f) => f.equipo === eq.slug);
+  // El puesto que importa es el del grupo: decide en qué copa juega.
+  const grupo = grupoDe(eq.slug);
+  const fila = posicionesPorGrupo(datos.partidos, datos.disciplina)
+    .find((t) => t.grupo === grupo)
+    ?.filas.find((f) => f.equipo === eq.slug);
 
   // Partidos de la edicion EN CURSO. La ficha mostraba solo la llave de la 3a
   // edicion, asi que un club eliminado en cuartos aparecia con un unico
   // partido y su ficha no decia nada del torneo que se esta jugando.
   const partidosLiga = datos.partidos.filter((p) => p.local === eq.slug || p.visitante === eq.slug);
-  const historial = BRACKET_2026.filter((p) => p.local === eq.slug || p.visitante === eq.slug);
+  const historial = (EDICION_ANTERIOR.partidos ?? []).filter(
+    (p) => p.local === eq.slug || p.visitante === eq.slug,
+  );
 
   /**
    * La nomina se arma con los jugadores que ya tienen gol registrado en la
@@ -152,7 +163,7 @@ export default async function EquipoPage({ params }: Props) {
    * entra; el palmarés cierra.
    */
   const tiles = [
-    { l: 'Posición', v: fila ? `${fila.posicion}º` : '—' },
+    { l: grupo ? `Grupo ${grupo}` : 'Posición', v: fila ? `${fila.posicion}º` : '—' },
     { l: 'Puntos', v: fila ? String(fila.pts) : '—' },
     { l: 'Goles a favor', v: fila ? String(fila.gf) : '—' },
     { l: 'Títulos', v: String(eq.titulos) },
@@ -333,8 +344,7 @@ export default async function EquipoPage({ params }: Props) {
                   Historial · {pillEdicion(EDICION_ANTERIOR)}
                 </p>
                 <p className="mt-2 max-w-2xl text-xs text-neutral-500">
-                  Esa edición se jugó por eliminación directa y ya terminó. No forma parte del
-                  torneo en curso.
+                  La fase final de esa edición, que ya terminó. No forma parte del torneo en curso.
                 </p>
                 <div className="mt-8 grid gap-5 opacity-80 sm:grid-cols-2">
                   {historial.map((p) => (

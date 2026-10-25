@@ -24,7 +24,7 @@ const {
   campeonDe,
   respaldoDe,
 } = require('../.test-build/lib/torneo.js');
-const { EQUIPOS } = require('../.test-build/lib/torneo-data.js');
+const { CLUBES_HISTORICOS } = require('../.test-build/lib/torneo-data.js');
 
 test('ningún título existe sin declarar de dónde sale', () => {
   const titulosContados = Object.values(TITULOS_POR_CLUB).reduce((s, n) => s + n, 0);
@@ -64,16 +64,23 @@ test('las dos primeras ediciones las ganó Pomada Alfa, sin llave publicada', ()
   }
 });
 
-test('Pomada Alfa es bicampeón y el escudo lo refleja', () => {
-  assert.equal(TITULOS_POR_CLUB['Pomada Alfa'], 2);
-  const pomada = EQUIPOS.find((e) => e.slug === 'pomada-alfa');
-  assert.equal(pomada.titulos, 2, 'los títulos del club se cuentan sobre EDICIONES, no a mano');
+test('Pomada Alfa suma tres títulos y el escudo lo refleja', () => {
+  assert.equal(TITULOS_POR_CLUB['Pomada Alfa'], 3);
+  const pomada = CLUBES_HISTORICOS.find((e) => e.slug === 'pomada-alfa');
+  assert.equal(pomada.titulos, 3, 'los títulos del club se cuentan sobre EDICIONES, no a mano');
 });
 
-test('el campeón vigente es The Originals, de la 3ª edición', () => {
-  assert.equal(CAMPEON_VIGENTE.equipo, 'The Originals');
-  assert.equal(CAMPEON_VIGENTE.edicion, 3);
-  assert.equal(CAMPEON_VIGENTE.periodo, '2026-1');
+test('la 4ª la ganó Pomada Alfa en penales, y lo dice la llave publicada', () => {
+  const cuarta = EDICIONES.find((e) => e.numero === 4);
+  assert.equal(cuarta.estado, 'jugada');
+  assert.equal(campeonDe(cuarta), 'Pomada Alfa');
+  assert.equal(respaldoDe(cuarta), 'llave-publicada');
+});
+
+test('el campeón vigente es Pomada Alfa, de la 4ª edición', () => {
+  assert.equal(CAMPEON_VIGENTE.equipo, 'Pomada Alfa');
+  assert.equal(CAMPEON_VIGENTE.edicion, 4);
+  assert.equal(CAMPEON_VIGENTE.periodo, '2026-2');
 });
 
 test('el campeón vigente sale de la última edición ya jugada', () => {
@@ -83,33 +90,29 @@ test('el campeón vigente sale de la última edición ya jugada', () => {
   assert.equal(CAMPEON_VIGENTE.edicion, ultima.numero);
 });
 
-test('el máximo ganador es Pomada Alfa, con 2 títulos', () => {
+test('el máximo ganador es Pomada Alfa, con 3 títulos', () => {
   assert.equal(MAXIMO_GANADOR.equipo, 'Pomada Alfa');
-  assert.equal(MAXIMO_GANADOR.titulos, 2);
+  assert.equal(MAXIMO_GANADOR.titulos, 3);
 });
 
-test('máximo ganador y campeón vigente son cosas distintas', () => {
-  assert.notEqual(
-    MAXIMO_GANADOR.equipo,
-    CAMPEON_VIGENTE.equipo,
-    'hoy son clubes distintos: Pomada Alfa acumula más, The Originals tiene la corona',
-  );
+test('si máximo ganador y campeón vigente coinciden, no se pinta el bloque dos veces', () => {
+  assert.equal(MAXIMO_GANADOR.equipo, CAMPEON_VIGENTE.equipo);
   assert.equal(
     MAXIMO_GANADOR_ES_OTRO,
-    true,
-    'con clubes distintos, la web debe mostrar los dos bloques',
+    false,
+    'con el mismo club en los dos, la web mostraría a Pomada Alfa dos veces',
   );
 });
 
 test('los títulos de cada club cuadran con las ediciones que ganaron', () => {
-  for (const e of EQUIPOS) {
+  for (const e of CLUBES_HISTORICOS) {
     const ganadas = EDICIONES.filter((ed) => campeonDe(ed) === e.nombre).length;
     assert.equal(e.titulos, ganadas, `${e.nombre} dice ${e.titulos} títulos y ganó ${ganadas}`);
   }
 });
 
-test('la 4ª edición está en curso y todavía no corona a nadie', () => {
-  const cuarta = EDICIONES.find((e) => e.numero === 4);
-  assert.equal(cuarta.estado, 'en-curso');
-  assert.equal(campeonDe(cuarta), undefined);
+test('la 5ª edición está en curso y todavía no corona a nadie', () => {
+  const quinta = EDICIONES.find((e) => e.numero === 5);
+  assert.equal(quinta.estado, 'en-curso');
+  assert.equal(campeonDe(quinta), undefined);
 });

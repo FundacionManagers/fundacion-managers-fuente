@@ -5,7 +5,7 @@ import {
   fechaLargaDe,
   jornadaEnVariosDias,
   ladoGanador,
-  type CruceCuartos,
+  type CruceDerivado,
   type EstadoRonda,
   type FaseFinal,
   type ParadaFinal,
@@ -16,8 +16,8 @@ import { cn } from '@/lib/utils';
 /** Un lado de un cruce: quién es, de qué puesto viene y cuánto hizo. */
 interface LadoLlave {
   slug: string | null;
-  /** Puesto en la tabla de la fase de grupos. Null si todavía no se sabe. */
-  siembra: number | null;
+  /** Puesto en su grupo, ej. '1A'. Null si todavía no se sabe. */
+  siembra: string | null;
   goles: number | null;
   /** Penales de la tanda, si el cruce se definió así. Null en la inmensa mayoría. */
   penales?: number | null;
@@ -31,7 +31,7 @@ interface LadoLlave {
 
 interface CeldaLlave {
   id: string;
-  /** Rótulo del cruce: '1º vs 8º' mientras es proyección, la fecha y hora cuando ya está programado. */
+  /** Rótulo del cruce: '1º A vs 2º B' mientras es proyección, la fecha y hora cuando ya está programado. */
   etiqueta: string | null;
   lados: [LadoLlave, LadoLlave];
   jugado: boolean;
@@ -90,7 +90,8 @@ const LADO_VACIO: LadoLlave = { slug: null, siembra: null, goles: null };
  * el tercer puesto, los perdedores.
  *
  * Los partidos de cuartos se numeran por su hora de juego, que es el orden en
- * que aparecen en esta misma página.
+ * que aparecen en esta misma página. En la 5ª no hay cuartos: la llave
+ * arranca en semifinales y esas casillas salen de las tablas de grupo.
  */
 function procedenciasDe(fase: FaseFinal, i: number): [LadoLlave, LadoLlave] {
   const de = (procedencia: string): LadoLlave => ({ ...LADO_VACIO, procedencia });
@@ -112,10 +113,17 @@ function procedenciasDe(fase: FaseFinal, i: number): [LadoLlave, LadoLlave] {
  * pantalla.
  */
 const NOTA_FASE: Partial<Record<FaseFinal, string>> = {
-  semifinal: 'Ganadores de los partidos 1 y 2 en una; 3 y 4 en la otra.',
   final: 'La disputan los ganadores de las semifinales.',
   'tercer-puesto': 'La juegan los perdedores de las semifinales.',
 };
+
+/** Las semifinales cruzan grupos; cuál es cuál depende de la copa. */
+function notaDe(fase: FaseFinal, cruces: readonly CruceDerivado[]): string | undefined {
+  if (fase === 'semifinal' && cruces.length) {
+    return `Cruzadas: ${cruces.map((c) => c.etiqueta).join(' y ')}. El mejor ubicado hace de local.`;
+  }
+  return NOTA_FASE[fase];
+}
 
 // Sobre el verde del cuadro, no sobre el fondo oscuro del resto del sitio.
 const CHIP: Record<EstadoRonda, { texto: string; clase: string }> = {
@@ -156,10 +164,10 @@ function Fila({
   return (
     <div className={cn('flex items-center gap-2.5', altoFijo && 'h-11')}>
       <span
-        className="w-5 shrink-0 font-mono text-[10px] uppercase tracking-widest"
+        className="w-6 shrink-0 font-mono text-[10px] uppercase tracking-wider"
         style={{ color: tono === 'dorado' ? 'rgb(15 20 25 / 0.5)' : `${VERDE}70` }}
       >
-        {lado.siembra ? `${lado.siembra}º` : '·'}
+        {lado.siembra ?? '·'}
       </span>
       {/* El marcador de escudo vacío es una placa clara con un «?». Sobre el
           dorado de la final y sobre la menta de lo que falta por jugar queda
@@ -292,14 +300,21 @@ export function LlaveArbol({
   provisional,
   siembra,
 }: {
-  /** Cuartos proyectados desde la tabla, para cuando aún no hay partidos cargados. */
-  cruces: readonly CruceCuartos[];
+  /**
+   * La primera ronda proyectada desde las tablas, para cuando aún no hay
+   * partidos cargados. Solo los de esta copa.
+   */
+  cruces: readonly CruceDerivado[];
   camino: readonly ParadaFinal[];
   /** Faltan fechas de grupos por jugar: los cruces todavía pueden cambiar. */
   provisional: boolean;
-  /** Puesto en la tabla de cada club, para etiquetar los cruces ya cargados. */
-  siembra: ReadonlyMap<string, number>;
+  /** Puesto de grupo de cada club ('1A'), para etiquetar los cruces ya cargados. */
+  siembra: ReadonlyMap<string, string>;
 }) {
+  // La primera ronda del camino es la que se proyecta desde la tabla: cuartos
+  // en una llave de ocho, semifinales en las copas de la 5ª.
+  const primera = camino[0]?.fase;
+
   function celdasDe(parada: ParadaFinal): CeldaLlave[] {
     // Manda siempre lo que haya cargado la organización.
     if (parada.partidos.length > 0) {
@@ -337,14 +352,14 @@ export function LlaveArbol({
       }));
     }
 
-    // Sin partidos cargados, cuartos se proyecta desde la tabla.
-    if (parada.fase === 'cuartos') {
+    // Sin partidos cargados, la primera ronda se proyecta desde la tabla.
+    if (parada.fase === primera && cruces.length) {
       return cruces.map((c) => ({
         id: c.id,
         etiqueta: c.etiqueta,
         lados: [
-          { slug: c.local, siembra: c.posicionLocal, goles: null },
-          { slug: c.visitante, siembra: c.posicionVisitante, goles: null },
+          { slug: c.local, siembra: c.siembraLocal, goles: null },
+          { slug: c.visitante, siembra: c.siembraVisitante, goles: null },
         ],
         jugado: false,
       }));
@@ -395,9 +410,7 @@ export function LlaveArbol({
                   {chip.texto}
                 </span>
               </div>
-              <p className="mt-2.5 text-xs text-white/65">
-                {parada.fecha ? fechaLargaDe(parada.fecha) : 'Fecha por confirmar'}
-              </p>
+              <p className="mt-2.5 text-xs text-white/65">{fechaDeParada(parada)}</p>
 
               <ul className="mt-4 space-y-3">
                 {celdasDe(parada).map((c) => (
@@ -407,9 +420,9 @@ export function LlaveArbol({
                 ))}
               </ul>
 
-              {NOTA_FASE[parada.fase] ? (
+              {notaDe(parada.fase, cruces) ? (
                 <p className="mt-3 text-[11px] leading-relaxed text-white/55">
-                  {NOTA_FASE[parada.fase]}
+                  {notaDe(parada.fase, cruces)}
                 </p>
               ) : null}
             </section>
@@ -418,6 +431,12 @@ export function LlaveArbol({
       </div>
     </>
   );
+}
+
+/** Cuándo se juega una ronda: su rótulo de dos días si lo tiene, o su fecha. */
+function fechaDeParada(parada: ParadaFinal): string {
+  if (parada.etiqueta) return parada.etiqueta;
+  return parada.fecha ? fechaLargaDe(parada.fecha) : 'Fecha por confirmar';
 }
 
 /** Las cinco columnas del cuadro: ronda, llave, ronda, llave, ronda. */
@@ -458,9 +477,7 @@ function Cabecera({ parada }: { parada: ParadaFinal }) {
           {chip.texto}
         </span>
       </div>
-      <p className="mt-2 text-xs text-white/65">
-        {parada.fecha ? fechaLargaDe(parada.fecha) : 'Fecha por confirmar'}
-      </p>
+      <p className="mt-2 text-xs text-white/65">{fechaDeParada(parada)}</p>
     </div>
   );
 }
@@ -495,8 +512,21 @@ function Cuadro({
   const tercero = (porFase.get('tercer-puesto') ?? [])[0];
   const paradaDe = (f: FaseFinal) => camino.find((p) => p.fase === f);
 
-  // El dibujo asume ocho equipos. Con cualquier otra forma se calla y deja
-  // las columnas, en vez de pintar una llave que no corresponde.
+  // Cuatro equipos: la llave arranca en semifinales (las copas de la 5ª).
+  if (cuartos.length === 0 && semis.length === 2 && final) {
+    return (
+      <CuadroDeCuatro
+        semis={semis}
+        final={final}
+        tercero={tercero}
+        paradaDe={paradaDe}
+        provisional={provisional}
+      />
+    );
+  }
+
+  // El dibujo de ocho asume cuartos completos. Con cualquier otra forma se
+  // calla y deja las columnas, en vez de pintar una llave que no corresponde.
   if (cuartos.length !== 4 || semis.length !== 2 || !final) return null;
 
   const cabeceras: [FaseFinal, string][] = [
@@ -562,6 +592,81 @@ function Cuadro({
       {tercero ? (
         <div className={cn('grid gap-x-0', COLUMNAS)}>
           <div className="col-start-5">
+            <Cabecera parada={paradaDe('tercer-puesto')!} />
+            <div className="mt-4">
+              <Celda celda={tercero} altoFijo />
+            </div>
+          </div>
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+/** Las tres columnas del cuadro de cuatro: semifinales, llave, final. */
+const COLUMNAS_CUATRO = 'grid-cols-[minmax(0,1fr)_3.5rem_minmax(0,1fr)]';
+
+/**
+ * El cuadro de una copa de cuatro equipos: dos semifinales que desembocan en
+ * la final, con el tercer puesto debajo.
+ *
+ * Es el mismo dibujo que el de ocho sin la primera columna. Sin él, la página
+ * de una copa de cuatro se quedaba vacía en escritorio: las columnas apiladas
+ * solo se muestran en pantallas estrechas y el cuadro de ocho se callaba.
+ */
+function CuadroDeCuatro({
+  semis,
+  final,
+  tercero,
+  paradaDe,
+  provisional,
+}: {
+  semis: CeldaLlave[];
+  final: CeldaLlave;
+  tercero: CeldaLlave | undefined;
+  paradaDe: (f: FaseFinal) => ParadaFinal | undefined;
+  provisional: boolean;
+}) {
+  const cabeceras: [FaseFinal, string][] = [
+    ['semifinal', 'col-start-1'],
+    ['final', 'col-start-3'],
+  ];
+
+  return (
+    <div
+      className="hidden rounded-2xl border border-white/15 p-8 backdrop-blur-[3px] lg:block"
+      style={{ background: PANEL }}
+    >
+      <div className={cn('grid gap-x-0', COLUMNAS_CUATRO)}>
+        {cabeceras.map(([fase, col]) => {
+          const p = paradaDe(fase);
+          return p ? (
+            <div key={fase} className={col}>
+              <Cabecera parada={p} />
+            </div>
+          ) : null;
+        })}
+      </div>
+
+      <div className={cn('mt-5 grid h-[24rem] grid-rows-2', COLUMNAS_CUATRO)}>
+        {semis.map((c, i) => (
+          <div key={c.id} className="col-start-1 flex items-center" style={{ gridRow: i + 1 }}>
+            <Celda celda={c} altoFijo provisional={provisional} />
+          </div>
+        ))}
+
+        <div className="col-start-2 row-span-2 row-start-1">
+          <Conector />
+        </div>
+
+        <div className="col-start-3 row-span-2 row-start-1 flex items-center">
+          <Celda celda={final} altoFijo destacada />
+        </div>
+      </div>
+
+      {tercero ? (
+        <div className={cn('mt-6 grid gap-x-0', COLUMNAS_CUATRO)}>
+          <div className="col-start-3">
             <Cabecera parada={paradaDe('tercer-puesto')!} />
             <div className="mt-4">
               <Celda celda={tercero} altoFijo />

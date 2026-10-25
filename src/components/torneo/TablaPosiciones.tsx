@@ -4,14 +4,19 @@ import { EQUIPOS, getEquipo } from '@/lib/torneo-data';
 import {
   COLUMNAS_TABLA,
   CRITERIOS_DESEMPATE,
-  calcularPosiciones,
   jornadaActualDe,
+  posicionesPorGrupo,
+  type TablaGrupo,
 } from '@/lib/liga';
 import type { DatosLiga } from '@/lib/liga-supabase';
 import { cn } from '@/lib/utils';
 
 /**
- * Tabla de posiciones de la fase de grupos.
+ * Tablas de posiciones de la fase de grupos, una por grupo.
+ *
+ * En la 5ª edición no hay tabla general: los puestos que cuentan son los del
+ * grupo. El 1º y el 2º van a la Copa Oro y el 3º y el 4º a la Plata, y cada
+ * fila lo dice con su color, porque eso es lo que un capitán viene a mirar.
  *
  * Las cifras vienen de `calcularPosiciones()`, que las deriva de los
  * marcadores: la tabla no puede contradecir al calendario.
@@ -28,7 +33,7 @@ import { cn } from '@/lib/utils';
  * vista el criterio menos decisivo y escondía el que manda.
  */
 export function TablaPosiciones({ datos }: { datos: DatosLiga }) {
-  const posiciones = calcularPosiciones(datos.partidos, datos.disciplina);
+  const tablas = posicionesPorGrupo(datos.partidos, datos.disciplina);
   const jornadaActual = jornadaActualDe(datos.partidos);
 
   return (
@@ -48,107 +53,24 @@ export function TablaPosiciones({ datos }: { datos: DatosLiga }) {
       </div>
       <div className="energy-bar mt-5 h-1 w-full rounded-full opacity-70" />
 
-      <div className="mt-8 overflow-x-auto rounded-2xl border border-white/10 bg-black/40">
-        {/* El ancho mínimo baja en móvil. Con el código corto la columna de
-            equipo pasó de 250 a 140 px, pero un min-width fijo de 720
-            repartía el sobrante entre las demás y seguía empujando PTS fuera
-            de pantalla. */}
-        <table className="w-full min-w-[560px] border-collapse text-sm sm:min-w-[720px]">
-          <caption className="sr-only">
-            Tabla de posiciones de la fase de grupos hasta la fecha {jornadaActual}
-          </caption>
-          <thead>
-            <tr className="border-b border-amarillo/30 bg-amarillo/10">
-              {/* POS y EQUIPO se quedan fijas al deslizar en móvil.
-                  Doce columnas no caben en los 326 px útiles de un teléfono
-                  por mucho que se apriete, así que deslizar es inevitable; lo
-                  que se puede evitar es perder de vista de qué club es la
-                  fila que estás leyendo. Desde `sm` la tabla entra entera y
-                  no hace falta fijar nada. */}
-              <th
-                scope="col"
-                className="sticky left-0 z-20 w-[52px] bg-[#191505] px-3 py-3 text-center font-bufon text-xs font-bold uppercase tracking-wider text-amarillo sm:static sm:w-auto sm:bg-transparent"
-              >
-                Pos
-              </th>
-              <th
-                scope="col"
-                className="sticky left-[52px] z-20 bg-[#191505] px-3 py-3 text-left font-bufon text-xs font-bold uppercase tracking-wider text-amarillo sm:static sm:bg-transparent"
-              >
-                Equipo
-              </th>
-              {COLUMNAS_TABLA.map((c) => (
-                <th
-                  key={c.key}
-                  scope="col"
-                  title={c.largo}
-                  className={cn(
-                    'px-2 py-3 text-center font-bufon text-xs font-bold uppercase tracking-wider text-amarillo',
-                    c.key === 'pts' && 'px-3',
-                  )}
-                >
-                  <abbr title={c.largo} className="no-underline">
-                    {c.corto}
-                  </abbr>
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {posiciones.map((fila) => {
-              const eq = getEquipo(fila.equipo);
-              return (
-                <tr
-                  key={fila.equipo}
-                  className="border-b border-white/5 transition-colors last:border-0 hover:bg-white/[0.04]"
-                >
-                  <td className="sticky left-0 z-10 w-[52px] bg-[#0b0f14] px-3 py-3 text-center sm:static sm:w-auto sm:bg-transparent">
-                    <span
-                      className={cn(
-                        'inline-flex h-7 w-7 items-center justify-center rounded-lg font-sport text-base',
-                        fila.posicion <= 4
-                          ? 'bg-gradient-to-b from-amarillo to-naranja text-carbon'
-                          : 'text-neutral-500',
-                      )}
-                    >
-                      {fila.posicion}
-                    </span>
-                  </td>
-                  <td className="sticky left-[52px] z-10 bg-[#0b0f14] px-3 py-3 sm:static sm:bg-transparent">
-                    {/* Nombre completo desde `sm`, codigo corto en movil. A
-                        375 px la columna de equipo se comia 250 de los 325
-                        disponibles y dejaba fuera hasta PTS, que es el dato
-                        que todo el mundo viene a mirar. */}
-                    <div className="flex items-center gap-2 sm:gap-3">
-                      <TeamCrest slug={fila.equipo} size={32} />
-                      <span className="whitespace-nowrap font-semibold text-neutral-100">
-                        <span className="sm:hidden">{eq?.corto ?? fila.equipo}</span>
-                        <span className="hidden sm:inline">{eq?.nombre ?? fila.equipo}</span>
-                      </span>
-                    </div>
-                  </td>
-                  {COLUMNAS_TABLA.map((c) => (
-                    <td
-                      key={c.key}
-                      className={cn(
-                        'px-2 py-3 text-center tabular-nums',
-                        c.key === 'pts'
-                          ? 'px-3 font-sport text-lg text-amarillo'
-                          : 'text-neutral-300',
-                        c.key === 'dg' && fila.dg > 0 && 'text-emerald-400',
-                        c.key === 'dg' && fila.dg < 0 && 'text-red-400',
-                        c.key === 'ta' && 'text-amber-300/80',
-                        c.key === 'tr' && 'text-red-400/80',
-                      )}
-                    >
-                      {c.key === 'dg' && fila.dg > 0 ? `+${fila.dg}` : fila[c.key]}
-                    </td>
-                  ))}
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+      {/* Qué se juega cada puesto. Sin esto la tabla no dice para qué sirve
+          quedar segundo en vez de tercero, que es justo la frontera entre las
+          dos copas. */}
+      <p className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-neutral-400">
+        <span className="flex items-center gap-2">
+          <span className="inline-block h-3 w-3 rounded-sm bg-gradient-to-b from-amarillo to-naranja" />
+          1º y 2º · Copa Oro
+        </span>
+        <span className="flex items-center gap-2">
+          <span className="inline-block h-3 w-3 rounded-sm bg-neutral-300" />
+          3º y 4º · Copa Plata
+        </span>
+      </p>
+
+      <div className="mt-6 space-y-10">
+        {tablas.map((t) => (
+          <TablaDeGrupo key={t.grupo} tabla={t} jornadaActual={jornadaActual} />
+        ))}
       </div>
 
       {/* La leyenda de las siglas y el Articulo 14 son material de consulta:
@@ -217,5 +139,125 @@ export function TablaPosiciones({ datos }: { datos: DatosLiga }) {
         </div>
       </details>
     </div>
+  );
+}
+
+/**
+ * La tabla de un grupo. Cuatro filas, las mismas doce columnas que tenía la
+ * tabla general: el Fair Play desempata antes que la diferencia de gol, así
+ * que TA y TR no se esconden en ningún ancho.
+ */
+function TablaDeGrupo({ tabla, jornadaActual }: { tabla: TablaGrupo; jornadaActual: number }) {
+  return (
+    <section aria-labelledby={`grupo-${tabla.grupo}`}>
+      <h3
+        id={`grupo-${tabla.grupo}`}
+        className="font-sport text-3xl uppercase leading-none text-neutral-100"
+      >
+        Grupo {tabla.grupo}
+      </h3>
+      <div className="mt-3 overflow-x-auto rounded-2xl border border-white/10 bg-black/40">
+        {/* El ancho mínimo baja en móvil. Con el código corto la columna de
+            equipo pasó de 250 a 140 px, pero un min-width fijo de 720
+            repartía el sobrante entre las demás y seguía empujando PTS fuera
+            de pantalla. */}
+        <table className="w-full min-w-[560px] border-collapse text-sm sm:min-w-[720px]">
+          <caption className="sr-only">
+            Tabla del Grupo {tabla.grupo} hasta la fecha {jornadaActual}
+          </caption>
+          <thead>
+            <tr className="border-b border-amarillo/30 bg-amarillo/10">
+              {/* POS y EQUIPO se quedan fijas al deslizar en móvil.
+                  Doce columnas no caben en los 326 px útiles de un teléfono
+                  por mucho que se apriete, así que deslizar es inevitable; lo
+                  que se puede evitar es perder de vista de qué club es la
+                  fila que estás leyendo. Desde `sm` la tabla entra entera y
+                  no hace falta fijar nada. */}
+              <th
+                scope="col"
+                className="sticky left-0 z-20 w-[52px] bg-[#191505] px-3 py-3 text-center font-bufon text-xs font-bold uppercase tracking-wider text-amarillo sm:static sm:w-auto sm:bg-transparent"
+              >
+                Pos
+              </th>
+              <th
+                scope="col"
+                className="sticky left-[52px] z-20 bg-[#191505] px-3 py-3 text-left font-bufon text-xs font-bold uppercase tracking-wider text-amarillo sm:static sm:bg-transparent"
+              >
+                Equipo
+              </th>
+              {COLUMNAS_TABLA.map((c) => (
+                <th
+                  key={c.key}
+                  scope="col"
+                  title={c.largo}
+                  className={cn(
+                    'px-2 py-3 text-center font-bufon text-xs font-bold uppercase tracking-wider text-amarillo',
+                    c.key === 'pts' && 'px-3',
+                  )}
+                >
+                  <abbr title={c.largo} className="no-underline">
+                    {c.corto}
+                  </abbr>
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {tabla.filas.map((fila) => {
+              const eq = getEquipo(fila.equipo);
+              return (
+                <tr
+                  key={fila.equipo}
+                  className="border-b border-white/5 transition-colors last:border-0 hover:bg-white/[0.04]"
+                >
+                  <td className="sticky left-0 z-10 w-[52px] bg-[#0b0f14] px-3 py-3 text-center sm:static sm:w-auto sm:bg-transparent">
+                    <span
+                      className={cn(
+                        'inline-flex h-7 w-7 items-center justify-center rounded-lg font-sport text-base',
+                        fila.posicion <= 2
+                          ? 'bg-gradient-to-b from-amarillo to-naranja text-carbon'
+                          : 'bg-neutral-300 text-carbon',
+                      )}
+                    >
+                      {fila.posicion}
+                    </span>
+                  </td>
+                  <td className="sticky left-[52px] z-10 bg-[#0b0f14] px-3 py-3 sm:static sm:bg-transparent">
+                    {/* Nombre completo desde `sm`, codigo corto en movil. A
+                        375 px la columna de equipo se comia 250 de los 325
+                        disponibles y dejaba fuera hasta PTS, que es el dato
+                        que todo el mundo viene a mirar. */}
+                    <div className="flex items-center gap-2 sm:gap-3">
+                      <TeamCrest slug={fila.equipo} size={32} />
+                      <span className="whitespace-nowrap font-semibold text-neutral-100">
+                        <span className="sm:hidden">{eq?.corto ?? fila.equipo}</span>
+                        <span className="hidden sm:inline">{eq?.nombre ?? fila.equipo}</span>
+                      </span>
+                    </div>
+                  </td>
+                  {COLUMNAS_TABLA.map((c) => (
+                    <td
+                      key={c.key}
+                      className={cn(
+                        'px-2 py-3 text-center tabular-nums',
+                        c.key === 'pts'
+                          ? 'px-3 font-sport text-lg text-amarillo'
+                          : 'text-neutral-300',
+                        c.key === 'dg' && fila.dg > 0 && 'text-emerald-400',
+                        c.key === 'dg' && fila.dg < 0 && 'text-red-400',
+                        c.key === 'ta' && 'text-amber-300/80',
+                        c.key === 'tr' && 'text-red-400/80',
+                      )}
+                    >
+                      {c.key === 'dg' && fila.dg > 0 ? `+${fila.dg}` : fila[c.key]}
+                    </td>
+                  ))}
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    </section>
   );
 }

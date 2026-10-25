@@ -1,32 +1,33 @@
 /**
- * Fase de grupos de la 4ª edición (2026-2) — liga de 7 fechas, 8 equipos,
- * todos contra todos a una sola vuelta. 28 partidos en Thomajo Sport.
+ * La edición en curso: la 5ª (2026-2), dos grupos de cuatro.
  *
- * A diferencia de la 3ª edición (llave eliminatoria, en `torneo-data.ts`),
- * esta edición se define por tabla de posiciones.
+ * Fase de grupos de tres fechas, todos contra todos dentro de cada grupo. Al
+ * cerrarla, el 1º y el 2º de cada grupo juegan la Copa Oro y el 3º y el 4º
+ * la Copa Plata, cada una con semifinales cruzadas (1º A vs 2º B, 1º B vs
+ * 2º A), tercer puesto y final. El título del torneo es la Copa Oro.
+ *
+ * La 4ª edición —liga de 8 a 7 fechas y llave desde cuartos— ya cerró y vive
+ * en `edicion-4.ts`, igual que la 3ª en `edicion-3.ts`.
  *
  * DECISIÓN DE DISEÑO: la tabla NO se escribe a mano. `calcularPosiciones()`
- * la deriva de `PARTIDOS_LIGA`, así PJ, PG, PE, PP, GF, GC, DG y PTS son
+ * la deriva de los partidos, así PJ, PG, PE, PP, GF, GC, DG y PTS son
  * siempre coherentes con el calendario: es imposible que se contradigan.
- * Solo se cargan a mano las tarjetas, que no se deducen de un marcador.
+ * Solo se cargan a mano las tarjetas, que no se deducen de un marcador. Y
+ * la llave sale de la tabla, grupo por grupo.
  *
- * Esto además detectó dos erratas en el gráfico oficial de la Fecha 4: la
- * diferencia de gol de Useches (dice -2, son -1) y la de Yonotomo (dice -13,
- * son -9). El resto de la tabla oficial coincide celda por celda.
- *
- * Al día en la Fecha 5, y cuadrado: los 8 clubes suman 97 goles a favor, el
- * ranking reparte 96 entre 46 anotadores y el que falta es el autogol de
- * `AUTOGOLES`, que lo marcó Managers FC en su propia portería y cuenta para
- * Pomada Alfa. Club por club también cuadra, y tests/ lo vigila.
+ * Los partidos de aquí son el RESPALDO: lo que se publica si Supabase no
+ * responde durante el build. La fuente real es la base, que carga el panel.
  */
 
-import { EQUIPOS } from './torneo-data';
+import { EQUIPOS, GRUPOS, LETRAS_GRUPO, grupoDe, type Grupo } from './torneo-data';
 
-export const EDICION_ACTUAL = 4;
+export type { Grupo };
+
+export const EDICION_ACTUAL = 5;
 export const PERIODO_ACTUAL = '2026-2';
-export const TOTAL_JORNADAS = 7;
+export const TOTAL_JORNADAS = 3;
 export const CANCHA = 'Thomajo Sport';
-export const FORMATO_LIGA = 'Todos contra todos · una sola vuelta';
+export const FORMATO_LIGA = 'Dos grupos de cuatro · todos contra todos dentro del grupo';
 
 export interface PartidoLiga {
   id: string;
@@ -77,356 +78,77 @@ export interface Goleador {
 
 /** Cada fecha con su día y su rótulo, tal como aparecen en el fixture oficial. */
 export const JORNADAS_INFO: readonly { jornada: number; etiqueta: string }[] = [
-  { jornada: 1, etiqueta: 'Domingo 26 de julio 2026' },
-  { jornada: 2, etiqueta: 'Domingo 2 de agosto 2026' },
-  { jornada: 3, etiqueta: 'Miércoles 5 y jueves 6 de agosto 2026' },
-  { jornada: 4, etiqueta: 'Miércoles 12 y jueves 13 de agosto 2026' },
-  { jornada: 5, etiqueta: 'Domingo 23 de agosto 2026' },
-  { jornada: 6, etiqueta: 'Domingo 30 de agosto 2026' },
-  { jornada: 7, etiqueta: 'Domingo 6 de septiembre 2026' },
+  { jornada: 1, etiqueta: 'Domingo 18 de octubre 2026' },
+  { jornada: 2, etiqueta: 'Domingo 25 de octubre 2026' },
+  { jornada: 3, etiqueta: 'Domingo 8 de noviembre 2026' },
 ] as const;
+
+/** Un partido de grupos en una línea: el respaldo se lee como el fixture. */
+function p(
+  id: string,
+  jornada: number,
+  fecha: string,
+  hora: string,
+  local: string,
+  visitante: string,
+  goles: readonly [number, number] | null = null,
+): PartidoLiga {
+  return {
+    id,
+    jornada,
+    fecha,
+    hora,
+    local,
+    visitante,
+    golesLocal: goles?.[0] ?? null,
+    golesVisitante: goles?.[1] ?? null,
+    estado: goles ? 'jugado' : 'programado',
+  };
+}
 
 /**
- * Fixture completo. Fechas 1 a 5 jugadas; 6 y 7 programadas.
+ * Fixture de la 5ª edición, con la Fecha 1 jugada. Copia del documento de la
+ * organización del 21/10/2026; la fuente real es la base.
  *
- * Nota: el gráfico de la Fecha 3 rotula el miércoles como 05/02/2026, pero
- * el fixture oficial lo fija el 5 de agosto. Se usa la fecha del fixture.
+ * La Fecha 1 tuvo además un torneo de penales a las 10:00, que no es un
+ * partido de grupos y no va en esta lista.
  */
 export const PARTIDOS_LIGA: readonly PartidoLiga[] = [
-  // Fecha 1 — domingo 26 de julio
-  {
-    id: 'j1p1',
-    jornada: 1,
-    fecha: '26/07/2026',
-    hora: '07:00',
-    local: 'the-originals',
-    visitante: 'tp-fc',
-    golesLocal: 4,
-    golesVisitante: 1,
-    estado: 'jugado',
-  },
-  {
-    id: 'j1p2',
-    jornada: 1,
-    fecha: '26/07/2026',
-    hora: '08:00',
-    local: 'pomada-alfa',
-    visitante: 'yonotomo-fc',
-    golesLocal: 9,
-    golesVisitante: 4,
-    estado: 'jugado',
-  },
-  {
-    id: 'j1p3',
-    jornada: 1,
-    fecha: '26/07/2026',
-    hora: '09:00',
-    local: 'los-pibes',
-    visitante: 'la-banda-cruzada',
-    golesLocal: 4,
-    golesVisitante: 2,
-    estado: 'jugado',
-  },
-  {
-    id: 'j1p4',
-    jornada: 1,
-    fecha: '26/07/2026',
-    hora: '10:00',
-    local: 'useche-fc',
-    visitante: 'managers-fc',
-    golesLocal: 4,
-    golesVisitante: 1,
-    estado: 'jugado',
-  },
+  // Fecha 1 — domingo 18 de octubre
+  p('j1p1', 1, '18/10/2026', '08:00', 'pomada-alfa', 'isotopos-portal-1', [10, 4]),
+  p('j1p2', 1, '18/10/2026', '09:00', 'la-banda-cruzada', 'los-pibes', [6, 1]),
+  p('j1p3', 1, '18/10/2026', '11:00', 'the-originals', 'tp-fc', [1, 3]),
+  p('j1p4', 1, '18/10/2026', '12:00', 'yonotomo-fc', 'cucuta-10-fc', [5, 6]),
+  // Fecha 2 — domingo 25 de octubre
+  p('j2p1', 2, '25/10/2026', '08:00', 'la-banda-cruzada', 'isotopos-portal-1'),
+  p('j2p2', 2, '25/10/2026', '09:00', 'the-originals', 'cucuta-10-fc'),
+  p('j2p3', 2, '25/10/2026', '10:00', 'pomada-alfa', 'los-pibes'),
+  p('j2p4', 2, '25/10/2026', '11:00', 'tp-fc', 'yonotomo-fc'),
+  // Fecha 3 — domingo 8 de noviembre
+  p('j3p1', 3, '08/11/2026', '08:00', 'isotopos-portal-1', 'los-pibes'),
+  p('j3p2', 3, '08/11/2026', '09:00', 'pomada-alfa', 'la-banda-cruzada'),
+  p('j3p3', 3, '08/11/2026', '10:00', 'the-originals', 'yonotomo-fc'),
+  p('j3p4', 3, '08/11/2026', '11:00', 'tp-fc', 'cucuta-10-fc'),
+];
 
-  // Fecha 2 — domingo 2 de agosto
-  {
-    id: 'j2p1',
-    jornada: 2,
-    fecha: '02/08/2026',
-    hora: '07:00',
-    local: 'yonotomo-fc',
-    visitante: 'the-originals',
-    golesLocal: 2,
-    golesVisitante: 1,
-    estado: 'jugado',
-  },
-  {
-    id: 'j2p2',
-    jornada: 2,
-    fecha: '02/08/2026',
-    hora: '08:00',
-    local: 'la-banda-cruzada',
-    visitante: 'tp-fc',
-    golesLocal: 3,
-    golesVisitante: 4,
-    estado: 'jugado',
-  },
-  {
-    id: 'j2p3',
-    jornada: 2,
-    fecha: '02/08/2026',
-    hora: '09:00',
-    local: 'managers-fc',
-    visitante: 'pomada-alfa',
-    golesLocal: 0,
-    golesVisitante: 1,
-    estado: 'jugado',
-  },
-  {
-    id: 'j2p4',
-    jornada: 2,
-    fecha: '02/08/2026',
-    hora: '10:00',
-    local: 'los-pibes',
-    visitante: 'useche-fc',
-    golesLocal: 4,
-    golesVisitante: 2,
-    estado: 'jugado',
-  },
-
-  // Fecha 3 — miércoles 5 y jueves 6 de agosto
-  {
-    id: 'j3p1',
-    jornada: 3,
-    fecha: '05/08/2026',
-    hora: '20:00',
-    local: 'useche-fc',
-    visitante: 'la-banda-cruzada',
-    golesLocal: 4,
-    golesVisitante: 3,
-    estado: 'jugado',
-  },
-  {
-    id: 'j3p2',
-    jornada: 3,
-    fecha: '05/08/2026',
-    hora: '21:00',
-    local: 'los-pibes',
-    visitante: 'yonotomo-fc',
-    golesLocal: 7,
-    golesVisitante: 0,
-    estado: 'jugado',
-  },
-  {
-    id: 'j3p3',
-    jornada: 3,
-    fecha: '06/08/2026',
-    hora: '20:00',
-    local: 'pomada-alfa',
-    visitante: 'tp-fc',
-    golesLocal: 2,
-    golesVisitante: 1,
-    estado: 'jugado',
-  },
-  {
-    id: 'j3p4',
-    jornada: 3,
-    fecha: '06/08/2026',
-    hora: '21:00',
-    local: 'managers-fc',
-    visitante: 'the-originals',
-    golesLocal: 1,
-    golesVisitante: 3,
-    estado: 'jugado',
-  },
-
-  // Fecha 4 — miércoles 12 y jueves 13 de agosto
-  {
-    id: 'j4p1',
-    jornada: 4,
-    fecha: '12/08/2026',
-    hora: '20:00',
-    local: 'pomada-alfa',
-    visitante: 'los-pibes',
-    golesLocal: 4,
-    golesVisitante: 2,
-    estado: 'jugado',
-  },
-  {
-    id: 'j4p2',
-    jornada: 4,
-    fecha: '12/08/2026',
-    hora: '21:00',
-    local: 'yonotomo-fc',
-    visitante: 'managers-fc',
-    golesLocal: 3,
-    golesVisitante: 1,
-    estado: 'jugado',
-  },
-  {
-    id: 'j4p3',
-    jornada: 4,
-    fecha: '13/08/2026',
-    hora: '20:00',
-    local: 'useche-fc',
-    visitante: 'tp-fc',
-    golesLocal: 2,
-    golesVisitante: 5,
-    estado: 'jugado',
-  },
-  {
-    id: 'j4p4',
-    jornada: 4,
-    fecha: '13/08/2026',
-    hora: '21:00',
-    local: 'the-originals',
-    visitante: 'la-banda-cruzada',
-    golesLocal: 3,
-    golesVisitante: 0,
-    estado: 'jugado',
-  },
-
-  // Fecha 5 — domingo 23 de agosto
-  {
-    id: 'j5p1',
-    jornada: 5,
-    fecha: '23/08/2026',
-    hora: '07:00',
-    local: 'managers-fc',
-    visitante: 'los-pibes',
-    golesLocal: 0,
-    golesVisitante: 0,
-    estado: 'jugado',
-  },
-  {
-    id: 'j5p2',
-    jornada: 5,
-    fecha: '23/08/2026',
-    hora: '08:00',
-    local: 'la-banda-cruzada',
-    visitante: 'pomada-alfa',
-    golesLocal: 2,
-    golesVisitante: 7,
-    estado: 'jugado',
-  },
-  {
-    id: 'j5p3',
-    jornada: 5,
-    fecha: '23/08/2026',
-    hora: '09:00',
-    local: 'the-originals',
-    visitante: 'useche-fc',
-    golesLocal: 0,
-    golesVisitante: 1,
-    estado: 'jugado',
-  },
-  {
-    id: 'j5p4',
-    jornada: 5,
-    fecha: '23/08/2026',
-    hora: '10:00',
-    local: 'tp-fc',
-    visitante: 'yonotomo-fc',
-    golesLocal: 0,
-    golesVisitante: 0,
-    estado: 'jugado',
-  },
-
-  // Fecha 6 — domingo 30 de agosto
-  {
-    id: 'j6p1',
-    jornada: 6,
-    fecha: '30/08/2026',
-    hora: '07:00',
-    local: 'pomada-alfa',
-    visitante: 'useche-fc',
-    golesLocal: null,
-    golesVisitante: null,
-    estado: 'programado',
-  },
-  {
-    id: 'j6p2',
-    jornada: 6,
-    fecha: '30/08/2026',
-    hora: '08:00',
-    local: 'tp-fc',
-    visitante: 'managers-fc',
-    golesLocal: null,
-    golesVisitante: null,
-    estado: 'programado',
-  },
-  {
-    id: 'j6p3',
-    jornada: 6,
-    fecha: '30/08/2026',
-    hora: '09:00',
-    local: 'los-pibes',
-    visitante: 'the-originals',
-    golesLocal: null,
-    golesVisitante: null,
-    estado: 'programado',
-  },
-  {
-    id: 'j6p4',
-    jornada: 6,
-    fecha: '30/08/2026',
-    hora: '10:00',
-    local: 'yonotomo-fc',
-    visitante: 'la-banda-cruzada',
-    golesLocal: null,
-    golesVisitante: null,
-    estado: 'programado',
-  },
-
-  // Fecha 7 — domingo 6 de septiembre
-  {
-    id: 'j7p1',
-    jornada: 7,
-    fecha: '06/09/2026',
-    hora: '07:00',
-    local: 'tp-fc',
-    visitante: 'los-pibes',
-    golesLocal: null,
-    golesVisitante: null,
-    estado: 'programado',
-  },
-  {
-    id: 'j7p2',
-    jornada: 7,
-    fecha: '06/09/2026',
-    hora: '08:00',
-    local: 'la-banda-cruzada',
-    visitante: 'managers-fc',
-    golesLocal: null,
-    golesVisitante: null,
-    estado: 'programado',
-  },
-  {
-    id: 'j7p3',
-    jornada: 7,
-    fecha: '06/09/2026',
-    hora: '09:00',
-    local: 'useche-fc',
-    visitante: 'yonotomo-fc',
-    golesLocal: null,
-    golesVisitante: null,
-    estado: 'programado',
-  },
-  {
-    id: 'j7p4',
-    jornada: 7,
-    fecha: '06/09/2026',
-    hora: '10:00',
-    local: 'the-originals',
-    visitante: 'pomada-alfa',
-    golesLocal: null,
-    golesVisitante: null,
-    estado: 'programado',
-  },
-] as const;
-
-/** Tarjetas acumuladas hasta la Fecha 5, según el panel de la organización. */
+/** Tarjetas acumuladas tras la Fecha 1, según el documento de la organización. */
 export const DISCIPLINA: Readonly<Record<string, Disciplina>> = {
-  'pomada-alfa': { amarillas: 3, rojas: 2 },
-  'the-originals': { amarillas: 7, rojas: 0 },
-  'los-pibes': { amarillas: 7, rojas: 1 },
-  'tp-fc': { amarillas: 5, rojas: 0 },
-  'useche-fc': { amarillas: 7, rojas: 0 },
-  'yonotomo-fc': { amarillas: 6, rojas: 2 },
-  'la-banda-cruzada': { amarillas: 4, rojas: 0 },
-  'managers-fc': { amarillas: 7, rojas: 1 },
+  'pomada-alfa': { amarillas: 1, rojas: 0 },
+  'isotopos-portal-1': { amarillas: 0, rojas: 0 },
+  'la-banda-cruzada': { amarillas: 2, rojas: 1 },
+  'los-pibes': { amarillas: 1, rojas: 1 },
+  'the-originals': { amarillas: 2, rojas: 0 },
+  'tp-fc': { amarillas: 1, rojas: 0 },
+  'yonotomo-fc': { amarillas: 1, rojas: 0 },
+  'cucuta-10-fc': { amarillas: 4, rojas: 0 },
 };
+
+/**
+ * Ranking de goleadores de respaldo. Vacío: el documento de la Fecha 1 no
+ * trae goleadores, y un ranking inventado es peor que ninguno. Se llena desde
+ * el panel, y de ahí lo lee el build.
+ */
+export const GOLEADORES_LIGA: readonly Goleador[] = [];
 
 /**
  * Peso de cada tarjeta para el desempate por juego limpio: menos es mejor.
@@ -440,68 +162,6 @@ export const PESO_ROJA = 3;
 export function puntosJuegoLimpio(fila: Pick<FilaPosicion, 'ta' | 'tr'>): number {
   return fila.ta * PESO_AMARILLA + fila.tr * PESO_ROJA;
 }
-
-/**
- * Ranking de goleadores acumulado hasta la Fecha 5. 46 anotadores, 96 goles.
- *
- * Es una copia de lo que hay en Supabase, que es la fuente real: esto solo
- * se usa si la base no responde durante el build. Conviene resincronizarlo
- * de vez en cuando para que el respaldo no publique un ranking viejo.
- *
- * Los equipos suman 97 goles y aquí hay 96. El que falta es el autogol de
- * `AUTOGOLES`: cuenta para el club, no para la bota de oro. La verificación
- * de tests/ exige que toda diferencia entre la tabla y este ranking quede
- * explicada por un autogol registrado, club por club, para que nunca vuelva
- * a haber un gol suelto sin dar cuenta de él.
- */
-export const GOLEADORES_LIGA: readonly Goleador[] = [
-  { posicion: 1, jugador: 'David Rincón', equipo: 'los-pibes', numero: 10, goles: 6 },
-  { posicion: 2, jugador: 'Jans Nieto', equipo: 'pomada-alfa', numero: 19, goles: 5 },
-  { posicion: 3, jugador: 'Andrés Ospina', equipo: 'yonotomo-fc', numero: 8, goles: 4 },
-  { posicion: 4, jugador: 'Andrés Wilches', equipo: 'useche-fc', numero: 17, goles: 4 },
-  { posicion: 5, jugador: 'Camilo Rojas', equipo: 'pomada-alfa', numero: 22, goles: 4 },
-  { posicion: 6, jugador: 'Jeison Malagón', equipo: 'pomada-alfa', numero: 8, goles: 4 },
-  { posicion: 7, jugador: 'Juan Pinzón', equipo: 'useche-fc', numero: 30, goles: 4 },
-  { posicion: 8, jugador: 'Julián Niño', equipo: 'los-pibes', numero: 21, goles: 4 },
-  { posicion: 9, jugador: 'Wilson Rubiano', equipo: 'tp-fc', numero: 99, goles: 4 },
-  { posicion: 10, jugador: 'Alain Jaimes', equipo: 'the-originals', numero: 11, goles: 3 },
-  { posicion: 11, jugador: 'Daniel Hernández', equipo: 'pomada-alfa', numero: 4, goles: 3 },
-  { posicion: 12, jugador: 'Germán Cruz', equipo: 'tp-fc', numero: 9, goles: 3 },
-  { posicion: 13, jugador: 'Leider López', equipo: 'la-banda-cruzada', numero: 23, goles: 3 },
-  { posicion: 14, jugador: 'Carlos Cepeda', equipo: 'pomada-alfa', numero: 7, goles: 2 },
-  { posicion: 15, jugador: 'Carlos Neira', equipo: 'los-pibes', numero: 8, goles: 2 },
-  { posicion: 16, jugador: 'Daniel Delgado', equipo: 'los-pibes', numero: 14, goles: 2 },
-  { posicion: 17, jugador: 'Diego Camacho', equipo: 'la-banda-cruzada', numero: 8, goles: 2 },
-  { posicion: 18, jugador: 'Guillermo Alvira', equipo: 'yonotomo-fc', numero: 19, goles: 2 },
-  { posicion: 19, jugador: 'Isnardo Zárate', equipo: 'useche-fc', numero: 19, goles: 2 },
-  { posicion: 20, jugador: 'Jeferson Pedraza', equipo: 'the-originals', numero: 37, goles: 2 },
-  { posicion: 21, jugador: 'Mauricio Altamar', equipo: 'yonotomo-fc', numero: 10, goles: 2 },
-  { posicion: 22, jugador: 'Nelson Mora', equipo: 'the-originals', numero: 8, goles: 2 },
-  { posicion: 23, jugador: 'Omar Flórez', equipo: 'la-banda-cruzada', numero: 7, goles: 2 },
-  { posicion: 24, jugador: 'Wilson Wilches', equipo: 'useche-fc', numero: 94, goles: 2 },
-  { posicion: 25, jugador: 'Yesid Malagón', equipo: 'pomada-alfa', numero: 91, goles: 2 },
-  { posicion: 26, jugador: 'Alfredo Tapia', equipo: 'the-originals', numero: 7, goles: 1 },
-  { posicion: 27, jugador: 'Arturo Castro', equipo: 'la-banda-cruzada', numero: 51, goles: 1 },
-  { posicion: 28, jugador: 'Christian López', equipo: 'yonotomo-fc', numero: 77, goles: 1 },
-  { posicion: 29, jugador: 'Daniel Forero', equipo: 'la-banda-cruzada', numero: 9, goles: 1 },
-  { posicion: 30, jugador: 'Daniel Rodríguez', equipo: 'los-pibes', numero: 5, goles: 1 },
-  { posicion: 31, jugador: 'Gustavo Páez', equipo: 'managers-fc', numero: 18, goles: 1 },
-  { posicion: 32, jugador: 'James Guerrero', equipo: 'managers-fc', numero: 90, goles: 1 },
-  { posicion: 33, jugador: 'Jaxon Murillo', equipo: 'la-banda-cruzada', numero: 2, goles: 1 },
-  { posicion: 34, jugador: 'Jesús Amaya', equipo: 'los-pibes', numero: 9, goles: 1 },
-  { posicion: 35, jugador: 'Jhon Tovaria', equipo: 'the-originals', numero: 16, goles: 1 },
-  { posicion: 36, jugador: 'Joan Jurado', equipo: 'tp-fc', numero: 17, goles: 1 },
-  { posicion: 37, jugador: 'Juan Álvarez', equipo: 'the-originals', numero: 23, goles: 1 },
-  { posicion: 38, jugador: 'Juan Mejía', equipo: 'pomada-alfa', numero: 14, goles: 1 },
-  { posicion: 39, jugador: 'Julián Garzón', equipo: 'tp-fc', numero: 4, goles: 1 },
-  { posicion: 40, jugador: 'Leonardo Espitia', equipo: 'tp-fc', numero: 19, goles: 1 },
-  { posicion: 41, jugador: 'Néstor Useche', equipo: 'useche-fc', numero: 7, goles: 1 },
-  { posicion: 42, jugador: 'Nicolás Muñoz', equipo: 'managers-fc', numero: 13, goles: 1 },
-  { posicion: 43, jugador: 'Rafael Quilindo', equipo: 'los-pibes', numero: 28, goles: 1 },
-  { posicion: 44, jugador: 'Ronald Serna', equipo: 'the-originals', numero: 43, goles: 1 },
-  { posicion: 45, jugador: 'Sebastián Galindo', equipo: 'pomada-alfa', numero: 11, goles: 1 },
-  { posicion: 46, jugador: 'William Castiblanco', equipo: 'tp-fc', numero: 3, goles: 1 },
-] as const;
 
 /**
  * Gol en propia puerta: suma al club beneficiado, no a ningún goleador.
@@ -521,20 +181,8 @@ export interface Autogol {
   jornada: number;
 }
 
-/**
- * Autogoles de la fase de grupos, confirmados por la organización.
- *
- * El de la Fecha 2 lo marcó un jugador de Managers FC en su propia portería,
- * en el 0–1 contra Pomada Alfa: fue el único gol del partido. La web llegó a
- * atribuirlo a La Banda Cruzada, que era una deducción equivocada — se dio
- * por hecho que el autogol explicaba el hueco de ese club.
- *
- * La planilla ya está conciliada: el gol estaba acreditado a Yesid Malagón
- * y se le descontó en el panel, así que Pomada Alfa marca 23 con 22 de sus
- * jugadores más este autogol. El hueco de La Banda Cruzada era otra cosa y
- * se cerró aparte, cargando a Jaxon Murillo.
- */
-export const AUTOGOLES: readonly Autogol[] = [{ autor: 'managers-fc', jornada: 2 }];
+/** Autogoles de la edición en curso. Ninguno registrado tras la Fecha 1. */
+export const AUTOGOLES: readonly Autogol[] = [];
 
 /** Un goleador con su puesto compartido y cuántos lo comparten. */
 export interface GoleadorClasificado extends Goleador {
@@ -664,16 +312,20 @@ export function proximoPartidoDe(partidos: readonly PartidoLiga[]): PartidoLiga 
  */
 export interface Compromiso {
   tipo: 'jornada' | 'ronda';
-  /** 'Fecha 6' o 'Cuartos de final'. */
+  /** 'Fecha 2' o 'Semifinales'. */
   titulo: string;
-  /** 'Domingo 30 de agosto 2026'. */
+  /** 'Domingo 25 de octubre 2026'. */
   etiqueta: string;
   /** Momento de inicio en ISO, para la cuenta atrás del navegador. */
   iso: string;
-  /** Los partidos, si ya se conocen. Vacío en una ronda sin sorteo. */
-  partidos: readonly PartidoLiga[];
   /**
-   * Los cruces de cuartos derivados de la tabla, cuando la ronda todavía no
+   * Los partidos, si ya se conocen. Vacío en una ronda sin sorteo. En la fase
+   * final llevan su copa: una misma ronda junta las dos semifinales de la
+   * Copa Oro y las dos de la Plata.
+   */
+  partidos: readonly (PartidoLiga & { copa?: Copa | null })[];
+  /**
+   * Los cruces de la primera ronda derivados de la tabla, cuando todavía no
    * tiene partidos cargados pero la fase de grupos ya cerró.
    *
    * Existe porque el sitio se estaba contradiciendo: la Llave decía "así
@@ -682,7 +334,7 @@ export interface Compromiso {
    * por definir". Los puestos ya estaban decididos; lo único que faltaba era
    * la hora.
    */
-  cruces?: readonly CruceCuartos[];
+  cruces?: readonly CruceDerivado[];
 }
 
 /**
@@ -747,18 +399,27 @@ export function proximoCompromiso(
     const primero = suyos.find((p) => p.estado === 'programado') ?? suyos[0];
     const fecha = primero?.fecha ?? ronda.fecha;
 
-    // Cuartos sin partidos cargados, pero con la fase de grupos cerrada: los
-    // rivales ya están decididos por la tabla aunque la organización no haya
-    // fijado las horas. Se muestran, que es lo que la Llave ya hacía.
+    // La primera ronda sin partidos cargados, pero con la fase de grupos
+    // cerrada: los rivales ya están decididos por la tabla aunque la
+    // organización no haya fijado las horas. Se muestran, que es lo que la
+    // Llave ya hacía.
     const cruces =
-      ronda.fase === 'cuartos' && suyos.length === 0 && faseDeGruposCompleta(partidos)
-        ? cruzarCuartos(calcularPosiciones(partidos, disciplina))
+      ronda.fase === CALENDARIO_FASE_FINAL[0]!.fase &&
+      suyos.length === 0 &&
+      faseDeGruposCompleta(partidos)
+        ? cruzarFaseFinal(posicionesPorGrupo(partidos, disciplina))
         : undefined;
+
+    // Las semifinales se reparten en miércoles y jueves. Mientras no haya
+    // cruces cargados, o si los cargados caen en días distintos, se dice el
+    // rótulo de la ronda —«Miércoles 11 y jueves 12»— y no solo el primer día.
+    const variosDias = suyos.length === 0 || jornadaEnVariosDias(suyos);
+    const etiqueta = variosDias && ronda.etiqueta ? ronda.etiqueta : fechaLargaDe(fecha);
 
     return {
       tipo: 'ronda',
       titulo: ronda.titulo,
-      etiqueta: fechaLargaDe(fecha),
+      etiqueta,
       iso: primero ? isoDe(primero) : `${aISO(fecha)}T00:00:00-05:00`,
       partidos: suyos,
       cruces,
@@ -834,9 +495,14 @@ export function jornadaEnVariosDias(partidos: readonly PartidoLiga[]): boolean {
  *   6. Sorteo
  *
  * El orden importa: con Fair Play en segundo lugar, un club con peor
- * diferencia de gol puede ir por encima si tiene menos tarjetas. Es
- * exactamente lo que ocurre entre The Originals y Los Pibes en la 4a
- * edicion, y explica el orden del grafico oficial de la Fecha 4.
+ * diferencia de gol puede ir por encima si tiene menos tarjetas. Es lo que
+ * paso entre The Originals y Los Pibes en la 4a edicion, y lo que deja a
+ * Pomada Alfa sobre La Banda Cruzada tras la Fecha 1 de la 5a: los dos con 3
+ * puntos, y la roja de La Banda pesa mas que su diferencia de gol.
+ *
+ * `clubes` dice que filas tiene la tabla. Por defecto son los de la edicion
+ * en curso; para la tabla de un grupo se pasan los cuatro del grupo, y los
+ * partidos contra clubes de fuera no cuentan.
  *
  * El sorteo no se automatiza: si dos clubes empatan en los cinco criterios,
  * la funcion los deja en orden alfabetico para que la tabla no cambie sola
@@ -845,20 +511,21 @@ export function jornadaEnVariosDias(partidos: readonly PartidoLiga[]): boolean {
 export function calcularPosiciones(
   partidos: readonly PartidoLiga[] = PARTIDOS_LIGA,
   disciplina: Readonly<Record<string, Disciplina>> = DISCIPLINA,
+  clubes: readonly string[] = EQUIPOS.map((e) => e.slug),
 ): FilaPosicion[] {
   const tabla = new Map<string, Omit<FilaPosicion, 'posicion' | 'dg'>>();
 
-  for (const eq of EQUIPOS) {
-    tabla.set(eq.slug, {
-      equipo: eq.slug,
+  for (const slug of clubes) {
+    tabla.set(slug, {
+      equipo: slug,
       pj: 0,
       pg: 0,
       pe: 0,
       pp: 0,
       gf: 0,
       gc: 0,
-      ta: disciplina[eq.slug]?.amarillas ?? 0,
-      tr: disciplina[eq.slug]?.rojas ?? 0,
+      ta: disciplina[slug]?.amarillas ?? 0,
+      tr: disciplina[slug]?.rojas ?? 0,
       pts: 0,
     });
   }
@@ -931,6 +598,41 @@ export function calcularPosiciones(
 
 export const POSICIONES_LIGA = calcularPosiciones();
 
+/** La tabla de un grupo, con sus puestos del 1 al 4. */
+export interface TablaGrupo {
+  grupo: Grupo;
+  filas: FilaPosicion[];
+}
+
+/**
+ * Una tabla por grupo. Es la que manda en la 5ª edición: los puestos que
+ * cuentan para las copas son los del grupo, no los de una tabla general.
+ */
+export function posicionesPorGrupo(
+  partidos: readonly PartidoLiga[] = PARTIDOS_LIGA,
+  disciplina: Readonly<Record<string, Disciplina>> = DISCIPLINA,
+): TablaGrupo[] {
+  return LETRAS_GRUPO.map((grupo) => ({
+    grupo,
+    filas: calcularPosiciones(partidos, disciplina, GRUPOS[grupo]),
+  }));
+}
+
+/**
+ * El puesto de cada club dentro de su grupo, escrito como se lee: '1A',
+ * '3B'. Es lo que va junto al escudo en la llave.
+ */
+export function siembraPorGrupo(tablas: readonly TablaGrupo[]): Map<string, string> {
+  return new Map(
+    tablas.flatMap((t) => t.filas.map((f) => [f.equipo, `${f.posicion}${t.grupo}`] as const)),
+  );
+}
+
+/** Grupo de un partido de la fase de grupos: el de cualquiera de sus clubes. */
+export function grupoDePartido(partido: Pick<PartidoLiga, 'local'>): Grupo | null {
+  return grupoDe(partido.local);
+}
+
 /**
  * Criterios de desempate del Articulo 14, para mostrarlos junto a la tabla.
  * Quien mira la tabla necesita saber por que un club esta sobre otro.
@@ -966,9 +668,40 @@ export const COLUMNAS_TABLA = [
  *  importaba de allí. */
 export type FaseFinal = 'cuartos' | 'semifinal' | 'tercer-puesto' | 'final';
 
-/** Un partido de la eliminatoria: como los de liga, más su ronda. */
+/**
+ * Las dos copas de la 5ª edición. La Oro es el título del torneo: la que
+ * suma al palmarés y corona al campeón.
+ */
+export type Copa = 'oro' | 'plata';
+
+export interface DatosCopa {
+  copa: Copa;
+  titulo: string;
+  /** Los dos puestos de grupo que juegan esta copa: [mejor, peor]. */
+  puestos: readonly [number, number];
+}
+
+export const COPAS: readonly DatosCopa[] = [
+  { copa: 'oro', titulo: 'Copa Oro', puestos: [1, 2] },
+  { copa: 'plata', titulo: 'Copa Plata', puestos: [3, 4] },
+];
+
+export const TITULO_COPA: Record<Copa, string> = { oro: 'Copa Oro', plata: 'Copa Plata' };
+
+/**
+ * La copa de un cruce. Null es la llave única de las ediciones anteriores,
+ * que fue la del título: cuenta como la Oro. Así las funciones de la fase
+ * final sirven igual para la 4ª, con una llave, que para la 5ª, con dos.
+ */
+export function copaDe(partido: { copa?: Copa | null }): Copa {
+  return partido.copa ?? 'oro';
+}
+
+/** Un partido de la eliminatoria: como los de liga, más su ronda y su copa. */
 export interface PartidoEliminatoria extends PartidoLiga {
   fase: FaseFinal;
+  /** 'oro' o 'plata'. Null en la llave única de ediciones anteriores. */
+  copa: Copa | null;
   /**
    * Penales convertidos en la tanda, si el partido acabó empatado.
    *
@@ -1004,28 +737,37 @@ export function ladoGanador(
 export interface RondaFinal {
   fase: FaseFinal;
   titulo: string;
-  /** Día de juego, ej. '13/09/2026'. */
+  /** Día de juego, ej. '13/09/2026'. Si la ronda va en dos días, el primero. */
   fecha: string;
+  /** Rótulo cuando la ronda se reparte en varios días: 'Miércoles 11 y jueves 12…'. */
+  etiqueta?: string;
 }
 
 /**
  * Calendario de la fase final, con las fechas que anunció la organización.
  *
  * Se guardan las fechas aunque todavía no se sepan ni los equipos ni las
- * horas: los cruces salen de la tabla cuando termine la fase de grupos, y
+ * horas: los cruces salen de las tablas cuando termine la fase de grupos, y
  * los horarios los fija la organización más adelante. Publicar el día ya
- * sirve —un capitán puede reservarlo— y evita el hueco que se abriría el 6
- * de septiembre, cuando se juegue la Fecha 7 y no quede ningún partido de
- * grupos por delante.
+ * sirve —un capitán puede reservarlo— y evita que la web se quede sin
+ * «próximo» el 8 de noviembre, al jugarse la Fecha 3.
+ *
+ * Es el mismo para las dos copas: sus semifinales se juegan las mismas dos
+ * noches y sus finales el mismo domingo. Qué semifinal va el miércoles y cuál
+ * el jueves no está anunciado todavía.
  *
  * En cuanto se carguen los partidos reales en el panel, mandan ellos: este
  * calendario solo se usa mientras la eliminatoria esté vacía.
  */
 export const CALENDARIO_FASE_FINAL: readonly RondaFinal[] = [
-  { fase: 'cuartos', titulo: 'Cuartos de final', fecha: '13/09/2026' },
-  { fase: 'semifinal', titulo: 'Semifinales', fecha: '20/09/2026' },
-  { fase: 'tercer-puesto', titulo: 'Tercer puesto', fecha: '26/09/2026' },
-  { fase: 'final', titulo: 'Gran Final', fecha: '26/09/2026' },
+  {
+    fase: 'semifinal',
+    titulo: 'Semifinales',
+    fecha: '11/11/2026',
+    etiqueta: 'Miércoles 11 y jueves 12 de noviembre 2026 · nocturno',
+  },
+  { fase: 'tercer-puesto', titulo: 'Tercer puesto', fecha: '22/11/2026' },
+  { fase: 'final', titulo: 'Gran Final', fecha: '22/11/2026' },
 ];
 
 /** Día en que arranca la fase final. Sale de la primera ronda, no a mano. */
@@ -1155,6 +897,8 @@ export interface ParadaFinal {
   titulo: string;
   /** La fecha del partido cargado si ya existe; si no, la que anunció la organización. */
   fecha: string;
+  /** El rótulo anunciado si la ronda va en dos días; la fecha sola no lo cuenta. */
+  etiqueta?: string;
   estado: EstadoRonda;
   partidos: PartidoEliminatoria[];
 }
@@ -1167,11 +911,18 @@ export interface ParadaFinal {
  * `en-juego`, y con todos jugados está `jugada`. Si dependiera de "hoy",
  * quedaría congelado en la fecha en que se compiló el sitio.
  *
- * Devuelve siempre las tres rondas, incluso vacías: es lo que permite dibujar
- * la llave completa —cuartos, semifinales y final— desde el primer día, en vez
- * de mostrar solo los cruces que ya existen y dejar el resto sin explicar.
+ * Devuelve siempre todas las rondas anunciadas, incluso vacías: es lo que
+ * permite dibujar la llave completa desde el primer día, en vez de mostrar
+ * solo los cruces que ya existen y dejar el resto sin explicar.
+ *
+ * Es el camino de UNA copa. En la 5ª hay dos y cada una se dibuja aparte;
+ * los cruces sin copa —la llave única de la 4ª— cuentan como la Oro.
  */
-export function caminoFaseFinal(eliminatoria: readonly PartidoEliminatoria[] = []): ParadaFinal[] {
+export function caminoFaseFinal(
+  todos: readonly PartidoEliminatoria[] = [],
+  copa: Copa = 'oro',
+): ParadaFinal[] {
+  const eliminatoria = todos.filter((p) => copaDe(p) === copa);
   const anunciadas = new Map(CALENDARIO_FASE_FINAL.map((r) => [r.fase, r]));
   const cargadas = new Set(eliminatoria.map((p) => p.fase));
 
@@ -1196,6 +947,10 @@ export function caminoFaseFinal(eliminatoria: readonly PartidoEliminatoria[] = [
       fase,
       titulo: anunciadas.get(fase)?.titulo ?? TITULO_FASE[fase],
       fecha: suyos[0]?.fecha ?? anunciadas.get(fase)?.fecha ?? '',
+      etiqueta:
+        suyos.length === 0 || jornadaEnVariosDias(suyos)
+          ? anunciadas.get(fase)?.etiqueta
+          : undefined,
       estado,
       partidos: suyos,
     };
@@ -1235,37 +990,37 @@ export function fechaLargaDe(fecha: string): string {
 }
 
 /**
- * Emparejamientos de cuartos: el 1º con el 8º, el 2º con el 7º, y así.
- * El mejor ubicado hace de local.
+ * Un cruce de la primera ronda de la fase final, sacado de las tablas antes
+ * de que la organización lo cargue con su hora.
  */
-export const EMPAREJAMIENTOS_CUARTOS: readonly (readonly [number, number])[] = [
-  [1, 8],
-  [2, 7],
-  [3, 6],
-  [4, 5],
-] as const;
-
-export interface CruceCuartos {
+export interface CruceDerivado {
   id: string;
-  /** Rótulo del cruce, ej. '1º vs 8º'. */
+  copa: Copa;
+  /** Rótulo del cruce, ej. '1º A vs 2º B'. */
   etiqueta: string;
-  posicionLocal: number;
-  posicionVisitante: number;
-  /** slug del club, o null si esa posición aún no tiene dueño. */
+  /** Puesto de grupo de cada lado, ej. '1A'. */
+  siembraLocal: string;
+  siembraVisitante: string;
+  /** slug del club, o null si ese puesto aún no tiene dueño. */
   local: string | null;
   visitante: string | null;
 }
 
-/** true cuando ya se jugaron los 28 partidos de la fase de grupos. */
+/** true cuando ya se jugaron todos los partidos de la fase de grupos. */
 export function faseDeGruposCompleta(partidos: readonly PartidoLiga[] = PARTIDOS_LIGA): boolean {
   return partidos.length > 0 && partidos.every((p) => p.estado === 'jugado');
 }
 
 /**
- * Deriva la llave de cuartos de la tabla de posiciones.
+ * Deriva las semifinales de las dos copas de las tablas de grupo.
+ *
+ * Cruzadas, como en el documento de la organización: en cada copa, el mejor
+ * puesto del Grupo A contra el peor del B, y el mejor del B contra el peor
+ * del A. En la Oro eso es 1º A vs 2º B y 1º B vs 2º A; en la Plata, 3º A vs
+ * 4º B y 3º B vs 4º A. El mejor ubicado hace de local.
  *
  * DECISIÓN DE DISEÑO: igual que la tabla, la llave NO se escribe a mano.
- * Sale de `calcularPosiciones()`, que a su vez sale de los marcadores. Así
+ * Sale de `posicionesPorGrupo()`, que a su vez sale de los marcadores. Así
  * es imposible publicar un cruce que contradiga la tabla —el error clásico
  * de copiar la llave a mano y olvidar actualizarla tras la última fecha—.
  *
@@ -1273,23 +1028,31 @@ export function faseDeGruposCompleta(partidos: readonly PartidoLiga[] = PARTIDOS
  * definitivo: quien la muestre debe decirlo. `faseDeGruposCompleta()` es el
  * interruptor para saber cuál de las dos cosas es.
  *
- * Cuando la organización cargue los cruces reales en el panel, esos mandan:
- * llegan por Supabase como partidos con `fase` distinta de 'grupos' y se
- * pintan en su lugar. Esta función solo cubre el hueco previo.
+ * Cuando la organización cargue los cruces reales en el panel, esos mandan.
+ * Esta función solo cubre el hueco previo.
  */
-export function cruzarCuartos(
-  posiciones: readonly FilaPosicion[] = POSICIONES_LIGA,
-): CruceCuartos[] {
-  const porPosicion = new Map(posiciones.map((f) => [f.posicion, f.equipo]));
+export function cruzarFaseFinal(
+  tablas: readonly TablaGrupo[] = posicionesPorGrupo(),
+): CruceDerivado[] {
+  const club = (grupo: Grupo, puesto: number) =>
+    tablas.find((t) => t.grupo === grupo)?.filas.find((f) => f.posicion === puesto)?.equipo ?? null;
 
-  return EMPAREJAMIENTOS_CUARTOS.map(([alto, bajo], i) => ({
-    id: `cf${i + 1}`,
-    etiqueta: `${alto}º vs ${bajo}º`,
-    posicionLocal: alto,
-    posicionVisitante: bajo,
-    local: porPosicion.get(alto) ?? null,
-    visitante: porPosicion.get(bajo) ?? null,
-  }));
+  return COPAS.flatMap(({ copa, puestos: [alto, bajo] }) =>
+    (
+      [
+        ['A', 'B'],
+        ['B', 'A'],
+      ] as const
+    ).map(([g1, g2], i) => ({
+      id: `${copa}-sf${i + 1}`,
+      copa,
+      etiqueta: `${alto}º ${g1} vs ${bajo}º ${g2}`,
+      siembraLocal: `${alto}${g1}`,
+      siembraVisitante: `${bajo}${g2}`,
+      local: club(g1, alto),
+      visitante: club(g2, bajo),
+    })),
+  );
 }
 
 /* ─────────────────────── Premios de la edición ─────────────────────── */
@@ -1386,7 +1149,11 @@ export interface Podio {
  * la final no esté jugada devuelve nulls, y quien lo muestre dice «por
  * definir» en vez de inventar un campeón.
  */
-export function podioDeEdicion(eliminatoria: readonly PartidoEliminatoria[]): Podio {
+export function podioDeEdicion(todos: readonly PartidoEliminatoria[], copa: Copa = 'oro'): Podio {
+  // El podio del torneo es el de la Copa Oro. Con dos finales en la misma
+  // edición, buscar «la final» sin decir de qué copa coronaba a la primera
+  // que devolviera la base.
+  const eliminatoria = todos.filter((p) => copaDe(p) === copa);
   const resolver = (fase: FaseFinal) => {
     const p = eliminatoria.find((x) => x.fase === fase && x.estado === 'jugado');
     if (!p) return { ganador: null, perdedor: null };
@@ -1407,5 +1174,5 @@ export function podioDeEdicion(eliminatoria: readonly PartidoEliminatoria[]): Po
   };
 }
 
-/** Llave proyectada con la tabla de respaldo. */
-export const CUARTOS_LIGA = cruzarCuartos();
+/** Llave proyectada con las tablas de respaldo. */
+export const CRUCES_LIGA = cruzarFaseFinal();

@@ -105,10 +105,11 @@ const PASOS: Paso[] = [
           y por eso nunca puede contradecir al calendario.
         </Nota>
         <Nota tono="bien">
-          <strong>La fase final se carga igual.</strong> Al lado de los números de fecha están las
-          cuatro rondas: <em>Cuartos</em>, <em>Semis</em>, <em>3.º puesto</em> y <em>Final</em>. Se
-          pulsa una y se cargan los marcadores exactamente igual. Esos partidos no suman puntos en
-          la tabla: la fase regular ya terminó.
+          <strong>La fase final se carga igual.</strong> Debajo de los números de fecha hay dos
+          filas, una por copa —<em>Copa Oro</em> y <em>Copa Plata</em>—, cada una con sus rondas:{' '}
+          <em>Semis</em>, <em>3.º puesto</em> y <em>Final</em>. Se pulsa una y se cargan los
+          marcadores exactamente igual. Esos partidos no suman puntos en la tabla: la fase de grupos
+          ya terminó.
         </Nota>
         <Nota tono="aviso">
           <strong>¿Empataron en eliminatoria?</strong> Al marcar el partido como jugado con el mismo
@@ -119,11 +120,12 @@ const PASOS: Paso[] = [
         </Nota>
         <Nota>
           <strong className="text-neutral-100">¿La ronda todavía no tiene cruces?</strong> Dentro de
-          ella aparece <em>Añadir cruce</em>: eliges los dos equipos, el día y la hora, y se crea.
-          El panel te propone los ganadores de la ronda anterior que aún no tienen rival, así que
-          las semifinales se arman en dos clics apenas termines los cuartos. Si te equivocas, el
-          icono de la papelera borra el cruce —solo en la fase final; el fixture de la liga no se
-          toca—.
+          ella aparece <em>Añadir cruce</em>: eliges los dos equipos, el día y la hora, y se crea en
+          la copa que tengas abierta. El panel te propone a quién le toca: en las semifinales, los
+          cruces que salen de las tablas de grupo (1.º A con 2.º B, 1.º B con 2.º A); en la final,
+          los ganadores de las semifinales de esa copa; en el tercer puesto, los perdedores. Si te
+          equivocas, el icono de la papelera borra el cruce —solo en la fase final; el fixture de
+          grupos no se toca—.
         </Nota>
       </>
     ),

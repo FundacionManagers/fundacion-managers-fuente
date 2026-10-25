@@ -10,16 +10,20 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 
-const { calcularPosiciones, puntosJuegoLimpio, PESO_AMARILLA, PESO_ROJA } =
-  require('../.test-build/lib/liga.js');
+const {
+  calcularPosiciones,
+  puntosJuegoLimpio,
+  PESO_AMARILLA,
+  PESO_ROJA,
+} = require('../.test-build/lib/liga.js');
 const { partido, tarjetas, posicionDe } = require('./ayuda.js');
 
 test('el puntaje manda sobre el Fair Play y sobre la diferencia de gol', () => {
   const tabla = calcularPosiciones(
     [
       // 6 puntos con diferencia +2 y 20 amarillas encima.
-      partido('a1', 'pomada-alfa', 'managers-fc', 1, 0),
-      partido('a2', 'pomada-alfa', 'useche-fc', 1, 0),
+      partido('a1', 'pomada-alfa', 'isotopos-portal-1', 1, 0),
+      partido('a2', 'pomada-alfa', 'cucuta-10-fc', 1, 0),
       // 3 puntos con diferencia +8 y la ficha impecable.
       partido('b1', 'los-pibes', 'yonotomo-fc', 9, 0),
       partido('b2', 'la-banda-cruzada', 'los-pibes', 1, 0),
@@ -37,7 +41,7 @@ test('el Fair Play va ANTES que la diferencia de gol', () => {
   const tabla = calcularPosiciones(
     [
       // Mismos puntos, peor diferencia (+1), pero sin tarjetas.
-      partido('a1', 'pomada-alfa', 'managers-fc', 1, 0),
+      partido('a1', 'pomada-alfa', 'isotopos-portal-1', 1, 0),
       // Mismos puntos, mejor diferencia (+5), pero con 5 amarillas.
       partido('b1', 'los-pibes', 'yonotomo-fc', 5, 0),
     ],
@@ -53,7 +57,7 @@ test('el Fair Play va ANTES que la diferencia de gol', () => {
 test('con puntaje y Fair Play iguales, decide la diferencia de gol', () => {
   const tabla = calcularPosiciones(
     [
-      partido('a1', 'pomada-alfa', 'managers-fc', 1, 0),
+      partido('a1', 'pomada-alfa', 'isotopos-portal-1', 1, 0),
       partido('b1', 'los-pibes', 'yonotomo-fc', 5, 0),
     ],
     tarjetas(),
@@ -65,7 +69,7 @@ test('con puntaje y Fair Play iguales, decide la diferencia de gol', () => {
 test('con puntaje, Fair Play y diferencia iguales, deciden los goles a favor', () => {
   const tabla = calcularPosiciones(
     [
-      partido('a1', 'pomada-alfa', 'managers-fc', 3, 2),
+      partido('a1', 'pomada-alfa', 'isotopos-portal-1', 3, 2),
       partido('b1', 'los-pibes', 'yonotomo-fc', 1, 0),
     ],
     tarjetas(),
@@ -83,8 +87,8 @@ test('igualados en todo, deciden los resultados entre sí', () => {
       // Se enfrentaron y ganó The Originals.
       partido('x', 'the-originals', 'los-pibes', 2, 0),
       // El otro partido de cada uno los deja idénticos en todo lo demás.
-      partido('a1', 'useche-fc', 'the-originals', 2, 0),
-      partido('b1', 'los-pibes', 'managers-fc', 2, 0),
+      partido('a1', 'cucuta-10-fc', 'the-originals', 2, 0),
+      partido('b1', 'los-pibes', 'isotopos-portal-1', 2, 0),
     ],
     tarjetas(),
   );
@@ -108,7 +112,7 @@ test('la roja pesa el triple que la amarilla', () => {
 
 test('el sorteo no se automatiza: el orden es estable entre compilaciones', () => {
   const partidos = [
-    partido('a1', 'pomada-alfa', 'managers-fc', 1, 0),
+    partido('a1', 'pomada-alfa', 'isotopos-portal-1', 1, 0),
     partido('b1', 'los-pibes', 'yonotomo-fc', 1, 0),
   ];
 

@@ -11,13 +11,13 @@ import {
   ordinalFemenino,
   pillEdicion,
 } from '@/lib/torneo';
-import { calcularPosiciones } from '@/lib/liga';
+import { posicionesPorGrupo } from '@/lib/liga';
 import { cargarLigaConAviso } from '@/lib/liga-supabase';
 import { EQUIPOS, getEquipo } from '@/lib/torneo-data';
 
 export const metadata: Metadata = {
   title: 'Equipos · Torneo Managers',
-  description: `Los ocho clubes de la ${ordinalFemenino(EDICION_EN_CURSO.numero)} edición del Torneo Managers F7.`,
+  description: `Los clubes de la ${ordinalFemenino(EDICION_EN_CURSO.numero)} edición del Torneo Managers F7, grupo por grupo.`,
 };
 
 export default async function EquiposPage() {
@@ -40,14 +40,16 @@ export default async function EquiposPage() {
    * aparecía dos veces en la misma página. Y ninguna de las tarjetas decía
    * nada de la edición en curso: ocho escudos iguales, sin puesto ni puntos.
    *
-   * Ahora es el índice completo de los ocho, con su puesto y sus puntos
-   * leídos de la tabla. Nada de esto se escribe a mano.
+   * Ahora es el índice completo, con su puesto y sus puntos leídos de la
+   * tabla de su grupo. Nada de esto se escribe a mano.
    */
   const datos = await cargarLigaConAviso();
-  const clubes = calcularPosiciones(datos.partidos, datos.disciplina).flatMap((fila) => {
-    const equipo = getEquipo(fila.equipo);
-    return equipo ? [{ fila, equipo }] : [];
-  });
+  const clubes = posicionesPorGrupo(datos.partidos, datos.disciplina).flatMap(({ grupo, filas }) =>
+    filas.flatMap((fila) => {
+      const equipo = getEquipo(fila.equipo);
+      return equipo ? [{ fila, equipo, grupo }] : [];
+    }),
+  );
 
   return (
     <TorneoShell eyebrow={pillEdicion(EDICION_EN_CURSO)} title="Equipos" active="/torneo/equipos/">
@@ -113,21 +115,21 @@ export default async function EquiposPage() {
         </Link>
       ) : null}
 
-      {/* Los ocho, como van hoy */}
+      {/* Los clubes, como van hoy en su grupo */}
       <h3 className="mt-16 font-sport text-4xl uppercase leading-none text-neutral-50 md:text-5xl">
-        Los ocho clubes
+        Los {clubes.length} clubes
       </h3>
       <p className="mt-2 text-sm text-neutral-500">
-        Ordenados como van hoy en{' '}
+        Grupo A y Grupo B, cada uno ordenado como va hoy en{' '}
         <Link href="/torneo/#fase-de-grupos" className="text-amarillo hover:text-naranja">
-          la tabla
+          su tabla
         </Link>{' '}
         de la {ordinalFemenino(EDICION_EN_CURSO.numero)} edición.
       </p>
       <div className="energy-bar mt-4 h-1 w-full rounded-full opacity-70" />
 
       <ul className="stagger-in mt-10 grid grid-cols-2 gap-5 sm:grid-cols-3 lg:grid-cols-4">
-        {clubes.map(({ fila, equipo }) => (
+        {clubes.map(({ fila, equipo, grupo }) => (
           <li key={equipo.slug}>
             <Link
               href={`/torneo/equipos/${equipo.slug}/`}
@@ -137,7 +139,7 @@ export default async function EquiposPage() {
                   líneas en móvil, y el encabezado de arriba ya dice que la
                   parrilla va ordenada por la tabla. */}
               <span className="rounded-full border border-white/15 px-2.5 py-0.5 font-mono text-[11px] uppercase tracking-widest text-neutral-400">
-                {fila.posicion}º
+                {fila.posicion}º · Grupo {grupo}
               </span>
               <TeamCrest slug={equipo.slug} size={88} />
               <span className="text-center font-serif text-base font-bold text-neutral-100">

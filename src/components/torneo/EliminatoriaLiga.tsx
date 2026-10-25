@@ -1,13 +1,13 @@
 import { TeamCrest } from '@/components/torneo/TeamCrest';
 import { getEquipo } from '@/lib/torneo-data';
-import { ladoGanador } from '@/lib/liga';
+import { COPAS, copaDe, ladoGanador } from '@/lib/liga';
 import type { FaseFinal, PartidoEliminatoria } from '@/lib/liga-supabase';
 import { cn } from '@/lib/utils';
 
 /** Orden y rótulo de cada instancia. */
 const FASES: { key: FaseFinal; titulo: string; sub: string }[] = [
   { key: 'cuartos', titulo: 'Cuartos de final', sub: 'Ronda 1' },
-  { key: 'semifinal', titulo: 'Semifinales', sub: 'Ronda 2' },
+  { key: 'semifinal', titulo: 'Semifinales', sub: 'Camino a la final' },
   { key: 'tercer-puesto', titulo: 'Tercer puesto', sub: 'El bronce' },
   { key: 'final', titulo: 'Gran Final', sub: 'El título' },
 ];
@@ -101,8 +101,33 @@ function Cruce({ p }: { p: PartidoEliminatoria }) {
  * Solo dibuja las instancias que existen: si aún no hay semifinales cargadas,
  * esa sección no aparece. Así la página se va llenando sola a medida que la
  * organización carga los cruces, sin tocar el código.
+ *
+ * Con dos copas va una lista por copa, la Oro primero. Una copa sin ningún
+ * cruce cargado no se pinta.
  */
 export function EliminatoriaLiga({ partidos }: { partidos: readonly PartidoEliminatoria[] }) {
+  const conCopa = partidos.some((p) => p.copa);
+  if (!conCopa) return <RondasDe partidos={partidos} />;
+
+  return (
+    <div className="space-y-16">
+      {COPAS.map(({ copa, titulo }) => {
+        const suyos = partidos.filter((p) => copaDe(p) === copa);
+        if (suyos.length === 0) return null;
+        return (
+          <section key={copa}>
+            <p className="font-sport text-3xl uppercase leading-none text-amarillo">{titulo}</p>
+            <div className="mt-6">
+              <RondasDe partidos={suyos} />
+            </div>
+          </section>
+        );
+      })}
+    </div>
+  );
+}
+
+function RondasDe({ partidos }: { partidos: readonly PartidoEliminatoria[] }) {
   return (
     <div className="space-y-12">
       {FASES.map((f) => {
