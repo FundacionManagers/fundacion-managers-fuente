@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { AvisoEnsayos } from '@/components/shared/AvisoEnsayos';
+import { AUTORIA, TITULAR, avisoDerechos } from '@/lib/autoria';
 import { ES_ENSAYOS } from '@/lib/entorno';
 import { bebasNeue, fredoka, inter, jakarta, jetbrainsMono, playfair } from '@/lib/fonts';
 import { cn } from '@/lib/utils';
@@ -47,6 +48,11 @@ export const metadata: Metadata = {
     ],
   },
   twitter: { card: 'summary_large_image' },
+  // De quién es y quién lo hizo, igual que el pie: ver src/lib/autoria.ts.
+  authors: [{ name: `${AUTORIA.autor} · ${AUTORIA.estudio}`, url: AUTORIA.sitio }],
+  creator: `${AUTORIA.autor} · ${AUTORIA.estudio}`,
+  publisher: TITULAR,
+  other: { copyright: avisoDerechos(new Date().getFullYear()) },
   // La réplica de ensayos no debe aparecer en un buscador: tiene datos de
   // prueba y un canonical que apunta a la web real no basta para sacarla.
   ...(ES_ENSAYOS ? { robots: { index: false, follow: false } } : {}),

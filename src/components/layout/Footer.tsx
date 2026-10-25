@@ -1,8 +1,10 @@
 import Link from 'next/link';
 import { asset } from '@/lib/asset';
 import { GoldCoin } from '@/components/shared/GoldCoin';
+import { FirmaAutor } from '@/components/shared/Creditos';
 import { IconeBrand } from '@/components/shared/IconeBrand';
 import { ALIANZA } from '@/lib/alianza';
+import { avisoDerechos } from '@/lib/autoria';
 import { ENTRADAS, hrefDeEje } from '@/lib/navigation';
 import { NORTE } from '@/lib/strategy';
 
@@ -150,7 +152,10 @@ export function Footer() {
 
         <div className="rule-gold mt-10 h-px" />
         <div className="mt-6 flex flex-col gap-2 text-xs text-neutral-500 sm:flex-row sm:items-center sm:justify-between">
-          <span>© {year} Fundación Managers · Bogotá, Colombia</span>
+          <div className="flex flex-col gap-1">
+            <span>{avisoDerechos(year)} · Bogotá, Colombia</span>
+            <FirmaAutor />
+          </div>
           <span className="font-mono uppercase tracking-[0.2em] text-neutral-600">{NORTE}</span>
         </div>
       </div>

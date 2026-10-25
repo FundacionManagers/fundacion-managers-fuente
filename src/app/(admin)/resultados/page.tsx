@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { Creditos } from '@/components/shared/Creditos';
 import { GoldCoin } from '@/components/shared/GoldCoin';
 import { NavAdmin } from '@/components/shared/NavAdmin';
 import { TorneoBackdrop } from '@/components/torneo/TorneoBackdrop';
@@ -52,6 +53,8 @@ export default function ResultadosPage() {
           <div className="mt-12">
             <PanelTorneoCliente />
           </div>
+
+          <Creditos />
         </div>
       </div>
     </div>

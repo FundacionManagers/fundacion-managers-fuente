@@ -27,6 +27,10 @@ export default function TerminosPage() {
               La marca Fundación Managers, su logo (moneda dorada) y los contenidos del sitio son
               propiedad de la fundación.
             </p>
+            <p>
+              El sitio lo diseñó y desarrolló, por encargo de la fundación, el Ing. Jorge Hugo Pérez
+              Gaona, de ICONEialabs, a quien se reconoce como su autor.
+            </p>
             <h2 className="font-display text-xl font-bold text-carbon">
               Limitación de responsabilidad
             </h2>

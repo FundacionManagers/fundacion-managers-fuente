@@ -1,3 +1,4 @@
+import { Creditos } from '@/components/shared/Creditos';
 import type { Metadata } from 'next';
 import { ShieldAlert } from 'lucide-react';
 import { InscripcionesDashboard } from '@/components/torneo/InscripcionesDashboard';
@@ -34,6 +35,8 @@ export default function AdminInscripcionesPage() {
         <div className="mt-10">
           <InscripcionesDashboard />
         </div>
+
+        <Creditos />
       </div>
     </div>
   );

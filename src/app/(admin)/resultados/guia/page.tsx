@@ -1,3 +1,4 @@
+import { Creditos } from '@/components/shared/Creditos';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
@@ -55,6 +56,8 @@ export default function GuiaPage() {
             Todo lo que hagas en el panel se puede deshacer. Si algo no cuadra, el propio panel te
             avisa antes de que salga a la web.
           </p>
+
+          <Creditos className="mt-8" />
         </div>
       </div>
     </div>
