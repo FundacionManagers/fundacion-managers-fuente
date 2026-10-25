@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
-import { BookOpen, Check, Loader2, Plus, RefreshCw, Trash2, TriangleAlert } from 'lucide-react';
+import { BookOpen, Check, Loader2, Plus, RefreshCw, Trash2, TriangleAlert, X } from 'lucide-react';
 import { DefinirClave } from '@/components/shared/DefinirClave';
 import { EstadoPublicacion } from '@/components/torneo/EstadoPublicacion';
 import { TeamCrest } from '@/components/torneo/TeamCrest';
@@ -15,10 +15,12 @@ import {
   copaDe,
   CRUCES_POR_FASE,
   cruzarFaseFinal,
+  disciplinaDeTarjetas,
   equipoMasGoleador,
   ladoGanador,
   podioDeEdicion,
   posicionesPorGrupo,
+  suspensiones,
   tablaJuegoLimpio,
   totalesDeEdicion,
   vallaMenosVencida,
@@ -26,6 +28,7 @@ import {
   TITULO_FASE,
   TOTAL_JORNADAS,
   type Copa,
+  type Disciplina,
   type FaseFinal,
   type PartidoLiga,
 } from '@/lib/liga';
@@ -34,25 +37,37 @@ import {
   cargarTodo,
   borrarMvp,
   crearCruce,
+  crearEvento,
   crearGoleador,
+  crearTarjeta,
   descuadres,
+  eliminarEvento,
   eliminarGoleador,
   eliminarPartido,
-  guardarDisciplina,
+  eliminarTarjeta,
   guardarMvp,
   guardarPartido,
   type EstadoTorneo,
   type GoleadorPanel,
   type MvpPanel,
   type PartidoPanel,
+  type TarjetaPanel,
 } from '@/lib/panel-torneo';
 import { cn } from '@/lib/utils';
 
-type Seccion = 'marcadores' | 'tarjetas' | 'previa' | 'goleadores' | 'premios' | 'acceso';
+type Seccion =
+  | 'marcadores'
+  | 'tarjetas'
+  | 'eventos'
+  | 'previa'
+  | 'goleadores'
+  | 'premios'
+  | 'acceso';
 
 const SECCIONES: { key: Seccion; label: string }[] = [
   { key: 'marcadores', label: 'Marcadores' },
   { key: 'tarjetas', label: 'Tarjetas' },
+  { key: 'eventos', label: 'Eventos' },
   { key: 'previa', label: 'Tabla (previa)' },
   { key: 'goleadores', label: 'Goleadores' },
   { key: 'premios', label: 'Premios' },
@@ -93,6 +108,38 @@ function tituloRonda(r: Ronda): string {
   return r.tipo === 'jornada'
     ? `Fecha ${r.jornada}`
     : `${TITULO_COPA[r.copa]} · ${TITULO_FASE[r.fase]}`;
+}
+
+/**
+ * El acumulado por club con lo que hay en el panel.
+ *
+ * Con tarjetas cargadas partido por partido, se cuenta sobre ellas, igual que
+ * en el sitio (`liga-supabase.ts`). Si la edición no tiene ninguna, el
+ * acumulado viejo de `disciplina`. Una sola fuente, para que la tabla previa
+ * del panel no pueda decir otra cosa que la publicada.
+ */
+function disciplinaDe(estado: EstadoTorneo): Record<string, Disciplina> {
+  if (estado.tarjetas.length > 0) return disciplinaDeTarjetas(estado.tarjetas);
+  return Object.fromEntries(
+    estado.disciplina.map((d) => [d.equipo, { amarillas: d.amarillas, rojas: d.rojas }]),
+  );
+}
+
+/** Un partido del panel en la forma que usan las funciones de `liga.ts`. */
+function comoPartidoLiga(p: PartidoPanel): PartidoLiga {
+  const jugado = p.jugado && p.golesLocal != null && p.golesVisitante != null;
+  return {
+    id: p.id,
+    jornada: p.jornada,
+    // `liga.ts` trabaja con 'DD/MM/AAAA'; el panel guarda 'AAAA-MM-DD'.
+    fecha: p.fecha.split('-').reverse().join('/'),
+    hora: p.hora,
+    local: p.local,
+    visitante: p.visitante,
+    golesLocal: jugado ? p.golesLocal : null,
+    golesVisitante: jugado ? p.golesVisitante : null,
+    estado: jugado ? 'jugado' : 'programado',
+  };
 }
 
 /** Campo numérico que admite quedar vacío mientras se escribe. */
@@ -217,9 +264,7 @@ export function PanelResultados({ salir, correo }: { salir: () => Promise<void>;
         estado:
           p.jugado && p.golesLocal != null && p.golesVisitante != null ? 'jugado' : 'programado',
       }));
-    const disciplina = Object.fromEntries(
-      estado.disciplina.map((d) => [d.equipo, { amarillas: d.amarillas, rojas: d.rojas }]),
-    );
+    const disciplina = disciplinaDe(estado);
     return posicionesPorGrupo(comoLiga, disciplina);
   }, [estado]);
   const partidosRonda = useMemo(() => {
@@ -271,21 +316,6 @@ export function PanelResultados({ salir, correo }: { salir: () => Promise<void>;
       await recargar();
     } catch {
       setError('No se pudo eliminar el cruce.');
-    } finally {
-      setGuardando(false);
-    }
-  }
-
-  async function guardarTarjetas() {
-    if (!estado) return;
-    setGuardando(true);
-    setError('');
-    setAviso('');
-    try {
-      await guardarDisciplina(estado.disciplina);
-      setAviso('Tarjetas guardadas.');
-    } catch {
-      setError('No se pudieron guardar las tarjetas.');
     } finally {
       setGuardando(false);
     }
@@ -619,77 +649,12 @@ export function PanelResultados({ salir, correo }: { salir: () => Promise<void>;
 
       {/* ── TARJETAS ───────────────────────────────────────────────── */}
       {seccion === 'tarjetas' ? (
-        <div className="mt-8">
-          <p className="text-sm text-neutral-400">
-            Acumuladas por club. Son los únicos datos que no se deducen de los marcadores.
-          </p>
-          <ul className="mt-6 space-y-2">
-            {EQUIPOS.map((eq) => {
-              const fila = estado.disciplina.find((d) => d.equipo === eq.slug) ?? {
-                equipo: eq.slug,
-                amarillas: 0,
-                rojas: 0,
-              };
-              return (
-                <li
-                  key={eq.slug}
-                  className="flex flex-wrap items-center gap-3 rounded-xl border border-white/10 bg-black/40 p-3"
-                >
-                  <TeamCrest slug={eq.slug} size={30} />
-                  <span className="min-w-0 flex-1 truncate text-sm font-semibold text-neutral-200">
-                    {eq.nombre}
-                  </span>
-                  <label className="flex items-center gap-2 text-xs text-amber-300">
-                    Amarillas
-                    <NumeroInput
-                      valor={fila.amarillas}
-                      onChange={(v) =>
-                        setEstado((prev) =>
-                          prev
-                            ? {
-                                ...prev,
-                                disciplina: [
-                                  ...prev.disciplina.filter((d) => d.equipo !== eq.slug),
-                                  { ...fila, amarillas: v ?? 0 },
-                                ],
-                              }
-                            : prev,
-                        )
-                      }
-                    />
-                  </label>
-                  <label className="flex items-center gap-2 text-xs text-red-400">
-                    Rojas
-                    <NumeroInput
-                      valor={fila.rojas}
-                      onChange={(v) =>
-                        setEstado((prev) =>
-                          prev
-                            ? {
-                                ...prev,
-                                disciplina: [
-                                  ...prev.disciplina.filter((d) => d.equipo !== eq.slug),
-                                  { ...fila, rojas: v ?? 0 },
-                                ],
-                              }
-                            : prev,
-                        )
-                      }
-                    />
-                  </label>
-                </li>
-              );
-            })}
-          </ul>
-          <button
-            onClick={() => void guardarTarjetas()}
-            disabled={guardando}
-            className="mt-6 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-amarillo to-naranja px-7 py-3 text-sm font-bold text-carbon disabled:opacity-50"
-          >
-            {guardando ? <Loader2 size={16} className="animate-spin" /> : <Check size={16} />}
-            Guardar tarjetas
-          </button>
-        </div>
+        <SeccionTarjetas estado={estado} onCambio={() => void recargar()} />
+      ) : null}
+
+      {/* ── EVENTOS ────────────────────────────────────────────────── */}
+      {seccion === 'eventos' ? (
+        <SeccionEventos estado={estado} onCambio={() => void recargar()} />
       ) : null}
 
       {/* ── GOLEADORES ─────────────────────────────────────────────── */}
@@ -978,9 +943,7 @@ function parejasSugeridas(fase: FaseFinal, copa: Copa, estado: EstadoTorneo): [s
       golesVisitante: p.golesVisitante,
       estado: 'jugado',
     }));
-    const disciplina = Object.fromEntries(
-      estado.disciplina.map((d) => [d.equipo, { amarillas: d.amarillas, rojas: d.rojas }]),
-    );
+    const disciplina = disciplinaDe(estado);
     return cruzarFaseFinal(posicionesPorGrupo(comoLiga, disciplina))
       .filter((c) => c.copa === copa && c.local && c.visitante)
       .map((c) => [c.local!, c.visitante!]);
@@ -1085,9 +1048,7 @@ function SeccionPremios({ estado, onCambio }: { estado: EstadoTorneo; onCambio: 
       }));
 
     const totales = totalesDeEdicion(comoLiga);
-    const disciplina = Object.fromEntries(
-      estado.disciplina.map((d) => [d.equipo, { amarillas: d.amarillas, rojas: d.rojas }]),
-    );
+    const disciplina = disciplinaDe(estado);
     const soloGrupos = comoLiga.filter((_, i) => estado.partidos[i]?.fase === 'grupos');
 
     return {
@@ -1414,6 +1375,417 @@ function SeccionGoleadores({ estado, onCambio }: { estado: EstadoTorneo; onCambi
         {estado.goleadores.length} anotadores · {estado.goleadores.reduce((s, g) => s + g.goles, 0)}{' '}
         goles
       </p>
+    </div>
+  );
+}
+
+/**
+ * La pestaña de Tarjetas: una por una, en el partido en que se mostraron.
+ *
+ * Antes se escribía el acumulado de cada club. Ahora se anota cada tarjeta
+ * con su dorsal, y de ahí salen solos el acumulado del Fair Play y quién
+ * está suspendido para la fecha siguiente: si los tres se escribieran por
+ * separado, tarde o temprano dirían cosas distintas.
+ *
+ * Cada tarjeta se guarda al momento. No hay botón de «guardar todo»: si se
+ * cierra la pestaña a mitad de camino, lo anotado ya está.
+ */
+function SeccionTarjetas({ estado, onCambio }: { estado: EstadoTorneo; onCambio: () => void }) {
+  const grupos = estado.partidos.filter((p) => p.fase === 'grupos');
+  // Abre en la última fecha jugada: las tarjetas se cargan después del partido.
+  const ultimaJugada = grupos.filter((p) => p.jugado).reduce((m, p) => Math.max(m, p.jornada), 0);
+  const [vista, setVista] = useState<number | 'final'>(ultimaJugada || 1);
+
+  const partidos =
+    vista === 'final'
+      ? estado.partidos.filter((p) => p.fase !== 'grupos')
+      : grupos.filter((p) => p.jornada === vista);
+
+  const acumulado = disciplinaDe(estado);
+  const susp = useMemo(
+    () => suspensiones(estado.tarjetas, estado.partidos.map(comoPartidoLiga)),
+    [estado.tarjetas, estado.partidos],
+  );
+  const pendientes = susp.filter((x) => {
+    const cumple = x.cumple ? estado.partidos.find((p) => p.id === x.cumple) : null;
+    return !cumple || !cumple.jugado;
+  });
+
+  return (
+    <div className="mt-8">
+      <p className="text-sm text-neutral-400">
+        Anota cada tarjeta en el partido en que se mostró, con el dorsal si lo tienes. El acumulado
+        de cada club y los suspendidos se calculan solos.
+      </p>
+      {estado.tarjetas.length === 0 && estado.disciplina.length > 0 ? (
+        <p className="mt-3 rounded-lg border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-xs text-amber-200">
+          Esta edición tiene acumulados por club cargados a la antigua. En cuanto anotes la primera
+          tarjeta aquí, el Fair Play pasa a contarse sobre las tarjetas de los partidos y esos
+          acumulados dejan de usarse.
+        </p>
+      ) : null}
+
+      <div className="mt-6 flex flex-wrap items-center gap-2">
+        {Array.from({ length: TOTAL_JORNADAS }, (_, i) => i + 1).map((j) => (
+          <button
+            key={j}
+            onClick={() => setVista(j)}
+            className={cn(
+              'h-10 w-10 rounded-lg font-sport text-lg transition-colors',
+              vista === j
+                ? 'bg-amarillo text-carbon'
+                : 'border border-white/15 text-neutral-400 hover:border-amarillo/50',
+            )}
+            title={`Fecha ${j}`}
+          >
+            {j}
+          </button>
+        ))}
+        <button
+          onClick={() => setVista('final')}
+          className={cn(
+            'h-10 rounded-lg px-3 font-bufon text-xs font-bold uppercase tracking-[0.1em] transition-colors',
+            vista === 'final'
+              ? 'bg-amarillo text-carbon'
+              : 'border border-white/15 text-neutral-400 hover:border-amarillo/50',
+          )}
+        >
+          Fase final
+        </button>
+      </div>
+
+      {partidos.length === 0 ? (
+        <p className="mt-6 text-sm text-neutral-500">Todavía no hay partidos en esta ronda.</p>
+      ) : (
+        <ul className="mt-6 space-y-4">
+          {partidos.map((p) => (
+            <li key={p.id} className="rounded-xl border border-white/10 bg-black/60 p-4">
+              <p className="text-xs text-neutral-500">
+                {p.copa ? `${TITULO_COPA[p.copa]} · ${TITULO_FASE[p.fase as FaseFinal]} · ` : ''}
+                {p.fecha} · {p.hora}
+                {p.jugado ? ` · ${p.golesLocal}–${p.golesVisitante}` : ' · sin jugar'}
+              </p>
+              <div className="mt-3 grid gap-4 sm:grid-cols-2">
+                {[p.local, p.visitante].map((equipo) => (
+                  <TarjetasDeClub
+                    key={equipo}
+                    partido={p.id}
+                    equipo={equipo}
+                    tarjetas={estado.tarjetas.filter(
+                      (t) => t.partido === p.id && t.equipo === equipo,
+                    )}
+                    onCambio={onCambio}
+                  />
+                ))}
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      {/* Lo que sale solo de las tarjetas: lo que antes se escribía a mano. */}
+      <div className="mt-10 grid gap-6 lg:grid-cols-2">
+        <div>
+          <p className="font-bufon text-xs font-bold uppercase tracking-[0.15em] text-amarillo">
+            Suspendidos por roja
+          </p>
+          {pendientes.length ? (
+            <ul className="mt-3 space-y-1.5 text-sm text-neutral-300">
+              {pendientes.map((x) => {
+                const cumple = x.cumple ? estado.partidos.find((q) => q.id === x.cumple) : null;
+                return (
+                  <li key={`${x.equipo}-${x.numero}-${x.origen}`}>
+                    <strong>#{x.numero}</strong> de {getEquipo(x.equipo)?.nombre ?? x.equipo}
+                    <span className="text-neutral-500">
+                      {' '}
+                      ·{' '}
+                      {cumple
+                        ? cumple.fase === 'grupos'
+                          ? `no juega la Fecha ${cumple.jornada}`
+                          : `no juega el ${cumple.fecha}`
+                        : 'no juega su próximo partido'}
+                    </span>
+                  </li>
+                );
+              })}
+            </ul>
+          ) : (
+            <p className="mt-3 text-sm text-neutral-500">Nadie tiene una suspensión pendiente.</p>
+          )}
+          <p className="mt-2 text-[11px] text-neutral-600">
+            Una roja con dorsal suspende al jugador para el siguiente partido de su club. Una roja
+            sin dorsal cuenta para el Fair Play, pero no se puede nombrar a nadie.
+          </p>
+        </div>
+
+        <div>
+          <p className="font-bufon text-xs font-bold uppercase tracking-[0.15em] text-amarillo">
+            Acumulado por club
+          </p>
+          <ul className="mt-3 space-y-1 text-sm">
+            {EQUIPOS.map((eq) => {
+              const d = acumulado[eq.slug] ?? { amarillas: 0, rojas: 0 };
+              return (
+                <li key={eq.slug} className="flex items-center gap-2 text-neutral-300">
+                  <TeamCrest slug={eq.slug} size={22} />
+                  <span className="min-w-0 flex-1 truncate">{eq.nombre}</span>
+                  <span className="tabular-nums text-amber-300">{d.amarillas} TA</span>
+                  <span className="w-12 text-right tabular-nums text-red-400">{d.rojas} TR</span>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/** Las tarjetas de un club en un partido, con el formulario para añadir otra. */
+function TarjetasDeClub({
+  partido,
+  equipo,
+  tarjetas,
+  onCambio,
+}: {
+  partido: string;
+  equipo: string;
+  tarjetas: TarjetaPanel[];
+  onCambio: () => void;
+}) {
+  const [tipo, setTipo] = useState<'amarilla' | 'roja'>('amarilla');
+  const [numero, setNumero] = useState<number | null>(null);
+  const [trabajando, setTrabajando] = useState(false);
+  const [error, setError] = useState('');
+
+  async function agregar() {
+    setTrabajando(true);
+    setError('');
+    try {
+      await crearTarjeta({ partido, equipo, numero, tipo });
+      setNumero(null);
+      onCambio();
+    } catch {
+      setError('No se pudo guardar la tarjeta.');
+    } finally {
+      setTrabajando(false);
+    }
+  }
+
+  async function quitar(t: TarjetaPanel) {
+    const quien = t.numero != null ? `#${t.numero}` : 'sin dorsal';
+    if (!window.confirm(`¿Quitar la ${t.tipo} ${quien}?`)) return;
+    setTrabajando(true);
+    setError('');
+    try {
+      await eliminarTarjeta(t.id);
+      onCambio();
+    } catch {
+      setError('No se pudo quitar la tarjeta.');
+    } finally {
+      setTrabajando(false);
+    }
+  }
+
+  const ordenadas = [...tarjetas].sort(
+    (a, b) => a.tipo.localeCompare(b.tipo) || (a.numero ?? 999) - (b.numero ?? 999),
+  );
+
+  return (
+    <div className="rounded-lg border border-white/10 bg-black/40 p-3">
+      <p className="flex items-center gap-2 text-sm font-semibold text-neutral-200">
+        <TeamCrest slug={equipo} size={24} />
+        {getEquipo(equipo)?.nombre ?? equipo}
+      </p>
+
+      <ul className="mt-2 flex min-h-[28px] flex-wrap gap-1.5">
+        {ordenadas.length === 0 ? (
+          <li className="text-xs text-neutral-600">Sin tarjetas.</li>
+        ) : (
+          ordenadas.map((t) => (
+            <li key={t.id}>
+              <button
+                onClick={() => void quitar(t)}
+                disabled={trabajando}
+                title="Quitar esta tarjeta"
+                className={cn(
+                  'inline-flex items-center gap-1 rounded px-2 py-1 font-mono text-xs font-bold disabled:opacity-50',
+                  t.tipo === 'roja' ? 'bg-red-600 text-white' : 'bg-amber-300 text-carbon',
+                )}
+              >
+                {t.numero != null ? `#${t.numero}` : 's/d'}
+                <X size={12} aria-hidden />
+              </button>
+            </li>
+          ))
+        )}
+      </ul>
+
+      <div className="mt-3 flex flex-wrap items-center gap-2">
+        <select
+          value={tipo}
+          onChange={(e) => setTipo(e.target.value === 'roja' ? 'roja' : 'amarilla')}
+          className="rounded-md border border-white/25 bg-[#05070a] px-2 py-2 text-xs text-neutral-50"
+          aria-label="Color de la tarjeta"
+        >
+          <option value="amarilla">Amarilla</option>
+          <option value="roja">Roja</option>
+        </select>
+        <label className="flex items-center gap-1 text-xs text-neutral-400">
+          Dorsal
+          <NumeroInput valor={numero} onChange={setNumero} ancho="w-16" />
+        </label>
+        <button
+          onClick={() => void agregar()}
+          disabled={trabajando}
+          className="inline-flex items-center gap-1 rounded-full border border-white/20 px-3 py-2 text-xs font-bold text-neutral-200 hover:border-amarillo/60 hover:text-amarillo disabled:opacity-50"
+        >
+          {trabajando ? <Loader2 size={13} className="animate-spin" /> : <Plus size={13} />}
+          Añadir
+        </button>
+      </div>
+      {error ? <p className="mt-2 text-xs text-red-400">{error}</p> : null}
+    </div>
+  );
+}
+
+/**
+ * La pestaña de Eventos: lo que pasa en una fecha y no es un partido.
+ *
+ * Existe por el torneo de penales de la Fecha 1, que tenía hora y campeón
+ * pero no cabía en ningún sitio: no suma puntos ni tiene dos equipos. Sale
+ * en el Calendario, dentro de su fecha y en su hora.
+ */
+function SeccionEventos({ estado, onCambio }: { estado: EstadoTorneo; onCambio: () => void }) {
+  const [jornada, setJornada] = useState(1);
+  const [hora, setHora] = useState('');
+  const [titulo, setTitulo] = useState('');
+  const [detalle, setDetalle] = useState('');
+  const [trabajando, setTrabajando] = useState(false);
+  const [error, setError] = useState('');
+
+  async function crear() {
+    if (!titulo.trim()) return setError('Falta el título: «Torneo de penales», por ejemplo.');
+    setTrabajando(true);
+    setError('');
+    try {
+      await crearEvento({ jornada, hora: hora || null, titulo, detalle: detalle || null });
+      setTitulo('');
+      setDetalle('');
+      setHora('');
+      onCambio();
+    } catch {
+      setError('No se pudo guardar el evento.');
+    } finally {
+      setTrabajando(false);
+    }
+  }
+
+  async function borrar(id: string, nombre: string) {
+    if (!window.confirm(`¿Eliminar «${nombre}»?`)) return;
+    setTrabajando(true);
+    try {
+      await eliminarEvento(id);
+      onCambio();
+    } catch {
+      setError('No se pudo eliminar el evento.');
+    } finally {
+      setTrabajando(false);
+    }
+  }
+
+  return (
+    <div className="mt-8">
+      <p className="text-sm text-neutral-400">
+        Lo que pasa en una fecha y no es un partido —un torneo de penales, una premiación—. Sale en
+        el Calendario, dentro de su fecha.
+      </p>
+
+      {estado.eventos.length ? (
+        <ul className="mt-6 space-y-2">
+          {estado.eventos.map((ev) => (
+            <li
+              key={ev.id}
+              className="flex flex-wrap items-center gap-3 rounded-xl border border-white/10 bg-black/50 px-4 py-3"
+            >
+              <span className="font-sport text-lg text-amarillo">Fecha {ev.jornada}</span>
+              <span className="font-mono text-xs text-neutral-500">{ev.hora ?? 'sin hora'}</span>
+              <span className="min-w-0 flex-1 text-sm text-neutral-200">
+                <strong>{ev.titulo}</strong>
+                {ev.detalle ? <span className="text-neutral-400"> · {ev.detalle}</span> : null}
+              </span>
+              <button
+                onClick={() => void borrar(ev.id, ev.titulo)}
+                disabled={trabajando}
+                title="Eliminar este evento"
+                className="rounded-md p-1.5 text-neutral-600 hover:bg-red-500/10 hover:text-red-400 disabled:opacity-50"
+              >
+                <Trash2 size={15} />
+              </button>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="mt-6 text-sm text-neutral-500">Todavía no hay eventos.</p>
+      )}
+
+      <div className="mt-6 rounded-xl border border-amarillo/30 bg-black/50 p-4">
+        <p className="font-bufon text-xs font-bold uppercase tracking-[0.15em] text-amarillo">
+          Nuevo evento
+        </p>
+        <div className="mt-3 flex flex-wrap items-end gap-3">
+          <label className="flex flex-col gap-1 text-xs text-neutral-400">
+            Fecha
+            <select
+              value={jornada}
+              onChange={(e) => setJornada(Number(e.target.value))}
+              className="rounded-md border border-white/25 bg-[#05070a] px-3 py-2 text-sm text-neutral-50"
+            >
+              {Array.from({ length: TOTAL_JORNADAS }, (_, i) => i + 1).map((j) => (
+                <option key={j} value={j}>
+                  Fecha {j}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="flex flex-col gap-1 text-xs text-neutral-400">
+            Hora
+            <input
+              type="time"
+              value={hora}
+              onChange={(e) => setHora(e.target.value)}
+              className="rounded-md border border-white/25 bg-[#05070a] px-3 py-2 text-sm text-neutral-50"
+            />
+          </label>
+          <label className="flex min-w-[12rem] flex-1 flex-col gap-1 text-xs text-neutral-400">
+            Título
+            <input
+              value={titulo}
+              onChange={(e) => setTitulo(e.target.value)}
+              placeholder="Torneo de penales"
+              className="rounded-md border border-white/25 bg-[#05070a] px-3 py-2 text-sm text-neutral-50"
+            />
+          </label>
+          <label className="flex min-w-[12rem] flex-1 flex-col gap-1 text-xs text-neutral-400">
+            Detalle (opcional)
+            <input
+              value={detalle}
+              onChange={(e) => setDetalle(e.target.value)}
+              placeholder="Campeón: Los Pibes del Barrio"
+              className="rounded-md border border-white/25 bg-[#05070a] px-3 py-2 text-sm text-neutral-50"
+            />
+          </label>
+          <button
+            onClick={() => void crear()}
+            disabled={trabajando}
+            className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-amarillo to-naranja px-5 py-2.5 text-sm font-bold text-carbon disabled:opacity-50"
+          >
+            {trabajando ? <Loader2 size={16} className="animate-spin" /> : <Plus size={16} />}
+            Crear
+          </button>
+        </div>
+        {error ? <p className="mt-2 text-xs text-red-400">{error}</p> : null}
+      </div>
     </div>
   );
 }

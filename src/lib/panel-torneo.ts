@@ -39,6 +39,23 @@ export interface DisciplinaPanel {
   rojas: number;
 }
 
+/** Una tarjeta tal como la guarda la base, con su id para poder borrarla. */
+export interface TarjetaPanel {
+  id: string;
+  partido: string;
+  equipo: string;
+  numero: number | null;
+  tipo: 'amarilla' | 'roja';
+}
+
+export interface EventoPanel {
+  id: string;
+  jornada: number;
+  hora: string | null;
+  titulo: string;
+  detalle: string | null;
+}
+
 export interface GoleadorPanel {
   id: string;
   jugador: string;
@@ -55,7 +72,10 @@ export interface MvpPanel {
 
 export interface EstadoTorneo {
   partidos: PartidoPanel[];
+  /** Acumulado por club de ediciones anteriores. La 5ª cuenta sobre `tarjetas`. */
   disciplina: DisciplinaPanel[];
+  tarjetas: TarjetaPanel[];
+  eventos: EventoPanel[];
   goleadores: GoleadorPanel[];
   mvp: MvpPanel | null;
 }
@@ -68,7 +88,7 @@ function exigirCliente() {
 export async function cargarTodo(edicion = EDICION_DATOS): Promise<EstadoTorneo> {
   const sb = exigirCliente();
 
-  const [p, d, g, m] = await Promise.all([
+  const [p, d, g, m, t, e] = await Promise.all([
     sb
       .from('partidos')
       .select(
@@ -93,11 +113,20 @@ export async function cargarTodo(edicion = EDICION_DATOS): Promise<EstadoTorneo>
       .eq('edicion', edicion)
       .eq('clave', 'mvp')
       .maybeSingle(),
+    sb.from('tarjetas').select('id, partido, equipo, numero, tipo').eq('edicion', edicion),
+    sb
+      .from('eventos_fecha')
+      .select('id, jornada, hora, titulo, detalle')
+      .eq('edicion', edicion)
+      .order('jornada')
+      .order('hora'),
   ]);
 
   if (p.error) throw p.error;
   if (d.error) throw d.error;
   if (g.error) throw g.error;
+  if (t.error) throw t.error;
+  if (e.error) throw e.error;
   // El MVP puede no existir todavía: eso no es un error, es lo normal hasta
   // la clausura.
 
@@ -118,6 +147,20 @@ export async function cargarTodo(edicion = EDICION_DATOS): Promise<EstadoTorneo>
       jugado: r.estado === 'jugado',
     })),
     disciplina: (d.data ?? []) as DisciplinaPanel[],
+    tarjetas: (t.data ?? []).map((r) => ({
+      id: r.id as string,
+      partido: r.partido as string,
+      equipo: r.equipo as string,
+      numero: r.numero as number | null,
+      tipo: r.tipo === 'roja' ? ('roja' as const) : ('amarilla' as const),
+    })),
+    eventos: (e.data ?? []).map((r) => ({
+      id: r.id as string,
+      jornada: r.jornada as number,
+      hora: r.hora ? (r.hora as string).slice(0, 5) : null,
+      titulo: r.titulo as string,
+      detalle: (r.detalle as string | null) ?? null,
+    })),
     goleadores: (g.data ?? []).map((r) => ({
       id: r.id as string,
       jugador: r.jugador as string,
@@ -250,6 +293,53 @@ export async function guardarDisciplina(
     })),
     { onConflict: 'edicion,equipo' },
   );
+  if (error) throw error;
+}
+
+/**
+ * Anota una tarjeta en un partido. La base comprueba que el club jugó ese
+ * partido (trigger `tarjeta_coherente`, migración 0013): una tarjeta cargada
+ * al rival movería el Fair Play de los dos sin que nadie lo notara.
+ */
+export async function crearTarjeta(
+  t: Omit<TarjetaPanel, 'id'>,
+  edicion = EDICION_DATOS,
+): Promise<void> {
+  const sb = exigirCliente();
+  const { error } = await sb.from('tarjetas').insert({
+    edicion,
+    partido: t.partido,
+    equipo: t.equipo,
+    numero: t.numero,
+    tipo: t.tipo,
+  });
+  if (error) throw error;
+}
+
+export async function eliminarTarjeta(id: string): Promise<void> {
+  const sb = exigirCliente();
+  const { error } = await sb.from('tarjetas').delete().eq('id', id);
+  if (error) throw error;
+}
+
+export async function crearEvento(
+  ev: Omit<EventoPanel, 'id'>,
+  edicion = EDICION_DATOS,
+): Promise<void> {
+  const sb = exigirCliente();
+  const { error } = await sb.from('eventos_fecha').insert({
+    edicion,
+    jornada: ev.jornada,
+    hora: ev.hora ? `${ev.hora}:00` : null,
+    titulo: ev.titulo.trim(),
+    detalle: ev.detalle?.trim() || null,
+  });
+  if (error) throw error;
+}
+
+export async function eliminarEvento(id: string): Promise<void> {
+  const sb = exigirCliente();
+  const { error } = await sb.from('eventos_fecha').delete().eq('id', id);
   if (error) throw error;
 }
 

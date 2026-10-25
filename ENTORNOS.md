@@ -94,6 +94,8 @@ nueva: el sitio de ensayos sigue el código, y el código de la 5ª sobre los
 datos de la 4ª pinta clubes y fechas que no existen.
 
 ```sql
+delete from public.eventos_fecha where edicion = 99;
+delete from public.tarjetas   where edicion = 99;
 delete from public.premios    where edicion = 99;
 delete from public.goleadores where edicion = 99;
 delete from public.disciplina where edicion = 99;
@@ -117,6 +119,21 @@ from public.goleadores where edicion = 5;
 insert into public.premios (edicion, clave, jugador, equipo, nota)
 select 99, clave, jugador, equipo, nota
 from public.premios where edicion = 5;
+
+-- Las tarjetas apuntan al id del partido, que es otro en la 99: se busca
+-- el partido gemelo por su ronda, su copa y sus dos clubes.
+insert into public.tarjetas (edicion, partido, equipo, numero, tipo)
+select 99, p99.id, t.equipo, t.numero, t.tipo
+from public.tarjetas t
+join public.partidos p5  on p5.id = t.partido
+join public.partidos p99 on p99.edicion = 99 and p99.fase = p5.fase
+ and p99.jornada = p5.jornada and p99.copa is not distinct from p5.copa
+ and p99.local = p5.local and p99.visitante = p5.visitante
+where t.edicion = 5;
+
+insert into public.eventos_fecha (edicion, jornada, hora, titulo, detalle)
+select 99, jornada, hora, titulo, detalle
+from public.eventos_fecha where edicion = 5;
 ```
 
 Se ejecuta en Supabase → SQL Editor, proyecto `fundacion-managers`.

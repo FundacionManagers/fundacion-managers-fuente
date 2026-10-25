@@ -12,6 +12,7 @@ import {
   jornadaEnVariosDias,
   type Compromiso,
   type DiaRelativo,
+  type Suspension,
 } from '@/lib/liga';
 
 /**
@@ -27,7 +28,14 @@ import {
  * build se quedaría congelado y mentiría a los pocos días. La cuenta se hace
  * en el navegador de quien mira, contra su reloj.
  */
-export function ProximaFecha({ compromiso }: { compromiso: Compromiso }) {
+export function ProximaFecha({
+  compromiso,
+  suspendidos = [],
+}: {
+  compromiso: Compromiso;
+  /** Quién no puede jugar por una roja. Sale de las tarjetas, no se escribe. */
+  suspendidos?: readonly Suspension[];
+}) {
   const { titulo, etiqueta, iso, partidos, cruces } = compromiso;
   // null hasta que monta en el navegador: en el servidor no hay "hoy" que
   // valga, y pintar uno provocaría un desajuste de hidratación.
@@ -146,6 +154,28 @@ export function ProximaFecha({ compromiso }: { compromiso: Compromiso }) {
           grupos.
         </p>
       )}
+
+      {/* Los suspendidos de esta fecha. El documento de la organización los
+          anuncia aparte, «Suspendidos para la Fecha 2 por tarjeta roja», y es
+          justo lo que un capitán necesita saber antes de armar el equipo. */}
+      {suspendidos.length ? (
+        <div className="mt-5 rounded-xl border border-red-500/30 bg-red-500/[0.07] px-4 py-3">
+          <p className="flex items-center gap-2 font-bufon text-[11px] font-bold uppercase tracking-[0.2em] text-red-300">
+            <span className="inline-block h-3.5 w-2.5 rounded-[2px] bg-red-600" aria-hidden />
+            Suspendidos por tarjeta roja
+          </p>
+          <ul className="mt-2 flex flex-wrap gap-x-5 gap-y-1.5 text-sm text-neutral-200">
+            {suspendidos.map((s) => (
+              <li key={`${s.equipo}-${s.numero}-${s.origen}`} className="flex items-center gap-2">
+                <TeamCrest slug={s.equipo} size={22} />
+                <span>
+                  <strong>#{s.numero}</strong> de {getEquipo(s.equipo)?.nombre ?? s.equipo}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
     </div>
   );
 }

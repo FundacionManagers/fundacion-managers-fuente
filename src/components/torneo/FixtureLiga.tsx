@@ -11,7 +11,9 @@ import {
   jornadaEnVariosDias,
   partidosDeJornada,
   proximoPartidoDe,
+  type EventoFecha,
   type PartidoLiga,
+  type Tarjeta,
 } from '@/lib/liga';
 import type { DatosLiga } from '@/lib/liga-supabase';
 import { cn } from '@/lib/utils';
@@ -84,38 +86,136 @@ function Marcador({ p, mostrarDia }: { p: PartidoLiga; mostrarDia: boolean }) {
   );
 }
 
-function FilaPartido({ p, mostrarDia }: { p: PartidoLiga; mostrarDia: boolean }) {
+/**
+ * Las tarjetas de un club en un partido, como en la planilla: un rectángulo
+ * por tarjeta, con el dorsal dentro si se conoce.
+ */
+function TarjetasDe({ tarjetas, alinear }: { tarjetas: Tarjeta[]; alinear: 'izq' | 'der' }) {
+  if (tarjetas.length === 0) return null;
+  const ordenadas = [...tarjetas].sort(
+    (a, b) => a.tipo.localeCompare(b.tipo) || (a.numero ?? 999) - (b.numero ?? 999),
+  );
+  return (
+    <span
+      className={cn('flex flex-wrap gap-1', alinear === 'der' ? 'justify-end' : 'justify-start')}
+    >
+      {ordenadas.map((t, i) => (
+        <span
+          key={i}
+          title={`${t.tipo === 'roja' ? 'Roja' : 'Amarilla'}${t.numero != null ? ` · #${t.numero}` : ''}`}
+          className={cn(
+            'inline-flex h-[18px] min-w-[13px] items-center justify-center rounded-[3px] px-1 font-mono text-[10px] font-bold leading-none',
+            t.tipo === 'roja' ? 'bg-red-600 text-white' : 'bg-amber-300 text-carbon',
+          )}
+        >
+          {t.numero ?? ''}
+        </span>
+      ))}
+    </span>
+  );
+}
+
+function FilaPartido({
+  p,
+  mostrarDia,
+  tarjetas,
+}: {
+  p: PartidoLiga;
+  mostrarDia: boolean;
+  tarjetas: Tarjeta[];
+}) {
   const jugado = p.estado === 'jugado';
+  const deLocal = tarjetas.filter((t) => t.equipo === p.local);
+  const deVisita = tarjetas.filter((t) => t.equipo === p.visitante);
 
   return (
     <li
       className={cn(
-        'flex items-center gap-3 rounded-xl border px-3 py-3 sm:gap-4 sm:px-4',
+        'rounded-xl border px-3 py-3 sm:px-4',
         jugado ? 'border-white/10 bg-black/40' : 'border-dashed border-white/10 bg-black/20',
       )}
     >
-      <div className="flex min-w-0 flex-1 items-center justify-end gap-2 sm:gap-3">
-        <NombreClub slug={p.local} alinear="der" />
-        <TeamCrest slug={p.local} size={34} />
+      <div className="flex items-center gap-3 sm:gap-4">
+        <div className="flex min-w-0 flex-1 items-center justify-end gap-2 sm:gap-3">
+          <NombreClub slug={p.local} alinear="der" />
+          <TeamCrest slug={p.local} size={34} />
+        </div>
+
+        <Marcador p={p} mostrarDia={mostrarDia} />
+
+        <div className="flex min-w-0 flex-1 items-center gap-2 sm:gap-3">
+          <TeamCrest slug={p.visitante} size={34} />
+          <NombreClub slug={p.visitante} alinear="izq" />
+        </div>
       </div>
 
-      <Marcador p={p} mostrarDia={mostrarDia} />
-
-      <div className="flex min-w-0 flex-1 items-center gap-2 sm:gap-3">
-        <TeamCrest slug={p.visitante} size={34} />
-        <NombreClub slug={p.visitante} alinear="izq" />
-      </div>
+      {/* Las tarjetas del partido, bajo el club que las recibió. Es lo que
+          explica el Fair Play de la tabla, y el documento de la organización
+          las da partido por partido. */}
+      {deLocal.length || deVisita.length ? (
+        <div className="mt-2 flex items-start gap-3 sm:gap-4">
+          <div className="flex-1">
+            <TarjetasDe tarjetas={deLocal} alinear="der" />
+          </div>
+          <span className="w-[72px] shrink-0" aria-hidden />
+          <div className="flex-1">
+            <TarjetasDe tarjetas={deVisita} alinear="izq" />
+          </div>
+        </div>
+      ) : null}
     </li>
   );
 }
 
-function ListaPartidos({ partidos }: { partidos: PartidoLiga[] }) {
+/** Un evento de la fecha que no es un partido, en su hora. */
+function FilaEvento({ ev }: { ev: EventoFecha }) {
+  return (
+    <li className="flex flex-wrap items-baseline gap-x-3 gap-y-1 rounded-xl border border-naranja/30 bg-naranja/[0.06] px-4 py-3">
+      <span className="font-bufon text-[10px] uppercase tracking-widest text-neutral-500">
+        {ev.hora ?? 'En la fecha'}
+      </span>
+      <span className="font-sport text-xl uppercase leading-none text-neutral-100">
+        {ev.titulo}
+      </span>
+      {ev.detalle ? <span className="text-sm text-amarillo">{ev.detalle}</span> : null}
+    </li>
+  );
+}
+
+function ListaPartidos({
+  partidos,
+  tarjetas,
+  eventos,
+}: {
+  partidos: PartidoLiga[];
+  tarjetas: readonly Tarjeta[];
+  eventos: readonly EventoFecha[];
+}) {
   const variosDias = jornadaEnVariosDias(partidos);
+  // Partidos y eventos van juntos, por hora: el torneo de penales de la
+  // Fecha 1 fue a las 10:00, entre el segundo partido y el tercero.
+  const filas = [
+    ...partidos.map((p) => ({ clave: `${p.fecha} ${p.hora}`, p, ev: null })),
+    ...eventos.map((ev) => ({
+      clave: `${partidos[0]?.fecha ?? ''} ${ev.hora ?? '99'}`,
+      p: null,
+      ev,
+    })),
+  ].sort((a, b) => a.clave.localeCompare(b.clave));
   return (
     <ul className="space-y-2.5">
-      {partidos.map((p) => (
-        <FilaPartido key={p.id} p={p} mostrarDia={variosDias} />
-      ))}
+      {filas.map((f) =>
+        f.p ? (
+          <FilaPartido
+            key={f.p.id}
+            p={f.p}
+            mostrarDia={variosDias}
+            tarjetas={tarjetas.filter((t) => t.partido === f.p!.id)}
+          />
+        ) : (
+          <FilaEvento key={f.ev!.id} ev={f.ev!} />
+        ),
+      )}
     </ul>
   );
 }
@@ -173,7 +273,11 @@ export function FixtureLiga({ datos }: { datos: DatosLiga }) {
           </div>
           <div className="mt-4 h-px w-full bg-gradient-to-r from-amarillo/40 to-transparent" />
           <div className="mt-5">
-            <ListaPartidos partidos={partidosUltima} />
+            <ListaPartidos
+              partidos={partidosUltima}
+              tarjetas={datos.tarjetas}
+              eventos={datos.eventos.filter((e) => e.jornada === ultima)}
+            />
           </div>
         </section>
       ) : null}
@@ -223,7 +327,11 @@ export function FixtureLiga({ datos }: { datos: DatosLiga }) {
                     </span>
                   </summary>
                   <div className="border-t border-white/5 px-4 pb-4 pt-4">
-                    <ListaPartidos partidos={partidos} />
+                    <ListaPartidos
+                      partidos={partidos}
+                      tarjetas={datos.tarjetas}
+                      eventos={datos.eventos.filter((e) => e.jornada === jornada)}
+                    />
                   </div>
                 </details>
               );

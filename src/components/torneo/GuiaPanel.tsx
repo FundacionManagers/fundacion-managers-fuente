@@ -134,22 +134,46 @@ const PASOS: Paso[] = [
     id: 'tarjetas',
     numero: '3',
     titulo: 'Registrar las tarjetas',
-    resumen: 'Amarillas y rojas por club',
+    resumen: 'Cada tarjeta, en su partido',
     icono: Users,
     cuerpo: (
       <>
         <p>
-          En <strong>Tarjetas</strong> anotas el acumulado de cada club. Son{' '}
-          <strong className="text-neutral-100">totales de todo el torneo</strong>, no de la fecha:
-          si un equipo tenía 5 amarillas y le sacaron 2 más, escribes 7.
+          En <strong>Tarjetas</strong> eliges la fecha y ves sus partidos. En cada club eliges{' '}
+          <em>Amarilla</em> o <em>Roja</em>, escribes el dorsal si lo tienes y pulsas{' '}
+          <strong className="text-amarillo">Añadir</strong>. Se guarda al momento.
         </p>
         <p className="mt-3">
-          Al terminar, <strong className="text-amarillo">Guardar tarjetas</strong>.
+          Se anota <strong className="text-neutral-100">cada tarjeta del partido</strong>, no el
+          total del torneo: el acumulado de cada club se suma solo, y abajo lo ves.
         </p>
-        <Nota>
-          Es el único dato que hay que escribir a mano. Todo lo demás —puntos, diferencia de gol,
-          posiciones— sale solo de los marcadores.
+        <Nota tono="aviso">
+          <strong>La roja con dorsal suspende sola.</strong> El jugador aparece como suspendido para
+          el siguiente partido de su club, en el panel y en el Calendario. Una roja sin dorsal
+          cuenta para el Fair Play, pero no se puede nombrar a nadie.
         </Nota>
+        <Nota>
+          ¿Te equivocaste? Pulsa la tarjeta y confirma: se quita. Todo lo demás —puntos, diferencia
+          de gol, posiciones— sale solo de los marcadores.
+        </Nota>
+      </>
+    ),
+  },
+  {
+    id: 'eventos',
+    numero: '3b',
+    titulo: 'Eventos de la fecha',
+    resumen: 'Lo que no es un partido',
+    icono: ListOrdered,
+    cuerpo: (
+      <>
+        <p>
+          En <strong>Eventos</strong> anotas lo que pasa en una fecha y no es un partido: un torneo
+          de penales, una premiación. Eliges la fecha, la hora, un título y, si quieres, un detalle
+          —«Campeón: Los Pibes del Barrio»—, y pulsas{' '}
+          <strong className="text-amarillo">Crear</strong>.
+        </p>
+        <Nota>Sale en el Calendario, dentro de su fecha y en su hora. No suma puntos.</Nota>
       </>
     ),
   },

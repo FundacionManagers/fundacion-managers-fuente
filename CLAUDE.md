@@ -45,7 +45,7 @@ código y este archivo.
 | Pagos | **Bold** (`src/lib/pago.ts`, `PagoBold.tsx`) | El contrato decía Wompi + Stripe; se implementó Bold |
 | WhatsApp | **Enlaces `wa.me`** | La Cloud API del contrato no está |
 | Hosting | **GitHub Pages** + workflow propio | No es Vercel |
-| Tests | **`node:test`** (`npm test`, 109 pruebas) | No hay Vitest ni Playwright |
+| Tests | **`node:test`** (`npm test`, 116 pruebas) | No hay Vitest ni Playwright |
 
 **Lo que el contrato pedía y NO existe** (dilo si alguien lo da por hecho):
 tRPC, Prisma, Inngest, Sentry, Cloudinary, `next-intl`, Stripe, Wompi,
@@ -84,6 +84,8 @@ la base cambió) y el botón «Publicar ahora» del panel.
 - La **clave publicable** de Supabase sí viaja en el bundle: está diseñada para
   eso. Quien protege es **RLS**, y hay que comprobarlo, no suponerlo.
 - Toda escritura del panel exige que el correo esté en `public.admins`.
+- Las tarjetas se guardan una por una (`tarjetas`, solo con dorsal, sin
+  nombre). El Fair Play por club y los suspendidos se calculan de ahí.
 - Ley 1581 de 2012 (Habeas Data): los datos personales viven en `miembros`,
   `emprendedores`, `inscripciones` y `jugadores`. **Ninguna de esas tablas puede
   quedar legible para `anon`.**
@@ -185,7 +187,7 @@ npm run dev          # desarrollo local
 npm run build        # build de producción (+ postbuild: build-info y huella de fotos)
 npm run typecheck    # tsc --noEmit
 npm run lint         # ESLint
-npm test             # node:test sobre la lógica pura (109 pruebas)
+npm test             # node:test sobre la lógica pura (116 pruebas)
 npm run format       # prettier
 ```
 

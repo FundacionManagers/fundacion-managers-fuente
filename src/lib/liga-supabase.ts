@@ -22,14 +22,19 @@ import { EDICION_DATOS } from './entorno';
 import { SUPABASE_ANON_KEY, SUPABASE_URL, supabaseConfigurado } from './supabase';
 import {
   DISCIPLINA,
+  EVENTOS_LIGA,
   GOLEADORES_LIGA,
   PARTIDOS_LIGA,
+  TARJETAS_LIGA,
+  disciplinaDeTarjetas,
   type Disciplina,
+  type EventoFecha,
   type Copa,
   type FaseFinal,
   type Goleador,
   type PartidoEliminatoria,
   type PartidoLiga,
+  type Tarjeta,
 } from './liga';
 
 // Los dos tipos viven ahora en `liga.ts`, junto al calendario de la fase
@@ -50,7 +55,15 @@ export interface DatosLiga {
   partidos: readonly PartidoLiga[];
   /** Cruces eliminatorios, si ya existen. No cuentan para la tabla. */
   eliminatoria: readonly PartidoEliminatoria[];
+  /**
+   * Acumulado por club. Si la edición tiene tarjetas cargadas partido por
+   * partido, sale de ellas; si no —ediciones anteriores—, de `disciplina`.
+   */
   disciplina: Readonly<Record<string, Disciplina>>;
+  /** Cada tarjeta con su partido. Vacío en ediciones que solo cargaban acumulados. */
+  tarjetas: readonly Tarjeta[];
+  /** Lo que pasa en una fecha y no es un partido. */
+  eventos: readonly EventoFecha[];
   goleadores: readonly Goleador[];
   /** Premios de jurado ya decididos. Vacío mientras no se cargue ninguno. */
   premios: readonly PremioJurado[];
@@ -62,6 +75,8 @@ const RESPALDO: DatosLiga = {
   partidos: PARTIDOS_LIGA,
   eliminatoria: [],
   disciplina: DISCIPLINA,
+  tarjetas: TARJETAS_LIGA,
+  eventos: EVENTOS_LIGA,
   goleadores: GOLEADORES_LIGA,
   premios: [],
   origen: 'respaldo',
@@ -100,6 +115,21 @@ interface FilaDisciplina {
   rojas: number;
 }
 
+interface FilaTarjeta {
+  partido: string;
+  equipo: string;
+  numero: number | null;
+  tipo: string;
+}
+
+interface FilaEvento {
+  id: string;
+  jornada: number;
+  hora: string | null;
+  titulo: string;
+  detalle: string | null;
+}
+
 interface FilaGoleador {
   jugador: string;
   equipo: string;
@@ -131,26 +161,34 @@ export async function cargarLiga(edicion = EDICION_DATOS): Promise<DatosLiga> {
   });
 
   try {
-    const [partidosRes, disciplinaRes, goleadoresRes, premiosRes] = await Promise.all([
-      supabase
-        .from('partidos')
-        .select(
-          'id, fase, copa, jornada, fecha, hora, local, visitante, goles_local, goles_visitante, penales_local, penales_visitante, estado',
-        )
-        .eq('edicion', edicion)
-        // Por fecha antes que por hora: hay jornadas repartidas en dos dias
-        // (miercoles y jueves) y ordenar solo por hora las intercala mal.
-        .order('jornada')
-        .order('fecha')
-        .order('hora'),
-      supabase.from('disciplina').select('equipo, amarillas, rojas').eq('edicion', edicion),
-      supabase
-        .from('goleadores')
-        .select('jugador, equipo, numero, goles')
-        .eq('edicion', edicion)
-        .order('goles', { ascending: false }),
-      supabase.from('premios').select('clave, jugador, equipo, nota').eq('edicion', edicion),
-    ]);
+    const [partidosRes, disciplinaRes, goleadoresRes, premiosRes, tarjetasRes, eventosRes] =
+      await Promise.all([
+        supabase
+          .from('partidos')
+          .select(
+            'id, fase, copa, jornada, fecha, hora, local, visitante, goles_local, goles_visitante, penales_local, penales_visitante, estado',
+          )
+          .eq('edicion', edicion)
+          // Por fecha antes que por hora: hay jornadas repartidas en dos dias
+          // (miercoles y jueves) y ordenar solo por hora las intercala mal.
+          .order('jornada')
+          .order('fecha')
+          .order('hora'),
+        supabase.from('disciplina').select('equipo, amarillas, rojas').eq('edicion', edicion),
+        supabase
+          .from('goleadores')
+          .select('jugador, equipo, numero, goles')
+          .eq('edicion', edicion)
+          .order('goles', { ascending: false }),
+        supabase.from('premios').select('clave, jugador, equipo, nota').eq('edicion', edicion),
+        supabase.from('tarjetas').select('partido, equipo, numero, tipo').eq('edicion', edicion),
+        supabase
+          .from('eventos_fecha')
+          .select('id, jornada, hora, titulo, detalle')
+          .eq('edicion', edicion)
+          .order('jornada')
+          .order('hora'),
+      ]);
 
     const filasPartidos = (partidosRes.data ?? []) as FilaPartido[];
 
@@ -184,9 +222,36 @@ export async function cargarLiga(edicion = EDICION_DATOS): Promise<DatosLiga> {
         penalesVisitante: p.penales_visitante,
       }));
 
+    // Igual que los premios: un fallo leyendo tarjetas o eventos no puede
+    // tumbar el sitio. Sin tarjetas se cae al acumulado de `disciplina`.
+    const tarjetas: Tarjeta[] = (
+      (tarjetasRes.error ? [] : (tarjetasRes.data ?? [])) as FilaTarjeta[]
+    ).map((t) => ({
+      partido: t.partido,
+      equipo: t.equipo,
+      numero: t.numero,
+      tipo: t.tipo === 'roja' ? 'roja' : 'amarilla',
+    }));
+    const eventos: EventoFecha[] = (
+      (eventosRes.error ? [] : (eventosRes.data ?? [])) as FilaEvento[]
+    ).map((e) => ({
+      id: e.id,
+      jornada: e.jornada,
+      hora: e.hora ? aHoraLegible(e.hora) : null,
+      titulo: e.titulo,
+      detalle: e.detalle,
+    }));
+
+    // Una sola fuente por edición: con tarjetas cargadas, el acumulado se
+    // cuenta sobre ellas y la tabla `disciplina` no se mira. Mezclar las dos
+    // daría un Fair Play que no cuadra con las tarjetas de los partidos.
     const disciplina: Record<string, Disciplina> = {};
-    for (const d of (disciplinaRes.data ?? []) as FilaDisciplina[]) {
-      disciplina[d.equipo] = { amarillas: d.amarillas, rojas: d.rojas };
+    if (tarjetas.length > 0) {
+      Object.assign(disciplina, disciplinaDeTarjetas(tarjetas));
+    } else {
+      for (const d of (disciplinaRes.data ?? []) as FilaDisciplina[]) {
+        disciplina[d.equipo] = { amarillas: d.amarillas, rojas: d.rojas };
+      }
     }
 
     // La posición se asigna aquí, no se guarda: así nunca queda desfasada
@@ -206,7 +271,16 @@ export async function cargarLiga(edicion = EDICION_DATOS): Promise<DatosLiga> {
     // panel muestra «por definir», que es la verdad.
     const premios = (premiosRes.error ? [] : (premiosRes.data ?? [])) as PremioJurado[];
 
-    return { partidos, eliminatoria, disciplina, goleadores, premios, origen: 'supabase' };
+    return {
+      partidos,
+      eliminatoria,
+      disciplina,
+      tarjetas,
+      eventos,
+      goleadores,
+      premios,
+      origen: 'supabase',
+    };
   } catch {
     return RESPALDO;
   }

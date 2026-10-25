@@ -46,10 +46,36 @@ export interface PartidoLiga {
   estado: 'programado' | 'jugado';
 }
 
-/** Tarjetas acumuladas por club. No se deducen del marcador: se cargan. */
+/**
+ * Tarjetas acumuladas por club. No se deducen del marcador: desde la 5ª se
+ * cuentan sobre las tarjetas de cada partido (`disciplinaDeTarjetas`).
+ */
 export interface Disciplina {
   amarillas: number;
   rojas: number;
+}
+
+/**
+ * Una tarjeta mostrada en un partido. El dorsal puede faltar: la
+ * organización no siempre lo informa, y entonces la tarjeta cuenta para el
+ * Fair Play del club pero no puede suspender a nadie.
+ */
+export interface Tarjeta {
+  /** id del partido en que se mostró. */
+  partido: string;
+  equipo: string;
+  numero: number | null;
+  tipo: 'amarilla' | 'roja';
+}
+
+/** Algo que pasa en una fecha y no es un partido: un torneo de penales. */
+export interface EventoFecha {
+  id: string;
+  jornada: number;
+  /** 'HH:MM', o null si no tiene hora fija. */
+  hora: string | null;
+  titulo: string;
+  detalle: string | null;
 }
 
 export interface FilaPosicion {
@@ -131,17 +157,144 @@ export const PARTIDOS_LIGA: readonly PartidoLiga[] = [
   p('j3p4', 3, '08/11/2026', '11:00', 'tp-fc', 'cucuta-10-fc'),
 ];
 
-/** Tarjetas acumuladas tras la Fecha 1, según el documento de la organización. */
-export const DISCIPLINA: Readonly<Record<string, Disciplina>> = {
-  'pomada-alfa': { amarillas: 1, rojas: 0 },
-  'isotopos-portal-1': { amarillas: 0, rojas: 0 },
-  'la-banda-cruzada': { amarillas: 2, rojas: 1 },
-  'los-pibes': { amarillas: 1, rojas: 1 },
-  'the-originals': { amarillas: 2, rojas: 0 },
-  'tp-fc': { amarillas: 1, rojas: 0 },
-  'yonotomo-fc': { amarillas: 1, rojas: 0 },
-  'cucuta-10-fc': { amarillas: 4, rojas: 0 },
-};
+/** Varias tarjetas iguales de un club en un partido, sin dorsal. */
+function sinDorsal(
+  partido: string,
+  equipo: string,
+  tipo: Tarjeta['tipo'],
+  cuantas: number,
+): Tarjeta[] {
+  return Array.from({ length: cuantas }, () => ({ partido, equipo, numero: null, tipo }));
+}
+
+/**
+ * Las tarjetas de la Fecha 1, tal como las da el documento de la
+ * organización: con dorsal donde lo dice, sin él donde no.
+ */
+export const TARJETAS_LIGA: readonly Tarjeta[] = [
+  ...sinDorsal('j1p1', 'pomada-alfa', 'amarilla', 1),
+  { partido: 'j1p2', equipo: 'la-banda-cruzada', numero: 16, tipo: 'amarilla' },
+  { partido: 'j1p2', equipo: 'la-banda-cruzada', numero: 23, tipo: 'amarilla' },
+  { partido: 'j1p2', equipo: 'la-banda-cruzada', numero: 7, tipo: 'roja' },
+  { partido: 'j1p2', equipo: 'los-pibes', numero: 7, tipo: 'amarilla' },
+  { partido: 'j1p2', equipo: 'los-pibes', numero: 21, tipo: 'roja' },
+  ...sinDorsal('j1p3', 'the-originals', 'amarilla', 2),
+  ...sinDorsal('j1p3', 'tp-fc', 'amarilla', 1),
+  ...sinDorsal('j1p4', 'yonotomo-fc', 'amarilla', 1),
+  ...sinDorsal('j1p4', 'cucuta-10-fc', 'amarilla', 4),
+];
+
+/**
+ * El acumulado por club, contado sobre las tarjetas de cada partido.
+ *
+ * Antes se escribía aparte, a mano, y podía no cuadrar con las tarjetas que
+ * la organización publica partido por partido. Sale de la misma lista.
+ */
+export function disciplinaDeTarjetas(tarjetas: readonly Tarjeta[]): Record<string, Disciplina> {
+  const acc: Record<string, Disciplina> = {};
+  for (const t of tarjetas) {
+    const d = (acc[t.equipo] ??= { amarillas: 0, rojas: 0 });
+    if (t.tipo === 'roja') d.rojas += 1;
+    else d.amarillas += 1;
+  }
+  return acc;
+}
+
+/** Tarjetas acumuladas tras la Fecha 1. */
+export const DISCIPLINA: Readonly<Record<string, Disciplina>> = disciplinaDeTarjetas(TARJETAS_LIGA);
+
+/** Lo que pasó en las fechas aparte de los partidos. */
+export const EVENTOS_LIGA: readonly EventoFecha[] = [
+  {
+    id: 'e1',
+    jornada: 1,
+    hora: '10:00',
+    titulo: 'Torneo de penales',
+    detalle: 'Campeón: Los Pibes del Barrio',
+  },
+];
+
+/** Una suspensión por roja: quién, por qué partido y en cuál la cumple. */
+export interface Suspension {
+  equipo: string;
+  numero: number;
+  /** id del partido en que vio la roja. */
+  origen: string;
+  /**
+   * id del partido en que la cumple: el siguiente de su club. Null si ese
+   * partido todavía no existe —una roja en la última fecha de grupos se
+   * cumple en una semifinal que aún no se ha creado—.
+   */
+  cumple: string | null;
+}
+
+/**
+ * Quién está suspendido, deducido de las rojas.
+ *
+ * La regla que aplica es la del documento de la organización: una roja
+ * suspende al jugador para el siguiente partido de su club. Nada más. La
+ * acumulación de amarillas no está en ningún documento del torneo, así que
+ * no se inventa; si la organización la confirma, se suma aquí.
+ *
+ * Una roja sin dorsal no suspende a nadie que se pueda nombrar, y no sale.
+ */
+export function suspensiones(
+  tarjetas: readonly Tarjeta[],
+  partidos: readonly PartidoLiga[],
+): Suspension[] {
+  const orden = [...partidos].sort((a, b) => isoDe(a).localeCompare(isoDe(b)));
+  const salida: Suspension[] = [];
+
+  for (const t of tarjetas) {
+    if (t.tipo !== 'roja' || t.numero == null) continue;
+    const origen = orden.find((p) => p.id === t.partido);
+    if (!origen) continue;
+    const siguiente = orden.find(
+      (p) =>
+        isoDe(p) > isoDe(origen) &&
+        p.id !== origen.id &&
+        (p.local === t.equipo || p.visitante === t.equipo),
+    );
+    salida.push({
+      equipo: t.equipo,
+      numero: t.numero,
+      origen: origen.id,
+      cumple: siguiente?.id ?? null,
+    });
+  }
+  return salida;
+}
+
+/**
+ * Los suspendidos de un conjunto de partidos —una fecha, una ronda—.
+ *
+ * Con `incluirSinPartido`, entran también los que aún no tienen partido
+ * donde cumplir. Es lo que toca cuando lo próximo es una ronda de la fase
+ * final que todavía no se ha creado: el siguiente compromiso de su club es
+ * justo ese. En una fecha de grupos no: ahí ya existen todos los partidos, y
+ * una roja sin partido por delante se cumplirá más adelante.
+ */
+export function suspendidosEn(
+  partidos: readonly Pick<PartidoLiga, 'id'>[],
+  todas: readonly Suspension[],
+  incluirSinPartido = false,
+): Suspension[] {
+  const ids = new Set(partidos.map((p) => p.id));
+  return todas.filter((s) => (s.cumple ? ids.has(s.cumple) : incluirSinPartido));
+}
+
+/** Los suspendidos para lo próximo que se juega. */
+export function suspendidosDelCompromiso(
+  compromiso: Compromiso,
+  tarjetas: readonly Tarjeta[],
+  todosLosPartidos: readonly PartidoLiga[],
+): Suspension[] {
+  return suspendidosEn(
+    compromiso.partidos,
+    suspensiones(tarjetas, todosLosPartidos),
+    compromiso.tipo === 'ronda',
+  );
+}
 
 /**
  * Ranking de goleadores de respaldo. Vacío: el documento de la Fecha 1 no

@@ -9,6 +9,7 @@ import {
   faseDeGruposCompleta,
   fechaLargaDe,
   proximoCompromiso,
+  suspendidosDelCompromiso,
 } from '@/lib/liga';
 import { cargarLigaConAviso } from '@/lib/liga-supabase';
 import { EDICION_ANTERIOR, EDICION_EN_CURSO, ordinalFemenino, pillEdicion } from '@/lib/torneo';
@@ -27,6 +28,9 @@ export default async function CalendarioPage() {
   // La disciplina va porque el desempate del Artículo 14 pone el fair play
   // antes que la diferencia de gol: sin ella los cruces saldrían en otro orden.
   const proximo = proximoCompromiso(datos.partidos, datos.eliminatoria, datos.disciplina);
+  const suspendidos = proximo
+    ? suspendidosDelCompromiso(proximo, datos.tarjetas, [...datos.partidos, ...datos.eliminatoria])
+    : [];
 
   return (
     <TorneoShell
@@ -36,7 +40,7 @@ export default async function CalendarioPage() {
     >
       {proximo ? (
         <div className="mb-14">
-          <ProximaFecha compromiso={proximo} />
+          <ProximaFecha compromiso={proximo} suspendidos={suspendidos} />
         </div>
       ) : null}
 

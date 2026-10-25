@@ -9,7 +9,12 @@ import { TablaPosiciones } from '@/components/torneo/TablaPosiciones';
 import { RankingGoleadores } from '@/components/torneo/RankingGoleadores';
 import { ProximaFecha } from '@/components/torneo/ProximaFecha';
 import { ALIANZA, ICONE_CYAN } from '@/lib/alianza';
-import { jornadaActualDe, proximoCompromiso, TOTAL_JORNADAS } from '@/lib/liga';
+import {
+  jornadaActualDe,
+  proximoCompromiso,
+  suspendidosDelCompromiso,
+  TOTAL_JORNADAS,
+} from '@/lib/liga';
 import { cargarLigaConAviso } from '@/lib/liga-supabase';
 import {
   CAMPEON_VIGENTE,
@@ -40,6 +45,9 @@ export async function TorneoLanding() {
   // La disciplina va porque el desempate del Artículo 14 pone el fair play
   // antes que la diferencia de gol: sin ella los cruces saldrían en otro orden.
   const proximo = proximoCompromiso(datos.partidos, datos.eliminatoria, datos.disciplina);
+  const suspendidos = proximo
+    ? suspendidosDelCompromiso(proximo, datos.tarjetas, [...datos.partidos, ...datos.eliminatoria])
+    : [];
 
   return (
     <div className="tournament-section relative">
@@ -92,7 +100,7 @@ export async function TorneoLanding() {
               sabía que mañana se juega. */}
           {proximo ? (
             <div className="mt-10 max-w-2xl">
-              <ProximaFecha compromiso={proximo} />
+              <ProximaFecha compromiso={proximo} suspendidos={suspendidos} />
             </div>
           ) : null}
         </div>
