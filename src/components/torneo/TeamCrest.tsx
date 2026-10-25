@@ -25,7 +25,22 @@ interface TeamCrestProps {
  * - Campeones: valla blanca + halo dorado intenso + ring dorado más visible
  *   + una estrella por título. Quién es campeón no se decide aquí: sale de
  *   `titulos`, que se cuenta sobre las finales publicadas.
+ *
+ * Todo son `<span>`: el escudo va dentro de frases (`<p>`), y un `<div>` ahí
+ * hace que el navegador cierre el párrafo antes de tiempo. React encontraba
+ * otro árbol al hidratar (error #418) y repintaba la página entera.
  */
+/**
+ * El archivo más chico que se sigue viendo nítido a doble densidad. Los PNG
+ * originales pesan hasta 500 KB y casi siempre se pintan a menos de 64 px;
+ * las versiones de 128, 256 y 512 salen de `herramientas/escudos-livianos.mjs`.
+ */
+function rutaEscudo(slug: string, size: number): string {
+  if (size <= 64) return `/escudos/128/${slug}.webp`;
+  if (size <= 128) return `/escudos/256/${slug}.webp`;
+  return `/escudos/512/${slug}.webp`;
+}
+
 export function TeamCrest({ slug, size = 56, showStars = false }: TeamCrestProps) {
   const eq = slug ? getEquipo(slug) : undefined;
   const titulos = eq?.titulos ?? 0;
@@ -34,13 +49,13 @@ export function TeamCrest({ slug, size = 56, showStars = false }: TeamCrestProps
 
   if (!eq) {
     return (
-      <div
+      <span
         aria-label="Por definir"
         className="inline-flex shrink-0 items-center justify-center rounded-2xl border border-white/15 bg-white/5 font-mono text-neutral-400"
         style={{ width: size, height: size, fontSize: size * 0.34 }}
       >
         ?
-      </div>
+      </span>
     );
   }
 
@@ -56,8 +71,8 @@ export function TeamCrest({ slug, size = 56, showStars = false }: TeamCrestProps
   const radius = Math.max(8, Math.round(size * 0.16));
 
   return (
-    <div className="inline-flex shrink-0 flex-col items-center">
-      <div
+    <span className="inline-flex shrink-0 flex-col items-center">
+      <span
         className="relative inline-flex items-center justify-center"
         style={{ width: size, height: size }}
       >
@@ -77,7 +92,7 @@ export function TeamCrest({ slug, size = 56, showStars = false }: TeamCrestProps
         />
 
         {/* Valla blanca (cartel) */}
-        <div
+        <span
           aria-hidden
           className="absolute inset-0"
           style={{
@@ -94,7 +109,7 @@ export function TeamCrest({ slug, size = 56, showStars = false }: TeamCrestProps
             misma valla que los demás, para que la tabla no lo trate distinto. */}
         {eq.escudo ? (
           <Image
-            src={asset(`/escudos/${eq.slug}.png`)}
+            src={asset(rutaEscudo(eq.slug, size))}
             alt={`Escudo ${eq.nombre}`}
             width={size}
             height={size}
@@ -111,10 +126,10 @@ export function TeamCrest({ slug, size = 56, showStars = false }: TeamCrestProps
             {eq.corto}
           </span>
         )}
-      </div>
+      </span>
 
       {showStars && champion ? (
-        <div
+        <span
           aria-hidden
           className="flex items-center gap-1"
           style={{ marginTop: Math.round(size * 0.08) }}
@@ -126,8 +141,8 @@ export function TeamCrest({ slug, size = 56, showStars = false }: TeamCrestProps
               className="fill-amarillo text-amarillo drop-shadow-[0_2px_6px_rgba(212,164,55,0.55)]"
             />
           ))}
-        </div>
+        </span>
       ) : null}
-    </div>
+    </span>
   );
 }

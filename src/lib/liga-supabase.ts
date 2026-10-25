@@ -17,6 +17,8 @@
  * todas formas. Siguen en `torneo-data.ts`.
  */
 
+import { mkdirSync, writeFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { createClient } from '@supabase/supabase-js';
 import { EDICION_DATOS } from './entorno';
 import { SUPABASE_ANON_KEY, SUPABASE_URL, supabaseConfigurado } from './supabase';
@@ -286,6 +288,9 @@ export async function cargarLiga(edicion = EDICION_DATOS): Promise<DatosLiga> {
   }
 }
 
+/** Donde se deja la marca de «este build usó el respaldo». */
+const MARCA_RESPALDO_DIR = join(process.cwd(), '.next');
+
 /**
  * Igual que `cargarLiga`, pero deja constancia en el log del build de qué
  * fuente se usó. Si un despliegue sale con datos viejos, el log lo dice.
@@ -297,6 +302,15 @@ export async function cargarLigaConAviso(edicion = EDICION_DATOS): Promise<Datos
     console.log(`[liga] Datos leídos de Supabase (${detalle}).`);
   } else {
     console.warn(`[liga] Supabase no respondió: se usan los datos de respaldo (${detalle}).`);
+    // Para build-info: si una sola página salió con el respaldo, el sitio no
+    // puede anunciarse como publicado con los datos de la base. El `prebuild`
+    // borra esta marca antes de cada compilación.
+    try {
+      mkdirSync(MARCA_RESPALDO_DIR, { recursive: true });
+      writeFileSync(join(MARCA_RESPALDO_DIR, 'liga-respaldo'), new Date().toISOString());
+    } catch {
+      // Si no se puede escribir, el log de arriba sigue diciéndolo.
+    }
   }
   return datos;
 }

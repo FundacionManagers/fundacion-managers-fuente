@@ -7,7 +7,7 @@ import { EDICION_ACTUAL, PERIODO_ACTUAL } from '@/lib/liga';
 import { EDICION_DATOS, ES_ENSAYOS } from '@/lib/entorno';
 
 export const metadata: Metadata = {
-  title: 'Panel del torneo · Fundación Managers',
+  title: 'Panel del torneo',
   description: 'Carga de marcadores, tarjetas y goleadores del Torneo Managers.',
   robots: { index: false, follow: false },
 };

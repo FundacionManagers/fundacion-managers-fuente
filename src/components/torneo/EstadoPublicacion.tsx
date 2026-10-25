@@ -3,7 +3,8 @@
 import { useCallback, useEffect, useState } from 'react';
 import { CloudUpload, Globe, HelpCircle, Loader2, Rocket } from 'lucide-react';
 import { asset } from '@/lib/asset';
-import { EDICION_DATOS, ENTORNO, ES_ENSAYOS } from '@/lib/entorno';
+import { EDICION_DATOS, ES_ENSAYOS } from '@/lib/entorno';
+import { pedirPublicacion } from '@/lib/panel-torneo';
 import { supabase } from '@/lib/supabase';
 import { cn } from '@/lib/utils';
 
@@ -14,12 +15,15 @@ interface Marca {
 
 interface Info extends Marca {
   publicado_en: string;
+  /** 'respaldo' si el build no pudo leer la base. Falta en builds anteriores. */
+  origen?: 'supabase' | 'respaldo';
 }
 
 type Estado =
   | { tipo: 'cargando' }
   | { tipo: 'al-dia'; publicadoEn: string }
   | { tipo: 'pendiente'; publicadoEn: string }
+  | { tipo: 'respaldo'; publicadoEn: string }
   | { tipo: 'desconocido' };
 
 function haceCuanto(iso: string): string {
@@ -40,7 +44,8 @@ function haceCuanto(iso: string): string {
  *
  * Compara la marca del sitio publicado —que el build deja en
  * `build-info.json`— contra la que tiene la base ahora mismo. Si difieren,
- * hay cambios esperando al próximo despliegue automático.
+ * hay cambios que todavía no salieron: el panel pide la publicación al
+ * guardar, y este botón la repite si hizo falta.
  *
  * No se limita a mostrar la hora del último despliegue: eso no distingue
  * entre "tu cambio ya está" y "se publicó antes de que guardaras".
@@ -59,6 +64,12 @@ export function EstadoPublicacion() {
       });
       if (!r.ok) return setEstado({ tipo: 'desconocido' });
       const info: Info = await r.json();
+
+      // El último build no pudo leer la base y publicó los datos de respaldo:
+      // la web no muestra lo cargado, aunque la marca coincida.
+      if (info.origen === 'respaldo') {
+        return setEstado({ tipo: 'respaldo', publicadoEn: info.publicado_en });
+      }
 
       if (!supabase || info.ultimo_cambio == null) {
         return setEstado({ tipo: 'desconocido' });
@@ -92,7 +103,8 @@ export function EstadoPublicacion() {
   }, [revisar]);
 
   /**
-   * Dispara el despliegue sin esperar al cron.
+   * Dispara el despliegue a mano. El panel ya lo pide al guardar; esto es
+   * para reintentar si aquel disparo falló.
    *
    * La llamada va a una función de Supabase, no directo a GitHub: el token
    * que autoriza el disparo vive como secreto del servidor y nunca llega al
@@ -104,34 +116,10 @@ export function EstadoPublicacion() {
     setPublicando(true);
     setAviso('');
     setFallo('');
-    // El entorno viaja en el cuerpo: la función sabe a qué repositorio
-    // disparar. Sin esto, «Publicar ahora» desde ensayos recompilaba la web
-    // real, que es exactamente lo que este entorno existe para evitar.
-    const { error } = await supabase.functions.invoke('publicar', {
-      body: { entorno: ENTORNO },
-    });
+    const motivo = await pedirPublicacion();
     setPublicando(false);
-
-    if (error) {
-      // Cuando la funcion responde con un codigo de error, supabase-js deja
-      // `data` en null y guarda la respuesta real en `error.context`. Leerla
-      // de `data`, como estaba antes, siempre daba undefined y acababa en un
-      // mensaje generico que no decia nada.
-      let detalle = '';
-      try {
-        const respuesta = (error as { context?: Response }).context;
-        if (respuesta && typeof respuesta.json === 'function') {
-          const cuerpo = await respuesta.json();
-          if (cuerpo?.error) {
-            detalle = cuerpo.estado
-              ? `${cuerpo.error} (GitHub respondio ${cuerpo.estado})`
-              : String(cuerpo.error);
-          }
-        }
-      } catch {
-        // Si no se puede leer el cuerpo, queda el mensaje generico.
-      }
-      setFallo(detalle || 'No se pudo iniciar el despliegue.');
+    if (motivo) {
+      setFallo(motivo);
       return;
     }
     setAviso(
@@ -147,13 +135,13 @@ export function EstadoPublicacion() {
 
   if (estado.tipo === 'desconocido') {
     return (
-      <p className="flex items-center gap-2 text-xs text-neutral-500">
+      <p className="flex items-center gap-2 text-xs text-neutral-300">
         <HelpCircle size={14} /> No se pudo comprobar el estado de publicación.
       </p>
     );
   }
 
-  const pendiente = estado.tipo === 'pendiente';
+  const pendiente = estado.tipo === 'pendiente' || estado.tipo === 'respaldo';
   const Icono = pendiente ? CloudUpload : Globe;
 
   return (
@@ -166,7 +154,15 @@ export function EstadoPublicacion() {
       )}
     >
       <Icono size={14} className="shrink-0" />
-      {pendiente ? (
+      {estado.tipo === 'respaldo' ? (
+        <>
+          <strong>La web salió con datos de respaldo.</strong>
+          <span className="text-amarillo/80">
+            El despliegue de {haceCuanto(estado.publicadoEn)} no pudo leer la base. Publica otra
+            vez.
+          </span>
+        </>
+      ) : pendiente ? (
         <>
           <strong>Hay cambios sin publicar.</strong>
           <span className="text-amarillo/80">

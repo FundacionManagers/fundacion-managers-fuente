@@ -75,7 +75,7 @@ export default async function EquiposPage() {
               {Array.from({ length: campeon.titulos }, (_, i) => (
                 <Star key={i} size={24} className="fill-amarillo text-amarillo" aria-hidden />
               ))}
-              <span className="ml-2 font-mono text-xs uppercase tracking-widest text-neutral-500">
+              <span className="ml-2 font-mono text-xs uppercase tracking-widest text-neutral-300">
                 {CAMPEON_VIGENTE.edicion}ª edición · {CAMPEON_VIGENTE.periodo}
               </span>
             </div>
@@ -97,7 +97,7 @@ export default async function EquiposPage() {
               el nombre a 54 px de los 76 que mide: se leía "POMADA ★★ 2 TÍTULOS
               / ALFA". Ahora bajan a una segunda línea, alineadas con el nombre. */}
           <div className="min-w-0 flex-1">
-            <p className="font-bufon text-xs font-bold uppercase tracking-[0.25em] text-neutral-500">
+            <p className="font-bufon text-xs font-bold uppercase tracking-[0.25em] text-neutral-300">
               Máximo ganador
             </p>
             <p className="mt-1 font-sport text-3xl uppercase leading-none text-neutral-100">
@@ -108,7 +108,7 @@ export default async function EquiposPage() {
             {Array.from({ length: MAXIMO_GANADOR.titulos }, (_, i) => (
               <Star key={i} size={18} className="fill-amarillo/70 text-amarillo/70" aria-hidden />
             ))}
-            <span className="ml-2 font-mono text-xs uppercase tracking-widest text-neutral-500">
+            <span className="ml-2 font-mono text-xs uppercase tracking-widest text-neutral-300">
               {MAXIMO_GANADOR.titulos} títulos
             </span>
           </span>
@@ -119,7 +119,7 @@ export default async function EquiposPage() {
       <h3 className="mt-16 font-sport text-4xl uppercase leading-none text-neutral-50 md:text-5xl">
         Los {clubes.length} clubes
       </h3>
-      <p className="mt-2 text-sm text-neutral-500">
+      <p className="mt-2 text-sm text-neutral-300">
         Grupo A y Grupo B, cada uno ordenado como va hoy en{' '}
         <Link href="/torneo/#fase-de-grupos" className="text-amarillo hover:text-naranja">
           su tabla
@@ -138,8 +138,8 @@ export default async function EquiposPage() {
               {/* Un chip y no "1º de la tabla": ese texto envolvía a dos
                   líneas en móvil, y el encabezado de arriba ya dice que la
                   parrilla va ordenada por la tabla. */}
-              <span className="rounded-full border border-white/15 px-2.5 py-0.5 font-mono text-[11px] uppercase tracking-widest text-neutral-400">
-                {fila.posicion}º · Grupo {grupo}
+              <span className="whitespace-nowrap rounded-full border border-white/15 px-2.5 py-0.5 font-mono text-xs uppercase tracking-wider text-neutral-300">
+                {fila.posicion}º · {grupo}
               </span>
               <TeamCrest slug={equipo.slug} size={88} />
               <span className="text-center font-serif text-base font-bold text-neutral-100">
@@ -147,11 +147,11 @@ export default async function EquiposPage() {
               </span>
               <span className="font-sport text-2xl leading-none text-amarillo">
                 {fila.pts}
-                <span className="ml-1.5 font-mono text-[10px] uppercase tracking-widest text-neutral-500">
+                <span className="ml-1.5 font-mono text-xs uppercase tracking-widest text-neutral-300">
                   {fila.pts === 1 ? 'punto' : 'puntos'}
                 </span>
               </span>
-              <span className="mt-auto inline-flex items-center gap-1 text-xs font-semibold text-neutral-500 transition-colors group-hover:text-amarillo">
+              <span className="mt-auto inline-flex items-center gap-1 text-xs font-semibold text-neutral-300 transition-colors group-hover:text-amarillo">
                 Ver club
                 <ArrowRight
                   size={14}

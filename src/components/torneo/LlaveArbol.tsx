@@ -164,8 +164,10 @@ function Fila({
   return (
     <div className={cn('flex items-center gap-2.5', altoFijo && 'h-11')}>
       <span
-        className="w-6 shrink-0 font-mono text-[10px] uppercase tracking-wider"
-        style={{ color: tono === 'dorado' ? 'rgb(15 20 25 / 0.5)' : `${VERDE}70` }}
+        className="w-6 shrink-0 font-mono text-xs uppercase tracking-wider"
+        // Sin transparencia: el puesto es lo que explica por qué cada club está
+        // en su cruce, y al 44 % de opacidad no llegaba a 2,4:1 sobre blanco.
+        style={{ color: tono === 'dorado' ? '#0F1419' : VERDE }}
       >
         {lado.siembra ?? '·'}
       </span>
@@ -195,7 +197,7 @@ function Fila({
               en cualquier cuadro impreso: el resultado de los 90 sigue siendo
               el número grande. */}
           {lado.penales != null ? (
-            <span className="font-mono text-[11px] font-bold">({lado.penales})</span>
+            <span className="font-mono text-xs font-bold">({lado.penales})</span>
           ) : null}
         </span>
       ) : null}
@@ -249,20 +251,21 @@ function Celda({
           cuadro oficial. En la final el rótulo va dentro de la propia casilla,
           que ya es dorada entera. */}
       {destacada ? (
-        <p className="flex items-center gap-1.5 px-3 pb-1 pt-2.5 font-bufon text-[10px] font-bold uppercase tracking-[0.2em] text-carbon">
+        <p className="flex items-center gap-1.5 px-3 pb-1 pt-2.5 font-bufon text-xs font-bold uppercase tracking-[0.2em] text-carbon">
           <Trophy size={13} aria-hidden />
           Gran Final
         </p>
       ) : celda.etiqueta ? (
         <p
           className={cn(
-            'px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.18em]',
+            'px-3 py-1.5 font-mono text-xs uppercase tracking-[0.18em]',
             altoFijo && 'truncate',
           )}
           style={
             tono === 'menta'
-              ? { color: `${MENTA_TEXTO}B0` }
-              : { background: '#D4A437', color: '#FFFFFF' }
+              ? { color: MENTA_TEXTO }
+              : // Texto oscuro: el blanco sobre este dorado daba 2,2:1.
+                { background: '#D4A437', color: '#0F1419' }
           }
         >
           {celda.etiqueta}
@@ -403,14 +406,14 @@ export function LlaveArbol({
                 </h3>
                 <span
                   className={cn(
-                    'rounded-full border px-2.5 py-0.5 font-bufon text-[10px] uppercase tracking-[0.15em]',
+                    'rounded-full border px-2.5 py-0.5 font-bufon text-xs uppercase tracking-[0.15em]',
                     chip.clase,
                   )}
                 >
                   {chip.texto}
                 </span>
               </div>
-              <p className="mt-2.5 text-xs text-white/65">{fechaDeParada(parada)}</p>
+              <p className="mt-2.5 text-xs text-white/80">{fechaDeParada(parada)}</p>
 
               <ul className="mt-4 space-y-3">
                 {celdasDe(parada).map((c) => (
@@ -421,7 +424,7 @@ export function LlaveArbol({
               </ul>
 
               {notaDe(parada.fase, cruces) ? (
-                <p className="mt-3 text-[11px] leading-relaxed text-white/55">
+                <p className="mt-3 text-xs leading-relaxed text-white/80">
                   {notaDe(parada.fase, cruces)}
                 </p>
               ) : null}
@@ -470,14 +473,14 @@ function Cabecera({ parada }: { parada: ParadaFinal }) {
         <h3 className="font-sport text-2xl uppercase leading-none text-white">{parada.titulo}</h3>
         <span
           className={cn(
-            'rounded-full border px-2.5 py-0.5 font-bufon text-[10px] uppercase tracking-[0.15em]',
+            'rounded-full border px-2.5 py-0.5 font-bufon text-xs uppercase tracking-[0.15em]',
             chip.clase,
           )}
         >
           {chip.texto}
         </span>
       </div>
-      <p className="mt-2 text-xs text-white/65">{fechaDeParada(parada)}</p>
+      <p className="mt-2 text-xs text-white/80">{fechaDeParada(parada)}</p>
     </div>
   );
 }

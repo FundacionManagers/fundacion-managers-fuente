@@ -1,18 +1,18 @@
 /**
- * Managers Lab — powered by ICONE ialabs (modelo Intel Inside / Bonyurt).
+ * Managers Lab — powered by ICONEialabs (modelo Intel Inside / Bonyurt).
  * Cada marca opera independiente; el concepto conjunto es:
  * IA que ayuda a líderes a tomar mejores decisiones.
  */
 
 export const ALIANZA = {
   nombre: 'Managers Lab',
-  poweredBy: 'ICONE ialabs',
-  firma: 'Managers Lab — powered by ICONE ialabs',
+  poweredBy: 'ICONEialabs',
+  firma: 'Managers Lab — powered by ICONEialabs',
   claim: 'El laboratorio donde los líderes deciden mejor con inteligencia artificial.',
   bajada:
-    'Managers Lab es el espacio conjunto de la Fundación Managers, potenciado por la inteligencia artificial de ICONE ialabs. La comunidad de líderes pone el contexto; la IA, la ventaja para decidir.',
+    'Managers Lab es el espacio conjunto de la Fundación Managers, potenciado por la inteligencia artificial de ICONEialabs. La comunidad de líderes pone el contexto; la IA, la ventaja para decidir.',
   icone: {
-    nombre: 'ICONE ialabs',
+    nombre: 'ICONEialabs',
     url: 'https://www.iconeialabs.com',
     descripcion: 'Laboratorio de inteligencia artificial: productos, automatización y formación.',
   },
@@ -37,11 +37,11 @@ export const APORTES: readonly AporteMarca[] = [
     ],
   },
   {
-    marca: 'ICONE ialabs',
+    marca: 'ICONEialabs',
     aporta: [
       'Inteligencia artificial aplicada',
       'Productos, automatización y herramientas',
-      'Formación técnica (ICONE Academy)',
+      'Formación técnica',
     ],
   },
 ] as const;
@@ -51,17 +51,17 @@ export const FLUJOS = [
   {
     desde: 'Llegas por Fundación Managers',
     hacia: 'y necesitas IA para tu organización',
-    resultado: 'Te conectamos con ICONE ialabs.',
+    resultado: 'Te conectamos con ICONEialabs.',
   },
   {
-    desde: 'Llegas por ICONE ialabs',
+    desde: 'Llegas por ICONEialabs',
     hacia: 'y lideras una empresa o equipo',
     resultado: 'Te abrimos la comunidad de Managers.',
   },
 ] as const;
 
-/** Acento visual de la marca aliada (paleta ICONE ialabs). */
+/** Acento visual de la marca aliada (paleta ICONEialabs). */
 export const ICONE_CYAN = '#00D4FF';
 
-/** Ejes donde tiene sentido el CTA cruzado hacia ICONE ialabs. */
+/** Ejes donde tiene sentido el CTA cruzado hacia ICONEialabs. */
 export const EJES_CON_CRUCE = ['consultoria', 'emprendimiento'] as const;

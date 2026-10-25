@@ -28,7 +28,7 @@ function Side({ slug, align }: { slug: string | null; align: 'left' | 'right' })
           <span className="sm:hidden">{eq?.corto ?? 'Por definir'}</span>
           <span className="hidden sm:inline">{eq?.nombre ?? 'Por definir'}</span>
         </p>
-        <p className="text-[11px] uppercase leading-tight tracking-widest text-neutral-500">
+        <p className="text-xs uppercase leading-tight tracking-widest text-neutral-300">
           <span className="sm:hidden">{eq?.nombre ?? '—'}</span>
           <span className="hidden sm:inline">{eq ? eq.corto : '—'}</span>
         </p>
@@ -49,17 +49,17 @@ export function MatchCard({ p }: { p: Partido }) {
         className="pointer-events-none absolute -right-16 -top-16 h-44 w-44 rounded-full bg-gold/10 blur-3xl"
       />
       <div className="relative flex items-center justify-between border-b border-white/5 px-5 py-2.5">
-        <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-neutral-500">
+        <span className="font-mono text-xs uppercase tracking-[0.2em] text-neutral-300">
           {p.etiqueta}
         </span>
         {enVivo ? (
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-amarillo to-naranja px-2.5 py-0.5 font-bufon text-[10px] font-bold text-carbon">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-amarillo to-naranja px-2.5 py-0.5 font-bufon text-xs font-bold text-carbon">
             <span className="pulse-live h-1.5 w-1.5 rounded-full bg-carbon" /> EN VIVO
           </span>
         ) : (
           <span
             className={cn(
-              'rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide',
+              'rounded-full px-2.5 py-0.5 text-xs font-bold uppercase tracking-wide',
               jugado ? 'bg-white/10 text-neutral-300' : 'bg-gold/15 text-gold',
             )}
           >
@@ -78,11 +78,11 @@ export function MatchCard({ p }: { p: Partido }) {
             <span className="tabular-nums">{p.golesVisitante ?? '–'}</span>
           </div>
           {p.penales ? (
-            <span className="mt-1 font-mono text-[10px] uppercase tracking-widest text-gold">
+            <span className="mt-1 font-mono text-xs uppercase tracking-widest text-gold">
               Pen. {p.penales.local}-{p.penales.visitante}
             </span>
           ) : null}
-          <span className="mt-1.5 font-mono text-[10px] uppercase tracking-widest text-neutral-500">
+          <span className="mt-1.5 font-mono text-xs uppercase tracking-widest text-neutral-300">
             {p.hora}
           </span>
         </div>
@@ -91,11 +91,11 @@ export function MatchCard({ p }: { p: Partido }) {
       </div>
 
       <div className="relative flex items-center justify-between border-t border-white/5 px-5 py-2.5">
-        <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-neutral-500">
+        <span className="font-mono text-xs uppercase tracking-[0.2em] text-neutral-300">
           {p.fecha}
         </span>
         {p.placeholder ? (
-          <span className="text-[10px] uppercase tracking-widest text-neutral-600">
+          <span className="text-xs uppercase tracking-widest text-neutral-300">
             Marcador por confirmar
           </span>
         ) : null}
@@ -120,14 +120,14 @@ export function TeamBadge({ slug }: { slug: string }) {
       <TeamCrest slug={eq.slug} size={56} showStars />
       <div className="relative min-w-0 flex-1">
         <p className="truncate font-serif text-lg font-bold text-neutral-50">{eq.nombre}</p>
-        <p className="mt-0.5 text-xs uppercase tracking-widest text-neutral-500">
+        <p className="mt-0.5 text-xs uppercase tracking-widest text-neutral-300">
           {etiquetaTitulos(eq.titulos)}
         </p>
       </div>
       <ChevronRight
         size={18}
         aria-hidden
-        className="relative shrink-0 text-neutral-600 transition-all duration-200 ease-managers group-hover:translate-x-1 group-hover:text-gold"
+        className="relative shrink-0 text-neutral-300 transition-all duration-200 ease-managers group-hover:translate-x-1 group-hover:text-gold"
       />
     </Link>
   );

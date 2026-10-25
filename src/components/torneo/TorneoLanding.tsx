@@ -10,7 +10,11 @@ import { RankingGoleadores } from '@/components/torneo/RankingGoleadores';
 import { ProximaFecha } from '@/components/torneo/ProximaFecha';
 import { ALIANZA, ICONE_CYAN } from '@/lib/alianza';
 import {
+  CALENDARIO_FASE_FINAL,
+  COPAS,
+  cruzarFaseFinal,
   jornadaActualDe,
+  posicionesPorGrupo,
   proximoCompromiso,
   suspendidosDelCompromiso,
   TOTAL_JORNADAS,
@@ -21,19 +25,28 @@ import {
   EDICIONES_DISPUTADAS,
   EDICION_EN_CURSO,
   EDICION_INSCRIPCIONES,
+  FINAL_ANTERIOR,
   TORNEO_BIO,
   TORNEO_INSTAGRAM_URL,
   ordinalFemenino,
   pillEdicion,
   rotuloEdicion,
 } from '@/lib/torneo';
-import { EQUIPOS } from '@/lib/torneo-data';
+import { EQUIPOS, getEquipo, LETRAS_GRUPO } from '@/lib/torneo-data';
 
+const SEMIFINALES = CALENDARIO_FASE_FINAL.find((r) => r.fase === 'semifinal');
+const GRAN_FINAL = CALENDARIO_FASE_FINAL.find((r) => r.fase === 'final');
+
+/**
+ * Las cifras del formato de esta edición. Eran «Ediciones, Equipos, 28+ y
+ * F7»: datos que no cambian nunca y que la bio y el pill ya decían dos líneas
+ * más arriba. Lo nuevo de la 5ª es el formato, y salen todas del código.
+ */
 const STATS = [
-  { v: String(EDICIONES_DISPUTADAS.length), l: 'Ediciones' },
-  { v: String(EQUIPOS.length), l: 'Equipos' },
-  { v: '28+', l: 'Edad líderes' },
-  { v: 'F7', l: 'Formato' },
+  { v: String(LETRAS_GRUPO.length), l: 'Grupos' },
+  { v: String(COPAS.length), l: 'Copas' },
+  { v: String(TOTAL_JORNADAS), l: 'Fechas de grupos' },
+  { v: GRAN_FINAL ? GRAN_FINAL.fecha.slice(0, 5) : '—', l: 'Gran Final' },
 ] as const;
 
 export async function TorneoLanding() {
@@ -48,6 +61,8 @@ export async function TorneoLanding() {
   const suspendidos = proximo
     ? suspendidosDelCompromiso(proximo, datos.tarjetas, [...datos.partidos, ...datos.eliminatoria])
     : [];
+  // Cómo se cruzarían las copas si la fase de grupos terminara hoy.
+  const cruces = cruzarFaseFinal(posicionesPorGrupo(datos.partidos, datos.disciplina));
 
   return (
     <div className="tournament-section relative">
@@ -111,7 +126,10 @@ export async function TorneoLanding() {
             {[...EQUIPOS, ...EQUIPOS].map((e, i) => (
               <span
                 key={`${e.slug}-${i}`}
-                className="flex items-center gap-3 font-sport text-2xl uppercase tracking-wide text-neutral-500"
+                // La segunda vuelta solo existe para que el bucle no se corte:
+                // un lector de pantalla leía los ocho nombres dos veces.
+                aria-hidden={i >= EQUIPOS.length || undefined}
+                className="flex items-center gap-3 font-sport text-2xl uppercase tracking-wide text-neutral-300"
               >
                 <TeamCrest slug={e.slug} size={28} />
                 {e.nombre}
@@ -129,7 +147,7 @@ export async function TorneoLanding() {
           {STATS.map((s) => (
             <div key={s.l} className="text-center">
               <div className="text-energy font-sport text-7xl leading-none lg:text-8xl">{s.v}</div>
-              <div className="mt-3 font-mono text-xs uppercase tracking-[0.25em] text-neutral-500">
+              <div className="mt-3 font-mono text-xs uppercase tracking-[0.25em] text-neutral-300">
                 {s.l}
               </div>
             </div>
@@ -142,7 +160,9 @@ export async function TorneoLanding() {
         <div className="relative mx-auto max-w-7xl px-6 py-20 lg:px-8 lg:py-28">
           <span className="inline-flex items-center gap-2 rounded-full border border-amarillo/40 bg-amarillo/10 px-4 py-1.5 font-bufon text-xs font-bold uppercase tracking-[0.15em] text-amarillo">
             <span className="pulse-live h-2 w-2 rounded-full bg-amarillo" />
-            {pillEdicion(EDICION_EN_CURSO)} en curso · Fecha {jornadaActual} de {TOTAL_JORNADAS}
+            {/* «Fecha 1 de 3» el día de la Fecha 2 se leía como que íbamos en la 1. */}
+            {pillEdicion(EDICION_EN_CURSO)} en curso · {jornadaActual} de {TOTAL_JORNADAS} fechas
+            jugadas
           </span>
 
           <div className="mt-10 space-y-24">
@@ -161,31 +181,73 @@ export async function TorneoLanding() {
             Camino al título
           </p>
           <h2 className="mt-2 max-w-2xl font-serif text-4xl font-bold leading-tight text-neutral-50 md:text-5xl">
-            Ocho clubes. Una sola moneda dorada.
+            Dos copas. Así se cruzarían hoy.
           </h2>
+          <p className="mt-4 max-w-2xl text-neutral-300">
+            Los dos primeros de cada grupo van a la Copa Oro, que da el título; el tercero y el
+            cuarto, a la Copa Plata. Los cruces se cierran con la última fecha de grupos.
+          </p>
 
-          <ul className="mt-12 grid grid-cols-2 gap-6 sm:grid-cols-4">
-            {EQUIPOS.map((e) => (
-              <li key={e.slug}>
-                <Link
-                  href={`/torneo/equipos/${e.slug}/`}
-                  className="group flex flex-col items-center gap-4 rounded-2xl border border-white/10 bg-[#0d1218]/70 p-6 transition-all duration-300 ease-managers hover:-translate-y-1.5 hover:border-amarillo/50 hover:bg-[#11161d]"
+          {/* Era una cuadrícula con los ocho escudos, que la página ya muestra
+              cuatro veces. El titular prometía un camino y no enseñaba
+              ninguno, justo en la edición que estrena dos copas. */}
+          <div className="mt-10 grid gap-6 md:grid-cols-2">
+            {COPAS.map(({ copa, titulo }) => (
+              <div
+                key={copa}
+                className={
+                  copa === 'oro'
+                    ? 'rounded-2xl border border-amarillo/40 bg-black/60 p-6'
+                    : 'rounded-2xl border border-white/15 bg-black/60 p-6'
+                }
+              >
+                <p
+                  className={
+                    copa === 'oro'
+                      ? 'font-bufon text-sm font-bold uppercase tracking-[0.2em] text-amarillo'
+                      : 'font-bufon text-sm font-bold uppercase tracking-[0.2em] text-neutral-200'
+                  }
                 >
-                  <TeamCrest slug={e.slug} size={84} showStars />
-                  <span className="text-center font-serif text-sm font-bold text-neutral-100">
-                    {e.nombre}
-                  </span>
-                </Link>
-              </li>
+                  {titulo} · Semifinales
+                </p>
+                <ul className="mt-4 space-y-3">
+                  {cruces
+                    .filter((c) => c.copa === copa)
+                    .map((c) => (
+                      <li key={c.id} className="rounded-xl border border-white/10 bg-black/30 p-3">
+                        <p className="font-mono text-xs uppercase tracking-wider text-neutral-300">
+                          {c.etiqueta}
+                        </p>
+                        {/* Un club por renglón: en el teléfono, los dos en la
+                            misma línea partían «La Banda Cruzada FC» en tres. */}
+                        {[c.local, c.visitante].map((slug, k) => (
+                          <p
+                            key={k}
+                            className="mt-2 flex items-center gap-2 text-sm font-semibold text-neutral-100"
+                          >
+                            <TeamCrest slug={slug} size={24} />
+                            {getEquipo(slug ?? '')?.nombre ?? 'Por definir'}
+                          </p>
+                        ))}
+                      </li>
+                    ))}
+                </ul>
+              </div>
             ))}
-          </ul>
+          </div>
+          {SEMIFINALES?.etiqueta || GRAN_FINAL ? (
+            <p className="mt-5 text-sm text-neutral-300">
+              {SEMIFINALES?.etiqueta ? `Semifinales: ${SEMIFINALES.etiqueta}.` : ''}
+              {GRAN_FINAL ? ` Tercer puesto y Gran Final: ${GRAN_FINAL.fecha}.` : ''}
+            </p>
+          ) : null}
 
-          <div className="mt-12">
+          <div className="mt-10">
             <Link
               href="/torneo/bracket/"
               className="group inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-amarillo to-naranja px-7 py-3.5 text-sm font-bold text-carbon transition-all duration-200 ease-managers hover:-translate-y-0.5"
             >
-              Ver el bracket completo
+              Ver la llave de las dos copas
               <ArrowRight
                 size={18}
                 aria-hidden
@@ -217,9 +279,13 @@ export async function TorneoLanding() {
                 <Star key={i} size={28} className="fill-amarillo text-amarillo" aria-hidden />
               ))}
             </div>
+            {/* El párrafo repetía el rótulo de arriba casi palabra por palabra.
+                La final dice algo que el rótulo no dice. */}
             <p className="mt-6 max-w-lg text-lg text-neutral-300">
-              {CAMPEON_VIGENTE.descripcion} Defenderá su corona en la {EDICION_EN_CURSO.numero}°
-              Edición ({EDICION_EN_CURSO.periodo}).
+              {FINAL_ANTERIOR
+                ? `Ganó la final a ${getEquipo(FINAL_ANTERIOR.rival)?.nombre ?? FINAL_ANTERIOR.rival}: ${FINAL_ANTERIOR.golesCampeon}–${FINAL_ANTERIOR.golesRival}${FINAL_ANTERIOR.penales ? ` y ${FINAL_ANTERIOR.penales.campeon}–${FINAL_ANTERIOR.penales.rival} en penales` : ''}. `
+                : ''}
+              Defiende la corona en la {ordinalFemenino(EDICION_EN_CURSO.numero)} edición.
             </p>
             {/* El palmarés completo vive en su propia pestaña: estuvo como
                 sección al final de esta página y ahí no lo encontraba nadie. */}
@@ -258,7 +324,7 @@ export async function TorneoLanding() {
               </h2>
               <p className="mt-3 max-w-2xl text-neutral-300">
                 Analítica de rendimiento, lectura de partido y decisiones en cancha potenciadas con
-                la inteligencia artificial de la alianza ICONE ialabs. El mismo músculo que se
+                la inteligencia artificial de la alianza ICONEialabs. El mismo músculo que se
                 entrena jugando, amplificado con IA.
               </p>
             </div>

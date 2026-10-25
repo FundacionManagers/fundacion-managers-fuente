@@ -237,7 +237,7 @@ export default function NosotrosPage() {
                     desincronizarse. */}
                 <p className="mt-3 max-w-2xl text-neutral-300">
                   Cada eje —{listaDeEjes}— se potencia con la inteligencia artificial de la alianza
-                  ICONE ialabs. No es un servicio más: es la capa que sostiene mejores decisiones en
+                  ICONEialabs. No es un servicio más: es la capa que sostiene mejores decisiones en
                   todo lo que hacemos.
                 </p>
               </div>

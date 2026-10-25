@@ -31,7 +31,7 @@ function Cruce({ p }: { p: PartidoEliminatoria }) {
         jugado ? 'border-amarillo/25 bg-black/50' : 'border-dashed border-white/15 bg-black/25',
       )}
     >
-      <p className="text-xs text-neutral-500">
+      <p className="text-xs text-neutral-300">
         {p.fecha} · {p.hora}
       </p>
       <div className="mt-3 flex items-center gap-3">
@@ -57,7 +57,7 @@ function Cruce({ p }: { p: PartidoEliminatoria }) {
             >
               {p.golesLocal}
             </span>
-            <span className="font-sport text-lg leading-none text-neutral-600">–</span>
+            <span className="font-sport text-lg leading-none text-neutral-300">–</span>
             <span
               className={cn(
                 'font-sport text-2xl leading-none',
@@ -68,7 +68,7 @@ function Cruce({ p }: { p: PartidoEliminatoria }) {
             </span>
           </div>
         ) : (
-          <span className="shrink-0 font-sport text-xl leading-none text-neutral-500">vs</span>
+          <span className="shrink-0 font-sport text-xl leading-none text-neutral-300">vs</span>
         )}
 
         <div className="flex min-w-0 flex-1 items-center gap-2">
@@ -87,7 +87,7 @@ function Cruce({ p }: { p: PartidoEliminatoria }) {
       {/* La tanda va debajo, no incrustada en el marcador: el 1-1 de los 90
           es el resultado del partido y la tanda es cómo se resolvió. */}
       {huboPenales ? (
-        <p className="mt-3 text-center font-mono text-[11px] uppercase tracking-[0.15em] text-naranja">
+        <p className="mt-3 text-center font-mono text-xs uppercase tracking-[0.15em] text-naranja">
           Penales {p.penalesLocal}–{p.penalesVisitante}
         </p>
       ) : null}

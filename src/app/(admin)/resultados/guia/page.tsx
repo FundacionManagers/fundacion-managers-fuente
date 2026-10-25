@@ -6,7 +6,7 @@ import { TorneoBackdrop } from '@/components/torneo/TorneoBackdrop';
 import { GuiaPanel } from '@/components/torneo/GuiaPanel';
 
 export const metadata: Metadata = {
-  title: 'Cómo usar el panel · Fundación Managers',
+  title: 'Cómo usar el panel',
   description: 'Guía paso a paso para cargar resultados del Torneo Managers.',
   robots: { index: false, follow: false },
 };
@@ -51,7 +51,7 @@ export default function GuiaPage() {
             <GuiaPanel />
           </div>
 
-          <p className="mt-14 border-t border-white/10 pt-6 text-xs text-neutral-500">
+          <p className="mt-14 border-t border-white/10 pt-6 text-xs text-neutral-300">
             Todo lo que hagas en el panel se puede deshacer. Si algo no cuadra, el propio panel te
             avisa antes de que salga a la web.
           </p>

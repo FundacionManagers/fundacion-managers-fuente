@@ -31,7 +31,7 @@ export function EtiquetaDia({ iso }: { iso: string }) {
   if (!cuando) return null;
 
   return (
-    <span className="shrink-0 rounded-full border border-amarillo/40 bg-amarillo/10 px-2.5 py-0.5 font-bufon text-[10px] font-bold uppercase tracking-[0.15em] text-amarillo">
+    <span className="shrink-0 rounded-full border border-amarillo/40 bg-amarillo/10 px-2.5 py-0.5 font-bufon text-xs font-bold uppercase tracking-[0.15em] text-amarillo">
       {cuando}
     </span>
   );

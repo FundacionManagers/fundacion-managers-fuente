@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import { BookOpen, Check, Loader2, Plus, RefreshCw, Trash2, TriangleAlert, X } from 'lucide-react';
 import { DefinirClave } from '@/components/shared/DefinirClave';
@@ -36,6 +36,7 @@ import {
   actualizarGoleador,
   cargarTodo,
   borrarMvp,
+  ConflictoDeVersion,
   crearCruce,
   crearEvento,
   crearGoleador,
@@ -47,6 +48,8 @@ import {
   eliminarTarjeta,
   guardarMvp,
   guardarPartido,
+  marcadorDistinto,
+  pedirPublicacion,
   type EstadoTorneo,
   type GoleadorPanel,
   type MvpPanel,
@@ -182,11 +185,48 @@ export function PanelResultados({ salir, correo }: { salir: () => Promise<void>;
   const [seccion, setSeccion] = useState<Seccion>('marcadores');
   const [ronda, setRonda] = useState<Ronda>({ tipo: 'jornada', jornada: 1 });
 
-  const recargar = useCallback(async () => {
-    setCargando(true);
+  /**
+   * Los partidos tal como están en la base, la última vez que se leyeron o se
+   * guardaron. Contra esto se sabe qué marcadores se tocaron sin guardar.
+   */
+  const base = useRef(new Map<string, PartidoPanel>());
+
+  /**
+   * Lee todo de la base.
+   *
+   * La primera vez abre el panel en lo que toca cargar. Después de guardar una
+   * tarjeta, un evento o un goleador recarga en silencio y conserva los
+   * marcadores escritos y no guardados: antes los descartaba y devolvía la
+   * vista a la primera fecha pendiente. Un marcador escrito aquí solo se
+   * reemplaza si otro administrador guardó ese mismo partido entretanto.
+   */
+  const recargar = useCallback(async (silencioso = false) => {
+    if (!silencioso) setCargando(true);
     setError('');
     try {
       const datos = await cargarTodo();
+      const anterior = base.current;
+      base.current = new Map(datos.partidos.map((p) => [p.id, p]));
+      if (silencioso) {
+        setEstado((prev) => {
+          if (!prev) return datos;
+          const enPantalla = new Map(prev.partidos.map((p) => [p.id, p]));
+          return {
+            ...datos,
+            partidos: datos.partidos.map((nuevo) => {
+              const escrito = enPantalla.get(nuevo.id);
+              const leido = anterior.get(nuevo.id);
+              const conservar =
+                escrito != null &&
+                leido != null &&
+                marcadorDistinto(escrito, leido) &&
+                leido.version === nuevo.version;
+              return conservar ? { ...escrito, version: nuevo.version } : nuevo;
+            }),
+          };
+        });
+        return;
+      }
       setEstado(datos);
       // Abrir en lo primero que falte por cargar: es lo que toca hacer.
       // Primero las fechas de grupos y, cuando ya no queda ninguna, la
@@ -215,9 +255,48 @@ export function PanelResultados({ salir, correo }: { salir: () => Promise<void>;
     } catch {
       setError('No se pudieron cargar los datos. Revisa tu conexión y vuelve a intentar.');
     } finally {
-      setCargando(false);
+      if (!silencioso) setCargando(false);
     }
   }, []);
+
+  /** Partidos con el marcador cambiado en pantalla y todavía sin guardar. */
+  const sinGuardar = useMemo(() => {
+    if (!estado) return new Set<string>();
+    return new Set(
+      estado.partidos
+        .filter((p) => {
+          const leido = base.current.get(p.id);
+          return leido != null && marcadorDistinto(p, leido);
+        })
+        .map((p) => p.id),
+    );
+  }, [estado]);
+
+  // Cerrar la pestaña con marcadores escritos los perdería sin aviso.
+  useEffect(() => {
+    if (sinGuardar.size === 0) return;
+    const avisar = (e: BeforeUnloadEvent) => e.preventDefault();
+    window.addEventListener('beforeunload', avisar);
+    return () => window.removeEventListener('beforeunload', avisar);
+  }, [sinGuardar]);
+
+  /** Pide la publicación y deja dicho en el aviso si salió o no. */
+  async function publicar(hecho: string) {
+    setAviso(`${hecho} Publicando en el sitio: tarda unos dos minutos.`);
+    const motivo = await pedirPublicacion();
+    if (motivo) {
+      setAviso(hecho);
+      setError(
+        `Se guardó, pero no se pudo publicar: ${motivo} Pulsa «Publicar ahora» arriba; si sigue sin salir, la revisión automática lo publica en unas horas.`,
+      );
+    }
+  }
+
+  /** Después de guardar algo que no es un marcador: recargar sin perder nada y publicar. */
+  async function trasCambio(hecho: string) {
+    await recargar(true);
+    await publicar(hecho);
+  }
 
   useEffect(() => {
     void recargar();
@@ -274,6 +353,8 @@ export function PanelResultados({ salir, correo }: { salir: () => Promise<void>;
       : deLaRonda(estado.partidos, ronda.fase, ronda.copa);
   }, [estado, ronda]);
 
+  const cambiosRonda = partidosRonda.filter((p) => sinGuardar.has(p.id)).length;
+
   function tocarPartido(id: string, cambios: Partial<PartidoPanel>) {
     setEstado((prev) =>
       prev
@@ -282,18 +363,55 @@ export function PanelResultados({ salir, correo }: { salir: () => Promise<void>;
     );
   }
 
+  /**
+   * Guarda solo los partidos de la ronda que se tocaron, cada uno con la
+   * versión que se leyó. Si otro administrador guardó alguno entretanto, ese
+   * no se pisa: se avisa y se trae lo que él cargó.
+   */
   async function guardarRonda() {
     if (!estado) return;
+    const tocados = partidosRonda.filter((p) => sinGuardar.has(p.id));
+    if (tocados.length === 0) {
+      setError('');
+      setAviso(`${tituloRonda(ronda)}: no hay cambios por guardar.`);
+      return;
+    }
     setGuardando(true);
     setError('');
     setAviso('');
-    try {
-      await Promise.all(partidosRonda.map((p) => guardarPartido(p)));
-      setAviso(`${tituloRonda(ronda)} guardada.`);
-    } catch {
-      setError('No se pudo guardar. Verifica que tu cuenta siga autorizada.');
-    } finally {
-      setGuardando(false);
+    const choques: string[] = [];
+    let guardados = 0;
+    let fallo = false;
+    for (const p of tocados) {
+      try {
+        const version = await guardarPartido(p);
+        base.current.set(p.id, { ...p, version });
+        tocarPartido(p.id, { version });
+        guardados++;
+      } catch (e) {
+        if (e instanceof ConflictoDeVersion) {
+          const local = getEquipo(p.local)?.nombre ?? p.local;
+          const visitante = getEquipo(p.visitante)?.nombre ?? p.visitante;
+          choques.push(`${local} vs ${visitante}`);
+        } else {
+          fallo = true;
+        }
+      }
+    }
+    setGuardando(false);
+
+    if (choques.length > 0) {
+      // Trae lo que guardó el otro administrador sin tocar lo demás escrito.
+      await recargar(true);
+      setError(
+        `Otro administrador guardó ${choques.join(' y ')} mientras tenías el panel abierto. No se pisó su marcador: ya ves el que cargó. Revísalo y, si hace falta, corrígelo y guarda otra vez.`,
+      );
+    } else if (fallo) {
+      setError('No se pudo guardar. Verifica tu conexión y que tu cuenta siga autorizada.');
+    }
+    if (guardados > 0) {
+      const cuantos = guardados === 1 ? '1 partido guardado' : `${guardados} partidos guardados`;
+      await publicar(`${tituloRonda(ronda)}: ${cuantos}.`);
     }
   }
 
@@ -312,8 +430,7 @@ export function PanelResultados({ salir, correo }: { salir: () => Promise<void>;
     setAviso('');
     try {
       await eliminarPartido(p.id);
-      setAviso('Cruce eliminado.');
-      await recargar();
+      await trasCambio('Cruce eliminado.');
     } catch {
       setError('No se pudo eliminar el cruce.');
     } finally {
@@ -356,7 +473,7 @@ export function PanelResultados({ salir, correo }: { salir: () => Promise<void>;
               className="rounded-2xl border border-white/10 bg-black/50 px-5 py-6 text-center backdrop-blur-sm"
             >
               <div className="text-energy font-sport text-4xl leading-none lg:text-5xl">{s.v}</div>
-              <div className="mt-2 font-mono text-[10px] uppercase tracking-[0.2em] text-neutral-500">
+              <div className="mt-2 font-mono text-xs uppercase tracking-[0.2em] text-neutral-300">
                 {s.l}
               </div>
             </div>
@@ -390,14 +507,24 @@ export function PanelResultados({ salir, correo }: { salir: () => Promise<void>;
             <BookOpen size={14} /> Guía
           </Link>
           <button
-            onClick={() => void recargar()}
+            onClick={() => {
+              if (
+                sinGuardar.size > 0 &&
+                !window.confirm(
+                  'Tienes marcadores sin guardar. Si recargas, se pierden. ¿Recargar?',
+                )
+              ) {
+                return;
+              }
+              void recargar();
+            }}
             className="inline-flex items-center gap-1.5 text-xs text-neutral-400 hover:text-amarillo"
           >
             <RefreshCw size={14} /> Recargar
           </button>
           <button
             onClick={() => void salir()}
-            className="text-xs text-neutral-500 hover:text-neutral-300"
+            className="text-xs text-neutral-300 hover:text-neutral-100"
           >
             Salir
           </button>
@@ -416,7 +543,7 @@ export function PanelResultados({ salir, correo }: { salir: () => Promise<void>;
       ) : null}
       {aviso ? (
         <p className="mt-5 flex items-center gap-2 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-300">
-          <Check size={16} /> {aviso} Arriba puedes ver si ya salieron al sitio.
+          <Check size={16} /> {aviso}
         </p>
       ) : null}
 
@@ -478,7 +605,7 @@ export function PanelResultados({ salir, correo }: { salir: () => Promise<void>;
               crean. */}
           {COPAS.map(({ copa, titulo }) => (
             <div key={copa} className="mt-3 flex flex-wrap items-center gap-2">
-              <span className="w-24 shrink-0 font-bufon text-[11px] font-bold uppercase tracking-[0.12em] text-neutral-500">
+              <span className="w-24 shrink-0 font-bufon text-xs font-bold uppercase tracking-[0.12em] text-neutral-300">
                 {titulo}
               </span>
               {FASES_FINAL.map((f) => {
@@ -523,15 +650,20 @@ export function PanelResultados({ salir, correo }: { salir: () => Promise<void>;
                 className="rounded-xl border border-white/10 bg-black/70 p-4 backdrop-blur-sm"
               >
                 <div className="flex items-center justify-between gap-3">
-                  <p className="text-xs text-neutral-500">
+                  <p className="text-xs text-neutral-400">
                     {p.fecha} · {p.hora}
+                    {sinGuardar.has(p.id) ? (
+                      <span className="ml-2 rounded-full bg-amarillo/15 px-2 py-0.5 font-semibold text-amarillo">
+                        Sin guardar
+                      </span>
+                    ) : null}
                   </p>
                   {p.fase !== 'grupos' ? (
                     <button
                       onClick={() => void borrarCruce(p)}
                       disabled={guardando}
                       title="Eliminar este cruce"
-                      className="rounded-md p-1.5 text-neutral-600 transition-colors hover:bg-red-500/10 hover:text-red-400 disabled:opacity-50"
+                      className="rounded-md p-1.5 text-neutral-300 transition-colors hover:bg-red-500/10 hover:text-red-400 disabled:opacity-50"
                     >
                       <Trash2 size={15} />
                     </button>
@@ -548,7 +680,7 @@ export function PanelResultados({ salir, correo }: { salir: () => Promise<void>;
                     valor={p.golesLocal}
                     onChange={(v) => tocarPartido(p.id, { golesLocal: v })}
                   />
-                  <span className="text-neutral-600">–</span>
+                  <span className="text-neutral-300">–</span>
                   <NumeroInput
                     valor={p.golesVisitante}
                     onChange={(v) => tocarPartido(p.id, { golesVisitante: v })}
@@ -578,7 +710,7 @@ export function PanelResultados({ salir, correo }: { salir: () => Promise<void>;
                 p.golesLocal != null &&
                 p.golesLocal === p.golesVisitante ? (
                   <div className="mt-3 rounded-lg border border-naranja/40 bg-naranja/10 p-3">
-                    <p className="font-bufon text-[11px] font-bold uppercase tracking-[0.15em] text-naranja">
+                    <p className="font-bufon text-xs font-bold uppercase tracking-[0.15em] text-naranja">
                       Empate · definición por penales
                     </p>
                     <div className="mt-2 flex flex-wrap items-center gap-3">
@@ -590,7 +722,7 @@ export function PanelResultados({ salir, correo }: { salir: () => Promise<void>;
                         valor={p.penalesLocal}
                         onChange={(v) => tocarPartido(p.id, { penalesLocal: v })}
                       />
-                      <span className="text-neutral-600">–</span>
+                      <span className="text-neutral-300">–</span>
                       <NumeroInput
                         ancho="w-16"
                         valor={p.penalesVisitante}
@@ -632,7 +764,7 @@ export function PanelResultados({ salir, correo }: { salir: () => Promise<void>;
               fase={ronda.fase}
               copa={ronda.copa}
               estado={estado}
-              onCreado={() => void recargar()}
+              onCreado={() => void trasCambio('Cruce creado.')}
             />
           ) : null}
 
@@ -643,23 +775,29 @@ export function PanelResultados({ salir, correo }: { salir: () => Promise<void>;
           >
             {guardando ? <Loader2 size={16} className="animate-spin" /> : <Check size={16} />}
             Guardar {tituloRonda(ronda).toLowerCase()}
+            {cambiosRonda > 0
+              ? ` (${cambiosRonda} ${cambiosRonda === 1 ? 'cambio' : 'cambios'})`
+              : ''}
           </button>
         </div>
       ) : null}
 
       {/* ── TARJETAS ───────────────────────────────────────────────── */}
       {seccion === 'tarjetas' ? (
-        <SeccionTarjetas estado={estado} onCambio={() => void recargar()} />
+        <SeccionTarjetas estado={estado} onCambio={() => void trasCambio('Tarjetas guardadas.')} />
       ) : null}
 
       {/* ── EVENTOS ────────────────────────────────────────────────── */}
       {seccion === 'eventos' ? (
-        <SeccionEventos estado={estado} onCambio={() => void recargar()} />
+        <SeccionEventos estado={estado} onCambio={() => void trasCambio('Eventos guardados.')} />
       ) : null}
 
       {/* ── GOLEADORES ─────────────────────────────────────────────── */}
       {seccion === 'goleadores' ? (
-        <SeccionGoleadores estado={estado} onCambio={() => void recargar()} />
+        <SeccionGoleadores
+          estado={estado}
+          onCambio={() => void trasCambio('Goleadores guardados.')}
+        />
       ) : null}
 
       {seccion === 'previa' ? (
@@ -706,7 +844,7 @@ export function PanelResultados({ salir, correo }: { salir: () => Promise<void>;
                             <span className="font-semibold text-neutral-100">
                               {getEquipo(f.equipo)?.nombre ?? f.equipo}
                             </span>
-                            <span className="font-mono text-[10px] uppercase tracking-widest text-neutral-500">
+                            <span className="font-mono text-xs uppercase tracking-widest text-neutral-300">
                               {f.posicion <= 2 ? 'Oro' : 'Plata'}
                             </span>
                           </span>
@@ -737,7 +875,7 @@ export function PanelResultados({ salir, correo }: { salir: () => Promise<void>;
       ) : null}
 
       {seccion === 'premios' ? (
-        <SeccionPremios estado={estado} onCambio={() => void recargar()} />
+        <SeccionPremios estado={estado} onCambio={() => void trasCambio('Premio guardado.')} />
       ) : null}
 
       {seccion === 'acceso' ? <DefinirClave correo={correo} /> : null}
@@ -834,7 +972,7 @@ function NuevoCruceForm({
           <Plus size={16} /> Añadir cruce
         </button>
         {faltan > 0 ? (
-          <p className="mt-2 text-xs text-neutral-500">
+          <p className="mt-2 text-xs text-neutral-300">
             {cargados === 0
               ? `Esta ronda todavía no tiene cruces. Lleva ${CRUCES_POR_FASE[fase]}.`
               : `Faltan ${faltan} de ${CRUCES_POR_FASE[fase]}.`}
@@ -901,13 +1039,13 @@ function NuevoCruceForm({
         </button>
         <button
           onClick={() => setAbierto(false)}
-          className="text-xs text-neutral-500 hover:text-neutral-300"
+          className="text-xs text-neutral-300 hover:text-neutral-100"
         >
           Cancelar
         </button>
       </div>
 
-      <p className="mt-3 text-xs text-neutral-500">
+      <p className="mt-3 text-xs text-neutral-300">
         El cruce nace programado y sin marcador. Los goles se cargan después, aquí mismo, cuando se
         juegue.
       </p>
@@ -1159,7 +1297,7 @@ function SeccionPremios({ estado, onCambio }: { estado: EstadoTorneo; onCambio: 
               value={mvp.jugador}
               onChange={(e) => setMvp({ ...mvp, jugador: e.target.value })}
               placeholder="Nombre y apellido"
-              className="w-52 rounded-md border border-white/25 bg-[#05070a] px-3 py-2 text-sm text-neutral-50 placeholder:text-neutral-500 focus:border-amarillo focus:outline-none"
+              className="w-52 rounded-md border border-white/25 bg-[#05070a] px-3 py-2 text-sm text-neutral-50 placeholder:text-neutral-400 focus:border-amarillo focus:outline-none"
             />
           </label>
           <label className="flex flex-col gap-1 text-xs text-neutral-400">
@@ -1178,7 +1316,7 @@ function SeccionPremios({ estado, onCambio }: { estado: EstadoTorneo; onCambio: 
             <button
               onClick={() => void borrar()}
               disabled={trabajando}
-              className="text-xs text-neutral-500 hover:text-red-400"
+              className="text-xs text-neutral-300 hover:text-red-400"
             >
               Borrar
             </button>
@@ -1191,7 +1329,7 @@ function SeccionPremios({ estado, onCambio }: { estado: EstadoTorneo; onCambio: 
       <p className="mt-8 font-bufon text-xs font-bold uppercase tracking-[0.15em] text-neutral-400">
         Los otros siete se calculan solos
       </p>
-      <p className="mt-2 text-xs text-neutral-500">
+      <p className="mt-2 text-xs text-neutral-300">
         Salen de los marcadores, y se cuentan sobre la edición completa —las siete fechas más la
         fase final—. Si alguno dice «Por definir», es que falta cargar un partido.
       </p>
@@ -1209,18 +1347,18 @@ function SeccionPremios({ estado, onCambio }: { estado: EstadoTorneo; onCambio: 
                   : 'border-white/10 bg-black/40',
               )}
             >
-              <span className="w-48 shrink-0 font-mono text-[11px] uppercase tracking-[0.12em] text-neutral-500">
+              <span className="w-48 shrink-0 font-mono text-xs uppercase tracking-[0.12em] text-neutral-300">
                 {f.rotulo}
               </span>
               <span
                 className={cn(
                   'min-w-0 flex-1 font-semibold',
-                  pendiente ? 'text-neutral-600' : 'text-neutral-100',
+                  pendiente ? 'text-neutral-300' : 'text-neutral-100',
                 )}
               >
                 {f.quien}
               </span>
-              <span className="text-xs text-neutral-500">{f.detalle}</span>
+              <span className="text-xs text-neutral-300">{f.detalle}</span>
             </li>
           );
         })}
@@ -1300,7 +1438,7 @@ function SeccionGoleadores({ estado, onCambio }: { estado: EstadoTorneo; onCambi
               value={nuevo.jugador}
               onChange={(e) => setNuevo({ ...nuevo, jugador: e.target.value })}
               placeholder="Nombre y apellido"
-              className="w-52 rounded-md border border-white/25 bg-[#05070a] px-3 py-2 text-sm text-neutral-50 placeholder:text-neutral-500 focus:border-amarillo focus:outline-none"
+              className="w-52 rounded-md border border-white/25 bg-[#05070a] px-3 py-2 text-sm text-neutral-50 placeholder:text-neutral-400 focus:border-amarillo focus:outline-none"
             />
           </label>
           <label className="flex flex-col gap-1 text-xs text-neutral-400">
@@ -1351,7 +1489,7 @@ function SeccionGoleadores({ estado, onCambio }: { estado: EstadoTorneo; onCambi
             <span className="min-w-0 flex-1 truncate text-sm font-semibold text-neutral-100">
               {g.jugador}
             </span>
-            <span className="hidden text-xs text-neutral-500 sm:block">
+            <span className="hidden text-xs text-neutral-300 sm:block">
               {getEquipo(g.equipo)?.nombre ?? g.equipo}
               {g.numero != null ? ` · #${g.numero}` : ''}
             </span>
@@ -1364,14 +1502,14 @@ function SeccionGoleadores({ estado, onCambio }: { estado: EstadoTorneo; onCambi
               onClick={() => void borrar(g.id)}
               disabled={trabajando}
               title={`Eliminar a ${g.jugador}`}
-              className="rounded-md p-2 text-neutral-500 transition-colors hover:bg-red-500/10 hover:text-red-400 disabled:opacity-50"
+              className="rounded-md p-2 text-neutral-300 transition-colors hover:bg-red-500/10 hover:text-red-400 disabled:opacity-50"
             >
               <Trash2 size={16} />
             </button>
           </li>
         ))}
       </ul>
-      <p className="mt-3 text-xs text-neutral-500">
+      <p className="mt-3 text-xs text-neutral-300">
         {estado.goleadores.length} anotadores · {estado.goleadores.reduce((s, g) => s + g.goles, 0)}{' '}
         goles
       </p>
@@ -1455,12 +1593,12 @@ function SeccionTarjetas({ estado, onCambio }: { estado: EstadoTorneo; onCambio:
       </div>
 
       {partidos.length === 0 ? (
-        <p className="mt-6 text-sm text-neutral-500">Todavía no hay partidos en esta ronda.</p>
+        <p className="mt-6 text-sm text-neutral-300">Todavía no hay partidos en esta ronda.</p>
       ) : (
         <ul className="mt-6 space-y-4">
           {partidos.map((p) => (
             <li key={p.id} className="rounded-xl border border-white/10 bg-black/60 p-4">
-              <p className="text-xs text-neutral-500">
+              <p className="text-xs text-neutral-300">
                 {p.copa ? `${TITULO_COPA[p.copa]} · ${TITULO_FASE[p.fase as FaseFinal]} · ` : ''}
                 {p.fecha} · {p.hora}
                 {p.jugado ? ` · ${p.golesLocal}–${p.golesVisitante}` : ' · sin jugar'}
@@ -1496,7 +1634,7 @@ function SeccionTarjetas({ estado, onCambio }: { estado: EstadoTorneo; onCambio:
                 return (
                   <li key={`${x.equipo}-${x.numero}-${x.origen}`}>
                     <strong>#{x.numero}</strong> de {getEquipo(x.equipo)?.nombre ?? x.equipo}
-                    <span className="text-neutral-500">
+                    <span className="text-neutral-300">
                       {' '}
                       ·{' '}
                       {cumple
@@ -1510,9 +1648,9 @@ function SeccionTarjetas({ estado, onCambio }: { estado: EstadoTorneo; onCambio:
               })}
             </ul>
           ) : (
-            <p className="mt-3 text-sm text-neutral-500">Nadie tiene una suspensión pendiente.</p>
+            <p className="mt-3 text-sm text-neutral-300">Nadie tiene una suspensión pendiente.</p>
           )}
-          <p className="mt-2 text-[11px] text-neutral-600">
+          <p className="mt-2 text-xs text-neutral-300">
             Una roja con dorsal suspende al jugador para el siguiente partido de su club. Una roja
             sin dorsal cuenta para el Fair Play, pero no se puede nombrar a nadie.
           </p>
@@ -1600,7 +1738,7 @@ function TarjetasDeClub({
 
       <ul className="mt-2 flex min-h-[28px] flex-wrap gap-1.5">
         {ordenadas.length === 0 ? (
-          <li className="text-xs text-neutral-600">Sin tarjetas.</li>
+          <li className="text-xs text-neutral-300">Sin tarjetas.</li>
         ) : (
           ordenadas.map((t) => (
             <li key={t.id}>
@@ -1709,7 +1847,7 @@ function SeccionEventos({ estado, onCambio }: { estado: EstadoTorneo; onCambio: 
               className="flex flex-wrap items-center gap-3 rounded-xl border border-white/10 bg-black/50 px-4 py-3"
             >
               <span className="font-sport text-lg text-amarillo">Fecha {ev.jornada}</span>
-              <span className="font-mono text-xs text-neutral-500">{ev.hora ?? 'sin hora'}</span>
+              <span className="font-mono text-xs text-neutral-300">{ev.hora ?? 'sin hora'}</span>
               <span className="min-w-0 flex-1 text-sm text-neutral-200">
                 <strong>{ev.titulo}</strong>
                 {ev.detalle ? <span className="text-neutral-400"> · {ev.detalle}</span> : null}
@@ -1718,7 +1856,7 @@ function SeccionEventos({ estado, onCambio }: { estado: EstadoTorneo; onCambio: 
                 onClick={() => void borrar(ev.id, ev.titulo)}
                 disabled={trabajando}
                 title="Eliminar este evento"
-                className="rounded-md p-1.5 text-neutral-600 hover:bg-red-500/10 hover:text-red-400 disabled:opacity-50"
+                className="rounded-md p-1.5 text-neutral-300 hover:bg-red-500/10 hover:text-red-400 disabled:opacity-50"
               >
                 <Trash2 size={15} />
               </button>
@@ -1726,7 +1864,7 @@ function SeccionEventos({ estado, onCambio }: { estado: EstadoTorneo; onCambio: 
           ))}
         </ul>
       ) : (
-        <p className="mt-6 text-sm text-neutral-500">Todavía no hay eventos.</p>
+        <p className="mt-6 text-sm text-neutral-300">Todavía no hay eventos.</p>
       )}
 
       <div className="mt-6 rounded-xl border border-amarillo/30 bg-black/50 p-4">

@@ -10,6 +10,7 @@ import {
   CAMPEON_VIGENTE,
   EDICIONES_DISPUTADAS,
   EDICION_ANTERIOR,
+  FINAL_ANTERIOR,
   ordinalFemenino,
   pillEdicion,
 } from '@/lib/torneo';
@@ -51,19 +52,11 @@ const FINAL = de('final')[0];
 
 /** 'PAL 3–3 ORI · 6–5 pen.', con el campeón siempre a la izquierda. */
 function marcadorFinal(): string {
-  if (!FINAL || FINAL.golesLocal == null || FINAL.golesVisitante == null) return '';
-  const ganaLocal = ganadorDe(FINAL) === FINAL.local;
-  const corto = (slug: string | null) => (slug ? (getEquipo(slug)?.corto ?? slug) : '—');
-  const [a, b] = ganaLocal ? [FINAL.local, FINAL.visitante] : [FINAL.visitante, FINAL.local];
-  const [ga, gb] = ganaLocal
-    ? [FINAL.golesLocal, FINAL.golesVisitante]
-    : [FINAL.golesVisitante, FINAL.golesLocal];
-  const pen = FINAL.penales
-    ? ganaLocal
-      ? ` · ${FINAL.penales.local}–${FINAL.penales.visitante} pen.`
-      : ` · ${FINAL.penales.visitante}–${FINAL.penales.local} pen.`
-    : '';
-  return `${corto(a)} ${ga}–${gb} ${corto(b)}${pen}`;
+  const f = FINAL_ANTERIOR;
+  if (!f) return '';
+  const corto = (slug: string) => getEquipo(slug)?.corto ?? slug;
+  const pen = f.penales ? ` · ${f.penales.campeon}–${f.penales.rival} pen.` : '';
+  return `${corto(f.campeon)} ${f.golesCampeon}–${f.golesRival} ${corto(f.rival)}${pen}`;
 }
 
 export default async function PalmaresPage() {
@@ -112,10 +105,10 @@ export default async function PalmaresPage() {
         resumen={`La llave completa de la ${ordinalFemenino(EDICION_ANTERIOR.numero)} edición`}
       >
         <div className="mt-8">
-          <p className="font-bufon text-xs font-bold uppercase tracking-[0.25em] text-neutral-500">
+          <p className="font-bufon text-xs font-bold uppercase tracking-[0.25em] text-neutral-300">
             {pillEdicion(EDICION_ANTERIOR)}
           </p>
-          <p className="mt-2 max-w-2xl text-xs leading-relaxed text-neutral-500">
+          <p className="mt-2 max-w-2xl text-xs leading-relaxed text-neutral-300">
             Es la última edición cerrada del torneo y el recorrido que dio el título a{' '}
             {CAMPEON_VIGENTE.equipo}. {EDICION_ANTERIOR.notas}
           </p>
@@ -125,7 +118,7 @@ export default async function PalmaresPage() {
               <div key={b.titulo}>
                 <div className="flex items-end justify-between gap-4">
                   <div>
-                    <p className="font-bufon text-[10px] font-bold uppercase tracking-[0.25em] text-neutral-600">
+                    <p className="font-bufon text-xs font-bold uppercase tracking-[0.25em] text-neutral-300">
                       {b.sub}
                     </p>
                     <h3 className="mt-1 font-sport text-2xl uppercase leading-none text-neutral-300">

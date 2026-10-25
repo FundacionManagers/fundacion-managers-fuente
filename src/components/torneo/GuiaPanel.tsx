@@ -24,6 +24,11 @@ const DIRECCION_PANEL = ES_ENSAYOS
   ? 'jorgeicone.github.io/fundacion-managers-ensayos/resultados'
   : 'fundacionmanagers.com/resultados';
 
+/** Dónde se comprueba lo publicado, por la misma razón. */
+const DIRECCION_TORNEO = ES_ENSAYOS
+  ? 'jorgeicone.github.io/fundacion-managers-ensayos/torneo'
+  : 'fundacionmanagers.com/torneo';
+
 interface Paso {
   id: string;
   numero: string;
@@ -109,6 +114,12 @@ const PASOS: Paso[] = [
           <em>Partido jugado</em> y guarda: el marcador se borra y el partido vuelve a programado.
           Todo se puede deshacer.
         </Nota>
+        <Nota>
+          <strong className="text-neutral-100">¿Hay otro administrador cargando a la vez?</strong>{' '}
+          No pasa nada. El panel guarda solo los partidos que tú tocaste, que llevan la marca{' '}
+          <em>Sin guardar</em>. Si el otro guardó ese mismo partido antes que tú, el panel no lo
+          pisa: te avisa y te muestra el marcador que él cargó.
+        </Nota>
         <Nota tono="aviso">
           La tabla de posiciones no se edita en ninguna parte. Se calcula sola con estos marcadores,
           y por eso nunca puede contradecir al calendario.
@@ -117,8 +128,7 @@ const PASOS: Paso[] = [
           <strong>La fase final se carga igual.</strong> Debajo de los números de fecha hay dos
           filas, una por copa —<em>Copa Oro</em> y <em>Copa Plata</em>—, cada una con sus rondas:{' '}
           <em>Semis</em>, <em>3.º puesto</em> y <em>Final</em>. Se pulsa una y se cargan los
-          marcadores exactamente igual. Esos partidos no suman puntos en la tabla: la fase de grupos
-          ya terminó.
+          marcadores exactamente igual. Esos partidos no suman puntos en la tabla de grupos.
         </Nota>
         <Nota tono="aviso">
           <strong>¿Empataron en eliminatoria?</strong> Al marcar el partido como jugado con el mismo
@@ -221,13 +231,13 @@ const PASOS: Paso[] = [
     icono: Table2,
     cuerpo: (
       <>
-        <p>El panel hace dos comprobaciones por ti. Míralas antes de publicar.</p>
+        <p>El panel hace dos comprobaciones por ti. Míralas antes de guardar.</p>
 
         <div className="mt-4 rounded-lg border border-emerald-500/30 bg-emerald-500/5 px-4 py-3">
           <p className="flex items-center gap-2 text-sm font-semibold text-emerald-400">
             <Check size={15} /> Los goles del ranking cuadran con los marcadores
           </p>
-          <p className="mt-1 text-sm text-neutral-400">Todo en orden, puedes publicar.</p>
+          <p className="mt-1 text-sm text-neutral-400">Todo en orden.</p>
         </div>
 
         <div className="mt-3 rounded-lg border border-amber-500/40 bg-amber-500/10 px-4 py-3">
@@ -242,8 +252,8 @@ const PASOS: Paso[] = [
 
         <p className="mt-4">
           Y en <strong>Tabla (previa)</strong> ves cómo quedarían las posiciones{' '}
-          <strong className="text-neutral-100">antes de publicar nada</strong>, incluso sin haber
-          guardado. Sirve para comprobar un resultado dudoso sin que lo vea nadie.
+          <strong className="text-neutral-100">antes de guardar</strong>. Sirve para comprobar un
+          resultado dudoso sin que lo vea nadie.
         </p>
       </>
     ),
@@ -252,24 +262,24 @@ const PASOS: Paso[] = [
     id: 'publicar',
     numero: '7',
     titulo: 'Publicar en la web',
-    resumen: 'Guardar no es publicar',
+    resumen: 'Guardar publica solo, en unos dos minutos',
     icono: Rocket,
     cuerpo: (
       <>
         <p>
-          Guardar deja los datos en la base, pero{' '}
-          <strong className="text-neutral-100">la web todavía no los muestra</strong>. Hay que
-          publicar.
+          Cada vez que guardas algo, el panel{' '}
+          <strong className="text-neutral-100">pide publicar la web</strong>. El aviso verde lo
+          dice: «Publicando en el sitio». La web tarda unos dos minutos en mostrarlo.
         </p>
         <ul className="mt-3 space-y-2">
           <li>
-            <strong className="text-amarillo">Publicar ahora</strong> — el botón de arriba. Tarda
-            unos dos minutos.
+            <strong className="text-amarillo">Publicar ahora</strong> — el botón de arriba. Úsalo si
+            el aviso dice que no se pudo publicar, o si pasaron cinco minutos y sigue diciendo «Hay
+            cambios sin publicar».
           </li>
           <li>
-            <strong className="text-neutral-100">O esperar.</strong> El sitio revisa la base cada 15
-            minutos y se republica solo si cambió algo. GitHub no garantiza la hora exacta de esa
-            revisión, así que puede tardar algo más.
+            <strong className="text-neutral-100">La revisión automática</strong> también publica lo
+            que falte, pero GitHub la corre cada 2 a 5 horas. No sirve para un día de partido.
           </li>
         </ul>
         <p className="mt-3">El aviso de arriba te dice siempre en qué estado estás:</p>
@@ -283,9 +293,8 @@ const PASOS: Paso[] = [
           </li>
         </ul>
         <Nota tono="bien">
-          Comprueba el resultado en{' '}
-          <strong className="text-neutral-100">fundacionmanagers.com/torneo</strong>. Si lo ves
-          viejo, recarga con <strong>Ctrl + Shift + R</strong>.
+          Comprueba el resultado en <strong className="text-neutral-100">{DIRECCION_TORNEO}</strong>
+          . Si lo ves viejo, recarga con <strong>Ctrl + Shift + R</strong>.
         </Nota>
       </>
     ),
@@ -299,15 +308,15 @@ const PROBLEMAS = [
   },
   {
     p: 'Guardé, pero la web sigue igual',
-    r: 'Guardar no publica. Pulsa "Publicar ahora" y espera dos minutos. Si ya lo hiciste, recarga la web con Ctrl + Shift + R: tu navegador puede estar mostrando una copia guardada.',
+    r: 'La web tarda unos dos minutos. Si pasaron cinco y el aviso de arriba sigue diciendo "Hay cambios sin publicar", pulsa "Publicar ahora". Si dice "Todo publicado", recarga la web con Ctrl + Shift + R: tu navegador puede estar mostrando una copia guardada.',
   },
   {
-    p: 'El botón de publicar da un error con un número',
+    p: 'El aviso dice que no se pudo publicar, con un número',
     r: 'Ese número es el diagnóstico. 401 es un problema con la llave de acceso a GitHub, 403 son permisos, 404 es configuración. Pásale el número a quien administre el sitio.',
   },
   {
     p: 'Cargué un marcador equivocado y ya lo publiqué',
-    r: 'Corrígelo en Marcadores, guarda y vuelve a publicar. La tabla se recalcula sola y la web queda corregida en dos minutos.',
+    r: 'Corrígelo en Marcadores y guarda. La tabla se recalcula sola y la web queda corregida en dos minutos.',
   },
   {
     p: 'Dice que los goles no cuadran y no encuentro el error',
@@ -354,13 +363,13 @@ export function GuiaPanel() {
                     <Icono size={17} className="shrink-0 text-amarillo" />
                     {paso.titulo}
                   </span>
-                  <span className="mt-1 block text-sm text-neutral-500">{paso.resumen}</span>
+                  <span className="mt-1 block text-sm text-neutral-300">{paso.resumen}</span>
                 </span>
                 <ChevronDown
                   size={20}
                   aria-hidden
                   className={cn(
-                    'shrink-0 text-neutral-500 transition-transform duration-200',
+                    'shrink-0 text-neutral-300 transition-transform duration-200',
                     activo && 'rotate-180 text-amarillo',
                   )}
                 />
@@ -396,7 +405,7 @@ export function GuiaPanel() {
                   <ChevronDown
                     size={17}
                     aria-hidden
-                    className="shrink-0 text-neutral-500 transition-transform group-open:rotate-180"
+                    className="shrink-0 text-neutral-300 transition-transform group-open:rotate-180"
                   />
                 </span>
               </summary>

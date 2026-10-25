@@ -39,12 +39,12 @@ function Slot({
       </span>
       <span className="flex items-baseline gap-1.5">
         {penales != null ? (
-          <span className="font-mono text-[11px] text-neutral-500">({penales})</span>
+          <span className="font-mono text-xs text-neutral-300">({penales})</span>
         ) : null}
         <span
           className={cn(
             'font-sport text-2xl tabular-nums',
-            ganador ? 'text-amarillo' : 'text-neutral-500',
+            ganador ? 'text-amarillo' : 'text-neutral-300',
           )}
         >
           {goles ?? '–'}
@@ -64,10 +64,10 @@ function Tie({ p, highlight = false }: { p: Partido; highlight?: boolean }) {
       )}
     >
       <div className="border-white/8 relative flex items-center justify-between border-b px-4 py-2">
-        <span className="font-bufon text-[11px] font-bold uppercase tracking-[0.15em] text-naranja">
+        <span className="font-bufon text-xs font-bold uppercase tracking-[0.15em] text-naranja">
           {p.etiqueta}
         </span>
-        <span className="font-mono text-[10px] uppercase tracking-widest text-amarillo/80">
+        <span className="font-mono text-xs uppercase tracking-widest text-amarillo/80">
           {p.fecha} · {p.hora}
         </span>
       </div>
@@ -85,7 +85,7 @@ function Tie({ p, highlight = false }: { p: Partido; highlight?: boolean }) {
         ganador={ganador != null && ganador === p.visitante}
       />
       {p.penales ? (
-        <p className="border-white/8 border-t px-4 py-1.5 text-center font-mono text-[10px] uppercase tracking-widest text-neutral-500">
+        <p className="border-white/8 border-t px-4 py-1.5 text-center font-mono text-xs uppercase tracking-widest text-neutral-300">
           Definido por penales
         </p>
       ) : null}

@@ -80,7 +80,7 @@ export function TablaPosiciones({ datos }: { datos: DatosLiga }) {
           arbitraria, porque un club puede ir sobre otro con peor diferencia
           de gol y nadie sabria por que. */}
       <details className="group mt-5 rounded-xl border border-white/10 bg-black/30">
-        <summary className="flex cursor-pointer list-none items-center gap-2 px-5 py-3 text-[11px] uppercase tracking-[0.2em] text-neutral-500 transition-colors hover:text-neutral-300">
+        <summary className="flex cursor-pointer list-none items-center gap-2 px-5 py-3 text-xs uppercase tracking-[0.2em] text-neutral-300 transition-colors hover:text-neutral-100">
           <ChevronRight
             size={12}
             aria-hidden
@@ -90,7 +90,7 @@ export function TablaPosiciones({ datos }: { datos: DatosLiga }) {
         </summary>
 
         <div className="border-t border-white/5 px-5 pb-5 pt-4">
-          <dl className="flex flex-wrap gap-x-5 gap-y-1 text-xs text-neutral-500">
+          <dl className="flex flex-wrap gap-x-5 gap-y-1 text-xs text-neutral-300">
             {COLUMNAS_TABLA.map((c) => (
               <div key={c.key} className="flex gap-1.5">
                 <dt className="font-bold text-neutral-400">{c.corto}:</dt>
@@ -107,7 +107,7 @@ export function TablaPosiciones({ datos }: { datos: DatosLiga }) {
           <p className="mt-5 font-bufon text-xs font-bold uppercase tracking-[0.2em] text-amarillo">
             Los clubes
           </p>
-          <dl className="mt-3 flex flex-wrap gap-x-5 gap-y-1.5 text-xs text-neutral-500">
+          <dl className="mt-3 flex flex-wrap gap-x-5 gap-y-1.5 text-xs text-neutral-300">
             {EQUIPOS.map((eq) => (
               <div key={eq.slug} className="flex items-center gap-1.5">
                 <TeamCrest slug={eq.slug} size={18} />
@@ -123,18 +123,17 @@ export function TablaPosiciones({ datos }: { datos: DatosLiga }) {
           <ol className="mt-3 flex flex-wrap gap-x-6 gap-y-2 text-sm text-neutral-300">
             {CRITERIOS_DESEMPATE.map((c, i) => (
               <li key={c} className="flex items-center gap-2">
-                <span className="inline-flex h-5 w-5 items-center justify-center rounded-md border border-white/15 font-mono text-[10px] text-neutral-400">
+                <span className="inline-flex h-5 w-5 items-center justify-center rounded-md border border-white/15 font-mono text-xs text-neutral-400">
                   {i + 1}
                 </span>
                 {c}
               </li>
             ))}
           </ol>
-          <p className="mt-3 text-xs text-neutral-500">
+          <p className="mt-3 text-xs text-neutral-300">
             Se aplican en ese orden. El Fair Play pesa más que la diferencia de gol: ante igualdad
-            de puntos, el club con menos tarjetas queda por encima aunque el otro tenga mejor
-            diferencia. Es el criterio del reglamento, no la descripción de un cruce concreto de la
-            tabla de hoy.
+            de puntos queda por encima el club con menos puntos de Fair Play —cada amarilla suma 1 y
+            cada roja 3—, aunque el otro tenga mejor diferencia.
           </p>
         </div>
       </details>
@@ -185,6 +184,18 @@ function TablaDeGrupo({ tabla, jornadaActual }: { tabla: TablaGrupo; jornadaActu
               >
                 Equipo
               </th>
+              {/* En el teléfono, PTS va justo después del equipo: al final de
+                  doce columnas quedaba fuera de pantalla, y es el dato que
+                  todo el mundo viene a mirar. Desde `sm` vuelve a su sitio. */}
+              <th
+                scope="col"
+                title="Puntos"
+                className="px-3 py-3 text-center font-bufon text-xs font-bold uppercase tracking-wider text-amarillo sm:hidden"
+              >
+                <abbr title="Puntos" className="no-underline">
+                  PTS
+                </abbr>
+              </th>
               {COLUMNAS_TABLA.map((c) => (
                 <th
                   key={c.key}
@@ -192,7 +203,7 @@ function TablaDeGrupo({ tabla, jornadaActual }: { tabla: TablaGrupo; jornadaActu
                   title={c.largo}
                   className={cn(
                     'px-2 py-3 text-center font-bufon text-xs font-bold uppercase tracking-wider text-amarillo',
-                    c.key === 'pts' && 'px-3',
+                    c.key === 'pts' && 'hidden px-3 sm:table-cell',
                   )}
                 >
                   <abbr title={c.largo} className="no-underline">
@@ -235,13 +246,16 @@ function TablaDeGrupo({ tabla, jornadaActual }: { tabla: TablaGrupo; jornadaActu
                       </span>
                     </div>
                   </td>
+                  <td className="px-3 py-3 text-center font-sport text-lg tabular-nums text-amarillo sm:hidden">
+                    {fila.pts}
+                  </td>
                   {COLUMNAS_TABLA.map((c) => (
                     <td
                       key={c.key}
                       className={cn(
                         'px-2 py-3 text-center tabular-nums',
                         c.key === 'pts'
-                          ? 'px-3 font-sport text-lg text-amarillo'
+                          ? 'hidden px-3 font-sport text-lg text-amarillo sm:table-cell'
                           : 'text-neutral-300',
                         c.key === 'dg' && fila.dg > 0 && 'text-emerald-400',
                         c.key === 'dg' && fila.dg < 0 && 'text-red-400',
@@ -258,6 +272,9 @@ function TablaDeGrupo({ tabla, jornadaActual }: { tabla: TablaGrupo; jornadaActu
           </tbody>
         </table>
       </div>
+      <p className="mt-2 text-xs text-neutral-300 sm:hidden" aria-hidden>
+        Desliza la tabla para ver goles y tarjetas →
+      </p>
     </section>
   );
 }

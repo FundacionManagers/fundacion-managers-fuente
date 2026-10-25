@@ -105,7 +105,7 @@ export default function ListoPage() {
                 </div>
               </div>
 
-              <p className="mt-6 text-center text-xs text-neutral-500">
+              <p className="mt-6 text-center text-xs text-neutral-300">
                 💡 Guarda el enlace de tu equipo en la pantalla de inicio de tu celular para volver
                 cuando quieras.
               </p>

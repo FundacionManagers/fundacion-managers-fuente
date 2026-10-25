@@ -39,15 +39,18 @@ export async function TorneoShell({ eyebrow, title, active, children }: TorneoSh
             F7
           </span>
 
-          <div className="relative mx-auto flex min-h-[58vh] max-w-7xl items-center justify-between gap-6 px-6 py-20 lg:px-8 lg:py-28">
+          {/* Portada compacta en el teléfono. Con 58vh de alto y la cinta de
+              clubes, quien abría el Calendario en la cancha veía 760 px de
+              portada antes del primer partido: el 90 % de la pantalla. */}
+          <div className="relative mx-auto flex max-w-7xl items-center justify-between gap-6 px-6 py-8 lg:min-h-[58vh] lg:px-8 lg:py-28">
             <div className="animate-fade-up">
               <span className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-amarillo to-naranja px-4 py-1.5 font-bufon text-xs font-bold uppercase tracking-[0.18em] text-carbon">
                 {eyebrow}
               </span>
-              <h1 className="mt-6 font-sport text-[16vw] uppercase leading-[0.85] text-neutral-50 drop-shadow-[0_6px_24px_rgba(0,0,0,0.7)] lg:text-[110px]">
+              <h1 className="mt-4 font-sport text-6xl uppercase leading-[0.85] text-neutral-50 drop-shadow-[0_6px_24px_rgba(0,0,0,0.7)] sm:text-7xl lg:mt-6 lg:text-[110px]">
                 {title}
               </h1>
-              <div className="energy-bar mt-5 h-1.5 w-32 rounded-full" />
+              <div className="energy-bar mt-4 h-1.5 w-32 rounded-full lg:mt-5" />
             </div>
             <div className="hidden shrink-0 lg:block">
               <div className="float-y">
@@ -56,12 +59,15 @@ export async function TorneoShell({ eyebrow, title, active, children }: TorneoSh
             </div>
           </div>
 
-          {/* Marquee de equipos */}
-          <div className="relative border-y border-white/10 bg-black/40 py-4 backdrop-blur-sm">
+          {/* Marquee de equipos. Solo en pantallas grandes: en el teléfono
+              empujaba el contenido otros 60 px hacia abajo. */}
+          <div className="relative hidden border-y border-white/10 bg-black/40 py-4 backdrop-blur-sm lg:block">
             <div className="marquee flex w-max gap-12 px-6">
               {[...EQUIPOS, ...EQUIPOS].map((e, i) => (
                 <span
                   key={`${e.slug}-${i}`}
+                  // La segunda vuelta solo existe para que el bucle no se corte.
+                  aria-hidden={i >= EQUIPOS.length || undefined}
                   className="flex items-center gap-3 font-sport text-xl uppercase tracking-wide text-neutral-400"
                 >
                   <TeamCrest slug={e.slug} size={24} />
@@ -76,7 +82,7 @@ export async function TorneoShell({ eyebrow, title, active, children }: TorneoSh
 
         {/* CONTENIDO (panel translúcido para que la foto se vea detrás) */}
         <section className="grain relative">
-          <div className="relative mx-auto max-w-7xl px-6 py-16 lg:px-8 lg:py-24">{children}</div>
+          <div className="relative mx-auto max-w-7xl px-6 py-8 lg:px-8 lg:py-24">{children}</div>
         </section>
       </div>
     </div>

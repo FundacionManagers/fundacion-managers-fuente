@@ -45,7 +45,7 @@ export interface EjeContent {
   /** Frase de cierre única que conecta este eje con mejores decisiones. */
   cierre: string;
   /**
-   * Cómo Managers Lab (alianza con ICONE ialabs) potencia ESTE eje.
+   * Cómo Managers Lab (alianza con ICONEialabs) potencia ESTE eje.
    * La alianza es transversal: aparece en cada sección con sentido propio.
    */
   labAngle: string;
@@ -103,7 +103,7 @@ export const EJE_CONTENT: Record<string, EjeContent> = {
     ctaBody: 'Conversemos. Una primera reunión exploratoria sin compromiso para entender el reto.',
     cierre: 'El criterio que se construye acá se nota en cada decisión de junta directiva.',
     labAngle:
-      'Diagnósticos, escenarios y modelos de decisión potenciados con la IA de ICONE ialabs.',
+      'Diagnósticos, escenarios y modelos de decisión potenciados con la IA de ICONEialabs.',
   },
   turismo: {
     intro:
@@ -140,7 +140,7 @@ export const EJE_CONTENT: Record<string, EjeContent> = {
       'Próximas salidas y cupos abiertos llegan a este sitio en cuanto el calendario esté listo.',
     cierre: 'Salir del entorno habitual destraba la cabeza para volver a decidir mejor.',
     labAngle:
-      'Itinerarios, logística y experiencias diseñados y optimizados con la IA de ICONE ialabs.',
+      'Itinerarios, logística y experiencias diseñados y optimizados con la IA de ICONEialabs.',
   },
   eventos: {
     intro:
@@ -175,7 +175,7 @@ export const EJE_CONTENT: Record<string, EjeContent> = {
     ctaTitle: '¿Tienes un evento en mente?',
     ctaBody: 'Cuéntanos la idea y te respondemos con una propuesta inicial.',
     cierre: 'Las mejores decisiones casi siempre nacen de la conversación correcta.',
-    labAngle: 'Convocatoria, contenido y producción amplificados con la IA de ICONE ialabs.',
+    labAngle: 'Convocatoria, contenido y producción amplificados con la IA de ICONEialabs.',
   },
   emprendimiento: {
     intro:
@@ -211,7 +211,7 @@ export const EJE_CONTENT: Record<string, EjeContent> = {
     ctaBody: 'Próxima cohorte: la abrimos a través de este sitio cuando esté lista.',
     cierre: 'Emprender es decidir mil veces con información incompleta. Acá se entrena.',
     labAngle:
-      'Validación de ideas, análisis de mercado y prototipos acelerados con la IA de ICONE ialabs.',
+      'Validación de ideas, análisis de mercado y prototipos acelerados con la IA de ICONEialabs.',
   },
   rural: {
     intro:
@@ -247,6 +247,6 @@ export const EJE_CONTENT: Record<string, EjeContent> = {
     ctaBody:
       'Si tienes una organización productiva, una alcaldía o un proyecto en marcha, conversemos.',
     cierre: 'Decisiones que cambian territorios, no solo balances.',
-    labAngle: 'Datos, trazabilidad y acceso a mercados para el campo con la IA de ICONE ialabs.',
+    labAngle: 'Datos, trazabilidad y acceso a mercados para el campo con la IA de ICONEialabs.',
   },
 };

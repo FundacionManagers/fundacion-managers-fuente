@@ -53,6 +53,9 @@ export function Footer() {
                 <li key={eje.slug}>
                   <Link
                     href={hrefDeEje(eje)}
+                    // El diagnóstico es un .html suelto, no una página de Next:
+                    // su prefetch pedía un .txt que no existe y daba 404.
+                    prefetch={eje.href ? false : undefined}
                     className="transition-colors duration-200 ease-managers hover:text-gold"
                   >
                     {eje.nombre}

@@ -31,9 +31,14 @@ afecta a las dos ediciones. Para probar un cambio de tablas destructivo
 haría falta un proyecto Supabase aparte.
 
 **NO aislado: inscripciones y planteles.** Esas tablas no llevan `edicion`, así
-que un formulario enviado desde ensayos escribe en la tabla real. Está avisado
-en la franja naranja; si llega a hacer falta probarlas, primero hay que
-añadirles la columna.
+que un formulario enviado desde ensayos escribiría en la tabla real. Por eso
+en ensayos el envío del formulario de inscripción está apagado
+(`InscripcionForm`, con `ES_ENSAYOS`) y la franja naranja lo dice. Si llega a
+hacer falta probarlas, primero hay que añadirles la columna.
+
+**Publicar desde el panel.** Al guardar, el panel de cada sitio pide su propio
+despliegue (función `publicar` con `entorno`). Ensayos no puede republicar la
+web real ni al revés.
 
 ---
 

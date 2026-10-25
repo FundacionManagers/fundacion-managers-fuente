@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { AvisoEnsayos } from '@/components/shared/AvisoEnsayos';
+import { ES_ENSAYOS } from '@/lib/entorno';
 import { bebasNeue, fredoka, inter, jakarta, jetbrainsMono, playfair } from '@/lib/fonts';
 import { cn } from '@/lib/utils';
 import './globals.css';
@@ -46,6 +47,9 @@ export const metadata: Metadata = {
     ],
   },
   twitter: { card: 'summary_large_image' },
+  // La réplica de ensayos no debe aparecer en un buscador: tiene datos de
+  // prueba y un canonical que apunta a la web real no basta para sacarla.
+  ...(ES_ENSAYOS ? { robots: { index: false, follow: false } } : {}),
 };
 
 /**
@@ -79,14 +83,21 @@ export const metadata: Metadata = {
  * salia al HTML como `/^/resultados(/|$)/`, que es un error de sintaxis, y
  * mataba el reenvio entero sin que nada lo avisara. Dos comparaciones de
  * cadena no se pueden romper asi.
+ *
+ * Las rutas llevan el basePath. En ensayos el panel vive en
+ * /fundacion-managers-ensayos/resultados/: comparado contra '/resultados/', el
+ * enlace mágico salía del panel hacia jorgeicone.github.io/panel.html —un 404
+ * de otro sitio— con el token de la sesión en la URL.
  */
+const BASE = JSON.stringify(process.env.NEXT_PUBLIC_BASE_PATH ?? '');
 const REENVIO_AUTH = `(function(){try{
 var h=location.hash||'';
 if(!/(^|[#&])(access_token|error_code|error_description)=/.test(h))return;
+var b=${BASE};
 var p=location.pathname;
 if(p.indexOf('panel.html')>-1)return;
-if(p==='/resultados/'||p==='/resultados')return;
-location.replace('/panel.html'+h);
+if(p===b+'/resultados/'||p===b+'/resultados')return;
+location.replace(b+'/panel.html'+h);
 }catch(e){}})();`;
 
 interface RootLayoutProps {

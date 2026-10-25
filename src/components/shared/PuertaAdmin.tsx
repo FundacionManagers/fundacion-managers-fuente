@@ -88,7 +88,12 @@ export function PuertaAdmin({
     setEnviando(true);
     const { error: err } = await supabase.auth.signInWithOtp({
       email: correo,
-      options: { emailRedirectTo: window.location.origin + window.location.pathname },
+      // Sin crear cuentas: quien no tenga una no recibe enlace. Antes cualquiera
+      // que escribiera su correo quedaba registrado con sesión válida.
+      options: {
+        emailRedirectTo: window.location.origin + window.location.pathname,
+        shouldCreateUser: false,
+      },
     });
     setEnviando(false);
     if (err) {
@@ -130,7 +135,7 @@ export function PuertaAdmin({
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="Correo"
-            className="block w-full rounded-md border border-white/15 bg-black/40 px-3 py-2.5 text-sm text-neutral-100 placeholder:text-neutral-500 focus:border-amarillo focus:outline-none focus:ring-2 focus:ring-amarillo/30"
+            className="block w-full rounded-md border border-white/15 bg-black/40 px-3 py-2.5 text-sm text-neutral-100 placeholder:text-neutral-400 focus:border-amarillo focus:outline-none focus:ring-2 focus:ring-amarillo/30"
           />
           <input
             type="password"
@@ -138,7 +143,7 @@ export function PuertaAdmin({
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="Contraseña"
-            className="block w-full rounded-md border border-white/15 bg-black/40 px-3 py-2.5 text-sm text-neutral-100 placeholder:text-neutral-500 focus:border-amarillo focus:outline-none focus:ring-2 focus:ring-amarillo/30"
+            className="block w-full rounded-md border border-white/15 bg-black/40 px-3 py-2.5 text-sm text-neutral-100 placeholder:text-neutral-400 focus:border-amarillo focus:outline-none focus:ring-2 focus:ring-amarillo/30"
           />
           {error ? <p className="text-xs text-red-400">{error}</p> : null}
           <button
@@ -151,9 +156,7 @@ export function PuertaAdmin({
 
         <div className="mt-6 flex items-center gap-3">
           <span className="h-px flex-1 bg-white/10" />
-          <span className="font-bufon text-[10px] uppercase tracking-[0.2em] text-neutral-500">
-            o
-          </span>
+          <span className="font-bufon text-xs uppercase tracking-[0.2em] text-neutral-300">o</span>
           <span className="h-px flex-1 bg-white/10" />
         </div>
 
@@ -172,7 +175,7 @@ export function PuertaAdmin({
             {enviando ? 'Enviando…' : 'Enviarme un enlace al correo'}
           </button>
         )}
-        <p className="mt-3 text-center text-xs text-neutral-500">
+        <p className="mt-3 text-center text-xs text-neutral-300">
           Sin contraseña: te llega un enlace de un solo uso.
         </p>
       </div>
@@ -188,7 +191,7 @@ export function PuertaAdmin({
           La cuenta <strong>{correoSesion}</strong> tiene sesión válida, pero no está en la lista de
           administradores del torneo.
         </p>
-        <p className="mt-2 text-xs text-neutral-500">
+        <p className="mt-2 text-xs text-neutral-300">
           Pide que agreguen tu correo a la lista para poder cargar resultados.
         </p>
         <button

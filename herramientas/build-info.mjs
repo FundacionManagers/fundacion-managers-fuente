@@ -11,7 +11,7 @@
  *
  * No usa dependencias: solo `fetch`, que Node trae desde la 18.
  */
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
@@ -55,10 +55,17 @@ async function leerMarca() {
 }
 
 const marca = await leerMarca();
+
+// La deja liga-supabase.ts si alguna página se compiló con los datos de
+// respaldo. Sin esto, si la marca respondía y los partidos no, el panel decía
+// «Todo publicado» sobre un sitio con datos viejos.
+const origen = existsSync(join('.next', 'liga-respaldo')) ? 'respaldo' : 'supabase';
+
 const info = {
   publicado_en: new Date().toISOString(),
   entorno: ENTORNO,
   edicion: EDICION,
+  origen,
   // null si Supabase no respondió: el panel lo interpreta como "no se puede
   // comparar" en vez de afirmar que todo está publicado.
   ultimo_cambio: marca?.ultimo_cambio ?? null,
@@ -68,7 +75,7 @@ const info = {
 const destino = join(process.cwd(), 'out', 'build-info.json');
 await writeFile(destino, JSON.stringify(info, null, 2), 'utf8');
 console.log(
-  `[build-info] ${ENTORNO} · edición ${EDICION} · ${info.publicado_en} · ${
+  `[build-info] ${ENTORNO} · edición ${EDICION} · datos de ${origen} · ${info.publicado_en} · ${
     marca ? `${info.filas} filas, último cambio ${info.ultimo_cambio}` : 'sin marca de Supabase'
   }`,
 );

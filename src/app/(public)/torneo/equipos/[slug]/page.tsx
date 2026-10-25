@@ -1,3 +1,5 @@
+import { existsSync } from 'node:fs';
+import path from 'node:path';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
@@ -24,6 +26,18 @@ import { cn } from '@/lib/utils';
 
 interface Props {
   params: Promise<{ slug: string }>;
+}
+
+/**
+ * La foto de fondo del club, o la del estadio si todavía no tiene. Se mira en
+ * disco al compilar: los tres clubes nuevos de la 5ª pedían una foto que no
+ * existe y cada visita a su ficha terminaba en un 404.
+ */
+function fotoDelClub(slug: string): string {
+  const propia = `/fotos/torneo-eq-${slug}.jpg`;
+  return existsSync(path.join(process.cwd(), 'public', propia))
+    ? propia
+    : '/fotos/torneo-estadio.jpg';
 }
 
 /**
@@ -80,7 +94,7 @@ function FilaLiga({ p, slug, proximo }: { p: PartidoLiga; slug: string; proximo:
         {/* Sin `truncate`: es la línea de contexto y en un móvil no cabe de
             una vez —"Fecha 6 · Visitante · 30/08/2026" mide 224 px—. En letra
             de 10 px, envolver a dos renglones se lee; cortarla, no. */}
-        <span className="mt-0.5 block font-mono text-[10px] uppercase leading-relaxed tracking-widest text-neutral-500">
+        <span className="mt-0.5 block font-mono text-xs uppercase leading-relaxed tracking-widest text-neutral-300">
           Fecha {p.jornada} · {enCasa ? 'Local' : 'Visitante'}
           {jugado ? '' : ` · ${p.fecha}`}
         </span>
@@ -89,13 +103,13 @@ function FilaLiga({ p, slug, proximo }: { p: PartidoLiga; slug: string; proximo:
         <span
           className={cn(
             'shrink-0 rounded-lg bg-white/[0.06] px-3 py-1 font-sport text-xl leading-none',
-            gana ? 'text-amarillo' : pierde ? 'text-neutral-500' : 'text-neutral-300',
+            gana ? 'text-amarillo' : pierde ? 'text-neutral-300' : 'text-neutral-300',
           )}
         >
           {propios}–{ajenos}
         </span>
       ) : (
-        <span className="shrink-0 font-mono text-xs text-neutral-500">{p.hora}</span>
+        <span className="shrink-0 font-mono text-xs text-neutral-300">{p.hora}</span>
       )}
     </>
   );
@@ -166,7 +180,8 @@ export default async function EquipoPage({ params }: Props) {
     { l: grupo ? `Grupo ${grupo}` : 'Posición', v: fila ? `${fila.posicion}º` : '—' },
     { l: 'Puntos', v: fila ? String(fila.pts) : '—' },
     { l: 'Goles a favor', v: fila ? String(fila.gf) : '—' },
-    { l: 'Títulos', v: String(eq.titulos) },
+    // Un «0 títulos» en seis de ocho fichas no dice nada; y quien sí tiene
+    // títulos ya los lleva en el rótulo y en las estrellas del escudo.
   ];
 
   // El próximo partido del club: el primero que aún no se ha jugado. Sale de
@@ -175,7 +190,7 @@ export default async function EquipoPage({ params }: Props) {
 
   return (
     <div className="tournament-section relative">
-      <TorneoBackdrop tint={eq.color} image={`/fotos/torneo-eq-${eq.slug}.jpg`} />
+      <TorneoBackdrop tint={eq.color} image={fotoDelClub(eq.slug)} />
       {/* HERO DE CLUB */}
       <section className="relative z-10 overflow-hidden">
         <div
@@ -200,7 +215,9 @@ export default async function EquipoPage({ params }: Props) {
               <TeamCrest slug={eq.slug} size={96} showStars />
               <div className="min-w-0">
                 <p className="font-bufon text-sm font-bold uppercase tracking-[0.2em] text-amarillo">
-                  {etiquetaTitulos(eq.titulos)}
+                  {/* Un club que no juega la edición en curso decía «5ª edición»
+                      justo encima de «no juega la quinta edición». */}
+                  {grupo || eq.titulos > 0 ? etiquetaTitulos(eq.titulos) : 'Historial'}
                 </p>
                 <h1 className="mt-2 break-words font-sport text-5xl uppercase leading-[0.85] text-neutral-50 sm:text-6xl md:text-8xl">
                   {eq.nombre}
@@ -240,34 +257,36 @@ export default async function EquipoPage({ params }: Props) {
           {grupo ? (
             <>
               {/* Datos rapidos de la edicion en curso */}
-              <div className="stagger-in grid grid-cols-2 gap-4 sm:grid-cols-4">
+              <div className="stagger-in grid grid-cols-3 gap-4">
                 {tiles.map((s) => (
                   <div
                     key={s.l}
                     className="rounded-2xl border border-white/10 bg-[#0d1218]/70 p-6 text-center"
                   >
                     <div className="text-energy font-sport text-5xl leading-none">{s.v}</div>
-                    <div className="mt-2 font-mono text-[11px] uppercase tracking-widest text-neutral-500">
+                    <div className="mt-2 font-mono text-xs uppercase tracking-widest text-neutral-300">
                       {s.l}
                     </div>
                   </div>
                 ))}
               </div>
-              <p className="mt-4 font-mono text-[11px] uppercase tracking-widest text-neutral-600">
+              <p className="mt-4 font-mono text-xs uppercase tracking-widest text-neutral-300">
                 {EDICION_ACTUAL}ª edición · {PERIODO_ACTUAL}
               </p>
 
-              {/* PLANTEL */}
-              <div className="mt-20">
-                <p className="font-bufon text-sm font-bold uppercase tracking-[0.25em] text-naranja">
-                  Plantel
-                </p>
-                <h2 className="mt-1 font-sport text-5xl uppercase leading-none text-neutral-50 md:text-7xl">
-                  La nómina
-                </h2>
-                <div className="energy-bar mt-4 h-1 w-full rounded-full opacity-70" />
+              {/* PLANTEL. Solo con jugadores: con la planilla sin cargar era un
+                  titular gigante sobre una frase de «todavía no hay», igual
+                  en las ocho fichas. */}
+              {nomina.length ? (
+                <div className="mt-20">
+                  <p className="font-bufon text-sm font-bold uppercase tracking-[0.25em] text-naranja">
+                    Plantel
+                  </p>
+                  <h2 className="mt-1 font-sport text-5xl uppercase leading-none text-neutral-50 md:text-7xl">
+                    La nómina
+                  </h2>
+                  <div className="energy-bar mt-4 h-1 w-full rounded-full opacity-70" />
 
-                {nomina.length ? (
                   <>
                     <ul className="stagger-in mt-10 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
                       {nomina.map((j) => (
@@ -281,27 +300,21 @@ export default async function EquipoPage({ params }: Props) {
                             <p className="mt-1 text-[13px] font-semibold leading-tight text-neutral-200">
                               {j.jugador}
                             </p>
-                            <p className="mt-1 text-[11px] uppercase tracking-widest text-amarillo">
+                            <p className="mt-1 text-xs uppercase tracking-widest text-amarillo">
                               {j.goles} {j.goles === 1 ? 'gol' : 'goles'}
                             </p>
                           </div>
                         </li>
                       ))}
                     </ul>
-                    <p className="mt-8 max-w-3xl text-xs leading-relaxed text-neutral-600">
+                    <p className="mt-8 max-w-3xl text-xs leading-relaxed text-neutral-300">
                       Jugadores con gol registrado en la {EDICION_ACTUAL}ª edición: nombre y dorsal
                       salen de la misma planilla que la bota de oro. La nómina completa se publica
                       cuando la organización cargue la inscripción del club.
                     </p>
                   </>
-                ) : (
-                  <p className="mt-10 rounded-2xl border border-dashed border-white/15 p-8 text-sm text-neutral-500">
-                    Todavía no hay jugadores de {eq.nombre} con gol registrado en la{' '}
-                    {EDICION_ACTUAL}ª edición. La nómina se publica cuando la organización cargue la
-                    inscripción del club.
-                  </p>
-                )}
-              </div>
+                </div>
+              ) : null}
 
               {/* PARTIDOS DE LA EDICION EN CURSO */}
               <div className="mt-20">
@@ -324,10 +337,28 @@ export default async function EquipoPage({ params }: Props) {
                     ))}
                   </ul>
                 ) : (
-                  <p className="mt-8 rounded-2xl border border-dashed border-white/15 p-8 text-sm text-neutral-500">
+                  <p className="mt-8 rounded-2xl border border-dashed border-white/15 p-8 text-sm text-neutral-300">
                     Aún sin partidos cargados para este club en la edición en curso.
                   </p>
                 )}
+
+                {/* La ficha terminaba en el historial de otra edición, sin
+                    decir adónde seguir. */}
+                <div className="mt-8 flex flex-wrap gap-3">
+                  <Link
+                    href="/torneo/calendario/"
+                    className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-amarillo to-naranja px-6 py-3 text-sm font-bold text-carbon transition-transform duration-200 ease-managers hover:-translate-y-0.5"
+                  >
+                    Ver el calendario
+                    <ChevronRight size={16} aria-hidden />
+                  </Link>
+                  <Link
+                    href="/torneo/bracket/"
+                    className="inline-flex items-center gap-2 rounded-full border border-amarillo/40 px-6 py-3 text-sm font-bold text-amarillo transition-colors duration-200 ease-managers hover:bg-amarillo/10"
+                  >
+                    Ver la llave de las dos copas
+                  </Link>
+                </div>
               </div>
             </>
           ) : (
@@ -352,7 +383,7 @@ export default async function EquipoPage({ params }: Props) {
               nada que corregir aquí. */}
           {historial.length ? (
             <details open={!grupo} className="group mt-20 border-t border-white/10 pt-8">
-              <summary className="flex cursor-pointer list-none items-center gap-2 text-[11px] uppercase tracking-[0.2em] text-neutral-600 transition-colors hover:text-neutral-400">
+              <summary className="flex cursor-pointer list-none items-center gap-2 text-xs uppercase tracking-[0.2em] text-neutral-300 transition-colors hover:text-neutral-100">
                 <ChevronRight
                   size={12}
                   aria-hidden
@@ -362,10 +393,10 @@ export default async function EquipoPage({ params }: Props) {
               </summary>
 
               <div className="mt-8">
-                <p className="font-bufon text-xs font-bold uppercase tracking-[0.25em] text-neutral-600">
+                <p className="font-bufon text-xs font-bold uppercase tracking-[0.25em] text-neutral-300">
                   Historial · {pillEdicion(EDICION_ANTERIOR)}
                 </p>
-                <p className="mt-2 max-w-2xl text-xs text-neutral-500">
+                <p className="mt-2 max-w-2xl text-xs text-neutral-300">
                   La fase final de esa edición, que ya terminó. No forma parte del torneo en curso.
                 </p>
                 <div className="mt-8 grid gap-5 opacity-80 sm:grid-cols-2">

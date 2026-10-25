@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { CheckCircle2, ShieldCheck } from 'lucide-react';
 import { GoldCoin } from '@/components/shared/GoldCoin';
 import { WhatsAppIcon } from '@/components/shared/WhatsAppIcon';
+import { ES_ENSAYOS } from '@/lib/entorno';
 import { supabasePublico, supabaseConfigurado } from '@/lib/supabase';
 import { EDICION_INSCRIPCIONES, rotuloEdicion } from '@/lib/torneo';
 
@@ -62,7 +63,9 @@ export function InscripcionForm() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!listo) return;
+    // En ensayos no se envía nada: `inscripciones` no está separada por
+    // edición y el envío escribiría datos personales en la tabla real.
+    if (!listo || ES_ENSAYOS) return;
 
     const cap = capitan.trim();
     const eq = equipo.trim();
@@ -130,7 +133,7 @@ export function InscripcionForm() {
                 ? 'bg-gradient-to-br from-amarillo to-naranja text-carbon'
                 : n === siguiente
                   ? 'border-2 border-[#25D366] text-[#25D366]'
-                  : 'border border-white/15 text-neutral-500'
+                  : 'border border-white/15 text-neutral-300'
             }`}
           >
             {n <= hechos ? '✓' : n}
@@ -208,7 +211,7 @@ export function InscripcionForm() {
         >
           <WhatsAppIcon size={20} /> Solicitar unirme al grupo (paso 2)
         </a>
-        <p className="text-xs text-neutral-500">Se abrirá WhatsApp en una pestaña nueva.</p>
+        <p className="text-xs text-neutral-300">Se abrirá WhatsApp en una pestaña nueva.</p>
         <p className="rounded-xl border border-amarillo/40 bg-amarillo/10 p-3 text-sm font-semibold text-amarillo">
           👉 Después de enviar el mensaje, <strong>vuelve a esta página</strong> para continuar con
           el paso 3 y registrar tu plantel.
@@ -229,7 +232,7 @@ export function InscripcionForm() {
             className={`flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold ${
               n === 1
                 ? 'bg-gradient-to-br from-amarillo to-naranja text-carbon'
-                : 'border border-white/15 text-neutral-500'
+                : 'border border-white/15 text-neutral-300'
             }`}
           >
             {n}
@@ -260,7 +263,7 @@ export function InscripcionForm() {
           value={capitan}
           onChange={(e) => setCapitan(e.target.value)}
           placeholder="Tu nombre completo"
-          className="mt-2 block w-full rounded-md border border-white/15 px-3 py-2.5 text-sm shadow-sm transition-colors duration-200 ease-managers placeholder:text-neutral-500 focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
+          className="mt-2 block w-full rounded-md border border-white/15 px-3 py-2.5 text-sm shadow-sm transition-colors duration-200 ease-managers placeholder:text-neutral-400 focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
         />
       </div>
 
@@ -276,7 +279,7 @@ export function InscripcionForm() {
           value={equipo}
           onChange={(e) => setEquipo(e.target.value)}
           placeholder="Como quieres que aparezca en la tabla"
-          className="mt-2 block w-full rounded-md border border-white/15 px-3 py-2.5 text-sm shadow-sm transition-colors duration-200 ease-managers placeholder:text-neutral-500 focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
+          className="mt-2 block w-full rounded-md border border-white/15 px-3 py-2.5 text-sm shadow-sm transition-colors duration-200 ease-managers placeholder:text-neutral-400 focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
         />
       </div>
 
@@ -293,7 +296,7 @@ export function InscripcionForm() {
           value={contacto}
           onChange={(e) => setContacto(e.target.value)}
           placeholder="+57 3xx xxx xxxx"
-          className="mt-2 block w-full rounded-md border border-white/15 px-3 py-2.5 text-sm shadow-sm transition-colors duration-200 ease-managers placeholder:text-neutral-500 focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
+          className="mt-2 block w-full rounded-md border border-white/15 px-3 py-2.5 text-sm shadow-sm transition-colors duration-200 ease-managers placeholder:text-neutral-400 focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
         />
       </div>
 
@@ -330,9 +333,19 @@ export function InscripcionForm() {
         </div>
       ) : null}
 
+      {ES_ENSAYOS ? (
+        <p
+          role="note"
+          className="rounded-md border border-naranja/50 bg-naranja/10 p-3 text-sm text-naranja"
+        >
+          En el sitio de ensayos el envío está apagado. Las inscripciones no tienen copia de prueba:
+          este formulario escribiría en la base real.
+        </p>
+      ) : null}
+
       <button
         type="submit"
-        disabled={!listo || estado === 'enviando'}
+        disabled={!listo || estado === 'enviando' || ES_ENSAYOS}
         className="inline-flex w-full items-center justify-center gap-3 rounded-full bg-gradient-to-r from-amarillo to-naranja py-2 pl-2.5 pr-7 text-sm font-bold text-carbon shadow-[0_12px_40px_rgba(232,114,44,0.4)] transition-all duration-200 ease-managers hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
       >
         <GoldCoin
@@ -343,7 +356,7 @@ export function InscripcionForm() {
         {estado === 'enviando' ? 'Enviando…' : 'Enviar pre-inscripción'}
       </button>
 
-      <p className="flex items-start gap-2 rounded-md border border-dashed border-white/15 p-3 text-xs text-neutral-500">
+      <p className="flex items-start gap-2 rounded-md border border-dashed border-white/15 p-3 text-xs text-neutral-300">
         <ShieldCheck size={14} className="mt-0.5 shrink-0 text-gold" aria-hidden />
         {supabaseConfigurado
           ? 'Guardamos tu pre-inscripción de forma segura y te llevamos a WhatsApp para unirte al grupo del torneo. Tus datos no se publican en el sitio.'

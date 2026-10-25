@@ -149,6 +149,7 @@ export default function PaqueteEmprendePage() {
               ¿Todavía no sabes si el paquete es para ti?{' '}
               <Link
                 href="/emprendedores.html"
+                prefetch={false}
                 className="font-semibold text-gold underline-offset-4 hover:underline"
               >
                 Haz primero el diagnóstico

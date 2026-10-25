@@ -294,7 +294,7 @@ export function RosterForm() {
             Ir al torneo
           </a>
         </div>
-        <p className="mt-4 text-xs text-neutral-500">
+        <p className="mt-4 text-xs text-neutral-300">
           Tu enlace sigue activo: puedes volver a editar este plantel cuando quieras.
         </p>
       </div>
@@ -464,7 +464,7 @@ export function RosterForm() {
                     ) : f.fotoUrl ? (
                       <Check size={20} className="text-[#25D366]" />
                     ) : (
-                      <Upload size={18} className="text-neutral-500" />
+                      <Upload size={18} className="text-neutral-300" />
                     )}
                   </div>
                   <label className="inline-flex cursor-pointer items-center gap-2 rounded-full border border-white/15 px-3 py-2 text-xs font-bold text-neutral-200 transition-colors hover:border-gold hover:text-gold">
@@ -495,7 +495,7 @@ export function RosterForm() {
         <UserPlus size={18} /> Agregar otro jugador
       </button>
 
-      <p className="flex items-start gap-2 rounded-md border border-dashed border-white/15 p-3 text-xs text-neutral-500">
+      <p className="flex items-start gap-2 rounded-md border border-dashed border-white/15 p-3 text-xs text-neutral-300">
         <Plus size={14} className="mt-0.5 shrink-0 text-gold" />
         Todo se guarda automáticamente. Puedes cerrar y volver con el mismo enlace; tu avance no se
         pierde. Mínimo {MIN_JUGADORES} jugadores completos para quedar inscrito.
@@ -554,7 +554,7 @@ function Campo({ label, value, onChange, type = 'text' }: CampoProps) {
         type={type}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="mt-1 block w-full rounded-md border border-white/15 bg-transparent px-3 py-2.5 text-sm text-neutral-100 placeholder:text-neutral-500 focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
+        className="mt-1 block w-full rounded-md border border-white/15 bg-transparent px-3 py-2.5 text-sm text-neutral-100 placeholder:text-neutral-400 focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
       />
     </div>
   );

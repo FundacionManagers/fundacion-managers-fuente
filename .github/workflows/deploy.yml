@@ -14,9 +14,12 @@ name: Desplegar web (GitHub Pages)
 #
 # Se publica en tres casos:
 #   - push a main: cambios de codigo o de imagenes.
-#   - cada 15 minutos: por si el panel de administracion cambio datos en
-#     Supabase. El sitio es estatico, asi que guardar en el panel no basta;
-#     hay que recompilar para que el cambio se vea.
+#   - desde el panel (repository_dispatch): cada vez que un administrador
+#     guarda algo, el panel pide publicar. El sitio es estatico, asi que
+#     guardar en la base no basta; hay que recompilar para que se vea.
+#   - revision programada: pide cada 15 minutos, pero GitHub la corre cada
+#     2 a 5 horas (medido en octubre de 2026). Es la red de seguridad por si
+#     un disparo del panel fallo, no el camino normal.
 #   - a mano, desde la pestana Actions.
 #
 # La revision programada NO compila siempre. Consulta la vista
@@ -46,9 +49,9 @@ permissions:
   pages: write
   id-token: write
 
-# Las ejecuciones se encolan en vez de cancelarse. Con el cron cada 15
-# minutos, cancelar significaria que una revision de rutina —que casi siempre
-# no hace nada— tumbe un despliegue en curso a mitad de camino.
+# Las ejecuciones se encolan en vez de cancelarse: cancelar significaria que
+# una revision de rutina —que casi siempre no hace nada— o un segundo guardado
+# en el panel tumbe un despliegue en curso a mitad de camino.
 concurrency:
   group: pages
   cancel-in-progress: false
@@ -137,6 +140,8 @@ jobs:
     needs: revisar
     if: needs.revisar.outputs.publicar == 'si'
     runs-on: ubuntu-latest
+    outputs:
+      origen: ${{ steps.origen.outputs.origen }}
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
@@ -164,6 +169,13 @@ jobs:
           NEXT_PUBLIC_EDICION: ${{ needs.revisar.outputs.edicion }}
         run: npm run build
 
+      # De donde salieron los datos: build-info lo anota. Si fue el respaldo,
+      # el estado no se guarda como publicado y la siguiente revision lo
+      # vuelve a intentar.
+      - name: Origen de los datos
+        id: origen
+        run: echo "origen=$(node -p "require('./out/build-info.json').origen")" >> "$GITHUB_OUTPUT"
+
       # El CNAME de public/ reclama fundacionmanagers.com. En el sitio de
       # ensayos eso le disputaria el dominio a la web real, asi que se
       # borra del artefacto: la replica vive en la URL de github.io.
@@ -190,10 +202,10 @@ jobs:
       # falla, el estado sigue contando como no publicado y el siguiente cron
       # lo reintenta en vez de darlo por hecho.
       - name: Anotar el estado publicado
-        if: success() && github.event_name == 'schedule'
+        if: success() && github.event_name == 'schedule' && needs.build.outputs.origen == 'supabase'
         run: mkdir -p .marca && echo "${{ needs.revisar.outputs.marca }}" > .marca/publicado.txt
       - name: Guardar la marca
-        if: success() && github.event_name == 'schedule'
+        if: success() && github.event_name == 'schedule' && needs.build.outputs.origen == 'supabase'
         uses: actions/cache/save@v6
         with:
           path: .marca

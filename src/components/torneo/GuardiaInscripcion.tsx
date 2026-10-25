@@ -57,7 +57,8 @@ function useAcceso(): Estado {
     }
 
     let vivo = true;
-    sb.rpc('fm_get_equipo', { p_id: id, p_token: tk }).then(({ data, error }) => {
+    // Basta saber si el token vale: el resumen no trae el plantel.
+    sb.rpc('fm_resumen_equipo', { p_id: id, p_token: tk }).then(({ data, error }) => {
       if (!vivo) return;
       setEstado(error || !data ? 'sin-acceso' : 'ok');
     });

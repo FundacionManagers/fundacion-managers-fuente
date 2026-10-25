@@ -45,15 +45,17 @@ código y este archivo.
 | Pagos | **Bold** (`src/lib/pago.ts`, `PagoBold.tsx`) | El contrato decía Wompi + Stripe; se implementó Bold |
 | WhatsApp | **Enlaces `wa.me`** | La Cloud API del contrato no está |
 | Hosting | **GitHub Pages** + workflow propio | No es Vercel |
-| Tests | **`node:test`** (`npm test`, 117 pruebas) | No hay Vitest ni Playwright |
+| Tests | **`node:test`** (`npm test`, 120 pruebas) | No hay Vitest ni Playwright |
 
 **Lo que el contrato pedía y NO existe** (dilo si alguien lo da por hecho):
 tRPC, Prisma, Inngest, Sentry, Cloudinary, `next-intl`, Stripe, Wompi,
 WhatsApp Cloud API, blog editorial, tiempo real con Supabase Realtime.
 
 El sitio es estático: **guardar en el panel no publica nada**. Hay que
-recompilar. De eso se encargan el cron de `deploy.yml` (cada 15 min, y solo si
-la base cambió) y el botón «Publicar ahora» del panel.
+recompilar. El panel lo pide solo cada vez que guarda (función `publicar`, que
+dispara un `repository_dispatch`); el botón «Publicar ahora» repite el disparo.
+El cron de `deploy.yml` es solo la red de seguridad: pide cada 15 min, pero
+GitHub lo corre cada 2 a 5 horas.
 
 ---
 
@@ -187,7 +189,7 @@ npm run dev          # desarrollo local
 npm run build        # build de producción (+ postbuild: build-info y huella de fotos)
 npm run typecheck    # tsc --noEmit
 npm run lint         # ESLint
-npm test             # node:test sobre la lógica pura (117 pruebas)
+npm test             # node:test sobre la lógica pura (120 pruebas)
 npm run format       # prettier
 ```
 

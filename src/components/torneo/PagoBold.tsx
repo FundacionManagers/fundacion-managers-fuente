@@ -47,8 +47,9 @@ export function PagoBold() {
     }
     if (id && t) {
       setCredenciales({ eq: id, t });
-      supabasePublico.rpc('fm_get_equipo', { p_id: id, p_token: t }).then(({ data }) => {
-        const nombre = (data as { inscripcion?: { equipo?: string } } | null)?.inscripcion?.equipo;
+      // Solo el nombre: fm_get_equipo traería el plantel con sus datos personales.
+      supabasePublico.rpc('fm_resumen_equipo', { p_id: id, p_token: t }).then(({ data }) => {
+        const nombre = (data as { equipo?: string } | null)?.equipo;
         if (nombre) setEquipo(nombre);
       });
     }
@@ -72,7 +73,7 @@ export function PagoBold() {
                 ? 'bg-gradient-to-br from-amarillo to-naranja text-carbon'
                 : n === 4
                   ? 'border-2 border-[#25D366] text-[#25D366]'
-                  : 'border border-white/15 text-neutral-500'
+                  : 'border border-white/15 text-neutral-300'
             }`}
           >
             {n <= 3 ? '✓' : n}
@@ -147,7 +148,7 @@ export function PagoBold() {
           </p>
         )}
 
-        <p className="mt-4 flex items-center justify-center gap-2 text-xs text-neutral-500">
+        <p className="mt-4 flex items-center justify-center gap-2 text-xs text-neutral-300">
           <ShieldCheck size={14} className="text-gold" />
           {pagoConfigurado
             ? 'Pago seguro procesado por Bold.'
@@ -179,7 +180,7 @@ export function PagoBold() {
           : 'Ya coordiné mi pago — ver paso 5 (programación)'}
       </a>
 
-      <p className="text-center text-xs text-neutral-500">
+      <p className="text-center text-xs text-neutral-300">
         Cuando termines el pago en Bold, vuelve aquí y entra al{' '}
         <strong className="text-neutral-300">paso 5</strong>: ahí tienes tu comprobante de
         inscripción y la programación del torneo.

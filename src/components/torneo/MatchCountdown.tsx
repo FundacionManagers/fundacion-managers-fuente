@@ -32,7 +32,7 @@ function Cell({ value, label }: { value: number; label: string }) {
       <span className="text-energy min-w-[2ch] font-sport text-6xl tabular-nums leading-none md:text-8xl">
         {String(value).padStart(2, '0')}
       </span>
-      <span className="mt-2 font-mono text-[10px] uppercase tracking-[0.3em] text-neutral-500">
+      <span className="mt-2 font-mono text-xs uppercase tracking-[0.3em] text-neutral-300">
         {label}
       </span>
     </div>

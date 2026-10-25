@@ -88,7 +88,7 @@ export function DashboardPlantel({ inscripcionId, equipoNombre }: Props) {
 
   if (jugadores.length === 0) {
     return (
-      <p className="mt-4 rounded-lg border border-dashed border-white/10 p-4 text-xs text-neutral-500">
+      <p className="mt-4 rounded-lg border border-dashed border-white/10 p-4 text-xs text-neutral-300">
         Este equipo aún no ha registrado jugadores (paso 3).
       </p>
     );
@@ -133,7 +133,7 @@ export function DashboardPlantel({ inscripcionId, equipoNombre }: Props) {
                 />
               </a>
             ) : (
-              <span className="flex h-12 w-12 items-center justify-center rounded-md bg-white/5 text-neutral-600">
+              <span className="flex h-12 w-12 items-center justify-center rounded-md bg-white/5 text-neutral-300">
                 <ImageOff size={16} />
               </span>
             )}
@@ -141,16 +141,16 @@ export function DashboardPlantel({ inscripcionId, equipoNombre }: Props) {
             <div className="min-w-0 flex-1">
               <p className="font-semibold text-neutral-100">
                 {j.numero != null ? `#${j.numero} ` : ''}
-                {j.nombre || <span className="text-neutral-500">Sin nombre</span>}
+                {j.nombre || <span className="text-neutral-300">Sin nombre</span>}
                 {j.posicion ? (
-                  <span className="ml-2 rounded bg-white/10 px-1.5 py-0.5 text-[10px] font-bold text-neutral-300">
+                  <span className="ml-2 rounded bg-white/10 px-1.5 py-0.5 text-xs font-bold text-neutral-300">
                     {j.posicion}
                   </span>
                 ) : null}
                 {esCompleto(j) ? (
-                  <span className="ml-2 text-[10px] font-bold text-[#25D366]">✓</span>
+                  <span className="ml-2 text-xs font-bold text-[#25D366]">✓</span>
                 ) : (
-                  <span className="ml-2 text-[10px] font-bold text-amarillo">incompleto</span>
+                  <span className="ml-2 text-xs font-bold text-amarillo">incompleto</span>
                 )}
               </p>
               <p className="text-xs text-neutral-400">
@@ -158,7 +158,7 @@ export function DashboardPlantel({ inscripcionId, equipoNombre }: Props) {
                 {j.fecha_nacimiento || '—'} · EPS: {j.eps || '—'} · Talla: {j.talla || '—'}
               </p>
             </div>
-            <span className="text-xs text-neutral-600">{i + 1}</span>
+            <span className="text-xs text-neutral-300">{i + 1}</span>
           </div>
         ))}
       </div>

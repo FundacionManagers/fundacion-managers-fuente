@@ -49,7 +49,7 @@ export function DetalleAncla({
       onToggle={(e) => setAbierto(e.currentTarget.open)}
       className={className}
     >
-      <summary className="flex cursor-pointer list-none items-center gap-2 text-[11px] uppercase tracking-[0.2em] text-neutral-500 transition-colors hover:text-neutral-300">
+      <summary className="flex cursor-pointer list-none items-center gap-2 text-xs uppercase tracking-[0.2em] text-neutral-300 transition-colors hover:text-neutral-100">
         <ChevronRight
           size={13}
           aria-hidden

@@ -10,6 +10,7 @@ import {
 } from '@/lib/liga';
 import type { DatosLiga } from '@/lib/liga-supabase';
 import { calcularPosiciones } from '@/lib/liga';
+import { EDICION_EN_CURSO, pillEdicion } from '@/lib/torneo';
 import { getEquipo } from '@/lib/torneo-data';
 import { cn } from '@/lib/utils';
 
@@ -75,7 +76,7 @@ function Casilla({ c }: { c: Casilla }) {
     >
       <p
         className={cn(
-          'flex items-center gap-2 font-bufon text-[11px] font-bold uppercase tracking-[0.15em]',
+          'flex items-center gap-2 font-bufon text-xs font-bold uppercase tracking-[0.15em]',
           c.tono === 'oro' ? 'text-amarillo' : 'text-neutral-400',
         )}
       >
@@ -102,7 +103,7 @@ function Casilla({ c }: { c: Casilla }) {
           {c.detalle ? <p className="mt-2 text-sm text-neutral-300">{c.detalle}</p> : null}
         </>
       ) : (
-        <p className="mt-3 font-sport text-2xl uppercase leading-none text-neutral-600">
+        <p className="mt-3 font-sport text-2xl uppercase leading-none text-neutral-300">
           Por definir
         </p>
       )}
@@ -175,7 +176,8 @@ export function PanelPremios({ datos }: { datos: DatosLiga }) {
       icono: Star,
       equipo: limpio?.equipo,
       detalle: limpio
-        ? `${puntosJuegoLimpio(limpio)} puntos · ${limpio.ta} amarillas, ${limpio.tr} rojas`
+        ? // «0 puntos» a secas se leía como los puntos de la tabla.
+          `${puntosJuegoLimpio(limpio)} puntos de Fair Play · ${limpio.ta} amarillas, ${limpio.tr} rojas`
         : null,
     },
     {
@@ -190,7 +192,10 @@ export function PanelPremios({ datos }: { datos: DatosLiga }) {
   return (
     <section>
       <p className="font-bufon text-xs font-bold uppercase tracking-[0.25em] text-naranja">
-        La clausura
+        {/* Decía «La clausura» con una de tres fechas jugadas, y sin decir de
+            qué edición era, justo debajo del campeón de la anterior. */}
+        {pillEdicion(EDICION_EN_CURSO)}
+        {EDICION_EN_CURSO.estado === 'en-curso' ? ' · en juego' : ''}
       </p>
       <h2 className="mt-1 font-sport text-4xl uppercase leading-none text-neutral-50 md:text-5xl">
         Panel de premios
@@ -200,8 +205,7 @@ export function PanelPremios({ datos }: { datos: DatosLiga }) {
       <p className="mt-5 max-w-2xl text-sm text-neutral-400">
         Todo se cuenta sobre la <strong className="text-neutral-200">edición completa</strong> —las
         fechas de grupos más la fase final—, no solo sobre la fase de grupos. El campeón es el de la
-        Copa Oro. Sale de los mismos marcadores que se cargan cada semana: ninguna de estas cifras
-        se escribe a mano.
+        Copa Oro.
       </p>
 
       <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">

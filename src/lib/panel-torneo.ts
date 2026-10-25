@@ -8,7 +8,7 @@
  */
 
 import { supabase } from './supabase';
-import { EDICION_DATOS } from './entorno';
+import { EDICION_DATOS, ENTORNO } from './entorno';
 import { type Copa, type FaseFinal } from './liga';
 
 /** Ronda a la que pertenece un partido: la liga o una ronda eliminatoria. */
@@ -31,6 +31,19 @@ export interface PartidoPanel {
   penalesLocal: number | null;
   penalesVisitante: number | null;
   jugado: boolean;
+  /**
+   * El `actualizado_en` que tenía la fila cuando se leyó. Se manda como
+   * condición al guardar: si otro administrador la cambió entretanto, la
+   * escritura no encuentra la fila y se avisa en vez de pisar su marcador.
+   */
+  version: string;
+}
+
+/** Otro administrador guardó el partido después de que este panel lo leyera. */
+export class ConflictoDeVersion extends Error {
+  constructor(public readonly partido: string) {
+    super('El partido cambió en la base después de leerlo.');
+  }
 }
 
 export interface DisciplinaPanel {
@@ -92,7 +105,7 @@ export async function cargarTodo(edicion = EDICION_DATOS): Promise<EstadoTorneo>
     sb
       .from('partidos')
       .select(
-        'id, fase, copa, jornada, fecha, hora, local, visitante, goles_local, goles_visitante, penales_local, penales_visitante, estado',
+        'id, fase, copa, jornada, fecha, hora, local, visitante, goles_local, goles_visitante, penales_local, penales_visitante, estado, actualizado_en',
       )
       .eq('edicion', edicion)
       // Vienen todas las rondas, tambien la eliminatoria. El selector del
@@ -145,6 +158,7 @@ export async function cargarTodo(edicion = EDICION_DATOS): Promise<EstadoTorneo>
       penalesLocal: r.penales_local as number | null,
       penalesVisitante: r.penales_visitante as number | null,
       jugado: r.estado === 'jugado',
+      version: r.actualizado_en as string,
     })),
     disciplina: (d.data ?? []) as DisciplinaPanel[],
     tarjetas: (t.data ?? []).map((r) => ({
@@ -193,14 +207,29 @@ export async function borrarMvp(edicion = EDICION_DATOS): Promise<void> {
   if (error) throw error;
 }
 
+/** Los campos que el formulario de marcadores deja cambiar. */
+export function marcadorDistinto(a: PartidoPanel, b: PartidoPanel): boolean {
+  return (
+    a.golesLocal !== b.golesLocal ||
+    a.golesVisitante !== b.golesVisitante ||
+    a.penalesLocal !== b.penalesLocal ||
+    a.penalesVisitante !== b.penalesVisitante ||
+    a.jugado !== b.jugado
+  );
+}
+
 /**
- * Guarda el marcador de un partido.
+ * Guarda el marcador de un partido y devuelve su versión nueva.
  *
  * La base tiene una restricción que impide estados incoherentes: o está
  * programado sin marcador, o jugado con los dos goles. Por eso al marcar
  * como programado se limpian los goles en la misma operación.
+ *
+ * Solo escribe si la fila sigue como se leyó (`version`). Con tres
+ * administradores en una fecha de juego, guardar a ciegas dejaba en
+ * «programado» el resultado que otro acababa de cargar, sin aviso.
  */
-export async function guardarPartido(p: PartidoPanel): Promise<void> {
+export async function guardarPartido(p: PartidoPanel): Promise<string> {
   const sb = exigirCliente();
   const jugado = p.jugado && p.golesLocal != null && p.golesVisitante != null;
 
@@ -219,7 +248,7 @@ export async function guardarPartido(p: PartidoPanel): Promise<void> {
     p.penalesVisitante != null &&
     p.penalesLocal !== p.penalesVisitante;
 
-  const { error } = await sb
+  const { data, error } = await sb
     .from('partidos')
     .update({
       goles_local: jugado ? p.golesLocal : null,
@@ -228,9 +257,14 @@ export async function guardarPartido(p: PartidoPanel): Promise<void> {
       penales_visitante: hayTanda ? p.penalesVisitante : null,
       estado: jugado ? 'jugado' : 'programado',
     })
-    .eq('id', p.id);
+    .eq('id', p.id)
+    .eq('actualizado_en', p.version)
+    .select('actualizado_en');
 
   if (error) throw error;
+  const fila = data?.[0];
+  if (!fila) throw new ConflictoDeVersion(p.id);
+  return fila.actualizado_en as string;
 }
 
 export interface NuevoCruce {
@@ -407,4 +441,59 @@ export function descuadres(estado: EstadoTorneo): Descuadre[] {
     if (a !== b) salida.push({ equipo, golesTabla: a, golesRanking: b });
   }
   return salida.sort((x, y) => x.equipo.localeCompare(y.equipo));
+}
+
+/**
+ * Pide al servidor que recompile y publique el sitio de este entorno.
+ *
+ * El sitio es estático: guardar no publica. La revisión programada de GitHub
+ * debería correr cada 15 minutos y en la práctica corre cada 2 a 5 horas, así
+ * que el panel pide la publicación cada vez que guarda algo.
+ *
+ * Varios guardados seguidos se juntan en un solo disparo: el primero sale de
+ * inmediato y los que lleguen en el minuto siguiente esperan a que acabe ese
+ * minuto. Cada disparo es una compilación completa de casi dos minutos.
+ */
+const ESPERA_ENTRE_DISPAROS = 60_000;
+let ultimoDisparo = 0;
+let disparoPendiente: Promise<string | null> | null = null;
+
+async function dispararPublicacion(): Promise<string | null> {
+  const sb = exigirCliente();
+  ultimoDisparo = Date.now();
+  // El entorno viaja en el cuerpo: la función sabe a qué repositorio
+  // disparar. Sin esto, publicar desde ensayos recompilaba la web real.
+  const { error } = await sb.functions.invoke('publicar', { body: { entorno: ENTORNO } });
+  if (!error) return null;
+
+  // Cuando la función responde con un código de error, supabase-js deja
+  // `data` en null y guarda la respuesta real en `error.context`.
+  try {
+    const respuesta = (error as { context?: Response }).context;
+    if (respuesta && typeof respuesta.json === 'function') {
+      const cuerpo = await respuesta.json();
+      if (cuerpo?.error) {
+        return cuerpo.estado
+          ? `${cuerpo.error} (GitHub respondió ${cuerpo.estado})`
+          : String(cuerpo.error);
+      }
+    }
+  } catch {
+    // Si no se puede leer el cuerpo, queda el mensaje genérico.
+  }
+  return 'No se pudo iniciar la publicación.';
+}
+
+/** Devuelve null si el disparo salió, o el motivo si falló. */
+export function pedirPublicacion(): Promise<string | null> {
+  if (disparoPendiente) return disparoPendiente;
+  const falta = ultimoDisparo + ESPERA_ENTRE_DISPAROS - Date.now();
+  if (falta <= 0) return dispararPublicacion();
+  disparoPendiente = new Promise<string | null>((resolver) => {
+    setTimeout(() => {
+      disparoPendiente = null;
+      void dispararPublicacion().then(resolver);
+    }, falta);
+  });
+  return disparoPendiente;
 }

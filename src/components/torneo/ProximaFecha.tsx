@@ -110,7 +110,7 @@ export function ProximaFecha({
               {/* De qué es el partido: el grupo en la fase de grupos, la copa
                   en la final. Las dos copas juegan la misma ronda las mismas
                   noches, y sin esto no se distingue una semifinal de otra. */}
-              <p className="mt-0.5 font-bufon text-[10px] uppercase tracking-[0.2em] text-neutral-500">
+              <p className="mt-0.5 font-bufon text-xs uppercase tracking-[0.2em] text-neutral-300">
                 {p.copa
                   ? TITULO_COPA[p.copa]
                   : grupoDePartido(p)
@@ -133,7 +133,7 @@ export function ProximaFecha({
                 className="rounded-xl border border-white/10 bg-black/25 px-3 py-3 text-center"
               >
                 <p className="font-mono text-sm font-semibold text-neutral-400">{c.etiqueta}</p>
-                <p className="mt-0.5 font-bufon text-[10px] uppercase tracking-[0.2em] text-neutral-500">
+                <p className="mt-0.5 font-bufon text-xs uppercase tracking-[0.2em] text-neutral-300">
                   {TITULO_COPA[c.copa]}
                 </p>
                 <div className="mt-2 space-y-1.5">
@@ -143,13 +143,13 @@ export function ProximaFecha({
               </li>
             ))}
           </ul>
-          <p className="mt-4 text-sm text-neutral-500">
+          <p className="mt-4 text-sm text-neutral-300">
             Horarios por confirmar. Los cruces salen de las tablas de grupo: el mejor ubicado hace
             de local.
           </p>
         </>
       ) : (
-        <p className="mt-4 text-sm text-neutral-500">
+        <p className="mt-4 text-sm text-neutral-300">
           Equipos y horarios por definir. Los cruces salen de las tablas al cerrar la fase de
           grupos.
         </p>
@@ -160,7 +160,7 @@ export function ProximaFecha({
           justo lo que un capitán necesita saber antes de armar el equipo. */}
       {suspendidos.length ? (
         <div className="mt-5 rounded-xl border border-red-500/30 bg-red-500/[0.07] px-4 py-3">
-          <p className="flex items-center gap-2 font-bufon text-[11px] font-bold uppercase tracking-[0.2em] text-red-300">
+          <p className="flex items-center gap-2 font-bufon text-xs font-bold uppercase tracking-[0.2em] text-red-300">
             <span className="inline-block h-3.5 w-2.5 rounded-[2px] bg-red-600" aria-hidden />
             Suspendidos por tarjeta roja
           </p>

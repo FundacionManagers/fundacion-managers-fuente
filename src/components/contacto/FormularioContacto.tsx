@@ -31,8 +31,8 @@ interface Props {
 
 const ORIGENES = [
   { value: 'fm', label: 'Fundación Managers' },
-  { value: 'icone', label: 'ICONE ialabs' },
-  { value: 'alianza', label: 'Managers Lab (powered by ICONE ialabs)' },
+  { value: 'icone', label: 'ICONEialabs' },
+  { value: 'alianza', label: 'Managers Lab (powered by ICONEialabs)' },
   { value: 'otro', label: 'Otro' },
 ] as const;
 

@@ -134,9 +134,9 @@ export function ComprobanteInscripcion() {
       const id = params.get('eq') || local.id;
       const t = params.get('t') || local.token;
       if (id && t && supabasePublico) {
-        supabasePublico.rpc('fm_get_equipo', { p_id: id, p_token: t }).then(({ data }) => {
-          const insc = (data as { inscripcion?: { equipo?: string; capitan?: string } } | null)
-            ?.inscripcion;
+        // El comprobante solo muestra equipo y capitán: nada del plantel.
+        supabasePublico.rpc('fm_resumen_equipo', { p_id: id, p_token: t }).then(({ data }) => {
+          const insc = data as { equipo?: string; capitan?: string } | null;
           if (insc?.equipo) setEquipo(insc.equipo);
           if (insc?.capitan) setCapitan(insc.capitan);
         });

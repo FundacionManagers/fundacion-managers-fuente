@@ -10,7 +10,8 @@ import {
 /** Display sans neutro (titulares secundarios, UI densa). */
 export const jakarta = Plus_Jakarta_Sans({
   subsets: ['latin'],
-  weight: ['700', '800'],
+  // 500 para «ialabs» en el lockup de la alianza (IconeBrand).
+  weight: ['500', '700', '800'],
   variable: '--font-display',
   display: 'swap',
 });

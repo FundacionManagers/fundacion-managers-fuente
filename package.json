@@ -5,6 +5,7 @@
   "description": "Plataforma web de la Fundación Managers",
   "scripts": {
     "dev": "next dev --turbopack",
+    "prebuild": "node -e \"require('fs').rmSync('.next/liga-respaldo',{force:true})\"",
     "build": "next build",
     "postbuild": "node herramientas/build-info.mjs && node herramientas/huella-fotos.mjs",
     "start": "next start",

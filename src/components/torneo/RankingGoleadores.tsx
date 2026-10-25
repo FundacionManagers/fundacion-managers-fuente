@@ -121,6 +121,27 @@ export function RankingGoleadores({
   // fuera cero, la web lo dice en vez de callarlo.
   const sinExplicar = Math.max(0, golesJugados - totalGoles - autogoles.length);
 
+  // Sin ningún anotador cargado, la tabla salía con su cabecera y cero filas,
+  // y la nota decía que «0 los marcaron jugadores». En el Resumen el bloque
+  // no aparece; en Estadísticas queda una línea que dice cuándo llega.
+  if (goleadores.length === 0 && autogoles.length === 0) {
+    if (compacto) return null;
+    return (
+      <div>
+        <p className="font-bufon text-sm font-bold uppercase tracking-[0.25em] text-naranja">
+          Goleadores
+        </p>
+        <h2 className="mt-1 font-sport text-5xl uppercase leading-none text-neutral-50 md:text-6xl">
+          La bota de oro
+        </h2>
+        <div className="energy-bar mt-5 h-1 w-full rounded-full opacity-70" />
+        <p className="mt-4 max-w-3xl text-sm leading-relaxed text-neutral-300">
+          Los goleadores se publican cuando se confirma la planilla de cada fecha.
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div>
       <div className="flex items-end justify-between gap-4">
@@ -142,7 +163,7 @@ export function RankingGoleadores({
           se lee como que un solo jugador marcó los 96, y además dejaba ese 96
           sin decir de qué total salía. Se parte del total y se reparte. */}
       {golesJugados > totalGoles ? (
-        <p className="mt-4 max-w-3xl text-xs leading-relaxed text-neutral-500">
+        <p className="mt-4 max-w-3xl text-xs leading-relaxed text-neutral-300">
           De los {golesJugados} goles del torneo,{' '}
           {totalGoles === 1 ? '1 lo marcó un jugador' : `${totalGoles} los marcaron jugadores`}
           {autogoles.length > 0 ? (
@@ -165,8 +186,8 @@ export function RankingGoleadores({
           {sinExplicar > 0 ? (
             <>
               {' '}
-              Quedan {sinExplicar} por atribuir: no se reparten a ojo, esperan a que la organización
-              confirme la planilla.
+              Los otros {sinExplicar} aparecen aquí cuando la planilla oficial confirme a sus
+              autores.
             </>
           ) : null}
         </p>
@@ -204,7 +225,7 @@ export function RankingGoleadores({
               </span>
               <p className="font-sport text-3xl leading-none text-amarillo">
                 {tramo.goles}
-                <span className="ml-2 font-bufon text-[10px] uppercase tracking-widest text-neutral-500">
+                <span className="ml-2 font-bufon text-xs uppercase tracking-widest text-neutral-300">
                   {tramo.goles === 1 ? 'gol' : 'goles'}
                 </span>
               </p>
@@ -222,7 +243,7 @@ export function RankingGoleadores({
               </>
             ) : (
               <>
-                <p className="relative mt-4 font-bufon text-[11px] uppercase tracking-widest text-neutral-500">
+                <p className="relative mt-4 font-bufon text-xs uppercase tracking-widest text-neutral-300">
                   {tramo.jugadores.length} jugadores empatados
                 </p>
                 <ul className="relative mt-2 space-y-1.5">
@@ -244,7 +265,7 @@ export function RankingGoleadores({
       {/* Se dice el criterio, igual que el Artículo 14 en la tabla: un orden
           que no explica su regla parece arbitrario. */}
       {hayEmpates ? (
-        <p className="mt-4 text-xs text-neutral-500">
+        <p className="mt-4 text-xs text-neutral-300">
           Los jugadores con los mismos goles comparten puesto y van en orden alfabético. Tras un
           empate, el ranking salta al puesto que corresponde.
         </p>
@@ -265,7 +286,7 @@ export function RankingGoleadores({
           igual y funciona con teclado. */}
       {restoPlegado.length > 0 ? (
         <details className="group mt-4">
-          <summary className="flex cursor-pointer list-none items-center gap-2 rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-xs uppercase tracking-[0.15em] text-neutral-500 transition-colors hover:text-neutral-300">
+          <summary className="flex cursor-pointer list-none items-center gap-2 rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-xs uppercase tracking-[0.15em] text-neutral-300 transition-colors hover:text-neutral-100">
             <ChevronRight
               size={13}
               aria-hidden
@@ -352,7 +373,7 @@ function TablaGoleadores({
                 key={`${g.jugador}-${g.equipo}-${g.numero}`}
                 className="border-b border-white/5 transition-colors last:border-0 hover:bg-white/[0.04]"
               >
-                <td className="px-3 py-2.5 text-center tabular-nums text-neutral-500">
+                <td className="px-3 py-2.5 text-center tabular-nums text-neutral-300">
                   {g.posicion}
                 </td>
                 <td className="whitespace-nowrap px-3 py-2.5 font-semibold text-neutral-100">
@@ -366,7 +387,7 @@ function TablaGoleadores({
                     </span>
                   </div>
                 </td>
-                <td className="hidden px-3 py-2.5 text-center tabular-nums text-neutral-500 sm:table-cell">
+                <td className="hidden px-3 py-2.5 text-center tabular-nums text-neutral-300 sm:table-cell">
                   {g.numero}
                 </td>
                 <td className="px-3 py-2.5 text-center font-sport text-lg text-amarillo">
@@ -388,12 +409,12 @@ function TablaGoleadores({
                 key={`autogol-${a.autor}-${a.jornada}-${i}`}
                 className="border-t border-amarillo/20 bg-white/[0.02]"
               >
-                <td className="px-3 py-2.5 text-center text-neutral-600">—</td>
+                <td className="px-3 py-2.5 text-center text-neutral-300">—</td>
                 <td className="px-3 py-2.5">
                   <p className="whitespace-nowrap font-semibold italic text-neutral-400">
                     Gol en propia puerta
                   </p>
-                  <p className="mt-0.5 whitespace-nowrap text-[11px] uppercase tracking-widest text-neutral-600">
+                  <p className="mt-0.5 whitespace-nowrap text-xs uppercase tracking-widest text-neutral-300">
                     Fecha {a.jornada} · lo marcó {autor?.nombre ?? a.autor}
                   </p>
                 </td>
@@ -402,13 +423,13 @@ function TablaGoleadores({
                     <TeamCrest slug={a.beneficiado ?? ''} size={22} />
                     <span className="whitespace-nowrap text-neutral-400">
                       {favorecido?.nombre ?? a.beneficiado ?? '—'}{' '}
-                      <span className="text-[11px] uppercase tracking-widest text-neutral-600">
+                      <span className="text-xs uppercase tracking-widest text-neutral-300">
                         a favor
                       </span>
                     </span>
                   </div>
                 </td>
-                <td className="hidden px-3 py-2.5 text-center text-neutral-600 sm:table-cell">—</td>
+                <td className="hidden px-3 py-2.5 text-center text-neutral-300 sm:table-cell">—</td>
                 <td className="px-3 py-2.5 text-center font-sport text-lg text-neutral-400">1</td>
               </tr>
             );

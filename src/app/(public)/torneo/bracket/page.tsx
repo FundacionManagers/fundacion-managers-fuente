@@ -108,7 +108,7 @@ export default async function BracketPage() {
         </section>
       ))}
 
-      <p className="mt-8 border-t border-white/5 pt-5 text-xs leading-relaxed text-neutral-600">
+      <p className="mt-8 border-t border-white/5 pt-5 text-xs leading-relaxed text-neutral-300">
         Horarios por definir. Los puestos que aparecen junto a cada club son los de{' '}
         <Link href="/torneo/#fase-de-grupos" className="text-neutral-400 hover:text-amarillo">
           su grupo

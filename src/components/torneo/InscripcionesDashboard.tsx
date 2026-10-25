@@ -145,7 +145,12 @@ export function InscripcionesDashboard() {
     setEnviandoEnlace(true);
     const { error } = await supabase.auth.signInWithOtp({
       email: correo,
-      options: { emailRedirectTo: window.location.origin + window.location.pathname },
+      // Sin crear cuentas: quien no tenga una no recibe enlace. Antes cualquiera
+      // que escribiera su correo quedaba registrado con sesión válida.
+      options: {
+        emailRedirectTo: window.location.origin + window.location.pathname,
+        shouldCreateUser: false,
+      },
     });
     setEnviandoEnlace(false);
     if (error) {
@@ -251,7 +256,7 @@ export function InscripcionesDashboard() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="Correo"
-            className="block w-full rounded-md border border-white/15 px-3 py-2.5 text-sm placeholder:text-neutral-500 focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
+            className="block w-full rounded-md border border-white/15 px-3 py-2.5 text-sm placeholder:text-neutral-400 focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
           />
           <input
             type="password"
@@ -259,7 +264,7 @@ export function InscripcionesDashboard() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="Contraseña"
-            className="block w-full rounded-md border border-white/15 px-3 py-2.5 text-sm placeholder:text-neutral-500 focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
+            className="block w-full rounded-md border border-white/15 px-3 py-2.5 text-sm placeholder:text-neutral-400 focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
           />
           {authError ? <p className="text-xs text-red-400">{authError}</p> : null}
           <button
@@ -273,9 +278,7 @@ export function InscripcionesDashboard() {
         {/* Alternativa sin contraseña. No reemplaza al formulario de arriba. */}
         <div className="mt-6 flex items-center gap-3">
           <span className="h-px flex-1 bg-white/10" />
-          <span className="font-bufon text-[10px] uppercase tracking-[0.2em] text-neutral-500">
-            o
-          </span>
+          <span className="font-bufon text-xs uppercase tracking-[0.2em] text-neutral-300">o</span>
           <span className="h-px flex-1 bg-white/10" />
         </div>
 
@@ -294,7 +297,7 @@ export function InscripcionesDashboard() {
             {enviandoEnlace ? 'Enviando…' : 'Enviarme un enlace al correo'}
           </button>
         )}
-        <p className="mt-3 text-center text-xs text-neutral-500">
+        <p className="mt-3 text-center text-xs text-neutral-300">
           Sin contraseña: te llega un enlace de un solo uso.
         </p>
       </div>
@@ -398,21 +401,21 @@ export function InscripcionesDashboard() {
             value={equipo}
             onChange={(e) => setEquipo(e.target.value)}
             placeholder="Nombre del equipo"
-            className="rounded-md border border-white/15 px-3 py-2.5 text-sm placeholder:text-neutral-500 focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
+            className="rounded-md border border-white/15 px-3 py-2.5 text-sm placeholder:text-neutral-400 focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
           />
           <input
             type="text"
             value={capitan}
             onChange={(e) => setCapitan(e.target.value)}
             placeholder="Capitán"
-            className="rounded-md border border-white/15 px-3 py-2.5 text-sm placeholder:text-neutral-500 focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
+            className="rounded-md border border-white/15 px-3 py-2.5 text-sm placeholder:text-neutral-400 focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
           />
           <input
             type="text"
             value={contacto}
             onChange={(e) => setContacto(e.target.value)}
             placeholder="WhatsApp (opcional)"
-            className="rounded-md border border-white/15 px-3 py-2.5 text-sm placeholder:text-neutral-500 focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
+            className="rounded-md border border-white/15 px-3 py-2.5 text-sm placeholder:text-neutral-400 focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
           />
           <button
             type="submit"
@@ -425,7 +428,7 @@ export function InscripcionesDashboard() {
 
       {/* LISTADO */}
       {totalEquipos === 0 ? (
-        <p className="rounded-2xl border border-dashed border-white/15 p-10 text-center text-sm text-neutral-500">
+        <p className="rounded-2xl border border-dashed border-white/15 p-10 text-center text-sm text-neutral-300">
           Aún no hay equipos registrados. Agrega el primero arriba.
         </p>
       ) : (
@@ -464,7 +467,7 @@ export function InscripcionesDashboard() {
                       className={`flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold ${
                         hecho
                           ? 'bg-gradient-to-r from-amarillo to-naranja text-carbon'
-                          : 'border border-white/10 text-neutral-500'
+                          : 'border border-white/10 text-neutral-300'
                       }`}
                     >
                       {hecho ? <Check size={12} aria-hidden /> : <span>{paso.numero}</span>}
@@ -507,7 +510,7 @@ export function InscripcionesDashboard() {
                 onChange={(e) => actualizar(ins.id, { notas: e.target.value })}
                 placeholder="Notas internas (logo recibido, fotos pendientes, etc.)"
                 rows={2}
-                className="mt-4 block w-full rounded-md border border-white/15 px-3 py-2 text-sm placeholder:text-neutral-500 focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
+                className="mt-4 block w-full rounded-md border border-white/15 px-3 py-2 text-sm placeholder:text-neutral-400 focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/30"
               />
 
               {modoSupabase ? (

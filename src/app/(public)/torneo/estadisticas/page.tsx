@@ -95,7 +95,7 @@ export default async function EstadisticasPage() {
             </div>
             <p className="font-sport text-5xl leading-none text-amarillo">
               {lider.goles}
-              <span className="ml-2 font-bufon text-[10px] uppercase tracking-widest text-neutral-500">
+              <span className="ml-2 font-bufon text-xs uppercase tracking-widest text-neutral-300">
                 {lider.goles === 1 ? 'gol' : 'goles'}
               </span>
             </p>
@@ -122,7 +122,7 @@ export default async function EstadisticasPage() {
         <div className="mt-8 grid grid-cols-2 gap-4 lg:grid-cols-4">
           <div className="rounded-2xl border border-white/10 bg-black/30 p-5">
             <p className="font-sport text-4xl leading-none text-amarillo">{cifras.goles}</p>
-            <p className="mt-2 font-mono text-[11px] uppercase tracking-widest text-neutral-500">
+            <p className="mt-2 font-mono text-xs uppercase tracking-widest text-neutral-300">
               Goles en {cifras.partidos} partidos
             </p>
           </div>
@@ -131,7 +131,7 @@ export default async function EstadisticasPage() {
             <p className="font-sport text-4xl leading-none text-amarillo">
               {cifras.promedio?.toFixed(2).replace('.', ',') ?? '—'}
             </p>
-            <p className="mt-2 font-mono text-[11px] uppercase tracking-widest text-neutral-500">
+            <p className="mt-2 font-mono text-xs uppercase tracking-widest text-neutral-300">
               Goles por partido
             </p>
           </div>
@@ -142,7 +142,7 @@ export default async function EstadisticasPage() {
               className="group col-span-2 rounded-2xl border border-white/10 bg-black/30 p-5 transition-colors hover:border-amarillo/40 lg:col-span-1"
             >
               <p className="font-sport text-4xl leading-none text-amarillo">{defensa.valor}</p>
-              <p className="mt-2 font-mono text-[11px] uppercase tracking-widest text-neutral-500">
+              <p className="mt-2 font-mono text-xs uppercase tracking-widest text-neutral-300">
                 Goles en contra · la valla menos vencida
               </p>
               {/* Todos los que la comparten: con un empate, nombrar a uno solo
@@ -164,14 +164,14 @@ export default async function EstadisticasPage() {
               <p className="font-sport text-4xl leading-none text-amarillo">
                 {(goleado.golesLocal ?? 0) + (goleado.golesVisitante ?? 0)}
               </p>
-              <p className="mt-2 font-mono text-[11px] uppercase tracking-widest text-neutral-500">
+              <p className="mt-2 font-mono text-xs uppercase tracking-widest text-neutral-300">
                 Goles · el partido más goleado
               </p>
               <p className="mt-2 text-sm font-semibold leading-tight text-neutral-200">
                 {localGoleado?.nombre ?? goleado.local} {goleado.golesLocal}–
                 {goleado.golesVisitante} {visitaGoleada?.nombre ?? goleado.visitante}
               </p>
-              <p className="mt-1 font-mono text-[10px] uppercase tracking-widest text-neutral-600">
+              <p className="mt-1 font-mono text-xs uppercase tracking-widest text-neutral-300">
                 Fecha {goleado.jornada}
               </p>
             </div>
@@ -194,11 +194,11 @@ export default async function EstadisticasPage() {
           Juego limpio
         </h2>
         <div className="energy-bar mt-5 h-1 w-full rounded-full opacity-70" />
-        <p className="mt-4 max-w-3xl text-xs leading-relaxed text-neutral-500">
-          Se cuenta una tarjeta por amarilla y tres por roja, así que un club con menos amarillas
-          puede quedar por debajo de otro que tenga más. Con la misma puntuación manda quien vaya
-          mejor en la tabla. Es el segundo criterio de desempate del Artículo 14, justo después de
-          los puntos.
+        <p className="mt-4 max-w-3xl text-xs leading-relaxed text-neutral-300">
+          Cada amarilla suma 1 punto de Fair Play y cada roja 3; va primero quien menos suma, así
+          que un club con menos amarillas puede quedar por debajo de otro que tenga más. Con la
+          misma puntuación manda quien vaya mejor en la tabla. Es el segundo criterio de desempate
+          del Artículo 14, justo después de los puntos.
         </p>
 
         <ul className="mt-8 space-y-2.5">
@@ -217,8 +217,8 @@ export default async function EstadisticasPage() {
                 >
                   <span
                     className={cn(
-                      'w-6 shrink-0 text-center font-mono text-[11px]',
-                      i === 0 ? 'text-amarillo' : 'text-neutral-600',
+                      'w-6 shrink-0 text-center font-mono text-xs',
+                      i === 0 ? 'text-amarillo' : 'text-neutral-300',
                     )}
                   >
                     {i + 1}
@@ -228,7 +228,7 @@ export default async function EstadisticasPage() {
                     <span className="block truncate text-sm font-semibold text-neutral-200">
                       {eq?.nombre ?? f.equipo}
                     </span>
-                    <span className="block font-mono text-[10px] uppercase leading-relaxed tracking-widest text-neutral-500">
+                    <span className="block font-mono text-xs uppercase leading-relaxed tracking-widest text-neutral-300">
                       {rotuloPuesto(puestoEnGrupo.get(f.equipo))} · {f.ta}{' '}
                       {f.ta === 1 ? 'amarilla' : 'amarillas'} · {f.tr}{' '}
                       {f.tr === 1 ? 'roja' : 'rojas'}
@@ -237,7 +237,7 @@ export default async function EstadisticasPage() {
                   <span
                     className={cn(
                       'shrink-0 font-sport text-2xl leading-none',
-                      i === 0 ? 'text-amarillo' : 'text-neutral-500',
+                      i === 0 ? 'text-amarillo' : 'text-neutral-300',
                     )}
                   >
                     {puntosJuegoLimpio(f)}
@@ -253,14 +253,17 @@ export default async function EstadisticasPage() {
         <RankingGoleadores datos={datos} />
       </div>
 
-      <p className="mt-8 border-t border-white/5 pt-5 text-xs leading-relaxed text-neutral-600">
-        Todo lo de esta página se calcula desde los resultados que carga la organización, hasta la
-        fecha {jornada}. Sale de la misma fuente que{' '}
-        <Link href="/torneo/#fase-de-grupos" className="text-neutral-400 hover:text-amarillo">
-          la tabla de posiciones
+      {/* Terminaba en una nota sobre cómo se calcula la página. Cierra con lo
+          que sigue: la próxima fecha. */}
+      <div className="mt-12 flex flex-wrap items-center gap-4 border-t border-white/5 pt-6">
+        <p className="text-sm text-neutral-300">Cifras hasta la fecha {jornada}.</p>
+        <Link
+          href="/torneo/calendario/"
+          className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-amarillo to-naranja px-6 py-3 text-sm font-bold text-carbon transition-transform duration-200 ease-managers hover:-translate-y-0.5"
+        >
+          Ver la próxima fecha
         </Link>
-        , así que no pueden contradecirse.
-      </p>
+      </div>
     </TorneoShell>
   );
 }

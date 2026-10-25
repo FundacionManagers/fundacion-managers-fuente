@@ -105,6 +105,7 @@ export default function EmprendimientoPage() {
                 </p>
                 <Link
                   href={hrefDeEje(DIAGNOSTICO)}
+                  prefetch={false}
                   className="group mt-9 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-amarillo to-naranja px-7 py-3.5 text-sm font-bold text-carbon shadow-[0_12px_40px_rgba(232,114,44,0.4)] transition-all duration-200 ease-managers hover:-translate-y-0.5"
                 >
                   <span className="text-left">

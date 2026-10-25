@@ -74,7 +74,7 @@ export function PalmaresTorneo() {
               {/* Edición */}
               <div className="w-20 shrink-0">
                 <p className="font-sport text-3xl leading-none text-neutral-100">{e.numero}ª</p>
-                <p className="mt-1 font-mono text-[11px] uppercase tracking-widest text-neutral-500">
+                <p className="mt-1 font-mono text-xs uppercase tracking-widest text-neutral-300">
                   {e.periodo}
                 </p>
               </div>
@@ -88,19 +88,19 @@ export function PalmaresTorneo() {
                       <p className="truncate font-serif text-base font-bold text-neutral-100">
                         {campeon}
                       </p>
-                      <p className="mt-0.5 font-bufon text-[11px] uppercase tracking-widest text-neutral-500">
+                      <p className="mt-0.5 font-bufon text-xs uppercase tracking-widest text-neutral-300">
                         Campeón
                       </p>
                     </>
                   ) : (
                     <>
-                      <p className="font-serif text-base font-bold text-neutral-400">
+                      <p className="font-serif text-base font-bold text-neutral-200">
                         {enCurso ? 'En juego' : 'Sin campeón registrado'}
                       </p>
                       {/* Decía "se juega en septiembre", escrito a mano.
                           La fecha sale del calendario de la fase final, así
                           que al moverse la final se mueve sola. */}
-                      <p className="mt-0.5 font-bufon text-[11px] uppercase tracking-widest text-neutral-600">
+                      <p className="mt-0.5 font-bufon text-xs uppercase tracking-widest text-neutral-300">
                         {enCurso && FECHA_FINAL ? `La final se juega el ${FECHA_FINAL}` : ''}
                       </p>
                     </>
@@ -117,12 +117,20 @@ export function PalmaresTorneo() {
                   // Ahora la llave vive en esta misma página, más abajo.
                   <Link
                     href="#llave-anterior"
-                    className="inline-flex items-center gap-1.5 rounded-full border border-white/15 px-3 py-1 font-bufon text-[10px] font-bold uppercase tracking-[0.15em] text-neutral-300 transition-colors hover:border-amarillo/50 hover:text-amarillo"
+                    className="inline-flex items-center gap-1.5 rounded-full border border-white/15 px-3 py-1 font-bufon text-xs font-bold uppercase tracking-[0.15em] text-neutral-300 transition-colors hover:border-amarillo/50 hover:text-amarillo"
+                  >
+                    Ver la llave
+                  </Link>
+                ) : enCurso ? (
+                  // La edición en juego no llevaba a ninguna parte.
+                  <Link
+                    href="/torneo/bracket/"
+                    className="inline-flex items-center gap-1.5 rounded-full border border-amarillo/40 px-3 py-1 font-bufon text-xs font-bold uppercase tracking-[0.15em] text-amarillo transition-colors hover:bg-amarillo/10"
                   >
                     Ver la llave
                   </Link>
                 ) : respaldo === 'declarado' ? (
-                  <span className="inline-flex items-center rounded-full border border-dashed border-white/15 px-3 py-1 font-bufon text-[10px] font-bold uppercase tracking-[0.15em] text-neutral-500">
+                  <span className="inline-flex items-center rounded-full border border-dashed border-white/15 px-3 py-1 font-bufon text-xs font-bold uppercase tracking-[0.15em] text-neutral-300">
                     Sin llave publicada
                   </span>
                 ) : null}
@@ -150,10 +158,9 @@ export function PalmaresTorneo() {
               );
             })}
           </ul>
-          <p className="mt-4 max-w-3xl text-xs leading-relaxed text-neutral-500">
+          <p className="mt-4 max-w-3xl text-xs leading-relaxed text-neutral-300">
             Las ediciones marcadas como «sin llave publicada» son las dos primeras: su palmarés lo
             aporta la organización del torneo, porque sus partidos nunca se publicaron en el sitio.
-            El día que se carguen, el campeón pasará a salir de la final como el de la 3ª edición.
           </p>
         </div>
       ) : null}

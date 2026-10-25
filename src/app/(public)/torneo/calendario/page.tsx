@@ -82,7 +82,7 @@ export default async function CalendarioPage() {
                       ya están decididos por las tablas: decir "equipos por
                       definir" contradiría a La llave, que a esa altura ya los
                       nombra. */}
-                  <span className="ml-auto font-bufon text-[10px] uppercase tracking-[0.15em] text-neutral-600">
+                  <span className="ml-auto font-bufon text-xs uppercase tracking-[0.15em] text-neutral-300">
                     {r.fase === CALENDARIO_FASE_FINAL[0]!.fase &&
                     faseDeGruposCompleta(datos.partidos)
                       ? 'Horarios por definir'
@@ -91,7 +91,7 @@ export default async function CalendarioPage() {
                 </li>
               ))}
             </ul>
-            <p className="mt-4 max-w-2xl text-xs leading-relaxed text-neutral-500">
+            <p className="mt-4 max-w-2xl text-xs leading-relaxed text-neutral-300">
               Cada ronda se juega en las dos copas: la Oro, con el 1º y el 2º de cada grupo, y la
               Plata, con el 3º y el 4º. Las semifinales se cruzan —1º A con 2º B, 1º B con 2º A— y
               se pueden ver proyectadas en{' '}
@@ -111,7 +111,7 @@ export default async function CalendarioPage() {
           atrás. Su sitio es el Palmarés, que es la página de la historia del
           torneo, y allí es donde apuntaban ya los enlaces que prometían "ver
           la llave". Queda solo el puntero, en letra pequeña. */}
-      <p className="mt-12 border-t border-white/5 pt-5 text-[11px] uppercase tracking-[0.2em] text-neutral-600">
+      <p className="mt-12 border-t border-white/5 pt-5 text-xs uppercase tracking-[0.2em] text-neutral-300">
         ¿Quieres ver qué pasó en la {ordinalFemenino(EDICION_ANTERIOR.numero)} edición? La llave
         completa está en{' '}
         <Link

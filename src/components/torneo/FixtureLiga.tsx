@@ -59,7 +59,7 @@ function Marcador({ p, mostrarDia }: { p: PartidoLiga; mostrarDia: boolean }) {
           >
             {p.golesLocal}
           </span>
-          <span className="font-sport text-lg leading-none text-neutral-600">–</span>
+          <span className="font-sport text-lg leading-none text-neutral-300">–</span>
           <span
             className={cn(
               'font-sport text-2xl leading-none',
@@ -70,14 +70,14 @@ function Marcador({ p, mostrarDia }: { p: PartidoLiga; mostrarDia: boolean }) {
           </span>
         </span>
       ) : (
-        <span className="font-sport text-xl leading-none text-neutral-500">vs</span>
+        <span className="font-sport text-xl leading-none text-neutral-300">vs</span>
       )}
 
       {/* Cuándo se juega. El día solo cuando la fecha del torneo se reparte
           en varios días: si todos son el mismo, ya lo dice el encabezado y
           repetirlo cuatro veces es ruido. El grupo va siempre: en una misma
           fecha se alternan partidos del A y del B. */}
-      <span className="whitespace-nowrap font-bufon text-[10px] uppercase tracking-widest text-neutral-600">
+      <span className="whitespace-nowrap font-bufon text-xs uppercase tracking-widest text-neutral-300">
         {grupoDePartido(p) ? `Grupo ${grupoDePartido(p)} · ` : ''}
         {mostrarDia ? `${diaCortoDe(p)} · ` : ''}
         {p.hora}
@@ -104,7 +104,7 @@ function TarjetasDe({ tarjetas, alinear }: { tarjetas: Tarjeta[]; alinear: 'izq'
           key={i}
           title={`${t.tipo === 'roja' ? 'Roja' : 'Amarilla'}${t.numero != null ? ` · #${t.numero}` : ''}`}
           className={cn(
-            'inline-flex h-[18px] min-w-[13px] items-center justify-center rounded-[3px] px-1 font-mono text-[10px] font-bold leading-none',
+            'inline-flex h-[18px] min-w-[13px] items-center justify-center rounded-[3px] px-1 font-mono text-xs font-bold leading-none',
             t.tipo === 'roja' ? 'bg-red-600 text-white' : 'bg-amber-300 text-carbon',
           )}
         >
@@ -171,7 +171,7 @@ function FilaPartido({
 function FilaEvento({ ev }: { ev: EventoFecha }) {
   return (
     <li className="flex flex-wrap items-baseline gap-x-3 gap-y-1 rounded-xl border border-naranja/30 bg-naranja/[0.06] px-4 py-3">
-      <span className="font-bufon text-[10px] uppercase tracking-widest text-neutral-500">
+      <span className="font-bufon text-xs uppercase tracking-widest text-neutral-300">
         {ev.hora ?? 'En la fecha'}
       </span>
       <span className="font-sport text-xl uppercase leading-none text-neutral-100">
@@ -265,9 +265,9 @@ export function FixtureLiga({ datos }: { datos: DatosLiga }) {
               <h3 className="font-sport text-4xl uppercase leading-none text-neutral-50 md:text-5xl">
                 Fecha {ultima}
               </h3>
-              <p className="mt-1 text-sm text-neutral-500">{etiquetaDe(ultima, partidosUltima)}</p>
+              <p className="mt-1 text-sm text-neutral-300">{etiquetaDe(ultima, partidosUltima)}</p>
             </div>
-            <span className="rounded-full bg-gradient-to-r from-amarillo to-naranja px-3 py-1 font-bufon text-[10px] font-bold uppercase tracking-[0.15em] text-carbon">
+            <span className="rounded-full bg-gradient-to-r from-amarillo to-naranja px-3 py-1 font-bufon text-xs font-bold uppercase tracking-[0.15em] text-carbon">
               Última fecha
             </span>
           </div>
@@ -285,7 +285,7 @@ export function FixtureLiga({ datos }: { datos: DatosLiga }) {
       {/* ===== El resto, plegado ===== */}
       {plegadas.length ? (
         <section>
-          <p className="font-bufon text-xs font-bold uppercase tracking-[0.25em] text-neutral-600">
+          <p className="font-bufon text-xs font-bold uppercase tracking-[0.25em] text-neutral-300">
             Las demás fechas
           </p>
           <div className="mt-4 space-y-2">
@@ -307,20 +307,20 @@ export function FixtureLiga({ datos }: { datos: DatosLiga }) {
                     <ChevronRight
                       size={14}
                       aria-hidden
-                      className="shrink-0 text-neutral-600 transition-transform duration-200 group-open:rotate-90"
+                      className="shrink-0 text-neutral-300 transition-transform duration-200 group-open:rotate-90"
                     />
                     <span className="font-sport text-xl uppercase leading-none text-neutral-300">
                       Fecha {jornada}
                     </span>
-                    <span className="order-last w-full pl-[26px] text-xs text-neutral-600 sm:order-none sm:w-auto sm:min-w-0 sm:flex-1 sm:truncate sm:pl-0">
+                    <span className="order-last w-full pl-[26px] text-xs text-neutral-300 sm:order-none sm:w-auto sm:min-w-0 sm:flex-1 sm:truncate sm:pl-0">
                       {etiquetaDe(jornada, partidos)}
                     </span>
                     <span
                       className={cn(
-                        'ml-auto shrink-0 rounded-full px-2.5 py-0.5 font-bufon text-[10px] font-bold uppercase tracking-[0.15em] sm:ml-0',
+                        'ml-auto shrink-0 rounded-full px-2.5 py-0.5 font-bufon text-xs font-bold uppercase tracking-[0.15em] sm:ml-0',
                         jugada
-                          ? 'border border-white/15 text-neutral-500'
-                          : 'border border-dashed border-white/20 text-neutral-500',
+                          ? 'border border-white/15 text-neutral-300'
+                          : 'border border-dashed border-white/20 text-neutral-300',
                       )}
                     >
                       {jugada ? 'Jugada' : 'Programada'}

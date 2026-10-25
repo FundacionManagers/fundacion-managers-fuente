@@ -232,6 +232,39 @@ export function pillEdicion(edicion: Edicion): string {
 export const EDICION_ANTERIOR =
   [...EDICIONES].reverse().find((e) => e.estado === 'jugada') ?? EDICIONES[0]!;
 
+/** La final de una edición, contada desde el lado del campeón. */
+export interface ResultadoFinal {
+  campeon: string;
+  rival: string;
+  golesCampeon: number;
+  golesRival: number;
+  /** La tanda, si la hubo, también desde el lado del campeón. */
+  penales: { campeon: number; rival: number } | null;
+}
+
+/**
+ * Cómo terminó la final de la edición anterior. La usan el Palmarés y el
+ * bloque del campeón del Resumen: los dos la cuentan, y si cada uno la
+ * calculara por su lado podrían decir marcadores distintos.
+ */
+export const FINAL_ANTERIOR: ResultadoFinal | null = (() => {
+  const f = (EDICION_ANTERIOR.partidos ?? []).find((p) => p.fase === 'final');
+  if (!f || f.local == null || f.visitante == null) return null;
+  if (f.golesLocal == null || f.golesVisitante == null) return null;
+  const ganaLocal = ganadorDe(f) === f.local;
+  return {
+    campeon: ganaLocal ? f.local : f.visitante,
+    rival: ganaLocal ? f.visitante : f.local,
+    golesCampeon: ganaLocal ? f.golesLocal : f.golesVisitante,
+    golesRival: ganaLocal ? f.golesVisitante : f.golesLocal,
+    penales: f.penales
+      ? ganaLocal
+        ? { campeon: f.penales.local, rival: f.penales.visitante }
+        : { campeon: f.penales.visitante, rival: f.penales.local }
+      : null,
+  };
+})();
+
 /** El club con más títulos. Empate resuelto por orden de aparición. */
 export const MAXIMO_GANADOR = Object.entries(TITULOS_POR_CLUB).reduce(
   (mejor, [equipo, titulos]) => (titulos > mejor.titulos ? { equipo, titulos } : mejor),

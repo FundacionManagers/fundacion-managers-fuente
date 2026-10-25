@@ -9,7 +9,7 @@ import { ALIANZA, APORTES, FLUJOS, ICONE_CYAN } from '@/lib/alianza';
 import { NORTE } from '@/lib/strategy';
 
 export const metadata: Metadata = {
-  title: 'Managers Lab — powered by ICONE ialabs',
+  title: 'Managers Lab — powered by ICONEialabs',
   description: ALIANZA.claim,
 };
 
@@ -26,7 +26,7 @@ export default function AlianzaPage() {
               El laboratorio de la fundación
             </p>
 
-            {/* Lockup — Managers Lab powered by ICONE ialabs (modelo Intel Inside) */}
+            {/* Lockup — Managers Lab powered by ICONEialabs (modelo Intel Inside) */}
             <div className="mt-6">
               <h1 className="font-serif text-[44px] font-bold leading-none text-neutral-50 md:text-[80px]">
                 Managers <span className="text-gold-grad">Lab</span>

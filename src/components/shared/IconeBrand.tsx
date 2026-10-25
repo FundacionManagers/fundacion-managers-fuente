@@ -14,9 +14,9 @@ interface IconeBrandProps {
 }
 
 /**
- * Marca oficial ICONE ialabs — fuente ÚNICA de verdad.
+ * Marca oficial ICONEialabs — fuente ÚNICA de verdad.
  *
- * Wordmark fiel al logo: "ICONE" + "ialabs" (cyan).
+ * Wordmark fiel al logo: "ICONE" + "ialabs" (cyan), sin espacio.
  * Cuando exista `public/logo-icone.png` (app-icon oficial), poner
  * USE_LOGO = true: se antepone el ícono al wordmark en toda la web.
  */
@@ -33,7 +33,7 @@ export function IconeBrand({
       {USE_LOGO && !textOnly ? (
         <Image
           src={asset('/logo-icone.png')}
-          alt="ICONE ialabs"
+          alt="ICONEialabs"
           width={iconSize}
           height={iconSize}
           sizes={`${iconSize}px`}
@@ -41,9 +41,17 @@ export function IconeBrand({
           style={{ width: iconSize, height: iconSize }}
         />
       ) : null}
-      <span className="font-display font-extrabold tracking-tight">
-        <span style={{ color: tone === 'dark' ? '#0F1419' : '#F5F5F4' }}>ICONE</span>
-        <span style={{ color: ICONE_CYAN }}>&nbsp;ialabs</span>
+      {/* Una sola palabra: «ICONE» en el peso más alto y «ialabs» en 500,
+          pegados. El `&nbsp;` que había entre los dos partía la marca en dos
+          palabras, que es justo la grafía que la marca prohíbe. La marca pide
+          900 para «ICONE»; Plus Jakarta llega hasta 800, que es el que se usa. */}
+      <span className="font-display tracking-tight">
+        <span className="font-extrabold" style={{ color: tone === 'dark' ? '#0F1419' : '#FFFFFF' }}>
+          ICONE
+        </span>
+        <span className="font-medium" style={{ color: ICONE_CYAN }}>
+          ialabs
+        </span>
       </span>
     </span>
   );
