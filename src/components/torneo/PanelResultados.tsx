@@ -547,8 +547,22 @@ export function PanelResultados({ salir, correo }: { salir: () => Promise<void>;
         </p>
       ) : null}
 
-      {/* Aviso de descuadre: la comprobación que destapó las erratas del gráfico */}
-      {problemas.length > 0 ? (
+      {/* Aviso de descuadre: la comprobación que destapó las erratas del gráfico.
+          Sin un solo anotador cargado no hay nada que comparar: listar los
+          ocho clubes con «0 en el ranking» y sugerir un marcador mal cargado
+          alarmaba sin motivo. */}
+      {problemas.length > 0 && estado?.goleadores.length === 0 ? (
+        <div className="mt-5 rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3">
+          <p className="flex items-center gap-2 text-sm font-semibold text-neutral-100">
+            <TriangleAlert size={16} className="text-amarillo" /> Faltan los anotadores
+          </p>
+          <p className="mt-1 text-xs text-neutral-300">
+            Los marcadores suman {problemas.reduce((s, d) => s + d.golesTabla, 0)} goles y todavía
+            no hay ningún anotador cargado. Se cargan en <strong>Goleadores</strong>; cuando
+            empiecen a estar, este aviso compara club por club.
+          </p>
+        </div>
+      ) : problemas.length > 0 ? (
         <div className="mt-5 rounded-xl border border-amber-500/40 bg-amber-500/10 px-4 py-3">
           <p className="flex items-center gap-2 text-sm font-semibold text-amber-300">
             <TriangleAlert size={16} /> Los goles no cuadran

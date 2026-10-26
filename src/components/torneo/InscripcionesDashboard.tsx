@@ -154,7 +154,10 @@ export function InscripcionesDashboard() {
     });
     setEnviandoEnlace(false);
     if (error) {
-      setAuthError('No se pudo enviar el enlace. Intenta con tu contraseña.');
+      // Mismo mensaje que la puerta del panel: ver PuertaAdmin.
+      setAuthError(
+        'No se pudo enviar el enlace. Revisa que el correo esté bien escrito: solo llega a los correos autorizados.',
+      );
       return;
     }
     setEnlaceEnviado(true);

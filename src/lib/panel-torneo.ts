@@ -458,13 +458,46 @@ const ESPERA_ENTRE_DISPAROS = 60_000;
 let ultimoDisparo = 0;
 let disparoPendiente: Promise<string | null> | null = null;
 
+/**
+ * Cuándo salió el último disparo aceptado, recordado en el navegador.
+ *
+ * El aviso de publicación lo usa para decir «publicación en curso» mientras
+ * GitHub compila. Sin eso, después de pulsar seguía diciendo «salió al aire
+ * hace N minutos» con la hora del despliegue anterior, y daba para volver a
+ * pulsar: el 26 de octubre salieron cinco compilaciones del mismo sitio en
+ * media hora. Se guarda en localStorage para que recargar el panel no lo
+ * olvide.
+ */
+const CLAVE_DISPARO_ACEPTADO = `fm-publicacion-pedida-${ENTORNO}`;
+export const EVENTO_PUBLICACION_PEDIDA = 'fm-publicacion-pedida';
+
+export function momentoPublicacionPedida(): number {
+  try {
+    return Number(localStorage.getItem(CLAVE_DISPARO_ACEPTADO)) || 0;
+  } catch {
+    return 0;
+  }
+}
+
+function anotarPublicacionPedida() {
+  try {
+    localStorage.setItem(CLAVE_DISPARO_ACEPTADO, String(Date.now()));
+  } catch {
+    // Sin almacenamiento el aviso no sabrá que hay una en curso; nada más.
+  }
+  window.dispatchEvent(new Event(EVENTO_PUBLICACION_PEDIDA));
+}
+
 async function dispararPublicacion(): Promise<string | null> {
   const sb = exigirCliente();
   ultimoDisparo = Date.now();
   // El entorno viaja en el cuerpo: la función sabe a qué repositorio
   // disparar. Sin esto, publicar desde ensayos recompilaba la web real.
   const { error } = await sb.functions.invoke('publicar', { body: { entorno: ENTORNO } });
-  if (!error) return null;
+  if (!error) {
+    anotarPublicacionPedida();
+    return null;
+  }
 
   // Cuando la función responde con un código de error, supabase-js deja
   // `data` en null y guarda la respuesta real en `error.context`.

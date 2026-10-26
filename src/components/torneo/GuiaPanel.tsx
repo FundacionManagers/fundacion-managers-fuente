@@ -250,6 +250,12 @@ const PASOS: Paso[] = [
           </p>
         </div>
 
+        <p className="mt-3 text-sm text-neutral-400">
+          Si todavía no hay ningún anotador cargado, el panel dice{' '}
+          <strong className="text-neutral-100">Faltan los anotadores</strong> con el total de goles:
+          no es un error, solo lo que queda por cargar.
+        </p>
+
         <p className="mt-4">
           Y en <strong>Tabla (previa)</strong> ves cómo quedarían las posiciones{' '}
           <strong className="text-neutral-100">antes de guardar</strong>. Sirve para comprobar un
@@ -286,6 +292,10 @@ const PASOS: Paso[] = [
         <ul className="mt-2 space-y-1 text-sm">
           <li>
             🌐 <strong className="text-emerald-400">Todo publicado</strong> — la web está al día.
+          </li>
+          <li>
+            ⏳ <strong className="text-sky-300">Publicación en curso</strong> — ya se pidió y GitHub
+            está compilando. Cambia sola en unos dos minutos: no vuelvas a pulsar.
           </li>
           <li>
             ☁️ <strong className="text-amarillo">Hay cambios sin publicar</strong> — falta que

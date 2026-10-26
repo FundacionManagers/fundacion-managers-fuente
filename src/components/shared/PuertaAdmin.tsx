@@ -97,7 +97,12 @@ export function PuertaAdmin({
     });
     setEnviando(false);
     if (err) {
-      setError('No se pudo enviar el enlace. Intenta con tu contraseña.');
+      // Con shouldCreateUser en false, un correo que no tiene cuenta también
+      // cae aquí: lo más común es una letra mal escrita. El mensaje es el mismo
+      // para cualquier fallo, para no revelar qué correos tienen acceso.
+      setError(
+        'No se pudo enviar el enlace. Revisa que el correo esté bien escrito: solo llega a los correos autorizados.',
+      );
       return;
     }
     setEnviado(true);
