@@ -14,7 +14,7 @@ const FECHA_FINAL = RONDA_FINAL ? fechaLargaDe(RONDA_FINAL.fecha) : '';
  * Palmarés del torneo: todas las ediciones y quién ganó cada una.
  *
  * Existe porque los títulos de las dos primeras ediciones no tenían dónde
- * verse. Vivían como un número suelto en la ficha de Pomada Alfa, sin ninguna
+ * verse. Vivían como un número suelto en la ficha de Pomada FC, sin ninguna
  * lista detrás, y por eso llegaron a contradecir al resto del sitio. Aquí
  * están las cuatro ediciones en un solo sitio, cada una con su campeón y con
  * de dónde sale ese dato: si la llave está publicada se enlaza para que
@@ -31,7 +31,7 @@ export function PalmaresTorneo() {
 
   // Cuántas de esas ediciones tienen ya un campeón: la en curso no cuenta.
   const conCampeon = ediciones.filter((e) => campeonDe(e) !== undefined).length;
-  // «4 campeones» se leía como cuatro clubes, y son dos: Pomada Alfa con tres
+  // «4 campeones» se leía como cuatro clubes, y son dos: Pomada FC con tres
   // títulos y The Originals con uno. Se dicen las dos cifras.
   const clubesCampeones = new Set(ediciones.map((e) => campeonDe(e)).filter(Boolean)).size;
 

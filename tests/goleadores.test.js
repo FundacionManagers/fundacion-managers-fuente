@@ -122,7 +122,7 @@ test('cada club cuadra: sus goleadores más sus autogoles son sus goles', () => 
   assert.deepEqual(descuadre, [], 'algún club reparte más o menos goles de los que marcó');
 });
 
-test('Pomada Alfa marca 23: 22 de sus jugadores y el autogol de Managers FC', () => {
+test('Pomada FC marca 23: 22 de sus jugadores y el autogol de Managers FC', () => {
   const fila = POSICIONES_LIGA.find((f) => f.equipo === 'pomada-alfa');
   const deJugador = GOLEADORES_LIGA.filter((g) => g.equipo === 'pomada-alfa').reduce(
     (s, g) => s + g.goles,
@@ -133,7 +133,7 @@ test('Pomada Alfa marca 23: 22 de sus jugadores y el autogol de Managers FC', ()
   assert.equal(autogolesDe('pomada-alfa'), 1);
 });
 
-test('el autogol lo marcó Managers FC en la Fecha 2, a favor de Pomada Alfa', () => {
+test('el autogol lo marcó Managers FC en la Fecha 2, a favor de Pomada FC', () => {
   assert.equal(AUTOGOLES.length, 1);
   assert.equal(AUTOGOLES[0].autor, 'managers-fc');
   assert.equal(AUTOGOLES[0].jornada, 2);
@@ -148,7 +148,7 @@ test('el partido del autogol es el 0–1 que describió la organización', () =>
   const partido = PARTIDOS_LIGA.find(
     (p) => p.jornada === 2 && p.local === 'managers-fc' && p.visitante === 'pomada-alfa',
   );
-  assert.ok(partido, 'Managers FC vs Pomada Alfa debería estar en la Fecha 2');
+  assert.ok(partido, 'Managers FC vs Pomada FC debería estar en la Fecha 2');
   assert.equal(partido.golesLocal, 0);
   assert.equal(partido.golesVisitante, 1);
 });

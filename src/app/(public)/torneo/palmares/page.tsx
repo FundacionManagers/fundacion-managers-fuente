@@ -50,7 +50,7 @@ const LLAVE_ANTERIOR = [
 
 const FINAL = de('final')[0];
 
-/** 'PAL 3–3 ORI · 6–5 pen.', con el campeón siempre a la izquierda. */
+/** 'PFC 3–3 ORI · 6–5 pen.', con el campeón siempre a la izquierda. */
 function marcadorFinal(): string {
   const f = FINAL_ANTERIOR;
   if (!f) return '';

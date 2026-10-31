@@ -34,7 +34,7 @@ export interface Equipo {
  * `EDICIONES` (en `torneo.ts`), que es donde vive el campeón de cada edición.
  *
  * Antes cada club llevaba su número de títulos a mano y se desincronizó: la
- * web daba a Pomada Alfa como "bicampeón vigente" cuando la 3ª edición la
+ * web daba a Pomada FC como "bicampeón vigente" cuando la 3ª edición la
  * ganó The Originals. Con el conteo derivado, cerrar una edición en
  * `EDICIONES` actualiza escudos, badges y destacados de una sola vez.
  *
@@ -42,7 +42,7 @@ export interface Equipo {
  * los nombran: Useches y Managers FC jugaron la 4ª y no la 5ª.
  */
 const CLUBES = [
-  { slug: 'pomada-alfa', nombre: 'Pomada Alfa', corto: 'PAL', color: '#8B2E2E', escudo: true },
+  { slug: 'pomada-alfa', nombre: 'Pomada FC', corto: 'PFC', color: '#8B2E2E', escudo: true },
   { slug: 'the-originals', nombre: 'The Originals', corto: 'ORI', color: '#2D6CDF', escudo: true },
   {
     slug: 'los-pibes',

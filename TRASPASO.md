@@ -31,7 +31,7 @@ final en curso.
 - **Cuartos** (13/09) y **semifinales** (20/09): jugados. Dos se definieron por
   penales.
 - **Tercer puesto**: sábado 26/09, 19:00 — Los Pibes del Barrio vs Tranquilo Papi.
-- **Gran Final**: sábado 26/09, 21:00 — **Pomada Alfa vs The Originals**.
+- **Gran Final**: sábado 26/09, 21:00 — **Pomada FC vs The Originals**.
 
 **Lo próximo que hay que hacer en el panel es cargar esos dos resultados** el
 sábado por la noche, y publicar.

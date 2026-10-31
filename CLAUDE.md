@@ -19,7 +19,7 @@ la parte viva del sitio: se carga desde un panel cada semana y se republica sola
 El torneo va por su **quinta edición (2026-2, octubre–noviembre)**: dos grupos
 de cuatro a tres fechas; el 1.º y el 2.º de cada grupo juegan la **Copa Oro**
 (el título) y el 3.º y el 4.º la **Copa Plata**, cada una con semifinales
-cruzadas, tercer puesto y final. Campeón vigente: **Pomada Alfa** (4.ª edición,
+cruzadas, tercer puesto y final. Campeón vigente: **Pomada FC** (4.ª edición,
 en penales). La 3.ª y la 4.ª están archivadas en `edicion-3.ts` y `edicion-4.ts`.
 
 **Documento de especificaciones:** `Managers_Especificaciones_v2.docx`, en la

@@ -650,7 +650,7 @@ export function jornadaEnVariosDias(partidos: readonly PartidoLiga[]): boolean {
  * El orden importa: con Fair Play en segundo lugar, un club con peor
  * diferencia de gol puede ir por encima si tiene menos tarjetas. Es lo que
  * paso entre The Originals y Los Pibes en la 4a edicion, y lo que deja a
- * Pomada Alfa sobre La Banda Cruzada tras la Fecha 1 de la 5a: los dos con 3
+ * Pomada FC sobre La Banda Cruzada tras la Fecha 1 de la 5a: los dos con 3
  * puntos, y la roja de La Banda pesa mas que su diferencia de gol.
  *
  * `clubes` dice que filas tiene la tabla. Por defecto son los de la edicion

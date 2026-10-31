@@ -6,7 +6,7 @@
  * máximo ganador y qué se muestra en la sección de Palmarés. Ningún club
  * lleva su número de títulos escrito a mano en otro sitio.
  *
- * Por qué. La web llegó a presentar a Pomada Alfa como "bicampeón vigente",
+ * Por qué. La web llegó a presentar a Pomada FC como "bicampeón vigente",
  * con dos títulos fechados en 2024 y 2025 que no encajaban ni con la
  * numeración del resto del sitio, mientras la 3ª edición la había ganado
  * The Originals. El número vivía suelto en la ficha del club, sin ninguna
@@ -37,7 +37,7 @@ export const TORNEO_BIO =
 
 /** Slug → nombre público. Los partidos guardan slugs; el palmarés, nombres. */
 const NOMBRE_POR_SLUG: Readonly<Record<string, string>> = {
-  'pomada-alfa': 'Pomada Alfa',
+  'pomada-alfa': 'Pomada FC',
   'the-originals': 'The Originals',
   'los-pibes': 'Los Pibes del Barrio',
   'yonotomo-fc': 'Yonotomo',
@@ -77,15 +77,15 @@ export const EDICIONES: readonly Edicion[] = [
     numero: 1,
     periodo: '2025-1',
     estado: 'jugada',
-    campeonDeclarado: 'Pomada Alfa',
+    campeonDeclarado: 'Pomada FC',
     notas: 'Primera edición del torneo. Sus partidos no se publicaron en el sitio.',
   },
   {
     numero: 2,
     periodo: '2025-2',
     estado: 'jugada',
-    campeonDeclarado: 'Pomada Alfa',
-    notas: 'Segunda estrella de Pomada Alfa. Sus partidos no se publicaron en el sitio.',
+    campeonDeclarado: 'Pomada FC',
+    notas: 'Segunda estrella de Pomada FC. Sus partidos no se publicaron en el sitio.',
   },
   {
     numero: 3,
@@ -100,7 +100,7 @@ export const EDICIONES: readonly Edicion[] = [
     estado: 'jugada',
     partidos: FASE_FINAL_4,
     notas:
-      'Liga de 8 clubes a 7 fechas y llave desde cuartos. Final: Pomada Alfa 3–3 The Originals, 6–5 en penales.',
+      'Liga de 8 clubes a 7 fechas y llave desde cuartos. Final: Pomada FC 3–3 The Originals, 6–5 en penales.',
   },
   {
     // Se juega en el mismo semestre que la 4ª, de octubre a noviembre: por
@@ -159,7 +159,7 @@ export const TITULOS_POR_CLUB: Readonly<Record<string, number>> = EDICIONES_CON_
  * Campeón vigente: el de la última edición cerrada con final publicada.
  *
  * Campeón vigente y máximo ganador son cosas distintas —quien ganó la última
- * frente a quien más acumula—. Tras la 4ª coinciden en Pomada Alfa, que ganó
+ * frente a quien más acumula—. Tras la 4ª coinciden en Pomada FC, que ganó
  * esa final y suma tres títulos; con la 3ª no coincidían. La web lo refleja
  * sola en cuanto cambia cualquiera de los dos.
  */
@@ -281,7 +281,7 @@ export const MAXIMO_GANADOR_ES_OTRO = MAXIMO_GANADOR.equipo !== CAMPEON_VIGENTE.
 
 /** Equipos identificados en el bracket de la edición 2026. */
 export const EQUIPOS_2026: readonly string[] = [
-  'Pomada Alfa',
+  'Pomada FC',
   'Managers FC',
   'The Originals',
   'La Banda Cruzada FC',

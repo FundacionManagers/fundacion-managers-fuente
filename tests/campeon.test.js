@@ -1,7 +1,7 @@
 /**
  * El palmarés sale de una sola lista, y cada título dice de dónde viene.
  *
- * La web llegó a presentar a Pomada Alfa como "bicampeón vigente" con dos
+ * La web llegó a presentar a Pomada FC como "bicampeón vigente" con dos
  * títulos fechados en 2024 y 2025 que no encajaban con la numeración del
  * resto del sitio, mientras la 3ª edición la había ganado The Originals. El
  * número vivía suelto en la ficha del club, sin ninguna lista detrás.
@@ -52,10 +52,10 @@ test('el campeón de una edición con llave sale de quién ganó su Gran Final',
   assert.equal(respaldoDe(tercera), 'llave-publicada');
 });
 
-test('las dos primeras ediciones las ganó Pomada Alfa, sin llave publicada', () => {
+test('las dos primeras ediciones las ganó Pomada FC, sin llave publicada', () => {
   for (const numero of [1, 2]) {
     const e = EDICIONES.find((x) => x.numero === numero);
-    assert.equal(campeonDe(e), 'Pomada Alfa');
+    assert.equal(campeonDe(e), 'Pomada FC');
     assert.equal(
       respaldoDe(e),
       'declarado',
@@ -64,21 +64,21 @@ test('las dos primeras ediciones las ganó Pomada Alfa, sin llave publicada', ()
   }
 });
 
-test('Pomada Alfa suma tres títulos y el escudo lo refleja', () => {
-  assert.equal(TITULOS_POR_CLUB['Pomada Alfa'], 3);
+test('Pomada FC suma tres títulos y el escudo lo refleja', () => {
+  assert.equal(TITULOS_POR_CLUB['Pomada FC'], 3);
   const pomada = CLUBES_HISTORICOS.find((e) => e.slug === 'pomada-alfa');
   assert.equal(pomada.titulos, 3, 'los títulos del club se cuentan sobre EDICIONES, no a mano');
 });
 
-test('la 4ª la ganó Pomada Alfa en penales, y lo dice la llave publicada', () => {
+test('la 4ª la ganó Pomada FC en penales, y lo dice la llave publicada', () => {
   const cuarta = EDICIONES.find((e) => e.numero === 4);
   assert.equal(cuarta.estado, 'jugada');
-  assert.equal(campeonDe(cuarta), 'Pomada Alfa');
+  assert.equal(campeonDe(cuarta), 'Pomada FC');
   assert.equal(respaldoDe(cuarta), 'llave-publicada');
 });
 
-test('el campeón vigente es Pomada Alfa, de la 4ª edición', () => {
-  assert.equal(CAMPEON_VIGENTE.equipo, 'Pomada Alfa');
+test('el campeón vigente es Pomada FC, de la 4ª edición', () => {
+  assert.equal(CAMPEON_VIGENTE.equipo, 'Pomada FC');
   assert.equal(CAMPEON_VIGENTE.edicion, 4);
   assert.equal(CAMPEON_VIGENTE.periodo, '2026-2');
 });
@@ -90,8 +90,8 @@ test('el campeón vigente sale de la última edición ya jugada', () => {
   assert.equal(CAMPEON_VIGENTE.edicion, ultima.numero);
 });
 
-test('el máximo ganador es Pomada Alfa, con 3 títulos', () => {
-  assert.equal(MAXIMO_GANADOR.equipo, 'Pomada Alfa');
+test('el máximo ganador es Pomada FC, con 3 títulos', () => {
+  assert.equal(MAXIMO_GANADOR.equipo, 'Pomada FC');
   assert.equal(MAXIMO_GANADOR.titulos, 3);
 });
 
@@ -100,7 +100,7 @@ test('si máximo ganador y campeón vigente coinciden, no se pinta el bloque dos
   assert.equal(
     MAXIMO_GANADOR_ES_OTRO,
     false,
-    'con el mismo club en los dos, la web mostraría a Pomada Alfa dos veces',
+    'con el mismo club en los dos, la web mostraría a Pomada FC dos veces',
   );
 });
 

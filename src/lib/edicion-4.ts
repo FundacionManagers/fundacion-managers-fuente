@@ -1,6 +1,6 @@
 /**
  * La 4ª edición (2026-2), ya cerrada: liga de 7 fechas con 8 clubes y una
- * llave de cuartos a la final. Campeón: Pomada Alfa, en penales.
+ * llave de cuartos a la final. Campeón: Pomada FC, en penales.
  *
  * Vive aparte por la misma razón que `edicion-3.ts`: el palmarés se deriva
  * de su Gran Final, y la edición en curso —la 5ª— ya no tiene nada que ver
@@ -17,7 +17,7 @@
  * `tests/` la siguen cuadrando: los 8 clubes suman 97 goles a favor, el
  * ranking reparte 96 entre 46 anotadores y el que falta es el autogol de
  * `AUTOGOLES_4`, que lo marcó Managers FC en su propia portería y cuenta para
- * Pomada Alfa. La fase final de abajo sí es la definitiva.
+ * Pomada FC. La fase final de abajo sí es la definitiva.
  *
  * Esto además detectó en su día dos erratas en el gráfico oficial de la
  * Fecha 4: la diferencia de gol de Useches (dice -2, son -1) y la de
@@ -446,12 +446,12 @@ export const GOLEADORES_4: readonly Goleador[] = [
  * Autogoles de la fase de grupos, confirmados por la organización.
  *
  * El de la Fecha 2 lo marcó un jugador de Managers FC en su propia portería,
- * en el 0–1 contra Pomada Alfa: fue el único gol del partido. La web llegó a
+ * en el 0–1 contra Pomada FC: fue el único gol del partido. La web llegó a
  * atribuirlo a La Banda Cruzada, que era una deducción equivocada — se dio
  * por hecho que el autogol explicaba el hueco de ese club.
  *
  * La planilla ya está conciliada: el gol estaba acreditado a Yesid Malagón
- * y se le descontó en el panel, así que Pomada Alfa marca 23 con 22 de sus
+ * y se le descontó en el panel, así que Pomada FC marca 23 con 22 de sus
  * jugadores más este autogol. El hueco de La Banda Cruzada era otra cosa y
  * se cerró aparte, cargando a Jaxon Murillo.
  */
