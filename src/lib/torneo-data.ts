@@ -63,15 +63,15 @@ const CLUBES = [
   { slug: 'managers-fc', nombre: 'Managers FC', corto: 'MGR', color: '#D4A437', escudo: true },
   { slug: 'useche-fc', nombre: 'Useches', corto: 'USE', color: '#5B3DA8', escudo: true },
   // Nuevos en la 5ª edición. Nombre tal como lo escribe la organización;
-  // escudo y color definitivos, pendientes.
+  // el color es provisional, el escudo ya viene del documento de la organización.
   {
     slug: 'isotopos-portal-1',
     nombre: 'Isótopos Portal 1',
     corto: 'ISO',
     color: '#65A30D',
-    escudo: false,
+    escudo: true,
   },
-  { slug: 'cucuta-10-fc', nombre: 'Cúcuta 10 F.C.', corto: 'CUC', color: '#9F1239', escudo: false },
+  { slug: 'cucuta-10-fc', nombre: 'Cúcuta 10 F.C.', corto: 'CUC', color: '#9F1239', escudo: true },
 ] as const;
 
 export type Grupo = 'A' | 'B';
